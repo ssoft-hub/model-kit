@@ -1,0 +1,89 @@
+# Сооставлят список поддиректорий до 10 уровней вложености
+################################################################################
+
+defineTest( addSubdirs ) {
+    result = false
+
+    for( subdir, ARGS ) {
+        entries = $$files( $${subdir}/* )
+        for( entry, entries ) {
+
+            sub_entries = $$files( $${entry}/* )
+
+            !isEmpty( sub_entries ) {
+                !contains( __RESOLVED_DIRS__, $${entry} ) {
+                    __RESOLVED_DIRS__ *= $${entry}
+                    result = true
+                }
+            }
+        }
+    }
+    export( __RESOLVED_DIRS__ )
+    return( $${result} )
+}
+
+defineTest( addSubdirsRecursive ) {
+    for( tmp, 1..10 ) {
+        !addSubdirs( $${__RESOLVED_DIRS__} ) : break()
+    }
+    export ( __RESOLVED_DIRS__ )
+    return ( true )
+}
+
+# Включает все исходные файлы из заданных дирректорий
+################################################################################
+
+defineTest( includeFilesFrom ) {
+
+    dir = $${ARGS}
+    entries = $$files( $${dir}/* )
+
+    isEmpty( entries ) {
+        return ( false )
+    }
+
+    exists( $${dir}/*.h ):   HEADERS *= $${dir}/*.h
+    exists( $${dir}/*.hpp ): HEADERS *= $${dir}/*.hpp
+    exists( $${dir}/*.c ):   SOURCES *= $${dir}/*.c
+    exists( $${dir}/*.cpp ): SOURCES *= $${dir}/*.cpp
+    exists( $${dir}/*.ui ):  FORMS *= $${dir}/*.ui
+    exists( $${dir}/*.l ):   LEXSOURCES *= $${dir}/*.l
+    exists( $${dir}/*.rc ):  RES_FILE *= $${dir}/*.rc
+    exists( $${dir}/*.qrc ): RESOURCES *= $${dir}/*.qrc
+    exists( $${dir}/*.ts ):  TRANSLATIONS *= $${dir}/*.ts
+
+    export( HEADERS )
+    export( SOURCES )
+    export( FORMS )
+    export( LEXSOURCES )
+    export( RES_FILE )
+    export( RESOURCES )
+    export( TRANSLATIONS )
+
+    return( true )
+}
+
+
+# Включает все исходные файлы из заданных дирректорий и их поддирректорий
+################################################################################
+
+defineTest( includeFiles ) {
+
+    __RESOLVED_DIRS__ = $${ARGS}
+
+    addSubdirsRecursive()
+
+    for( dir, __RESOLVED_DIRS__ ) {
+        includeFilesFrom( $${dir} )
+    }
+
+    export( HEADERS )
+    export( SOURCES )
+    export( FORMS )
+    export( LEXSOURCES )
+    export( RES_FILE )
+    export( RESOURCES )
+    export( TRANSLATIONS )
+
+    return( true )
+}
