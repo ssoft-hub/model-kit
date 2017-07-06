@@ -2,32 +2,26 @@
 #include <Helper/AccessHelper.h>
 #include <memory>
 
+
 /*!
  */
 template < typename _ValueType, typename _ValueTool >
 class Instance
 {
-    template < typename _RequaredType, typename _WrapperType >
-    friend struct AccessHelper;
+    template < typename _WrapperType >
+    friend struct AccessProxy;
 
     using ThisType = Instance< _ValueType, _ValueTool >;
 
 public:
+    using ValueType = _ValueType;
     using ValueTool = _ValueTool;
-    using Value = typename ValueTool:: template Value< _ValueType >;
-    using Holder = typename ValueTool:: template ValueHolder< _ValueType >;
-
-    using WritableProxy = typename ValueTool:: template WritableProxy< _ValueType >;
-    using ReadableProxy = typename ValueTool:: template ReadableProxy< _ValueType >;
-
-    using WritableAccessValue = typename ValueTool:: template WritableAccessValue< _ValueType >;
-    using ReadableAccessValue = typename ValueTool:: template ReadableAccessValue< _ValueType >;
-    using MovableAccessValue = typename ValueTool:: template MovableAccessValue< _ValueType >;
+    using HolderType = typename ValueTool:: template HolderType< _ValueType >;
 
     enum InitializeFlag { NotInitialized };
 
 private:
-    Holder m_holder;
+    HolderType m_holder;
 
 public:
     //! Конструктор без специальной инициализации значения.
@@ -40,94 +34,126 @@ public:
     //! Конструктор инициализации значения по заданным параметрам
     template < typename ... _Arguments >
     Instance ( _Arguments && ... arguments )
-    : m_holder( ValueTool:: template makeValueHolder< Value >(
+    : m_holder( ValueTool:: template makeValueHolder< ValueType >(
         ::std::forward< _Arguments >( arguments ) ... ) )
     {
+        // в этот конструктор нельзя передать Instance, поэтому
+        // нет необходимости защищать входящие аргументы
     }
 
     template < typename _Type >
-    ThisType & operator = ( _Type && other )
+    ThisType & operator = ( _Type & /*other*/ )
     {
-        m_holder = ValueTool:: template makeValueHolder< Value >(
-            ::std::forward< _Type >( other ) );
+        // в этот оператор нельзя передать Instance,
+        // поэтому необходимо защищать только *this.
         return *this;
     }
 
-    //! Конструктор перемещения.
-    Instance ( ThisType && other )
-    : m_holder( ::std::forward< Holder >( other.m_holder ) )
+    template < typename _Type >
+    ThisType & operator = ( _Type && /*other*/ )
     {
-    }
-
-    ThisType & operator = ( ThisType && other )
-    {
-        m_holder = ::std::forward< Holder >( other.m_holder );
+        // в этот оператор нельзя передать Instance,
+        // поэтому необходимо защищать только *this.
         return *this;
     }
 
-    //! Конструктор копирования (необходим для правильной компиляции).
-    Instance ( ThisType & other )
-    : m_holder( other.m_holder )
+    template < typename _Type >
+    ThisType & operator = ( const _Type & /*other*/ )
     {
-    }
-
-    ThisType & operator = ( ThisType & other )
-    {
-        m_holder = other.m_holder;
+        // в этот оператор нельзя передать Instance,
+        // поэтому необходимо защищать только *this.
         return *this;
     }
 
-    //! Конструктор копирования.
-    Instance ( const ThisType & other )
-    : m_holder( other.m_holder )
+    // TODO: защитить аргументы конструкторов и операторов
+
+    Instance ( ThisType && /*other*/ )
+    : m_holder( /*::std::forward< HolderType >( other.m_holder )*/ )
     {
+        // требуется защитить other
     }
 
-    ThisType & operator = ( const ThisType & other )
+    ThisType & operator = ( ThisType && /*other*/ )
     {
-        m_holder = other.m_holder;
+        // требуется защитить *this и other
+        //m_holder = ::std::forward< HolderType >( other.m_holder );
         return *this;
     }
 
-    //! Конструктор перемещения из подобного объекта.
-    template < typename _OtherType, typename _OtherTool >
-    Instance ( Instance< _OtherType, _OtherTool > && other )
-    : Instance( getMovableValue< _OtherType >( ::std::forward< Instance< _OtherType, _OtherTool > >( other ) ) )
+    Instance ( ThisType & /*other*/ )
+    : m_holder( /*other.m_holder*/ )
     {
+        // требуется защитить other
     }
 
-    template < typename _OtherType, typename _OtherTool >
-    ThisType & operator = ( Instance< _OtherType, _OtherTool > && other )
+    ThisType & operator = ( ThisType & /*other*/ )
     {
-        *this = getMovableValue< _OtherType >( ::std::forward< Instance< _OtherType, _OtherTool > >( other ) );
+        // требуется защитить *this и other
+//        m_holder = other.m_holder;
         return *this;
     }
 
-    //! Конструктор копирования из подобного объекта (необходим для правильной компиляции).
-    template < typename _OtherType, typename _OtherTool >
-    Instance ( Instance< _OtherType, _OtherTool > & other )
-    : Instance( cget< _OtherType >( other ) )
+    Instance ( const ThisType & /*other*/ )
+    : m_holder( /*other.m_holder*/ )
     {
+        // требуется защитить other
     }
 
-    template < typename _OtherType, typename _OtherTool >
-    ThisType & operator = ( Instance< _OtherType, _OtherTool > & other )
+    ThisType & operator = ( const ThisType & /*other*/ )
     {
-        *this = cget< _OtherType >( other );
+        // требуется защитить *this и other
+        //m_holder = other.m_holder;
         return *this;
     }
 
-    //! Конструктор копирования из подобного объекта.
     template < typename _OtherType, typename _OtherTool >
-    Instance ( const Instance< _OtherType, _OtherTool > & other )
-    : Instance( cget< _OtherType >( other ) )
+    Instance ( Instance< _OtherType, _OtherTool > && /*other*/ )
+    : m_holder( /*other.m_holder*/ )
     {
+        // требуется защитить other
+        // затем other нужно раскрыть либо до ThisType, либо до _ValueType
     }
 
     template < typename _OtherType, typename _OtherTool >
-    ThisType & operator = ( const Instance< _OtherType, _OtherTool > & other )
+    ThisType & operator = ( Instance< _OtherType, _OtherTool > && /*other*/ )
     {
-        *this = cget< _OtherType >( other );
+        // требуется защитить *this и other
+        // затем other нужно раскрыть либо до ThisType, либо до _ValueType
+        //m_holder = ::std::forward< HolderType >( other.m_holder );
+        return *this;
+    }
+
+    template < typename _OtherType, typename _OtherTool >
+    Instance ( Instance< _OtherType, _OtherTool > & /*other*/ )
+    : m_holder( /*other.m_holder*/ )
+    {
+        // требуется защитить other
+        // затем other нужно раскрыть либо до ThisType, либо до _ValueType
+    }
+
+    template < typename _OtherType, typename _OtherTool >
+    ThisType & operator = ( Instance< _OtherType, _OtherTool > & /*other*/ )
+    {
+        // требуется защитить *this и other
+        // затем other нужно раскрыть либо до ThisType, либо до _ValueType
+        //m_holder = other.m_holder;
+        return *this;
+    }
+
+    template < typename _OtherType, typename _OtherTool >
+    Instance ( const Instance< _OtherType, _OtherTool > & /*other*/ )
+    : m_holder( /*other.m_holder*/ )
+    {
+        // требуется защитить other
+        // затем other нужно раскрыть либо до ThisType, либо до _ValueType
+    }
+
+    template < typename _OtherType, typename _OtherTool >
+    ThisType & operator = ( const Instance< _OtherType, _OtherTool > & /*other*/ )
+    {
+        // требуется защитить *this и other
+        // затем other нужно раскрыть либо до ThisType, либо до _ValueType
+        //m_holder = other.m_holder;
         return *this;
     }
 
@@ -136,88 +162,119 @@ public:
     {
         ValueTool::destroyValueHolder( m_holder );
     }
+};
 
-    WritableProxy operator -> ()
-    {
-        return ValueTool:: template writableProxy< _ValueType >( m_holder );
-    }
+template < typename _ValueType, typename _ValueTool >
+struct AccessProxy< Instance< _ValueType, _ValueTool > & >
+{
+    using ThisType = AccessProxy< Instance< _ValueType, _ValueTool > & >;
 
-    ReadableProxy operator -> () const
-    {
-        return ValueTool:: template readableProxy< _ValueType >( m_holder );
-    }
+public:
+    using ValueType = _ValueType;
+    using ValueTool = _ValueTool;
+    using ReferType = Instance< _ValueType, _ValueTool > &;
 
 private:
-    WritableAccessValue writable ()
+    ReferType m_refer;
+
+public:
+    AccessProxy ( ReferType refer )
+    : m_refer( refer )
     {
-        return ValueTool:: template writable< _ValueType >( m_holder );
+        static_assert( ::std::is_reference< ReferType >::value
+            , "The template parameter must be a reference." );
+        ValueTool::guardWritableHolder( m_refer.m_holder );
     }
 
-    ReadableAccessValue readable () const
+    AccessProxy ( ThisType && other )
+    : m_refer( ::std::forward< ReferType >( other.m_refer ) )
     {
-        return ValueTool:: template readable< _ValueType >( m_holder );
     }
 
-    MovableAccessValue movable ()
+    ~AccessProxy ()
     {
-        return ValueTool:: template movable< _ValueType >(
-            ::std::forward< Holder >( m_holder ) );
-    }
-};
-
-// TODO: Имеет смысл дополнить понятие Instance значения
-// набором операторов сравнения/присвоения и т.д.
-
-/*!
- * Специализация шаблоного класса для доступа к внутреннему значению Instance.
- */
-template < typename _RequaredType, typename _ValueType, typename _ValueTool >
-struct AccessHelper< _RequaredType, Instance< _ValueType, _ValueTool > >
-{
-    using RequaredType = _RequaredType;
-    using WrapperType = Instance< _ValueType, _ValueTool >;
-
-    using WritableAccessValue = typename WrapperType::WritableAccessValue;
-    using ReadableAccessValue = typename WrapperType::ReadableAccessValue;
-    using MovableAccessValue = typename WrapperType::MovableAccessValue;
-
-    static constexpr RequaredType & writable ( WrapperType & wrapper )
-    {
-        return getWritableValue< _RequaredType >( wrapper.writable() );
+        ValueTool::unguardWritableHolder( m_refer.m_holder );
     }
 
-    static constexpr const RequaredType & readable ( const WrapperType & wrapper )
+    constexpr AccessProxy< ValueType & > operator -> ()
     {
-        return getReadableValue< _RequaredType >( wrapper.readable() );
-    }
-
-    static constexpr RequaredType && movable ( WrapperType && wrapper )
-    {
-        return getMovableValue< _RequaredType >( ::std::forward< MovableAccessValue >( wrapper.movable() ) );
+        return ValueTool:: template getWritableProxy< ValueType >( m_refer.m_holder );
     }
 };
 
-/*!
- * Специализация шаблоного класса для доступа к самому Instance.
- */
 template < typename _ValueType, typename _ValueTool >
-struct AccessHelper< Instance< _ValueType, _ValueTool >, Instance< _ValueType, _ValueTool > >
+struct AccessProxy< const Instance< _ValueType, _ValueTool > & >
 {
-    using RequaredType = Instance< _ValueType, _ValueTool >;
-    using WrapperType = Instance< _ValueType, _ValueTool >;
+    using ThisType = AccessProxy< Instance< _ValueType, _ValueTool > & >;
 
-    static constexpr RequaredType & writable ( WrapperType & wrapper )
+public:
+    using ValueType = _ValueType;
+    using ValueTool = _ValueTool;
+    using ReferType = const Instance< _ValueType, _ValueTool > &;
+
+private:
+    ReferType m_refer;
+
+public:
+    AccessProxy ( ReferType refer )
+    : m_refer( refer )
     {
-        return wrapper;
+        static_assert( ::std::is_reference< ReferType >::value
+            , "The template parameter must be a reference." );
+        ValueTool::guardReadableHolder( m_refer.m_holder );
     }
 
-    static constexpr const RequaredType & readable ( const WrapperType & wrapper )
+    AccessProxy ( ThisType && other )
+    : m_refer( ::std::forward< ReferType >( other.m_refer ) )
     {
-        return wrapper;
     }
 
-    static constexpr RequaredType && movable ( WrapperType && wrapper )
+    ~AccessProxy ()
     {
-        return ::std::forward< WrapperType >( wrapper );
+        ValueTool::unguardReadableHolder( m_refer.m_holder );
+    }
+
+    constexpr AccessProxy< const ValueType & > operator -> ()
+    {
+        return ValueTool::getReadableProxy( m_refer.m_holder );
+    }
+};
+
+template < typename _ValueType, typename _ValueTool >
+struct AccessProxy< Instance< _ValueType, _ValueTool > && >
+{
+    using ThisType = AccessProxy< Instance< _ValueType, _ValueTool > && >;
+
+public:
+    using ValueType = _ValueType;
+    using ValueTool = _ValueTool;
+    using ReferType = Instance< _ValueType, _ValueTool > &&;
+    using HolderType = typename Instance< _ValueType, _ValueTool >::HolderType;
+
+private:
+    ReferType m_refer;
+
+public:
+    AccessProxy ( ReferType refer )
+    : m_refer( ::std::forward< ReferType >( refer ) )
+    {
+        static_assert( ::std::is_reference< ReferType >::value
+            , "The template parameter must be a reference." );
+        ValueTool::guardMovableHolder(
+            ::std::forward< HolderType >( m_refer.m_holder ) );
+    }
+
+    AccessProxy ( ThisType && other ) = default;
+
+    ~AccessProxy ()
+    {
+        ValueTool::unguardReadableHolder(
+            ::std::forward< HolderType >( m_refer.m_holder ) );
+    }
+
+    constexpr AccessProxy< ValueType && > operator -> ()
+    {
+        return ValueTool::getMovableProxy(
+            ::std::forward< HolderType >( m_refer.m_holder ) );
     }
 };

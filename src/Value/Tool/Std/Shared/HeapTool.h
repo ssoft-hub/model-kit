@@ -12,54 +12,72 @@ namespace Std
         struct HeapTool
         {
             template < typename _Type >
-            using Value = _Type;
-
-            template < typename _Type >
-            using WritableProxy = _Type *;
-
-            template < typename _Type >
-            using ReadableProxy = const _Type *;
-
-            template < typename _Type >
-            using WritableAccessValue = _Type &;
-
-            template < typename _Type >
-            using ReadableAccessValue = const _Type &;
-
-            template < typename _Type >
-            using MovableAccessValue = _Type &&;
-
-            template < typename _Type >
-            using ValueHolder = ::std::shared_ptr< Value< _Type > >;
+            using HolderType = ::std::shared_ptr< _Type >;
 
             template < typename _Type, typename ... _Arguments >
-            static ValueHolder< _Type > makeValueHolder ( _Arguments && ... arguments )
+            static constexpr HolderType< _Type > makeValueHolder ( _Arguments && ... arguments )
             {
-                return ValueHolder< _Type >( new _Type( ::std::forward< _Arguments >( arguments ) ... ) );
+                return HolderType< _Type >( ::std::make_shared< _Type >( ::std::forward< _Arguments >( arguments ) ... ) );
             }
 
             template < typename _Type >
-            static void destroyValueHolder ( ValueHolder< _Type > & holder )
+            static constexpr void destroyValueHolder ( HolderType< _Type > & holder )
             {
                 holder.reset();
             }
 
             template < typename _Type >
-            static WritableAccessValue< _Type > writable ( ValueHolder< _Type > & holder )
+            static constexpr void guardWritableHolder ( HolderType< _Type > & /*holder*/ )
             {
-                return *holder.get();
+                // nothing to do
             }
 
             template < typename _Type >
-            static ReadableAccessValue< _Type > readable ( const ValueHolder< _Type > & holder )
+            static constexpr void unguardWritableHolder ( HolderType< _Type > & /*holder*/ )
             {
-                return *holder.get();
+                // nothing to do
             }
 
             template < typename _Type >
-            static MovableAccessValue< _Type > movable ( ValueHolder< _Type > && holder )
+            static constexpr void guardReadableHolder ( const HolderType< _Type > & /*holder*/ )
             {
-                return ::std::forward< Value< _Type > >( *holder.get() );
+                // nothing to do
+            }
+
+            template < typename _Type >
+            static constexpr void unguardReadableHolder ( const HolderType< _Type > & /*holder*/ )
+            {
+                // nothing to do
+            }
+
+            template < typename _Type >
+            static constexpr void guardMovableHolder ( HolderType< _Type > && /*holder*/ )
+            {
+                // nothing to do
+            }
+
+            template < typename _Type >
+            static constexpr void unguardMovableHolder ( HolderType< _Type > && /*holder*/ )
+            {
+                // nothing to do
+            }
+
+            template < typename _Type >
+            static constexpr AccessProxy< _Type & > getWritableProxy ( HolderType< _Type > & holder )
+            {
+                return AccessProxy< _Type & >( *holder.get() );
+            }
+
+            template < typename _Type >
+            static constexpr AccessProxy< const _Type & > getReadableProxy ( const HolderType< _Type > & holder )
+            {
+                return AccessProxy< const _Type & >( *holder.get() );
+            }
+
+            template < typename _Type >
+            static constexpr AccessProxy< _Type && > getMovableProxy ( HolderType< _Type > && holder )
+            {
+                return AccessProxy< _Type && >( ::std::forward< _Type >( *holder.get() ) );
             }
         };
     }

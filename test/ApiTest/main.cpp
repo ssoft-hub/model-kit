@@ -1,11 +1,9 @@
 #include <iostream>
 #include <string>
 #include "memory.h"
-#include <QtWidgets/QApplication>
-#include <QtGui/QFont>
 
-using ImplicitTool = ::Std::Shared::ImplicitTool;
-using RelationTool = ::Std::Shared::RelationTool;
+//using ImplicitTool = ::Std::Shared::ImplicitTool;
+//using RelationTool = ::Std::Shared::RelationTool;
 
 struct Item
 {
@@ -76,7 +74,7 @@ extern void testAllTool ();
 
 int main ( int /*argc*/, char ** /*argv*/ )
 {
-    testBaseDerived();
+    //testBaseDerived();
     testAllTool ();
 
 //    int int_value; // OK
@@ -86,7 +84,7 @@ int main ( int /*argc*/, char ** /*argv*/ )
 //    const Variable< int > int_value; // ERROR
 //    Variable< const int > int_value; // ERROR
 
-    Variable< Instance< int, ImplicitTool > > int_value; // OK
+//    Variable< Instance< int, ImplicitTool > > int_value; // OK
 //    const Variable< Instance< int, ImplicitTool > > int_value; // ERROR
 //    Variable< const Instance< int, ImplicitTool > > int_value; // ERROR
 //    Variable< Instance< const int, ImplicitTool > > int_value; // ERROR
@@ -102,11 +100,11 @@ int main ( int /*argc*/, char ** /*argv*/ )
 //    Variable< SharedEnd< const int, ToolType > > int_value; // ERROR
 
 
-    get< int >( int_value ) += 12345;
-    cget< int >( int_value );
+//    get< int >( int_value ) += 12345;
+//    cget< int >( int_value );
 
-    Variable< ::std::string > name;
-    get< ::std::string >( name ) = "Hello";
+//    Variable< ::std::string > name;
+//    get< ::std::string >( name ) = "Hello";
 
 //    Variable< Implicit< Item, ValueTool > > item;
 //    get< BaseItem >( item ); // ОК

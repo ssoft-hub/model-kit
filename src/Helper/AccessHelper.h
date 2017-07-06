@@ -4,181 +4,94 @@
 
 #include <memory>
 
-/*!
- * Шаблоный класс, специализация которого определяет правила доступа к внутреннему
- * значению обертки. В реализации "по умолчанию" принимается, что тип входящего
- * параметра In соответствует типу возвращаемого Return.
- *
- * Доступ к внутреннему значению должен быть специализирован для двух случаев
- * (чтения и записи), которые определяют возможность изменения значения
- * в зависимости от возможности изменения обертки.
- */
-template < typename _RequaredType, typename _WrapperType >
-struct AccessHelper
+template < typename _ReferType >
+class ValueProxy
 {
-    using RequaredType = typename ::std::decay< _RequaredType >::type;
-    using WrapperType = typename ::std::decay< _WrapperType >::type;
+    using ThisType = ValueProxy< _ReferType >;
 
-    static constexpr RequaredType * writableProxy (
-        WrapperType & wrapper ) noexcept
+public:
+    using ReferType = _ReferType;
+
+private:
+    ReferType m_refer;
+
+public:
+    ValueProxy ( ReferType refer )
+    : m_refer( ::std::forward< ReferType >( refer ) )
     {
-        static_assert( ::std::is_same< RequaredType, WrapperType >::value
-                || ::std::is_base_of< RequaredType, WrapperType >::value,
-            "The wrapper type is not compatible with requared." );
-        return &wrapper;
+        static_assert( ::std::is_reference< ReferType >::value
+            , "The template parameter must be a reference." );
     }
 
-    static constexpr const RequaredType * readableProxy (
-        const WrapperType & wrapper ) noexcept
-    {
-        static_assert( ::std::is_same< RequaredType, WrapperType >::value
-                || ::std::is_base_of< RequaredType, WrapperType >::value,
-            "The wrapper type is not compatible with requared." );
-        return &wrapper;
-    }
+    ValueProxy ( ThisType && other ) = default;
 
-    static constexpr RequaredType &
-        writable ( WrapperType & wrapper ) noexcept
+    ReferType refer () const
     {
-        static_assert( ::std::is_same< RequaredType, WrapperType >::value
-                || ::std::is_base_of< RequaredType, WrapperType >::value,
-            "The types Value and Wrapper are not compatible" );
-        return wrapper;
-    }
-
-    static constexpr const RequaredType &
-        readable ( const WrapperType & wrapper ) noexcept
-    {
-        static_assert( ::std::is_same< RequaredType, WrapperType >::value
-                || ::std::is_base_of< RequaredType, WrapperType >::value,
-            "The types Value and Wrapper are not compatible" );
-        return wrapper;
-    }
-
-    static constexpr RequaredType &&
-        movable ( WrapperType && wrapper ) noexcept
-    {
-        static_assert( ::std::is_same< RequaredType, WrapperType >::value
-                || ::std::is_base_of< RequaredType, WrapperType >::value,
-            "The types Value and Wrapper are not compatible" );
-        return ::std::forward< RequaredType >( wrapper );
+        return ::std::forward< ReferType >( m_refer );
     }
 };
 
-template < typename _RequaredType, typename _WrapperType >
-constexpr _RequaredType * get_ptr ( _WrapperType & wrapper ) noexcept
+/*!
+ * Шаблоный класс, специализация которого определяет правила доступа
+ * к внутреннему значению обертки.
+ */
+template < typename _ReferType >
+class AccessProxy
 {
-    using Value = typename ::std::decay< _RequaredType >::type;
-    using Wrapper = typename ::std::decay< _WrapperType >::type;
-    return AccessHelper< Value, Wrapper >::writableProxy( wrapper );
-}
+    using ThisType = AccessProxy< _ReferType >;
 
-template < typename _RequaredType, typename _WrapperType >
-constexpr _RequaredType * get_ptr ( const _WrapperType & wrapper ) noexcept
-{
-    using Value = typename ::std::decay< _RequaredType >::type;
-    using Wrapper = typename ::std::decay< _WrapperType >::type;
-    return AccessHelper< Value, Wrapper >::readableProxy( wrapper );
-}
+public:
+    using ReferType = _ReferType;
+    using ValueType = typename ::std::remove_reference< ReferType >::type;
+    using ProxyType = ValueProxy< _ReferType >;
 
-template < typename _RequaredType, typename _WrapperType >
-constexpr _RequaredType * get_ptr ( _WrapperType && wrapper ) noexcept
-{
-    using Value = typename ::std::decay< _RequaredType >::type;
-    using Wrapper = typename ::std::decay< _WrapperType >::type;
-    return AccessHelper< Value, Wrapper >::movable(
-        ::std::forward< _WrapperType >( wrapper ) );
-}
+private:
+    ProxyType m_proxy;
 
+public:
+    AccessProxy ( ReferType refer )
+    : m_proxy( ::std::forward< ReferType >( refer ) )
+    {
+        static_assert( ::std::is_reference< ReferType >::value
+            , "The template parameter must be a reference." );
+    }
 
+    AccessProxy ( ThisType && other ) = default;
 
+    constexpr ProxyType * operator -> ()
+    {
+        return &m_proxy;
+    }
+};
 
 /*!
- * Метод обеспечивает доступ к любому представлению внутреннего значения,
- * последовательно раскрывая суперпозицию оберток.
+ * Метод доступа к внутреннему содержимому
  */
-template < typename _RequaredType, typename _WrapperType >
-constexpr _RequaredType & get ( _WrapperType & wrapper ) noexcept
+template < typename _WrapperType >
+inline constexpr AccessProxy< _WrapperType & > accessValue ( _WrapperType & wrapper ) noexcept
 {
-    using Value = typename ::std::decay< _RequaredType >::type;
-    using Wrapper = typename ::std::decay< _WrapperType >::type;
-    return AccessHelper< Value, Wrapper >::writable( wrapper );
+    return AccessProxy< _WrapperType & >( wrapper );
 }
 
-template < typename _RequaredType, typename _WrapperType >
-constexpr _RequaredType & get ( const _WrapperType & wrapper ) noexcept
+template < typename _WrapperType >
+inline constexpr AccessProxy< const _WrapperType & > accessValue ( const _WrapperType & wrapper ) noexcept
 {
-    using Value = typename ::std::decay< _RequaredType >::type;
-    using Wrapper = typename ::std::decay< _WrapperType >::type;
-    return AccessHelper< Value, Wrapper >::readable( wrapper );
+    return AccessProxy< const _WrapperType & >( wrapper );
 }
 
-template < typename _RequaredType, typename _WrapperType >
-constexpr _RequaredType && get ( _WrapperType && wrapper ) noexcept
+template < typename _WrapperType >
+inline constexpr AccessProxy< _WrapperType && > accessValue ( _WrapperType && wrapper ) noexcept
 {
-    using Value = typename ::std::decay< _RequaredType >::type;
-    using Wrapper = typename ::std::decay< _WrapperType >::type;
-    return AccessHelper< Value, Wrapper >::movable(
-        ::std::forward< _WrapperType >( wrapper ) );
+    return AccessProxy< _WrapperType && >( ::std::forward< _WrapperType >( wrapper ) );
 }
 
-
-/*!
- * Метод эквиваленетен методу get< const _RequaredType >( const _WrapperType & wrapper ).
- * Применяется для сокращения записи вызова метода get.
- *
- * Метод не изменяет значение оберток во время доступа к их внутреннему значению.
- */
-template < typename _RequaredType, typename _WrapperType >
-constexpr const _RequaredType & cget ( const _WrapperType & wrapper )  noexcept
+template < typename _WrapperType >
+inline constexpr AccessProxy< const _WrapperType & > accessConstValue ( const _WrapperType & wrapper ) noexcept
 {
-    return get< const _RequaredType, _WrapperType >( wrapper );
+    return AccessProxy< const _WrapperType & >( wrapper );
 }
 
-/*!
- *
- */
-template < typename _RequaredType, typename _WrapperType >
-_RequaredType && getMovableValue ( _WrapperType & ) = delete;
-
-template < typename _RequaredType, typename _WrapperType >
-_RequaredType && getMovableValue ( const _WrapperType & ) = delete;
-
-template < typename _RequaredType, typename _WrapperType >
-constexpr _RequaredType && getMovableValue ( _WrapperType && wrapper ) noexcept
-{
-    return get< _RequaredType, _WrapperType >( ::std::forward< _WrapperType >( wrapper ) );
-}
-
-/*!
- *
- */
-template < typename _RequaredType, typename _WrapperType >
-constexpr _RequaredType & getWritableValue ( _WrapperType & wrapper )  noexcept
-{
-    return get< _RequaredType, _WrapperType >( wrapper );
-}
-
-template < typename _RequaredType, typename _WrapperType >
-constexpr _RequaredType & getWritableValue ( const _WrapperType & wrapper )  noexcept
-{
-    return get< _RequaredType, _WrapperType >( wrapper );
-}
-
-template < typename _RequaredType, typename _WrapperType >
-constexpr _RequaredType & getWritableValue ( _WrapperType && wrapper )  noexcept
-{
-    return get< _RequaredType, _WrapperType >( static_cast< _WrapperType & >( wrapper ) );
-}
-
-/*!
- *
- */
-template < typename _RequaredType, typename _WrapperType >
-constexpr const _RequaredType & getReadableValue ( const _WrapperType & wrapper )
-{
-    return cget< _RequaredType, _WrapperType >( wrapper );
-}
+#define g_get( value ) accessValue( value )->refer()
+#define c_get( value ) accessConstValue( value )->refer()
 
 #endif
-

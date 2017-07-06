@@ -8,4 +8,4 @@ INCLUDEPATH = \
 include( $${PWD}/files.prf )
 includeFiles( $${PWD}/ )
 
-QMAKE_CXXFLAGS = -std=c++11
+QMAKE_CXXFLAGS = -std=c++14

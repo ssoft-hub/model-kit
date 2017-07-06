@@ -12,147 +12,123 @@ namespace Std
          */
         struct AtomicTool
         {
-            using _LockType = ::std::mutex;
+            using _LockType = ::std::recursive_mutex;
 
             template < typename _Type >
-            using Value = _Type;
-
-            template < typename _Type >
-            struct ValueHolder
+            struct HolderType
             {
-                using ThisType = ValueHolder< _Type >;
+                using ThisType = HolderType< _Type >;
+
                 using LockType = _LockType;
-                using ValueType = Value< _Type >;
+                using ValueType = _Type;
 
                 mutable LockType m_lock;
                 ValueType m_value;
 
-                ValueHolder ( ThisType && other )
+                HolderType ( ThisType && other )
                 : m_lock()
                 , m_value( ::std::forward< ValueType >( other.m_value ) )
                 {
+                    ::std::cout << "HolderType ( ThisType && other )" << ::std::endl;
                 }
 
-                ValueHolder ( const ThisType & other )
-                : m_lock()
-                , m_value( other.m_value )
+                ThisType & operator = ( ThisType && other )
                 {
+                    ::std::cout << "HolderType operator ( ThisType && other )" << ::std::endl;
+                    m_value = ( ::std::forward< ValueType >( other.m_value ) );
+                    return *this;
+                }
+
+                ThisType & operator = ( const ThisType & other )
+                {
+                    ::std::cout << "HolderType operator ( const ThisType & other )" << ::std::endl;
+                    m_value = other.m_value;
+                    return *this;
                 }
 
                 template < typename ... _Arguments >
-                ValueHolder ( _Arguments && ... arguments )
+                HolderType ( _Arguments && ... arguments )
                 : m_lock()
                 , m_value( ::std::forward< _Arguments >( arguments ) ... )
                 {
+                    ::std::cout << "HolderType ( _Arguments && ... arguments )" << ::std::endl;
                 }
             };
-
-            template < typename _Type >
-            class AccessValue
-            {
-                using ValueType = Value< _Type >;
-                using LockType = _LockType;
-                using LockerType = ::std::unique_lock< LockType >;
-
-                LockerType m_locker;
-                ValueType * const m_value;
-
-            public:
-                AccessValue ( LockType & lock, ValueType & value )
-                : m_locker( lock )
-                , m_value( &value )
-                {
-                    std::cout << "locked" << ::std::endl;
-                }
-
-                AccessValue ( AccessValue && other )
-                : m_locker( ::std::forward< LockerType >( other.m_locker ) )
-                , m_value( other.m_value )
-                {
-                }
-
-                ~AccessValue ()
-                {
-                    std::cout << "unlocked" << ::std::endl;
-                }
-
-                ValueType & access () const
-                {
-                    return *m_value;
-                }
-
-
-            };
-
-            template < typename _Type >
-            using WritableProxy = AccessValue< _Type >;
-
-            template < typename _Type >
-            using ReadableProxy = AccessValue< const _Type >;
-
-            template < typename _Type >
-            using WritableAccessValue = AccessValue< _Type >;
-
-            template < typename _Type >
-            using ReadableAccessValue = AccessValue< const _Type >;
-
-            template < typename _Type >
-            using MovableAccessValue = AccessValue< _Type >;
-
 
             template < typename _Type, typename ... _Arguments >
-            static ValueHolder< _Type > makeValueHolder ( _Arguments && ... arguments )
+            static constexpr HolderType< _Type > makeValueHolder ( _Arguments && ... arguments )
             {
-                return ValueHolder< _Type >( ::std::forward< _Arguments >( arguments ) ... );
+                return HolderType< _Type >( ::std::forward< _Arguments >( arguments ) ... );
             }
 
             template < typename _Type >
-            static void destroyValueHolder ( ValueHolder< _Type > & )
+            static constexpr void destroyValueHolder ( HolderType< _Type > & /*holder*/ )
             {
+                // nothing to do
             }
 
             template < typename _Type >
-            static WritableAccessValue< _Type > writable ( ValueHolder< _Type > & holder )
+            static constexpr void guardWritableHolder ( HolderType< _Type > & holder )
             {
-                return WritableAccessValue< _Type >( holder.m_lock, holder.m_value );
+                ::std::cout << "writable lock" << ::std::endl;
+                holder.m_lock.lock();
             }
 
             template < typename _Type >
-            static ReadableAccessValue< _Type > readable ( const ValueHolder< _Type > & holder )
+            static constexpr void unguardWritableHolder ( HolderType< _Type > & holder )
             {
-                return ReadableAccessValue< _Type >( holder.m_lock, holder.m_value );
+                holder.m_lock.unlock();
+                ::std::cout << "writable unlock" << ::std::endl;
             }
 
             template < typename _Type >
-            static MovableAccessValue< _Type > movable ( ValueHolder< _Type > && holder )
+            static constexpr void guardReadableHolder ( const HolderType< _Type > & holder )
             {
-                return MovableAccessValue< _Type >( holder.m_lock, holder.m_value );
+                ::std::cout << "readable lock" << ::std::endl;
+                holder.m_lock.lock();
+            }
+
+            template < typename _Type >
+            static constexpr void unguardReadableHolder ( const HolderType< _Type > & holder )
+            {
+                holder.m_lock.unlock();
+                ::std::cout << "readable unlock" << ::std::endl;
+            }
+
+            template < typename _Type >
+            static constexpr void guardMovableHolder ( HolderType< _Type > && holder )
+            {
+                ::std::cout << "movable lock" << ::std::endl;
+                holder.m_lock.lock();
+            }
+
+            template < typename _Type >
+            static constexpr void unguardMovableHolder ( const HolderType< _Type > & holder )
+            {
+                holder.m_lock.unlock();
+                ::std::cout << "movable unlock" << ::std::endl;
+            }
+
+            template < typename _Type >
+            static constexpr AccessProxy< _Type & > getWritableProxy ( HolderType< _Type > & holder )
+            {
+                return AccessProxy< _Type & >( holder.m_value );
+            }
+
+            template < typename _Type >
+            static constexpr AccessProxy< const _Type & > getReadableProxy ( const HolderType< _Type > & holder )
+            {
+                return AccessProxy< const _Type & >( holder.m_value );
+            }
+
+            template < typename _Type >
+            static constexpr AccessProxy< _Type && > getMovableProxy ( HolderType< _Type > && holder )
+            {
+                return AccessProxy< _Type && >( ::std::forward< _Type >( holder.m_value ) );
             }
         };
     }
 }
-
-template < typename _RequaredType, typename _ValueType >
-struct AccessHelper< _RequaredType, ::Std::Mutex::AtomicTool::AccessValue< _ValueType > >
-{
-    using WrapperType = typename ::Std::Mutex::AtomicTool::AccessValue< _ValueType >;
-
-    static constexpr _RequaredType & writable ( WrapperType & wrapper )
-    {
-        return getWritableValue< _RequaredType >( wrapper.access()  );
-    }
-
-    static constexpr const _RequaredType & readable ( const WrapperType & wrapper )
-    {
-        return getReadableValue< _RequaredType >( wrapper.access() );
-    }
-
-    static constexpr _RequaredType & movable ( WrapperType && wrapper )
-    {
-        return getWritableValue< _RequaredType >( wrapper.access() );
-    }
-};
-
 
 #include <Helper/InstanceHelper.h>
 #include <Helper/TypeHelper.h>

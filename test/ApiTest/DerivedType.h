@@ -1,6 +1,4 @@
 #include "BaseType.h"
-#include <Value/Instance.h>
-#include <Value/Tool/Std/Shared/ImplicitTool.h>
 
 struct DerivedType
     : public BaseType
