@@ -95,15 +95,23 @@ inline constexpr FeatureGuard< const _WrapperType & > cvalueFeatureGuard ( const
     return FeatureGuard< const _WrapperType & >( wrapper );
 }
 
+template < typename _WrapperType >
+inline constexpr FeatureGuard< _WrapperType && > mvalueFeatureGuard ( _WrapperType && wrapper ) noexcept
+{
+    return FeatureGuard< _WrapperType && >( ::std::forward< _WrapperType >( wrapper ) );
+}
+
 /*!
  * Методы доступа к экземпляру значения с применеием всех задекларированных свойств.
  */
-#define v_guard( value ) valueFeatureGuard( value )
+#define v_guard( value )  valueFeatureGuard( value )
+#define m_guard( value ) mvalueFeatureGuard( value )
 #define c_guard( value ) cvalueFeatureGuard( value )
 
 #define g_get( value ) value->access()
 
 #define v_get( value ) g_get( v_guard( value ) )
+#define m_get( value ) g_get( m_guard( value ) )
 #define c_get( value ) g_get( c_guard( value ) )
 
 #endif

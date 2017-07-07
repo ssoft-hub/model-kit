@@ -8,8 +8,9 @@ void testTool ()
     Variable< _TestType > value;
     Variable< _TestType > other;
 
-    value = _TestType();
-    value = other;
+    other = _TestType();
+    value = ::std::move( other );
+    other = value;
     v_get( value ) = v_get( _TestType() );
 
     v_get( value ).m_first_name = "first name";
@@ -29,19 +30,19 @@ void testTool ()
     // доступ по значению x.
 
     // Иногда, имеет смысл применять гаранты, если необходимо снизить
-    // накладные расходы связанные с их конкретной реализацией
+    // накладные расходы связанные с их конкретным инструментом _ValueTool
     // (например, системные блокировки и т.п.)
 
-    // Гарант первоочередного свойства для применения константного value
+    // Гарант первоочередного свойства для применения константного значения value
     auto cguard = c_guard( value );
 
     // value
     ::std::cout
         << "Test tool:" << ::std::endl
-        << ( c_get( cguard->access().m_first_name ) ) << ::std::endl
-        << ( c_get( cguard->access().m_last_name ) ) << ::std::endl
-        << ( c_get( cguard->access().m_age ) ) << ::std::endl
-        << ( c_get( cguard->access().m_stature ) ) << ::std::endl;
+        << ( c_get( g_get( cguard ).m_first_name ) ) << ::std::endl
+        << ( c_get( g_get( cguard ).m_last_name ) ) << ::std::endl
+        << ( c_get( g_get( cguard ).m_age ) ) << ::std::endl
+        << ( c_get( g_get( cguard ).m_stature ) ) << ::std::endl;
 }
 
 void testAllTool ()

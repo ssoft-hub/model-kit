@@ -18,21 +18,34 @@ namespace Std
             using HolderType = ::std::shared_ptr< _Type >;
 
             template < typename _Type, typename ... _Arguments >
-            static constexpr HolderType< _Type > makeValueHolder ( _Arguments && ... arguments )
+            static constexpr HolderType< _Type > makeHolder ( _Arguments && ... arguments )
             {
                 return HolderType< _Type >( ::std::make_shared< _Type >( ::std::forward< _Arguments >( arguments ) ... ) );
             }
 
             template < typename _Type >
-            static constexpr void destroyValueHolder ( HolderType< _Type > & holder )
+            static constexpr HolderType< _Type > copyHolder ( const HolderType< _Type > & holder )
+            {
+                return holder;
+            }
+
+            template < typename _Type >
+            static constexpr HolderType< _Type > moveHolder ( HolderType< _Type > && holder )
+            {
+                return ::std::forward< HolderType< _Type > && >( holder );
+            }
+
+            template < typename _Type >
+            static constexpr void destroyHolder ( HolderType< _Type > & holder )
             {
                 holder.reset();
             }
 
             template < typename _Type >
-            static constexpr void guardWritableHolder ( HolderType< _Type > & /*holder*/ )
+            static constexpr void guardWritableHolder ( HolderType< _Type > & holder )
             {
-                // nothing to do
+                if ( !!holder && !holder.unique() )
+                    holder = makeHolder< _Type >( *holder.get() );
             }
 
             template < typename _Type >
@@ -66,21 +79,19 @@ namespace Std
             }
 
             template < typename _Type >
-            static constexpr FeatureGuard< _Type & > getWritableGuard ( HolderType< _Type > & holder )
+            static constexpr FeatureGuard< _Type & > writableValueGuard ( HolderType< _Type > & holder )
             {
-                if ( !holder.unique() )
-                    holder = makeValueHolder< _Type >( *holder.get() );
                 return FeatureGuard< _Type & >( *holder.get() );
             }
 
             template < typename _Type >
-            static constexpr FeatureGuard< const _Type & > getReadableGuard ( const HolderType< _Type > & holder )
+            static constexpr FeatureGuard< const _Type & > readableValueGuard ( const HolderType< _Type > & holder )
             {
                 return FeatureGuard< const _Type & >( *holder.get() );
             }
 
             template < typename _Type >
-            static constexpr FeatureGuard< _Type && > getMovableGuard ( HolderType< _Type > && holder )
+            static constexpr FeatureGuard< _Type && > movableValueGuard ( HolderType< _Type > && holder )
             {
                 return FeatureGuard< _Type && >( ::std::forward< _Type >( *holder.get() ) );
             }

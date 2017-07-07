@@ -36,7 +36,7 @@ public:
     //! Конструктор инициализации значения по заданным параметрам
     template < typename ... _Arguments >
     Instance ( _Arguments && ... arguments )
-    : m_holder( ValueTool:: template makeValueHolder< ValueType >(
+    : m_holder( ValueTool:: template makeHolder< ValueType >(
         ::std::forward< _Arguments >( arguments ) ... ) )
     {
         // в этот конструктор нельзя передать Instance, поэтому
@@ -44,67 +44,75 @@ public:
     }
 
     template < typename _Type >
-    ThisType & operator = ( _Type & /*other*/ )
+    ThisType & operator = ( _Type & other )
     {
         // в этот оператор нельзя передать Instance,
         // поэтому необходимо защищать только *this.
+        v_guard( *this ).holder()
+            = ValueTool:: template makeHolder< ValueType >( other );
         return *this;
     }
 
     template < typename _Type >
-    ThisType & operator = ( _Type && /*other*/ )
+    ThisType & operator = ( _Type && other )
     {
         // в этот оператор нельзя передать Instance,
         // поэтому необходимо защищать только *this.
+        v_guard( *this ).holder()
+            = ValueTool:: template makeHolder< ValueType >(
+                ::std::forward< _Type >( other ) );
         return *this;
     }
 
     template < typename _Type >
-    ThisType & operator = ( const _Type & /*other*/ )
+    ThisType & operator = ( const _Type & other )
     {
         // в этот оператор нельзя передать Instance,
         // поэтому необходимо защищать только *this.
+        v_guard( *this ).holder()
+            = ValueTool:: template makeHolder< ValueType >( other );
         return *this;
     }
 
-    // TODO: защитить аргументы конструкторов и операторов
-
-    Instance ( ThisType && /*other*/ )
-    : m_holder( /*::std::forward< HolderType >( other.m_holder )*/ )
+    Instance ( ThisType & other )
+    : m_holder( ValueTool::copyHolder( c_guard( other ).holder() ) )
     {
-        // требуется защитить other
+        // защищаем other
     }
 
-    ThisType & operator = ( ThisType && /*other*/ )
+    ThisType & operator = ( ThisType & other )
     {
-        // требуется защитить *this и other
-        //m_holder = ::std::forward< HolderType >( other.m_holder );
+        // защищаем *this и other
+        v_guard( *this ).holder()
+            = ValueTool::copyHolder( c_guard( other ).holder() );
         return *this;
     }
 
-    Instance ( ThisType & /*other*/ )
-    : m_holder( /*other.m_holder*/ )
+    Instance ( ThisType && other )
+    : m_holder( ValueTool::moveHolder( ::std::forward< HolderType >( m_guard( other ).holder() ) ) )
     {
-        // требуется защитить other
+        // защищаем other
     }
 
-    ThisType & operator = ( ThisType & /*other*/ )
+    ThisType & operator = ( ThisType && other )
     {
-        // требуется защитить *this и other
-//        m_holder = other.m_holder;
+        // защищаем *this и other
+        v_guard( *this ).holder()
+            = ValueTool::moveHolder( ::std::forward< HolderType >( m_guard( other ).holder() ) );
         return *this;
     }
 
-    Instance ( const ThisType & /*other*/ )
-    : m_holder( /*other.m_holder*/ )
+    Instance ( const ThisType & other )
+    : m_holder( ValueTool::copyHolder( c_guard( other ).holder() ) )
     {
-        // требуется защитить other
+        // защищаем other
     }
 
-    ThisType & operator = ( const ThisType & /*other*/ )
+    ThisType & operator = ( const ThisType & other )
     {
-        // требуется защитить *this и other
-        //m_holder = other.m_holder;
+        // защищаем *this и other
+        v_guard( *this ).holder()
+            = ValueTool::copyHolder( c_guard( other ).holder() );
         return *this;
     }
 
@@ -162,7 +170,7 @@ public:
     //! Деструктор.
     ~Instance ()
     {
-        ValueTool::destroyValueHolder( m_holder );
+        ValueTool::destroyHolder( v_guard( *this ).holder() );
     }
 };
 
@@ -175,9 +183,11 @@ struct FeatureGuard< Instance< _ValueType, _ValueTool > & >
     using ThisType = FeatureGuard< Instance< _ValueType, _ValueTool > & >;
 
 public:
+    using InstanceType = Instance< _ValueType, _ValueTool >;
+    using HolderType = typename InstanceType::HolderType;
+    using ReferType = Instance< _ValueType, _ValueTool > &;
     using ValueType = _ValueType;
     using ValueTool = _ValueTool;
-    using ReferType = Instance< _ValueType, _ValueTool > &;
 
 private:
     ReferType m_refer;
@@ -201,9 +211,14 @@ public:
         ValueTool::unguardWritableHolder( m_refer.m_holder );
     }
 
+    constexpr HolderType & holder ()
+    {
+        return m_refer.m_holder;
+    }
+
     constexpr FeatureGuard< ValueType & > operator -> ()
     {
-        return ValueTool:: template getWritableGuard< ValueType >( m_refer.m_holder );
+        return ValueTool::writableValueGuard( m_refer.m_holder );
     }
 };
 
@@ -216,9 +231,11 @@ struct FeatureGuard< const Instance< _ValueType, _ValueTool > & >
     using ThisType = FeatureGuard< Instance< _ValueType, _ValueTool > & >;
 
 public:
+    using InstanceType = Instance< _ValueType, _ValueTool >;
+    using HolderType = typename InstanceType::HolderType;
+    using ReferType = const Instance< _ValueType, _ValueTool > &;
     using ValueType = _ValueType;
     using ValueTool = _ValueTool;
-    using ReferType = const Instance< _ValueType, _ValueTool > &;
 
 private:
     ReferType m_refer;
@@ -242,9 +259,14 @@ public:
         ValueTool::unguardReadableHolder( m_refer.m_holder );
     }
 
+    constexpr const HolderType & holder ()
+    {
+        return m_refer.m_holder;
+    }
+
     constexpr FeatureGuard< const ValueType & > operator -> ()
     {
-        return ValueTool::getReadableGuard( m_refer.m_holder );
+        return ValueTool::readableValueGuard( m_refer.m_holder );
     }
 };
 
@@ -257,10 +279,11 @@ struct FeatureGuard< Instance< _ValueType, _ValueTool > && >
     using ThisType = FeatureGuard< Instance< _ValueType, _ValueTool > && >;
 
 public:
+    using InstanceType = Instance< _ValueType, _ValueTool >;
+    using HolderType = typename InstanceType::HolderType;
+    using ReferType = Instance< _ValueType, _ValueTool > &&;
     using ValueType = _ValueType;
     using ValueTool = _ValueTool;
-    using ReferType = Instance< _ValueType, _ValueTool > &&;
-    using HolderType = typename Instance< _ValueType, _ValueTool >::HolderType;
 
 private:
     ReferType m_refer;
@@ -286,9 +309,14 @@ public:
             ::std::forward< HolderType >( m_refer.m_holder ) );
     }
 
+    constexpr HolderType && holder ()
+    {
+        return ::std::forward< HolderType >( m_refer.m_holder );
+    }
+
     constexpr FeatureGuard< ValueType && > operator -> ()
     {
-        return ValueTool::getMovableGuard(
+        return ValueTool::movableValueGuard(
             ::std::forward< HolderType >( m_refer.m_holder ) );
     }
 };

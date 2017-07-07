@@ -56,13 +56,25 @@ namespace Std
             };
 
             template < typename _Type, typename ... _Arguments >
-            static constexpr HolderType< _Type > makeValueHolder ( _Arguments && ... arguments )
+            static constexpr HolderType< _Type > makeHolder ( _Arguments && ... arguments )
             {
                 return HolderType< _Type >( ::std::forward< _Arguments >( arguments ) ... );
             }
 
             template < typename _Type >
-            static constexpr void destroyValueHolder ( HolderType< _Type > & /*holder*/ )
+            static constexpr HolderType< _Type > copyHolder ( const HolderType< _Type > & holder )
+            {
+                return makeHolder< _Type >( holder.m_value );
+            }
+
+            template < typename _Type >
+            static constexpr HolderType< _Type > moveHolder ( HolderType< _Type > && holder )
+            {
+                return makeHolder< _Type >( std::forward< _Type >( holder.m_value ) );
+            }
+
+            template < typename _Type >
+            static constexpr void destroyHolder ( HolderType< _Type > & /*holder*/ )
             {
                 // nothing to do
             }
@@ -70,7 +82,6 @@ namespace Std
             template < typename _Type >
             static constexpr void guardWritableHolder ( HolderType< _Type > & holder )
             {
-                ::std::cout << "writable lock " << &holder.m_lock << ::std::endl;
                 holder.m_lock.lock();
             }
 
@@ -78,13 +89,11 @@ namespace Std
             static constexpr void unguardWritableHolder ( HolderType< _Type > & holder )
             {
                 holder.m_lock.unlock();
-                ::std::cout << "writable unlock " << &holder.m_lock << ::std::endl;
             }
 
             template < typename _Type >
             static constexpr void guardReadableHolder ( const HolderType< _Type > & holder )
             {
-                ::std::cout << "readable lock " << &holder.m_lock << ::std::endl;
                 holder.m_lock.lock();
             }
 
@@ -92,13 +101,11 @@ namespace Std
             static constexpr void unguardReadableHolder ( const HolderType< _Type > & holder )
             {
                 holder.m_lock.unlock();
-                ::std::cout << "readable unlock " << &holder.m_lock << ::std::endl;
             }
 
             template < typename _Type >
             static constexpr void guardMovableHolder ( HolderType< _Type > && holder )
             {
-                ::std::cout << "movable lock " << &holder.m_lock << ::std::endl;
                 holder.m_lock.lock();
             }
 
@@ -106,23 +113,22 @@ namespace Std
             static constexpr void unguardMovableHolder ( const HolderType< _Type > & holder )
             {
                 holder.m_lock.unlock();
-                ::std::cout << "movable unlock " << &holder.m_lock << ::std::endl;
             }
 
             template < typename _Type >
-            static constexpr FeatureGuard< _Type & > getWritableGuard ( HolderType< _Type > & holder )
+            static constexpr FeatureGuard< _Type & > writableValueGuard ( HolderType< _Type > & holder )
             {
                 return FeatureGuard< _Type & >( holder.m_value );
             }
 
             template < typename _Type >
-            static constexpr FeatureGuard< const _Type & > getReadableGuard ( const HolderType< _Type > & holder )
+            static constexpr FeatureGuard< const _Type & > readableValueGuard ( const HolderType< _Type > & holder )
             {
                 return FeatureGuard< const _Type & >( holder.m_value );
             }
 
             template < typename _Type >
-            static constexpr FeatureGuard< _Type && > getMovableGuard ( HolderType< _Type > && holder )
+            static constexpr FeatureGuard< _Type && > movableValueGuard ( HolderType< _Type > && holder )
             {
                 return FeatureGuard< _Type && >( ::std::forward< _Type >( holder.m_value ) );
             }
