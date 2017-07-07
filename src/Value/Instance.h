@@ -2,8 +2,10 @@
 #include <Helper/AccessHelper.h>
 #include <memory>
 
-
 /*!
+ * Класс для формирования экземпляра значения, наделенными дополнительными
+ * свойствами. Дополнительные свойства реализуются посредством заданного
+ * _ValueTool.
  */
 template < typename _ValueType, typename _ValueTool >
 class Instance
