@@ -1,7 +1,6 @@
 #pragma once
 #include <Helper/InstanceHelper.h>
 #include <Value/Instance.h>
-#include <Value/Tool/Cpp/Inplace/InplaceTool.h>
 
 /*!
  * Свойство классификатора объекта (структуры или класса).
@@ -10,3 +9,4 @@
  */
 template < typename _Type >
 using Property = typename InstanceHelper< _Type >::InstanceType;
+//using Property = Instance< _Type, ::Cpp::Inplace::InplaceTool >;

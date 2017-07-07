@@ -45,13 +45,25 @@ void testTool ()
         << ( cGet( gGet( cguard ).m_stature ) ) << ::std::endl;
 }
 
+template < typename _Type >
+void testToolByTool ()
+{
+    testTool< _Type >();
+    testTool< Instance< _Type, ::Cpp::Inplace::InplaceTool > >();
+    testTool< Instance< _Type, ::Cpp::Raw::HeapTool > >();
+    testTool< Instance< _Type, ::Std::Mutex::AtomicTool > >();
+    testTool< Instance< _Type, ::Std::Shared::ImplicitTool > >();
+    testTool< Instance< _Type, ::Std::Shared::HeapTool > >();
+    testTool< Instance< _Type, ::Std::Unique::HeapTool > >();
+}
+
 void testAllTool ()
 {
-    testTool< MyType >();
-    testTool< Instance< MyType, ::Cpp::Inplace::InplaceTool > >();
-    testTool< Instance< MyType, ::Cpp::Raw::HeapTool > >();
-    testTool< Instance< MyType, ::Std::Mutex::AtomicTool > >();
-    testTool< Instance< MyType, ::Std::Shared::ImplicitTool > >();
-    testTool< Instance< MyType, ::Std::Shared::HeapTool > >();
-    testTool< Instance< MyType, ::Std::Unique::HeapTool > >();
+    testToolByTool< MyType >();
+    testToolByTool< Instance< MyType, ::Cpp::Inplace::InplaceTool > >();
+    testToolByTool< Instance< MyType, ::Cpp::Raw::HeapTool > >();
+    testToolByTool< Instance< MyType, ::Std::Mutex::AtomicTool > >();
+    testToolByTool< Instance< MyType, ::Std::Shared::ImplicitTool > >();
+    testToolByTool< Instance< MyType, ::Std::Shared::HeapTool > >();
+    testToolByTool< Instance< MyType, ::Std::Unique::HeapTool > >();
 }
