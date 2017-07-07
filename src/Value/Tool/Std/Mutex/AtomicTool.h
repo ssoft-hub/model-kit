@@ -29,19 +29,16 @@ namespace Std
                 : m_lock()
                 , m_value( ::std::forward< ValueType >( other.m_value ) )
                 {
-                    ::std::cout << "HolderType ( ThisType && other ) " << &m_lock << ::std::endl;
                 }
 
                 ThisType & operator = ( ThisType && other )
                 {
-                    ::std::cout << "HolderType operator ( ThisType && other ) " << &m_lock << ::std::endl;
-                    m_value = ( ::std::forward< ValueType >( other.m_value ) );
+                    m_value = ::std::forward< ValueType >( other.m_value );
                     return *this;
                 }
 
                 ThisType & operator = ( const ThisType & other )
                 {
-                    ::std::cout << "HolderType operator ( const ThisType & other ) " << &m_lock << ::std::endl;
                     m_value = other.m_value;
                     return *this;
                 }
@@ -51,7 +48,6 @@ namespace Std
                 : m_lock()
                 , m_value( ::std::forward< _Arguments >( arguments ) ... )
                 {
-                    ::std::cout << "HolderType ( _Arguments && ... arguments ) " << &m_lock << ::std::endl;
                 }
             };
 

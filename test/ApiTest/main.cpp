@@ -74,7 +74,7 @@ extern void testAllTool ();
 
 int main ( int /*argc*/, char ** /*argv*/ )
 {
-    //testBaseDerived();
+    testBaseDerived();
     testAllTool ();
 
 //    int int_value; // OK
