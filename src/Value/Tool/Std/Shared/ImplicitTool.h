@@ -66,23 +66,23 @@ namespace Std
             }
 
             template < typename _Type >
-            static constexpr AccessProxy< _Type & > getWritableProxy ( HolderType< _Type > & holder )
+            static constexpr FeatureGuard< _Type & > getWritableGuard ( HolderType< _Type > & holder )
             {
                 if ( !holder.unique() )
                     holder = makeValueHolder< _Type >( *holder.get() );
-                return AccessProxy< _Type & >( *holder.get() );
+                return FeatureGuard< _Type & >( *holder.get() );
             }
 
             template < typename _Type >
-            static constexpr AccessProxy< const _Type & > getReadableProxy ( const HolderType< _Type > & holder )
+            static constexpr FeatureGuard< const _Type & > getReadableGuard ( const HolderType< _Type > & holder )
             {
-                return AccessProxy< const _Type & >( *holder.get() );
+                return FeatureGuard< const _Type & >( *holder.get() );
             }
 
             template < typename _Type >
-            static constexpr AccessProxy< _Type && > getMovableProxy ( HolderType< _Type > && holder )
+            static constexpr FeatureGuard< _Type && > getMovableGuard ( HolderType< _Type > && holder )
             {
-                return AccessProxy< _Type && >( ::std::forward< _Type >( *holder.get() ) );
+                return FeatureGuard< _Type && >( ::std::forward< _Type >( *holder.get() ) );
             }
         };
     }

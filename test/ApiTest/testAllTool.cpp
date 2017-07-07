@@ -10,19 +10,38 @@ void testTool ()
 
     value = _TestType();
     value = other;
-    g_get( value ) = g_get( _TestType() );
+    v_get( value ) = v_get( _TestType() );
 
-    g_get( value ).m_first_name = "first name";
-    g_get( value ).m_last_name = "last name";
-    g_get( value ).m_age = 50;
-    g_get( value ).m_stature = 178.5;
+    v_get( value ).m_first_name = "first name";
+    v_get( value ).m_last_name = "last name";
+    v_get( value ).m_age = 50;
+    v_get( value ).m_stature = 178.5;
 
+    // Явное использование FeatureGuard гарантирует применение только того
+    // свойства, за которое он отвечает.
+
+    // Доступ к значению дожно осуществляться строго через метод access(),
+    // так как фактическое размещение экземляра значения может измениться
+    // (например, в случае implicit shared значения).
+    //
+    // Например, использование кода: auto x = cvalueFeatureGuard( value )->access();
+    // или эквивалентного: auto x = c_get( value ); не гарантирует корректный
+    // доступ по значению x.
+
+    // Иногда, имеет смысл применять гаранты, если необходимо снизить
+    // накладные расходы связанные с их конкретной реализацией
+    // (например, системные блокировки и т.п.)
+
+    // Гарант первоочередного свойства для применения константного value
+    auto cguard = c_guard( value );
+
+    // value
     ::std::cout
         << "Test tool:" << ::std::endl
-        << ( c_get( c_get( value ).m_first_name ) ) << ::std::endl
-        << ( c_get( c_get( value ).m_last_name ) ) << ::std::endl
-        << ( c_get( c_get( value ).m_age ) ) << ::std::endl
-        << ( c_get( c_get( value ).m_stature ) ) << ::std::endl;
+        << ( c_get( cguard->access().m_first_name ) ) << ::std::endl
+        << ( c_get( cguard->access().m_last_name ) ) << ::std::endl
+        << ( c_get( cguard->access().m_age ) ) << ::std::endl
+        << ( c_get( cguard->access().m_stature ) ) << ::std::endl;
 }
 
 void testAllTool ()

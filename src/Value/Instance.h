@@ -9,7 +9,7 @@ template < typename _ValueType, typename _ValueTool >
 class Instance
 {
     template < typename _WrapperType >
-    friend struct AccessProxy;
+    friend struct FeatureGuard;
 
     using ThisType = Instance< _ValueType, _ValueTool >;
 
@@ -164,10 +164,13 @@ public:
     }
 };
 
+/*!
+ * Специализация FeatureGuard для Instance< _ValueType, _ValueTool > &.
+ */
 template < typename _ValueType, typename _ValueTool >
-struct AccessProxy< Instance< _ValueType, _ValueTool > & >
+struct FeatureGuard< Instance< _ValueType, _ValueTool > & >
 {
-    using ThisType = AccessProxy< Instance< _ValueType, _ValueTool > & >;
+    using ThisType = FeatureGuard< Instance< _ValueType, _ValueTool > & >;
 
 public:
     using ValueType = _ValueType;
@@ -178,7 +181,7 @@ private:
     ReferType m_refer;
 
 public:
-    AccessProxy ( ReferType refer )
+    FeatureGuard ( ReferType refer )
     : m_refer( refer )
     {
         static_assert( ::std::is_reference< ReferType >::value
@@ -186,26 +189,29 @@ public:
         ValueTool::guardWritableHolder( m_refer.m_holder );
     }
 
-    AccessProxy ( ThisType && other )
-    : m_refer( ::std::forward< ReferType >( other.m_refer ) )
-    {
-    }
+    FeatureGuard ( ThisType && other )
+    : m_refer( ::std::forward< ReferType >( other.m_refer ) ) {}
 
-    ~AccessProxy ()
+    FeatureGuard ( const ThisType & other ) = delete;
+
+    ~FeatureGuard ()
     {
         ValueTool::unguardWritableHolder( m_refer.m_holder );
     }
 
-    constexpr AccessProxy< ValueType & > operator -> ()
+    constexpr FeatureGuard< ValueType & > operator -> ()
     {
-        return ValueTool:: template getWritableProxy< ValueType >( m_refer.m_holder );
+        return ValueTool:: template getWritableGuard< ValueType >( m_refer.m_holder );
     }
 };
 
+/*!
+ * Специализация FeatureGuard для const Instance< _ValueType, _ValueTool > &.
+ */
 template < typename _ValueType, typename _ValueTool >
-struct AccessProxy< const Instance< _ValueType, _ValueTool > & >
+struct FeatureGuard< const Instance< _ValueType, _ValueTool > & >
 {
-    using ThisType = AccessProxy< Instance< _ValueType, _ValueTool > & >;
+    using ThisType = FeatureGuard< Instance< _ValueType, _ValueTool > & >;
 
 public:
     using ValueType = _ValueType;
@@ -216,7 +222,7 @@ private:
     ReferType m_refer;
 
 public:
-    AccessProxy ( ReferType refer )
+    FeatureGuard ( ReferType refer )
     : m_refer( refer )
     {
         static_assert( ::std::is_reference< ReferType >::value
@@ -224,26 +230,29 @@ public:
         ValueTool::guardReadableHolder( m_refer.m_holder );
     }
 
-    AccessProxy ( ThisType && other )
-    : m_refer( ::std::forward< ReferType >( other.m_refer ) )
-    {
-    }
+    FeatureGuard ( ThisType && other )
+    : m_refer( ::std::forward< ReferType >( other.m_refer ) ) {}
 
-    ~AccessProxy ()
+    FeatureGuard ( const ThisType & other ) = delete;
+
+    ~FeatureGuard ()
     {
         ValueTool::unguardReadableHolder( m_refer.m_holder );
     }
 
-    constexpr AccessProxy< const ValueType & > operator -> ()
+    constexpr FeatureGuard< const ValueType & > operator -> ()
     {
-        return ValueTool::getReadableProxy( m_refer.m_holder );
+        return ValueTool::getReadableGuard( m_refer.m_holder );
     }
 };
 
+/*!
+ * Специализация FeatureGuard для Instance< _ValueType, _ValueTool > &&.
+ */
 template < typename _ValueType, typename _ValueTool >
-struct AccessProxy< Instance< _ValueType, _ValueTool > && >
+struct FeatureGuard< Instance< _ValueType, _ValueTool > && >
 {
-    using ThisType = AccessProxy< Instance< _ValueType, _ValueTool > && >;
+    using ThisType = FeatureGuard< Instance< _ValueType, _ValueTool > && >;
 
 public:
     using ValueType = _ValueType;
@@ -255,7 +264,7 @@ private:
     ReferType m_refer;
 
 public:
-    AccessProxy ( ReferType refer )
+    FeatureGuard ( ReferType refer )
     : m_refer( ::std::forward< ReferType >( refer ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
@@ -264,17 +273,20 @@ public:
             ::std::forward< HolderType >( m_refer.m_holder ) );
     }
 
-    AccessProxy ( ThisType && other ) = default;
+    FeatureGuard ( ThisType && other )
+    : m_refer( ::std::forward< ReferType >( other.m_refer ) ) {}
 
-    ~AccessProxy ()
+    FeatureGuard ( const ThisType & other ) = delete;
+
+    ~FeatureGuard ()
     {
-        ValueTool::unguardReadableHolder(
+        ValueTool::unguardMovableHolder(
             ::std::forward< HolderType >( m_refer.m_holder ) );
     }
 
-    constexpr AccessProxy< ValueType && > operator -> ()
+    constexpr FeatureGuard< ValueType && > operator -> ()
     {
-        return ValueTool::getMovableProxy(
+        return ValueTool::getMovableGuard(
             ::std::forward< HolderType >( m_refer.m_holder ) );
     }
 };

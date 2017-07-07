@@ -39,20 +39,20 @@ void testBaseSetting ()
 {
     Variable< BaseType > base_value;
 
-    g_get( base_value ).m_int = 1;
-    g_get( base_value ).m_string = "one";
+    v_get( base_value ).m_int = 1;
+    v_get( base_value ).m_string = "one";
     printBase( c_get( base_value ) );
 
-    g_get( base_value ).m_int = BaseInt( 2 );
-    g_get( base_value ).m_string = BaseString( "two" );
+    v_get( base_value ).m_int = BaseInt( 2 );
+    v_get( base_value ).m_string = BaseString( "two" );
     printBase( c_get( base_value ) );
 
-    g_get( base_value ).m_int = DerivedInt( 3 );
-    g_get( base_value ).m_string = DerivedString( "three" );
+    v_get( base_value ).m_int = DerivedInt( 3 );
+    v_get( base_value ).m_string = DerivedString( "three" );
     printBase( c_get( base_value ) );
 
-    g_get( base_value ).m_int = HeapInt( 4 );
-    g_get( base_value ).m_string = HeapString( "four" );
+    v_get( base_value ).m_int = HeapInt( 4 );
+    v_get( base_value ).m_string = HeapString( "four" );
     printBase( c_get( base_value ) );
 }
 
@@ -82,28 +82,28 @@ void testBaseDerivedSetting ()
 {
     Variable< DerivedType > derived_value;
 
-    g_get( derived_value ).BaseType::m_int = 1;
-    g_get( derived_value ).BaseType::m_string = "one";
-    g_get( derived_value ).m_int = -1;
-    g_get( derived_value ).m_string = "negative one";
+    v_get( derived_value ).BaseType::m_int = 1;
+    v_get( derived_value ).BaseType::m_string = "one";
+    v_get( derived_value ).m_int = -1;
+    v_get( derived_value ).m_string = "negative one";
     printDerived( c_get( derived_value ) );
 
-    g_get( derived_value ).BaseType::m_int = BaseInt( 2 );
-    g_get( derived_value ).BaseType::m_string = BaseString( "two" );
-    g_get( derived_value ).m_int = BaseInt( -2 );
-    g_get( derived_value ).m_string = BaseString( "negative two" );
+    v_get( derived_value ).BaseType::m_int = BaseInt( 2 );
+    v_get( derived_value ).BaseType::m_string = BaseString( "two" );
+    v_get( derived_value ).m_int = BaseInt( -2 );
+    v_get( derived_value ).m_string = BaseString( "negative two" );
     printDerived( c_get( derived_value ) );
 
-    g_get( derived_value ).BaseType::m_int = DerivedInt( 3 );
-    g_get( derived_value ).BaseType::m_string = DerivedString( "three" );
-    g_get( derived_value ).m_int = DerivedInt( -3 );
-    g_get( derived_value ).m_string = DerivedString( "negative three" );
+    v_get( derived_value ).BaseType::m_int = DerivedInt( 3 );
+    v_get( derived_value ).BaseType::m_string = DerivedString( "three" );
+    v_get( derived_value ).m_int = DerivedInt( -3 );
+    v_get( derived_value ).m_string = DerivedString( "negative three" );
     printDerived( c_get( derived_value ) );
 
-    g_get( derived_value ).BaseType::m_int = HeapInt( 4 );
-    g_get( derived_value ).BaseType::m_string = HeapString( "four" );
-    g_get( derived_value ).m_int = HeapInt( -4 );
-    g_get( derived_value ).m_string = HeapString( "negative four" );
+    v_get( derived_value ).BaseType::m_int = HeapInt( 4 );
+    v_get( derived_value ).BaseType::m_string = HeapString( "four" );
+    v_get( derived_value ).m_int = HeapInt( -4 );
+    v_get( derived_value ).m_string = HeapString( "negative four" );
     printDerived( c_get( derived_value ) );
 
     Variable< BaseType > base_value = derived_value; // OK
