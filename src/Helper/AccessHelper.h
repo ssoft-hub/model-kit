@@ -104,14 +104,14 @@ inline constexpr FeatureGuard< _WrapperType && > mvalueFeatureGuard ( _WrapperTy
 /*!
  * Методы доступа к экземпляру значения с применеием всех задекларированных свойств.
  */
-#define v_guard( value )  valueFeatureGuard( value )
-#define m_guard( value ) mvalueFeatureGuard( value )
-#define c_guard( value ) cvalueFeatureGuard( value )
+#define wGuard( value )  valueFeatureGuard( value )
+#define mGuard( value ) mvalueFeatureGuard( value )
+#define cGuard( value ) cvalueFeatureGuard( value )
 
-#define g_get( value ) value->access()
+#define gGet( value ) value->access()
 
-#define v_get( value ) g_get( v_guard( value ) )
-#define m_get( value ) g_get( m_guard( value ) )
-#define c_get( value ) g_get( c_guard( value ) )
+#define wGet( value ) gGet( wGuard( value ) )
+#define mGet( value ) gGet( mGuard( value ) )
+#define cGet( value ) gGet( cGuard( value ) )
 
 #endif

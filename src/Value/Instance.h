@@ -48,7 +48,7 @@ public:
     {
         // в этот оператор нельзя передать Instance,
         // поэтому необходимо защищать только *this.
-        v_guard( *this ).holder()
+        wGuard( *this ).holder()
             = ValueTool:: template makeHolder< ValueType >( other );
         return *this;
     }
@@ -58,7 +58,7 @@ public:
     {
         // в этот оператор нельзя передать Instance,
         // поэтому необходимо защищать только *this.
-        v_guard( *this ).holder()
+        wGuard( *this ).holder()
             = ValueTool:: template makeHolder< ValueType >(
                 ::std::forward< _Type >( other ) );
         return *this;
@@ -69,108 +69,150 @@ public:
     {
         // в этот оператор нельзя передать Instance,
         // поэтому необходимо защищать только *this.
-        v_guard( *this ).holder()
+        wGuard( *this ).holder()
             = ValueTool:: template makeHolder< ValueType >( other );
         return *this;
     }
 
     Instance ( ThisType & other )
-    : m_holder( ValueTool::copyHolder( c_guard( other ).holder() ) )
+    : m_holder( ValueTool::copyHolder( cGuard( other ).holder() ) )
     {
-        // защищаем other
+        // наделяем свойствами other
     }
 
     ThisType & operator = ( ThisType & other )
     {
-        // защищаем *this и other
-        v_guard( *this ).holder()
-            = ValueTool::copyHolder( c_guard( other ).holder() );
+        // наделяем свойствами *this и other
+        wGuard( *this ).holder()
+            = ValueTool::copyHolder( cGuard( other ).holder() );
         return *this;
     }
 
     Instance ( ThisType && other )
-    : m_holder( ValueTool::moveHolder( ::std::forward< HolderType >( m_guard( other ).holder() ) ) )
+    : m_holder( ValueTool::moveHolder( ::std::forward< HolderType >( mGuard( other ).holder() ) ) )
     {
-        // защищаем other
+        // наделяем свойствами other
     }
 
     ThisType & operator = ( ThisType && other )
     {
-        // защищаем *this и other
-        v_guard( *this ).holder()
-            = ValueTool::moveHolder( ::std::forward< HolderType >( m_guard( other ).holder() ) );
+        // наделяем свойствами *this и other
+        wGuard( *this ).holder()
+            = ValueTool::moveHolder( ::std::forward< HolderType >( mGuard( other ).holder() ) );
         return *this;
     }
 
     Instance ( const ThisType & other )
-    : m_holder( ValueTool::copyHolder( c_guard( other ).holder() ) )
+    : m_holder( ValueTool::copyHolder( cGuard( other ).holder() ) )
     {
-        // защищаем other
+        // наделяем свойствами other
     }
 
     ThisType & operator = ( const ThisType & other )
     {
-        // защищаем *this и other
-        v_guard( *this ).holder()
-            = ValueTool::copyHolder( c_guard( other ).holder() );
+        // наделяем свойствами *this и other
+        wGuard( *this ).holder()
+            = ValueTool::copyHolder( cGuard( other ).holder() );
         return *this;
     }
 
     template < typename _OtherType, typename _OtherTool >
-    Instance ( Instance< _OtherType, _OtherTool > && /*other*/ )
-    : m_holder( /*other.m_holder*/ )
+    Instance ( Instance< _OtherType, _OtherTool > & other )
+    : Instance( cGet( other ) )
     {
-        // требуется защитить other
-        // затем other нужно раскрыть либо до ThisType, либо до _ValueType
+        // наделяем свойствами other
+
+        // TODO: реализовать оптимальный вариант
+        // * если внутри ThisInstance может находится значение OtherInstance,
+        //   то необходимо выполнить операцию присвоения внутреннему
+        //   значению *this и other;
+        // * если внутри OtherInstance может находится значение ThisInstance,
+        //   то необходимо выполнить операцию присвоения *this внутреннему
+        //   значению other.
     }
 
     template < typename _OtherType, typename _OtherTool >
-    ThisType & operator = ( Instance< _OtherType, _OtherTool > && /*other*/ )
+    ThisType & operator = ( Instance< _OtherType, _OtherTool > & other )
     {
-        // требуется защитить *this и other
-        // затем other нужно раскрыть либо до ThisType, либо до _ValueType
-        //m_holder = ::std::forward< HolderType >( other.m_holder );
-        return *this;
+        // наделяем свойствами *this и other
+
+        // TODO: реализовать оптимальный вариант
+        // * если внутри ThisInstance может находится значение OtherInstance,
+        //   то необходимо выполнить операцию присвоения внутреннему
+        //   значению *this и other;
+        // * если внутри OtherInstance может находится значение ThisInstance,
+        //   то необходимо выполнить операцию присвоения *this внутреннему
+        //   значению other.
+
+        return *this = cGet( other );
     }
 
     template < typename _OtherType, typename _OtherTool >
-    Instance ( Instance< _OtherType, _OtherTool > & /*other*/ )
-    : m_holder( /*other.m_holder*/ )
+    Instance ( Instance< _OtherType, _OtherTool > && other )
+    : Instance( mGet( other ) )
     {
-        // требуется защитить other
-        // затем other нужно раскрыть либо до ThisType, либо до _ValueType
+        // наделяем свойствами other
+
+        // TODO: реализовать оптимальный вариант
+        // * если внутри ThisInstance может находится значение OtherInstance,
+        //   то необходимо выполнить операцию присвоения внутреннему
+        //   значению *this и other;
+        // * если внутри OtherInstance может находится значение ThisInstance,
+        //   то необходимо выполнить операцию присвоения *this внутреннему
+        //   значению other.
     }
 
     template < typename _OtherType, typename _OtherTool >
-    ThisType & operator = ( Instance< _OtherType, _OtherTool > & /*other*/ )
+    ThisType & operator = ( Instance< _OtherType, _OtherTool > && other )
     {
-        // требуется защитить *this и other
-        // затем other нужно раскрыть либо до ThisType, либо до _ValueType
-        //m_holder = other.m_holder;
-        return *this;
+        // наделяем свойствами *this и other
+
+        // TODO: реализовать оптимальный вариант
+        // * если внутри ThisInstance может находится значение OtherInstance,
+        //   то необходимо выполнить операцию присвоения внутреннему
+        //   значению *this и other;
+        // * если внутри OtherInstance может находится значение ThisInstance,
+        //   то необходимо выполнить операцию присвоения *this внутреннему
+        //   значению other.
+
+        return *this = mGet( other );
     }
 
     template < typename _OtherType, typename _OtherTool >
-    Instance ( const Instance< _OtherType, _OtherTool > & /*other*/ )
-    : m_holder( /*other.m_holder*/ )
+    Instance ( const Instance< _OtherType, _OtherTool > & other )
+    : Instance( cGet( other ) )
     {
-        // требуется защитить other
-        // затем other нужно раскрыть либо до ThisType, либо до _ValueType
+        // наделяем свойствами other
+
+        // TODO: реализовать оптимальный вариант
+        // * если внутри ThisInstance может находится значение OtherInstance,
+        //   то необходимо выполнить операцию присвоения внутреннему
+        //   значению *this и other;
+        // * если внутри OtherInstance может находится значение ThisInstance,
+        //   то необходимо выполнить операцию присвоения *this внутреннему
+        //   значению other.
     }
 
     template < typename _OtherType, typename _OtherTool >
-    ThisType & operator = ( const Instance< _OtherType, _OtherTool > & /*other*/ )
+    ThisType & operator = ( const Instance< _OtherType, _OtherTool > & other )
     {
-        // требуется защитить *this и other
-        // затем other нужно раскрыть либо до ThisType, либо до _ValueType
-        //m_holder = other.m_holder;
-        return *this;
+        // наделяем свойствами *this и other
+
+        // TODO: реализовать оптимальный вариант
+        // * если внутри ThisInstance может находится значение OtherInstance,
+        //   то необходимо выполнить операцию присвоения внутреннему
+        //   значению *this и other;
+        // * если внутри OtherInstance может находится значение ThisInstance,
+        //   то необходимо выполнить операцию присвоения *this внутреннему
+        //   значению other.
+
+        return *this = cGet( other );
     }
 
     //! Деструктор.
     ~Instance ()
     {
-        ValueTool::destroyHolder( v_guard( *this ).holder() );
+        ValueTool::destroyHolder( wGuard( *this ).holder() );
     }
 };
 
