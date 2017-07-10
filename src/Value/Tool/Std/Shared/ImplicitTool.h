@@ -108,7 +108,7 @@ namespace Std
 template < typename _Value >
 struct IsHeapInstance< Instance< _Value, ::Std::Shared::ImplicitTool > >
 {
-    static constexpr bool result = true;
+    static constexpr bool value = true;
 };
 
 /*!
@@ -117,7 +117,7 @@ struct IsHeapInstance< Instance< _Value, ::Std::Shared::ImplicitTool > >
 template < typename _Value >
 struct IsImplicitInstance< Instance< _Value, ::Std::Shared::ImplicitTool > >
 {
-    static constexpr bool result = true;
+    static constexpr bool value = true;
 };
 
 /*!
@@ -129,7 +129,7 @@ struct IsImplicitInstance< Instance< _Value, ::Std::Shared::ImplicitTool > >
 template < typename _ValueType >
 struct InstanceHelper< Instance< _ValueType, ::Std::Shared::ImplicitTool > >
 {
-    using InstanceType = typename TypeHelper< IsImplicitInstance< _ValueType >::result,
+    using InstanceType = typename TypeHelper< IsImplicitInstance< _ValueType >::value,
         typename InstanceHelper< _ValueType >::InstanceType,
         Instance< _ValueType, ::Std::Shared::ImplicitTool > >::Type;
 };

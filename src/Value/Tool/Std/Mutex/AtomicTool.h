@@ -141,7 +141,7 @@ namespace Std
 template < typename _Value >
 struct IsAtomicInstance< Instance< _Value, ::Std::Mutex::AtomicTool > >
 {
-    static constexpr bool result = true;
+    static constexpr bool value = true;
 };
 
 /*!
@@ -154,7 +154,7 @@ template < typename _ValueType >
 struct InstanceHelper< Instance< _ValueType, ::Std::Mutex::AtomicTool > >
 {
 
-    using InstanceType = typename TypeHelper< IsAtomicInstance< _ValueType >::result,
+    using InstanceType = typename TypeHelper< IsAtomicInstance< _ValueType >::value,
         typename InstanceHelper< _ValueType >::InstanceType,
         Instance< _ValueType, ::Std::Mutex::AtomicTool > >::Type;
 };

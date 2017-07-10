@@ -104,7 +104,7 @@ namespace Std
 template < typename _Value >
 struct IsHeapInstance< Instance< _Value, ::Std::Unique::HeapTool > >
 {
-    static constexpr bool result = true;
+    static constexpr bool value = true;
 };
 
 /*!
@@ -117,7 +117,7 @@ template < typename _ValueType >
 struct InstanceHelper< Instance< _ValueType, ::Std::Unique::HeapTool > >
 {
 
-    using InstanceType = typename TypeHelper< IsHeapInstance< _ValueType >::result,
+    using InstanceType = typename TypeHelper< IsHeapInstance< _ValueType >::value,
         typename InstanceHelper< _ValueType >::InstanceType,
         Instance< _ValueType, ::Std::Unique::HeapTool > >::Type;
 };

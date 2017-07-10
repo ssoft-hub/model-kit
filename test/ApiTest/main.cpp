@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include "memory.h"
+#include "BaseType.h"
+#include "DerivedType.h"
 
 //using ImplicitTool = ::Std::Shared::ImplicitTool;
 //using RelationTool = ::Std::Shared::RelationTool;
@@ -74,8 +76,57 @@ extern void testAllTool ();
 
 int main ( int /*argc*/, char ** /*argv*/ )
 {
-    testBaseDerived();
-    testAllTool ();
+//    testBaseDerived();
+//    testAllTool ();
+
+
+    ::std::cout
+        << "IsCompatible< Variable< int >, Variable< int > >::value" << ::std::endl
+        << IsCompatible< Variable< int >, Variable< int > >::value << ::std::endl;
+    ::std::cout
+        << "IsCompatible< Variable< int >, Variable< double > >::value" << ::std::endl
+        << IsCompatible< Variable< int >, Variable< double > >::value << ::std::endl;
+    ::std::cout
+        << "IsCompatible< Variable< BaseType >, Variable< DerivedType > >::value" << ::std::endl
+        << IsCompatible< Variable< BaseType >, Variable< DerivedType > >::value << ::std::endl;
+    ::std::cout
+        << "IsCompatible< Variable< DerivedType >, Variable< BaseType > >::value" << ::std::endl
+        << IsCompatible< Variable< DerivedType >, Variable< BaseType > >::value << ::std::endl;
+
+
+    using FirstType = Instance< Instance< Instance< BaseType
+        , ::Std::Unique::HeapTool >
+        , ::Std::Shared::ImplicitTool >
+        , ::Std::Mutex::AtomicTool >;
+
+    using SecondType = Instance< Instance< Instance< DerivedType
+        , ::Std::Unique::HeapTool >
+        , ::Std::Shared::ImplicitTool >
+        , ::Std::Mutex::AtomicTool >;
+
+    ::std::cout
+        << "IsCompatible< FirstType, SecondType >::value" << ::std::endl
+        << IsCompatible< FirstType, SecondType >::value << ::std::endl;
+    ::std::cout
+        << "IsCompatible< SecondType, FirstType >::value" << ::std::endl
+        << IsCompatible< SecondType, FirstType >::value << ::std::endl;
+
+    using FirstPartType = Instance< BaseType, ::Std::Unique::HeapTool >;
+    using SecondPartType = Instance< DerivedType, ::Std::Unique::HeapTool >;
+
+    ::std::cout
+        << "IsPartOf< FirstPartType, FirstType >::value" << ::std::endl
+        << IsPartOf< FirstPartType, FirstType >::value << ::std::endl;
+    ::std::cout
+        << "IsPartOf< SecondPartType, FirstType >::value" << ::std::endl
+        << IsPartOf< SecondPartType, FirstType >::value << ::std::endl;
+    ::std::cout
+        << "IsPartOf< FirstPartType, SecondType >::value" << ::std::endl
+        << IsPartOf< FirstPartType, SecondType >::value << ::std::endl;
+    ::std::cout
+        << "IsPartOf< SecondPartType, SecondType >::value" << ::std::endl
+        << IsPartOf< SecondPartType, SecondType >::value << ::std::endl;
+
 
 //    int int_value; // OK
 //    const int int_value; // ERROR
