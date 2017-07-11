@@ -11,12 +11,12 @@ void testTool ()
     other = _TestType();
     value = ::std::move( other );
     other = value;
-    wGet( value ) = wGet( _TestType() );
+    vGet( value ) = vGet( _TestType() );
 
-    wGet( value ).m_first_name = "first name";
-    wGet( value ).m_last_name = "last name";
-    wGet( value ).m_age = 50;
-    wGet( value ).m_stature = 178.5;
+    vGet( value ).m_first_name = "first name";
+    vGet( value ).m_last_name = "last name";
+    vGet( value ).m_age = 50;
+    vGet( value ).m_stature = 178.5;
 
     // Явное использование FeatureGuard гарантирует применение только того
     // свойства, за которое он отвечает.

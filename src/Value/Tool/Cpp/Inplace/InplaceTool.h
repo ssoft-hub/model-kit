@@ -14,7 +14,20 @@ namespace Cpp
         struct InplaceTool
         {
             template < typename _Type >
-            using HolderType = _Type;
+            struct HolderType
+            {
+                using ThisType = HolderType< _Type >;
+                using ValueType = _Type;
+
+                ValueType m_value;
+
+                template < typename ... _Arguments >
+                constexpr HolderType ( _Arguments && ... arguments )
+                : m_value( ::std::forward< _Arguments >( arguments ) ... )
+                {
+                }
+            };
+
 
             template < typename _Type, typename ... _Arguments >
             static constexpr HolderType< _Type > makeHolder ( _Arguments && ... arguments )
@@ -25,13 +38,13 @@ namespace Cpp
             template < typename _Type >
             static constexpr HolderType< _Type > copyHolder ( const HolderType< _Type > & holder )
             {
-                return makeHolder< _Type >( holder );
+                return makeHolder< _Type >( holder.m_value );
             }
 
             template < typename _Type >
             static constexpr HolderType< _Type > moveHolder ( HolderType< _Type > && holder )
             {
-                return makeHolder< _Type >( ::std::forward< HolderType< _Type > && >( holder ) );
+                return makeHolder< _Type >( ::std::forward< _Type && >( holder.m_value ) );
             }
 
             template < typename _Type >
@@ -79,19 +92,19 @@ namespace Cpp
             template < typename _Type >
             static constexpr FeatureGuard< _Type & > writableValueGuard ( HolderType< _Type > & holder )
             {
-                return FeatureGuard< _Type & >( holder );
+                return FeatureGuard< _Type & >( holder.m_value );
             }
 
             template < typename _Type >
             static constexpr FeatureGuard< const _Type & > readableValueGuard ( const HolderType< _Type > & holder )
             {
-                return FeatureGuard< const _Type & >( holder );
+                return FeatureGuard< const _Type & >( holder.m_value );
             }
 
             template < typename _Type >
             static constexpr FeatureGuard< _Type && > movableValueGuard ( HolderType< _Type > && holder )
             {
-                return FeatureGuard< _Type && >( ::std::forward< _Type >( holder ) );
+                return FeatureGuard< _Type && >( ::std::forward< _Type >( holder.m_value ) );
             }
         };
     }

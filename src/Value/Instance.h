@@ -1,6 +1,169 @@
 #pragma once
 #include <Helper/AccessHelper.h>
+#include <Helper/InstanceHelper.h>
 #include <memory>
+
+
+
+enum AssignmentVariant
+{
+    DefaultVariant,
+    CompatibleVariant,
+    ThisPartOfOtherVariant,
+    OtherPartOfThisVariant
+};
+
+template < bool _compatible, bool _this_part_of_other, bool _other_part_of_this >
+struct VariantDefiner
+    : public ::std::integral_constant< AssignmentVariant, DefaultVariant >
+{
+};
+
+template <>
+struct VariantDefiner< true, false, false >
+    : public ::std::integral_constant< AssignmentVariant, CompatibleVariant >
+{
+};
+
+template <>
+struct VariantDefiner< false, true, false >
+    : public ::std::integral_constant< AssignmentVariant, ThisPartOfOtherVariant >
+{
+};
+
+template <>
+struct VariantDefiner< false, false, true >
+    : public ::std::integral_constant< AssignmentVariant, OtherPartOfThisVariant >
+{
+};
+
+template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
+struct VariantDefiner2
+    : public ::std::integral_constant< AssignmentVariant, VariantDefiner<
+        IsCompatible< Instance< _ThisType, _ThisTool >, Instance< _OtherType, _OtherTool > >::value,
+        IsPartOf< Instance< _ThisType, _ThisTool >, Instance< _OtherType, _OtherTool > >::value,
+        IsPartOf< Instance< _OtherType, _OtherTool >, Instance< _ThisType, _ThisTool > >::value >::value >
+{
+};
+
+template < AssignmentVariant >
+struct AssignmentHelper
+{
+//    можно использовать в определениях методов
+//    static constexpr decltype(auto) construct (...)
+
+    template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
+    static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( Instance< _OtherType, _OtherTool > & other )
+    {
+        return _ThisTool:: template makeHolder< _ThisType >( cGet( other ) );
+    }
+
+    template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
+    static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( const Instance< _OtherType, _OtherTool > & other )
+    {
+        return _ThisTool:: template makeHolder< _ThisType >( cGet( other ) );
+    }
+
+    template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
+    static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( Instance< _OtherType, _OtherTool > && other )
+    {
+        return _ThisTool:: template makeHolder< _ThisType >( mGet( other ) );
+    }
+};
+
+
+/*!
+ * Если Instance совместимы или одинаковы, то значение формируется путем
+ * копирования или переноса holder с помощью методов, предоставляемых
+ * инструментарием _ThisTool.
+ */
+template <>
+struct AssignmentHelper< CompatibleVariant >
+{
+//    можно использовать в определениях методов
+//    static constexpr decltype(auto) construct (...)
+
+    template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
+    static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( Instance< _OtherType, _OtherTool > & other )
+    {
+        return _ThisTool:: template copyHolder< _ThisType >( cGuard( other ).value().m_holder );
+    }
+
+    template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
+    static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( const Instance< _OtherType, _OtherTool > & other )
+    {
+        return _ThisTool:: template copyHolder< _ThisType >( cGuard( other ).value().m_holder );
+    }
+
+    template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
+    static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( Instance< _OtherType, _OtherTool > && other )
+    {
+        return _ThisTool:: template moveHolder< _ThisType >(
+            ::std::forward< typename Instance< _OtherType, _OtherTool >::HolderType >(
+                mGuard( other ).value().m_holder ) );
+    }
+};
+
+/*!
+ * Eсли необходимый Instance совместим с внутренней частью исходного,
+ * то необходимо сформировать необходимый Instance на основе внутреннего
+ * значения other.
+ */
+template <>
+struct AssignmentHelper< ThisPartOfOtherVariant >
+{
+//    можно использовать в определениях методов
+//    static constexpr decltype(auto) construct (...)
+
+    template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
+    static constexpr Instance< _ThisType, _ThisTool > construct ( Instance< _OtherType, _OtherTool > & other )
+    {
+        return Instance< _ThisType, _ThisTool >( _OtherTool:: template readableValueGuard< _OtherType >( cGuard( other ).value().m_holder ).value() );
+    }
+
+    template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
+    static constexpr Instance< _ThisType, _ThisTool > construct ( const Instance< _OtherType, _OtherTool > & other )
+    {
+        return Instance< _ThisType, _ThisTool >( _OtherTool:: template readableValueGuard< _OtherType >( cGuard( other ).value().m_holder ).value() );
+    }
+
+    template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
+    static constexpr Instance< _ThisType, _ThisTool > construct ( Instance< _OtherType, _OtherTool > && other )
+    {
+        return Instance< _ThisType, _ThisTool >( _OtherTool:: template movableValueGuard< _OtherType >(
+            ::std::forward< _OtherType >( ::std::forward< typename _OtherTool::HolderType >( mGuard( other ).value().m_holder ) ).value() ) );
+    }
+};
+
+/*!
+ * Если внутренняя часть необходимого Instance совметима с исходным,
+ * то необходимо выполнить формирование holder на осове значения other с помощью
+ * методов, предоставляемых инструментарием _ThisTool.
+ */
+template <>
+struct AssignmentHelper< OtherPartOfThisVariant >
+{
+//    можно использовать в определениях методов
+//    static constexpr decltype(auto) construct (...)
+
+    template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
+    static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( Instance< _OtherType, _OtherTool > & other )
+    {
+        return _ThisTool:: template makeHolder< _ThisType >( other );
+    }
+
+    template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
+    static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( const Instance< _OtherType, _OtherTool > & other )
+    {
+        return _ThisTool:: template makeHolder< _ThisType >( other );
+    }
+
+    template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
+    static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( Instance< _OtherType, _OtherTool > && other )
+    {
+        return _ThisTool:: template makeHolder< _ThisType >( ::std::forward< Instance< _OtherType, _OtherTool > >( other ) );
+    }
+};
 
 /*!
  * Класс для формирования экземпляра значения, наделенными дополнительными
@@ -10,8 +173,14 @@
 template < typename _ValueType, typename _ValueTool >
 class Instance
 {
-    template < typename _WrapperType >
+    template < typename >
     friend struct FeatureGuard;
+
+    template < AssignmentVariant >
+    friend struct AssignmentHelper;
+
+    template < typename, typename >
+    friend class Instance;
 
     using ThisType = Instance< _ValueType, _ValueTool >;
 
@@ -25,6 +194,12 @@ public:
 private:
     HolderType m_holder;
 
+private:
+    constexpr Instance ( HolderType && holder )
+    : m_holder( ::std::forward< HolderType >( holder ) )
+    {
+    }
+
 public:
     //! Конструктор без специальной инициализации значения.
     /// В зависимости от инструмента, значение может не существовать
@@ -35,8 +210,8 @@ public:
 
     //! Конструктор инициализации значения по заданным параметрам
     template < typename ... _Arguments >
-    Instance ( _Arguments && ... arguments )
-    : m_holder( ValueTool:: template makeHolder< ValueType >(
+    constexpr Instance ( _Arguments && ... arguments )
+    : Instance ( ValueTool:: template makeHolder< ValueType >(
         ::std::forward< _Arguments >( arguments ) ... ) )
     {
         // в этот конструктор нельзя передать Instance, поэтому
@@ -48,8 +223,8 @@ public:
     {
         // в этот оператор нельзя передать Instance,
         // поэтому необходимо защищать только *this.
-        wGuard( *this ).holder()
-            = ValueTool:: template makeHolder< ValueType >( other );
+        vGuard( *this ).value().m_holder
+            = ValueTool:: template makeHolder< ValueType >( cGet( other ) );
         return *this;
     }
 
@@ -58,7 +233,7 @@ public:
     {
         // в этот оператор нельзя передать Instance,
         // поэтому необходимо защищать только *this.
-        wGuard( *this ).holder()
+        vGuard( *this ).value().m_holder
             = ValueTool:: template makeHolder< ValueType >(
                 ::std::forward< _Type >( other ) );
         return *this;
@@ -69,150 +244,57 @@ public:
     {
         // в этот оператор нельзя передать Instance,
         // поэтому необходимо защищать только *this.
-        wGuard( *this ).holder()
+        vGuard( *this ).value().m_holder
             = ValueTool:: template makeHolder< ValueType >( other );
         return *this;
     }
 
-    Instance ( ThisType & other )
-    : m_holder( ValueTool::copyHolder( cGuard( other ).holder() ) )
-    {
-        // наделяем свойствами other
-    }
-
-    ThisType & operator = ( ThisType & other )
-    {
-        // наделяем свойствами *this и other
-        wGuard( *this ).holder()
-            = ValueTool::copyHolder( cGuard( other ).holder() );
-        return *this;
-    }
-
-    Instance ( ThisType && other )
-    : m_holder( ValueTool::moveHolder( ::std::forward< HolderType >( mGuard( other ).holder() ) ) )
-    {
-        // наделяем свойствами other
-    }
-
-    ThisType & operator = ( ThisType && other )
-    {
-        // наделяем свойствами *this и other
-        wGuard( *this ).holder()
-            = ValueTool::moveHolder( ::std::forward< HolderType >( mGuard( other ).holder() ) );
-        return *this;
-    }
-
-    Instance ( const ThisType & other )
-    : m_holder( ValueTool::copyHolder( cGuard( other ).holder() ) )
-    {
-        // наделяем свойствами other
-    }
-
-    ThisType & operator = ( const ThisType & other )
-    {
-        // наделяем свойствами *this и other
-        wGuard( *this ).holder()
-            = ValueTool::copyHolder( cGuard( other ).holder() );
-        return *this;
-    }
-
     template < typename _OtherType, typename _OtherTool >
-    Instance ( Instance< _OtherType, _OtherTool > & other )
-    : Instance( cGet( other ) )
+    constexpr Instance ( Instance< _OtherType, _OtherTool > & other )
+    : Instance( AssignmentHelper< VariantDefiner2< _ValueType, _ValueTool, _OtherType, _OtherTool >::value >
+        :: template construct< _ValueType, _ValueTool, _OtherType, _OtherTool >( other ) )
     {
-        // наделяем свойствами other
-
-        // TODO: реализовать оптимальный вариант
-        // * если внутри ThisInstance может находится значение OtherInstance,
-        //   то необходимо выполнить операцию присвоения внутреннему
-        //   значению *this и other;
-        // * если внутри OtherInstance может находится значение ThisInstance,
-        //   то необходимо выполнить операцию присвоения *this внутреннему
-        //   значению other.
     }
 
     template < typename _OtherType, typename _OtherTool >
     ThisType & operator = ( Instance< _OtherType, _OtherTool > & other )
     {
-        // наделяем свойствами *this и other
-
         // TODO: реализовать оптимальный вариант
-        // * если внутри ThisInstance может находится значение OtherInstance,
-        //   то необходимо выполнить операцию присвоения внутреннему
-        //   значению *this и other;
-        // * если внутри OtherInstance может находится значение ThisInstance,
-        //   то необходимо выполнить операцию присвоения *this внутреннему
-        //   значению other.
-
         return *this = cGet( other );
     }
 
     template < typename _OtherType, typename _OtherTool >
-    Instance ( Instance< _OtherType, _OtherTool > && other )
-    : Instance( mGet( other ) )
+    constexpr Instance ( Instance< _OtherType, _OtherTool > && other )
+    : Instance( AssignmentHelper< VariantDefiner2< _ValueType, _ValueTool, _OtherType, _OtherTool >::value >
+        :: template construct< _ValueType, _ValueTool, _OtherType, _OtherTool >(
+            ::std::forward< Instance< _OtherType, _OtherTool > >( other ) ) )
     {
-        // наделяем свойствами other
-
-        // TODO: реализовать оптимальный вариант
-        // * если внутри ThisInstance может находится значение OtherInstance,
-        //   то необходимо выполнить операцию присвоения внутреннему
-        //   значению *this и other;
-        // * если внутри OtherInstance может находится значение ThisInstance,
-        //   то необходимо выполнить операцию присвоения *this внутреннему
-        //   значению other.
     }
 
     template < typename _OtherType, typename _OtherTool >
     ThisType & operator = ( Instance< _OtherType, _OtherTool > && other )
     {
-        // наделяем свойствами *this и other
-
-        // TODO: реализовать оптимальный вариант
-        // * если внутри ThisInstance может находится значение OtherInstance,
-        //   то необходимо выполнить операцию присвоения внутреннему
-        //   значению *this и other;
-        // * если внутри OtherInstance может находится значение ThisInstance,
-        //   то необходимо выполнить операцию присвоения *this внутреннему
-        //   значению other.
-
         return *this = mGet( other );
     }
 
     template < typename _OtherType, typename _OtherTool >
-    Instance ( const Instance< _OtherType, _OtherTool > & other )
-    : Instance( cGet( other ) )
+    constexpr Instance ( const Instance< _OtherType, _OtherTool > & other )
+    : Instance( AssignmentHelper< VariantDefiner2< _ValueType, _ValueTool, _OtherType, _OtherTool >::value >
+        :: template construct< _ValueType, _ValueTool, _OtherType, _OtherTool >( other ) )
     {
-        // наделяем свойствами other
-
-        // TODO: реализовать оптимальный вариант
-        // * если внутри ThisInstance может находится значение OtherInstance,
-        //   то необходимо выполнить операцию присвоения внутреннему
-        //   значению *this и other;
-        // * если внутри OtherInstance может находится значение ThisInstance,
-        //   то необходимо выполнить операцию присвоения *this внутреннему
-        //   значению other.
     }
 
     template < typename _OtherType, typename _OtherTool >
     ThisType & operator = ( const Instance< _OtherType, _OtherTool > & other )
     {
-        // наделяем свойствами *this и other
-
         // TODO: реализовать оптимальный вариант
-        // * если внутри ThisInstance может находится значение OtherInstance,
-        //   то необходимо выполнить операцию присвоения внутреннему
-        //   значению *this и other;
-        // * если внутри OtherInstance может находится значение ThisInstance,
-        //   то необходимо выполнить операцию присвоения *this внутреннему
-        //   значению other.
-
         return *this = cGet( other );
     }
 
     //! Деструктор.
     ~Instance ()
     {
-        ValueTool::destroyHolder( wGuard( *this ).holder() );
+        ValueTool::destroyHolder( m_holder );
     }
 };
 
@@ -253,9 +335,9 @@ public:
         ValueTool::unguardWritableHolder( m_refer.m_holder );
     }
 
-    constexpr HolderType & holder ()
+    constexpr ReferType value ()
     {
-        return m_refer.m_holder;
+        return m_refer;
     }
 
     constexpr FeatureGuard< ValueType & > operator -> ()
@@ -301,9 +383,9 @@ public:
         ValueTool::unguardReadableHolder( m_refer.m_holder );
     }
 
-    constexpr const HolderType & holder ()
+    constexpr ReferType value ()
     {
-        return m_refer.m_holder;
+        return m_refer;
     }
 
     constexpr FeatureGuard< const ValueType & > operator -> ()
@@ -351,9 +433,9 @@ public:
             ::std::forward< HolderType >( m_refer.m_holder ) );
     }
 
-    constexpr HolderType && holder ()
+    constexpr ReferType value ()
     {
-        return ::std::forward< HolderType >( m_refer.m_holder );
+        return ::std::forward< ReferType >( m_refer );
     }
 
     constexpr FeatureGuard< ValueType && > operator -> ()
@@ -362,3 +444,4 @@ public:
             ::std::forward< HolderType >( m_refer.m_holder ) );
     }
 };
+

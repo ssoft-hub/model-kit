@@ -39,20 +39,20 @@ void testBaseSetting ()
 {
     Variable< BaseType > base_value;
 
-    wGet( base_value ).m_int = 1;
-    wGet( base_value ).m_string = "one";
+    vGet( base_value ).m_int = 1;
+    vGet( base_value ).m_string = "one";
     printBase( cGet( base_value ) );
 
-    wGet( base_value ).m_int = BaseInt( 2 );
-    wGet( base_value ).m_string = BaseString( "two" );
+    vGet( base_value ).m_int = BaseInt( 2 );
+    vGet( base_value ).m_string = BaseString( "two" );
     printBase( cGet( base_value ) );
 
-    wGet( base_value ).m_int = DerivedInt( 3 );
-    wGet( base_value ).m_string = DerivedString( "three" );
+    vGet( base_value ).m_int = DerivedInt( 3 );
+    vGet( base_value ).m_string = DerivedString( "three" );
     printBase( cGet( base_value ) );
 
-    wGet( base_value ).m_int = HeapInt( 4 );
-    wGet( base_value ).m_string = HeapString( "four" );
+    vGet( base_value ).m_int = HeapInt( 4 );
+    vGet( base_value ).m_string = HeapString( "four" );
     printBase( cGet( base_value ) );
 }
 
@@ -80,33 +80,37 @@ void testDerived ()
 
 void testBaseDerivedSetting ()
 {
-    Variable< DerivedType > derived_value;
+    using BaseTestType = Instance< BaseType, ::Std::Shared::ImplicitTool >;
+    using DerivedTestType = Instance< DerivedType, ::Std::Shared::ImplicitTool >;
 
-    wGet( derived_value ).BaseType::m_int = 1;
-    wGet( derived_value ).BaseType::m_string = "one";
-    wGet( derived_value ).m_int = -1;
-    wGet( derived_value ).m_string = "negative one";
+    Variable< DerivedTestType > derived_value;
+
+    vGet( derived_value ).BaseType::m_int = 1;
+    vGet( derived_value ).BaseType::m_string = "one";
+    vGet( derived_value ).m_int = -1;
+    vGet( derived_value ).m_string = "negative one";
     printDerived( cGet( derived_value ) );
 
-    wGet( derived_value ).BaseType::m_int = BaseInt( 2 );
-    wGet( derived_value ).BaseType::m_string = BaseString( "two" );
-    wGet( derived_value ).m_int = BaseInt( -2 );
-    wGet( derived_value ).m_string = BaseString( "negative two" );
+    vGet( derived_value ).BaseType::m_int = BaseInt( 2 );
+    vGet( derived_value ).BaseType::m_string = BaseString( "two" );
+    vGet( derived_value ).m_int = BaseInt( -2 );
+    vGet( derived_value ).m_string = BaseString( "negative two" );
     printDerived( cGet( derived_value ) );
 
-    wGet( derived_value ).BaseType::m_int = DerivedInt( 3 );
-    wGet( derived_value ).BaseType::m_string = DerivedString( "three" );
-    wGet( derived_value ).m_int = DerivedInt( -3 );
-    wGet( derived_value ).m_string = DerivedString( "negative three" );
+    vGet( derived_value ).BaseType::m_int = DerivedInt( 3 );
+    vGet( derived_value ).BaseType::m_string = DerivedString( "three" );
+    vGet( derived_value ).m_int = DerivedInt( -3 );
+    vGet( derived_value ).m_string = DerivedString( "negative three" );
     printDerived( cGet( derived_value ) );
 
-    wGet( derived_value ).BaseType::m_int = HeapInt( 4 );
-    wGet( derived_value ).BaseType::m_string = HeapString( "four" );
-    wGet( derived_value ).m_int = HeapInt( -4 );
-    wGet( derived_value ).m_string = HeapString( "negative four" );
+    vGet( derived_value ).BaseType::m_int = HeapInt( 4 );
+    vGet( derived_value ).BaseType::m_string = HeapString( "four" );
+    vGet( derived_value ).m_int = HeapInt( -4 );
+    vGet( derived_value ).m_string = HeapString( "negative four" );
     printDerived( cGet( derived_value ) );
 
-    Variable< BaseType > base_value = derived_value; // OK
+    Variable< BaseTestType > base_value;
+    base_value = derived_value; // OK
     printBase( cGet( base_value ) );
 
     //Variable< DerivedType > other_derived_value = base_value; //ERROR

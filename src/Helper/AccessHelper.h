@@ -61,6 +61,11 @@ public:
     FeatureGuard ( ThisType && other ) = default;
     FeatureGuard ( const ThisType & other ) = delete;
 
+    constexpr ReferType value ()
+    {
+        return ::std::forward< ReferType >( m_proxy.access() );
+    }
+
     constexpr ProxyType * operator -> ()
     {
         return &m_proxy;
@@ -104,14 +109,14 @@ inline constexpr FeatureGuard< _WrapperType && > mvalueFeatureGuard ( _WrapperTy
 /*!
  * Методы доступа к экземпляру значения с применеием всех задекларированных свойств.
  */
-#define wGuard( value )  valueFeatureGuard( value )
-#define mGuard( value ) mvalueFeatureGuard( value )
+#define vGuard( value )  valueFeatureGuard( value )
 #define cGuard( value ) cvalueFeatureGuard( value )
+#define mGuard( value ) mvalueFeatureGuard( ::std::forward< decltype(value) >( value ) )
 
 #define gGet( value ) value->access()
 
-#define wGet( value ) gGet( wGuard( value ) )
-#define mGet( value ) gGet( mGuard( value ) )
+#define vGet( value ) gGet( vGuard( value ) )
 #define cGet( value ) gGet( cGuard( value ) )
+#define mGet( value ) gGet( mGuard( value ) )
 
 #endif

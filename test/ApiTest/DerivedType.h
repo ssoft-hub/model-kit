@@ -20,7 +20,7 @@ struct DerivedType
     }
 
     DerivedType ( const DerivedType & other )
-    : BaseType( 2, "Base string copy" )
+    : BaseType( other )
     , m_int( other.m_int )
     , m_string( other.m_string )
     {
