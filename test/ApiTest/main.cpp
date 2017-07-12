@@ -76,22 +76,22 @@ extern void testAllTool ();
 
 int main ( int /*argc*/, char ** /*argv*/ )
 {
-//    testBaseDerived();
-//    testAllTool ();
+    testBaseDerived();
+    testAllTool ();
 
 
-//    ::std::cout
-//        << "IsCompatible< Variable< int >, Variable< int > >::value" << ::std::endl
-//        << IsCompatible< Variable< int >, Variable< int > >::value << ::std::endl;
-//    ::std::cout
-//        << "IsCompatible< Variable< int >, Variable< double > >::value" << ::std::endl
-//        << IsCompatible< Variable< int >, Variable< double > >::value << ::std::endl;
-//    ::std::cout
-//        << "IsCompatible< Variable< BaseType >, Variable< DerivedType > >::value" << ::std::endl
-//        << IsCompatible< Variable< BaseType >, Variable< DerivedType > >::value << ::std::endl;
-//    ::std::cout
-//        << "IsCompatible< Variable< DerivedType >, Variable< BaseType > >::value" << ::std::endl
-//        << IsCompatible< Variable< DerivedType >, Variable< BaseType > >::value << ::std::endl;
+    ::std::cout
+        << "IsCompatible< Variable< int >, Variable< int > >::value" << ::std::endl
+        << IsCompatible< Variable< int >, Variable< int > >::value << ::std::endl;
+    ::std::cout
+        << "IsCompatible< Variable< int >, Variable< double > >::value" << ::std::endl
+        << IsCompatible< Variable< int >, Variable< double > >::value << ::std::endl;
+    ::std::cout
+        << "IsCompatible< Variable< BaseType >, Variable< DerivedType > >::value" << ::std::endl
+        << IsCompatible< Variable< BaseType >, Variable< DerivedType > >::value << ::std::endl;
+    ::std::cout
+        << "IsCompatible< Variable< DerivedType >, Variable< BaseType > >::value" << ::std::endl
+        << IsCompatible< Variable< DerivedType >, Variable< BaseType > >::value << ::std::endl;
 
 
     using FirstType = Instance< Instance< Instance< BaseType
