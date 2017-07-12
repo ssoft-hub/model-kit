@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include <Helper/AccessHelper.h>
+#include <Helper/FeatureGuard.h>
 
 namespace Cpp
 {
@@ -113,7 +113,7 @@ namespace Cpp
 #include <Helper/InstanceHelper.h>
 
 /*!
- * Специализация помошника для вычисления типа InstanceType для значений в виде
+ * Специализация помошника для вычисления типа type для значений в виде
  * оберток Instance с размещением по месту с помощью инструмента ::Cpp::Inplace::InplaceTool.
  * Инструмент ::Cpp::Inplace::InplaceTool предназначен для предотвращения прямого
  * доступа к значениям.
@@ -121,6 +121,6 @@ namespace Cpp
 template < typename _ValueType >
 struct InstanceHelper< Instance< _ValueType, ::Cpp::Inplace::InplaceTool > >
 {
-    using InstanceType = typename InstanceHelper< _ValueType >::InstanceType;
+    using type = typename InstanceHelper< _ValueType >::type;
 };
 

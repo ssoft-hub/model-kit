@@ -1,13 +1,13 @@
 #pragma once
 
 //template < typename _Type >
-//using ReturnCreate = Inplace< typename InplaceHelper< _Type >::Type >;
+//using ReturnCreate = Inplace< typename InplaceHelper< _Type >::type >;
 
 //template < typename _Type >
-//using ReturnRead = Inplace< const typename InplaceHelper< _Type >::Type & >;
+//using ReturnRead = Inplace< const typename InplaceHelper< _Type >::type & >;
 
 //template < typename _Type >
-//using ReturnUpdate = Inplace< typename InplaceHelper< _Type >::Type & >;
+//using ReturnUpdate = Inplace< typename InplaceHelper< _Type >::type & >;
 
 
 template < typename _Type >

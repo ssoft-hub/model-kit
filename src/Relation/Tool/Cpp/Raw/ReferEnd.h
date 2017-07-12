@@ -1,5 +1,5 @@
 #pragma once
-#include <Helper/AccessHelper.h>
+#include <Helper/FeatureGuard.h>
 #include <Relation/ReferEnd.h>
 #include <Relation/Tool/Cpp/Raw/RelationTool.h>
 
@@ -40,4 +40,4 @@ public:
  * Требуется вспомогательный объект Accessor.
  */
 //template < typename _Type >
-//struct AccessHelper< ReferEnd< _Type, ::Cpp::Raw::RelationTool > > {};
+//struct FeatureGuard< ReferEnd< _Type, ::Cpp::Raw::RelationTool > > {};

@@ -8,5 +8,5 @@
  * вариант размещения его экземпляра.
  */
 template < typename _Type >
-using Property = typename InstanceHelper< _Type >::InstanceType;
+using Property = typename InstanceHelper< _Type >::type;
 //using Property = Instance< _Type, ::Cpp::Inplace::InplaceTool >;

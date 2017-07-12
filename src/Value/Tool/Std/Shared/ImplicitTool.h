@@ -100,28 +100,37 @@ namespace Std
 }
 
 #include <Helper/InstanceHelper.h>
-#include <Helper/TypeHelper.h>
+#include <Helper/ValueTrait.h>
 
 /*!
  * Специализация проверки свойства размещения значения в куче.
  */
 template < typename _Value >
-struct IsHeapInstance< Instance< _Value, ::Std::Shared::ImplicitTool > >
+struct IsHeap< Instance< _Value, ::Std::Shared::ImplicitTool > >
+    : public ::std::true_type
 {
-    static constexpr bool value = true;
 };
 
 /*!
  * Специализация проверки свойства неявного обобщения значения.
  */
 template < typename _Value >
-struct IsImplicitInstance< Instance< _Value, ::Std::Shared::ImplicitTool > >
+struct IsImplicit< Instance< _Value, ::Std::Shared::ImplicitTool > >
+: public ::std::true_type
 {
-    static constexpr bool value = true;
 };
 
 /*!
- * Специализация помошника для вычисления типа InstanceType для неявно обобщенных значений в виде
+ * Специализация проверки свойства размещения значения в куче.
+ */
+template < typename _Value >
+struct IsOptional< Instance< _Value, ::Std::Shared::ImplicitTool > >
+    : public ::std::true_type
+{
+};
+
+/*!
+ * Специализация помошника для вычисления типа type для неявно обобщенных значений в виде
  * оберток Instance с размещением в куче с помощью инструмента ::Std::Shared::ImplicitTool.
  *
  * Если оборачиваемое значений уже размещается в куче, то данный вид обертки игнорируется.
@@ -129,7 +138,7 @@ struct IsImplicitInstance< Instance< _Value, ::Std::Shared::ImplicitTool > >
 template < typename _ValueType >
 struct InstanceHelper< Instance< _ValueType, ::Std::Shared::ImplicitTool > >
 {
-    using InstanceType = typename TypeHelper< IsImplicitInstance< _ValueType >::value,
-        typename InstanceHelper< _ValueType >::InstanceType,
-        Instance< _ValueType, ::Std::Shared::ImplicitTool > >::Type;
+    using type = typename ::std::conditional< IsImplicit< _ValueType >::value,
+        typename InstanceHelper< _ValueType >::type,
+        Instance< _ValueType, ::Std::Shared::ImplicitTool > >::type;
 };

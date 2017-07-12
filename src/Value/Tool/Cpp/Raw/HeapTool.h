@@ -95,19 +95,19 @@ namespace Cpp
 }
 
 #include <Helper/InstanceHelper.h>
-#include <Helper/TypeHelper.h>
+#include <Helper/ValueTrait.h>
 
 /*!
  * Специализация проверки свойства размещения значения в куче.
  */
 template < typename _Value >
-struct IsHeapInstance< Instance< _Value, ::Cpp::Raw::HeapTool > >
+struct IsHeap< Instance< _Value, ::Cpp::Raw::HeapTool > >
+    : public ::std::true_type
 {
-    static constexpr bool value = true;
 };
 
 /*!
- * Специализация помошника для вычисления типа InstanceType для значений в виде
+ * Специализация помошника для вычисления типа type для значений в виде
  * оберток Instance с размещением в куче с помощью инструмента ::Cpp::Raw::HeapTool.
  *
  * Если оборачиваемое значений уже размещается в куче, то данный вид обертки игнорируется.
@@ -115,7 +115,7 @@ struct IsHeapInstance< Instance< _Value, ::Cpp::Raw::HeapTool > >
 template < typename _ValueType >
 struct InstanceHelper< Instance< _ValueType, ::Cpp::Raw::HeapTool > >
 {
-    using InstanceType = typename TypeHelper< IsHeapInstance< _ValueType >::value,
-        typename InstanceHelper< _ValueType >::InstanceType,
-        Instance< _ValueType, ::Cpp::Raw::HeapTool > >::Type;
+    using type = typename ::std::conditional< IsHeap< _ValueType >::value,
+        typename InstanceHelper< _ValueType >::type,
+        Instance< _ValueType, ::Cpp::Raw::HeapTool > >::type;
 };

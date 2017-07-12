@@ -1,5 +1,5 @@
 #pragma once
-#include <Helper/AccessHelper.h>
+#include <Helper/FeatureGuard.h>
 #include <Relation/SharedEnd.h>
 #include <Relation/Tool/Std/Shared/RelationTool.h>
 
@@ -93,7 +93,7 @@ public:
  * то возвращаемый тип Type & для writable и readable доступа.
  */
 //template < typename _Type >
-//struct AccessHelper< UniqueEnd< _Type, ::Std::Shared::RelationTool > >
+//struct FeatureGuard< UniqueEnd< _Type, ::Std::Shared::RelationTool > >
 //{
 //    using Wrapper = UniqueEnd< _Type, ::Std::Shared::RelationTool >;
 //    using Holder = typename Wrapper::Holder;

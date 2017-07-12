@@ -1,5 +1,5 @@
 #pragma once
-#include <Helper/AccessHelper.h>
+#include <Helper/FeatureGuard.h>
 #include <Relation/ReferEnd.h>
 #include <Relation/SharedEnd.h>
 #include <Relation/UniqueEnd.h>
@@ -92,4 +92,4 @@ public:
  * Требуется вспомогательный объект Accessor.
  */
 //template < typename _Type >
-//struct AccessHelper< ReferEnd< _Type, ::Std::Shared::RelationTool > > {};
+//struct FeatureGuard< ReferEnd< _Type, ::Std::Shared::RelationTool > > {};
