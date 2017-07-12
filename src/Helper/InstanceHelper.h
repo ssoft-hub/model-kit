@@ -7,8 +7,9 @@
 // Предварительная декларация Instance
 template < typename _ValueType, typename _ValueTool > class Instance;
 
-// Базовый инструмент для размещения значения
+// Базовые инструменты для размещения значения
 namespace Cpp { namespace Inplace { struct InplaceTool; } }
+namespace Std { namespace Shared { struct ImplicitTool; } }
 
 /*!
  * Класс-помошник для вычисления типа обертки Instance для наделения
@@ -24,7 +25,14 @@ template < typename _ValueType >
 struct InstanceHelper
 {
     using DefaultTool = ::Cpp::Inplace::InplaceTool;
-    using type = Instance< _ValueType, DefaultTool >;
+    using ImplicitTool = ::Std::Shared::ImplicitTool;
+
+    using type = typename ::std::conditional<
+        ::std::is_trivially_copyable< _ValueType >::value
+            || !::std::is_copy_constructible< _ValueType >::value
+            || !::std::is_move_constructible< _ValueType >::value,
+        Instance< _ValueType, DefaultTool >,
+        Instance< _ValueType, ImplicitTool > >::type;
 };
 
 template < typename _ValueType, typename _ValueTool >
@@ -45,7 +53,6 @@ struct TraitChecker
 
 {
 };
-
 
 /*!
  * Класс выбирает тип Instance на основе сравнения свойств исходного и вложенного

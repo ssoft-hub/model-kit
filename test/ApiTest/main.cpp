@@ -4,15 +4,16 @@
 #include "BaseType.h"
 #include "DerivedType.h"
 
-//using ImplicitTool = ::Std::Shared::ImplicitTool;
+using ImplicitTool = ::Std::Shared::ImplicitTool;
 //using RelationTool = ::Std::Shared::RelationTool;
+using ValueTool = ::Cpp::Inplace::InplaceTool;
 
 struct Item
 {
+    using Int = int;
+    using String = ::std::string;
 
-////    using Int = int;
-////    using String = ::std::string;
-////    using StringRef = ::std::reference_wrapper< String >;
+    ////    using StringRef = ::std::reference_wrapper< String >;
 //    using Int = Implicit< int, ValueTool >;
 //    using String = Implicit< ::std::string, ValueTool >;
 //    using StringRef = String *;
@@ -20,26 +21,26 @@ struct Item
 ////    using String = UniqueEnd< ::std::string, RelationTool  >;
 ////    using StringRef = ReferEnd< ::std::string, RelationTool  >;
 
-//    Property< Int > m_int;
-//    Property< String > m_string;
+    Property< Int > m_int;
+    Property< String > m_string;
 //    Property< StringRef > m_string_refer;
 
-//    Item ()
-//    : m_int( Int() )
-//    , m_string( "" )
+    Item ()
+    : m_int( Int() )
+    , m_string( "" )
 //    , m_string_refer()
-//    {
-//    }
+    {
+    }
 
-//    Item ( const Item & other )
-//    : m_int( other.m_int )
-//    , m_string( other.m_string )
+    Item ( const Item & other )
+    : m_int( other.m_int )
+    , m_string( other.m_string )
 //    , m_string_refer()
-//    {
-//    }
+    {
+    }
 
-////    ReturnUpdate< StringRef > stringRefer ();
-////    ReturnRead< StringRef > stringRefer () const;
+//    ReturnUpdate< StringRef > stringRefer ();
+//    ReturnRead< StringRef > stringRefer () const;
 };
 
 //using ItemRawRefer = ReferEnd< Item, ::Cpp::Raw::RelationTool >;
@@ -71,90 +72,22 @@ struct Item
 //        << "OK" << ::std::endl;
 //}
 
-extern void testBaseDerived ();
 extern void testAllTool ();
+extern void testBaseDerived ();
+extern void testTrait ();
 
 int main ( int /*argc*/, char ** /*argv*/ )
 {
     testBaseDerived();
-    testAllTool ();
-
-
-    ::std::cout
-        << "IsCompatible< Variable< int >, Variable< int > >::value" << ::std::endl
-        << IsCompatible< Variable< int >, Variable< int > >::value << ::std::endl;
-    ::std::cout
-        << "IsCompatible< Variable< int >, Variable< double > >::value" << ::std::endl
-        << IsCompatible< Variable< int >, Variable< double > >::value << ::std::endl;
-    ::std::cout
-        << "IsCompatible< Variable< BaseType >, Variable< DerivedType > >::value" << ::std::endl
-        << IsCompatible< Variable< BaseType >, Variable< DerivedType > >::value << ::std::endl;
-    ::std::cout
-        << "IsCompatible< Variable< DerivedType >, Variable< BaseType > >::value" << ::std::endl
-        << IsCompatible< Variable< DerivedType >, Variable< BaseType > >::value << ::std::endl;
-
-
-    using FirstType = Instance< Instance< Instance< BaseType
-        , ::Std::Shared::ImplicitTool >
-        , ::Std::Unique::HeapTool >
-        , ::Std::Mutex::AtomicTool >;
-
-    using SecondType = Instance< Instance< Instance< DerivedType
-        , ::Std::Shared::ImplicitTool >
-        , ::Std::Unique::HeapTool >
-        , ::Std::Mutex::AtomicTool >;
-
-    ::std::cout
-        << "IsCompatible< FirstType, SecondType >::value" << ::std::endl
-        << IsCompatible< FirstType, SecondType >::value << ::std::endl;
-    ::std::cout
-        << "IsCompatible< SecondType, FirstType >::value" << ::std::endl
-        << IsCompatible< SecondType, FirstType >::value << ::std::endl;
-
-    using FirstPartType = Instance< BaseType, ::Std::Shared::ImplicitTool >;
-    using SecondPartType = Instance< DerivedType, ::Std::Shared::ImplicitTool >;
-
-    ::std::cout
-        << "IsPartOf< FirstPartType, FirstType >::value" << ::std::endl
-        << IsPartOf< FirstPartType, FirstType >::value << ::std::endl;
-    ::std::cout
-        << "IsPartOf< SecondPartType, FirstType >::value" << ::std::endl
-        << IsPartOf< SecondPartType, FirstType >::value << ::std::endl;
-    ::std::cout
-        << "IsPartOf< FirstPartType, SecondType >::value" << ::std::endl
-        << IsPartOf< FirstPartType, SecondType >::value << ::std::endl;
-    ::std::cout
-        << "IsPartOf< SecondPartType, SecondType >::value" << ::std::endl
-        << IsPartOf< SecondPartType, SecondType >::value << ::std::endl;
-    ::std::cout
-        << "IsPartOf< FirstType, FirstType >::value" << ::std::endl
-        << IsPartOf< FirstType, FirstType >::value << ::std::endl;
-    ::std::cout
-        << "IsPartOf< FirstType, SecondType >::value" << ::std::endl
-        << IsPartOf< FirstType, SecondType >::value << ::std::endl;
-    ::std::cout
-        << "IsPartOf< SecondType, FirstType >::value" << ::std::endl
-        << IsPartOf< SecondType, FirstType >::value << ::std::endl;
-    ::std::cout
-        << "IsPartOf< FirstPartType, SecondPartType >::value" << ::std::endl
-        << IsPartOf< FirstPartType, SecondPartType >::value << ::std::endl;
-
-
-    FirstType first_value;
-    FirstPartType first_part_value;
-
-    FirstType check_value( first_part_value );
-    FirstPartType check_part_value( first_value );
-
-
-
+    testAllTool();
+    testTrait();
 
 //    int int_value; // OK
-//    const int int_value; // ERROR
+//    const int int_value = 0; // ERROR
 
-//    Variable< int > int_value; // OK
-//    const Variable< int > int_value; // ERROR
-//    Variable< const int > int_value; // ERROR
+    Variable< int > int_value; // OK
+//    const Variable< int > int_value = 0; // ERROR
+//    Variable< const int > int_value = 0; // ERROR
 
 //    Variable< Instance< int, ImplicitTool > > int_value; // OK
 //    const Variable< Instance< int, ImplicitTool > > int_value; // ERROR
@@ -171,36 +104,35 @@ int main ( int /*argc*/, char ** /*argv*/ )
 //    Variable< const SharedEnd< int, ToolType >  > int_value; // OK
 //    Variable< SharedEnd< const int, ToolType > > int_value; // ERROR
 
+    vGet( int_value ) += 12345;
+    cGet( int_value );
 
-//    get< int >( int_value ) += 12345;
-//    cget< int >( int_value );
+    Variable< ::std::string > name;
+    vGet( name ) = "Hello";
 
-//    Variable< ::std::string > name;
-//    get< ::std::string >( name ) = "Hello";
+    Variable< Instance< Item, ValueTool >, ImplicitTool > item;
+    vGet( item ); // ОК
+    vGet( vGet( item ).m_int ) = 67890;
+    vGet( vGet( item ).m_string ) = "Item";
 
-//    Variable< Implicit< Item, ValueTool > > item;
-//    get< BaseItem >( item ); // ОК
-//    get< int >( get< Item >( item ).m_int ) = 67890;
-//    get< ::std::string >( get< Item >( item ).m_string ) = "Item";
+    ::std::cout
+        << cGet( int_value ) << ::std::endl
+        << cGet( name ) << ::std::endl
+        << cGet( cGet( item ).m_int ) << ::std::endl
+        << cGet( cGet( item ).m_string ) << ::std::endl
+    ;
 
-//    ::std::cout
-//        << cget< int >( int_value ) << ::std::endl
-//        << cget< ::std::string >( name ) << ::std::endl
-//        << cget< int >( cget< Item >( item ).m_int ) << ::std::endl
-//        << cget< ::std::string >( cget< Item >( item ).m_string ) << ::std::endl
-//    ;
+    Variable< Instance< Item, ValueTool >, ImplicitTool > other_item;// = item;
+//    vGet( other_item ).m_refer = cGet( item ).m_string;
 
-//    Variable< Implicit< Item, ValueTool > > other_item;// = item;
-////    get< Item >( other_item ).m_refer = cget< Item >( item ).m_string;
+    vGet( vGet( other_item ).m_int ) = 1;
+    vGet( vGet( other_item ).m_string ) = "Word";
 
-//    get< int >( get< Item >( other_item ).m_int ) = 1;
-//    get< ::std::string >( get< Item >( other_item ).m_string ) = "Word";
-
-//    ::std::cout
-//        << get< const int >( get< Item >( other_item ).m_int ) << ::std::endl
-//        << cget< ::std::string >( cget< Item >( other_item ).m_string ) << ::std::endl
-////        << cget< ::std::string >( cget< Item >( other_item ).m_string_refer ) << ::std::endl
-//    ;
+    ::std::cout
+        << cGet( vGet( other_item ).m_int ) << ::std::endl
+        << cGet( cGet( other_item ).m_string ) << ::std::endl
+//        << cGet( cGet( other_item ).m_string_refer ) << ::std::endl
+    ;
 
     return 0;
 }
