@@ -1,5 +1,5 @@
 #pragma once
-#include <memory>
+
 #include <Helper/FeatureGuard.h>
 
 namespace Cpp
@@ -27,7 +27,6 @@ namespace Cpp
                 {
                 }
             };
-
 
             template < typename _Type, typename ... _Arguments >
             static constexpr HolderType< _Type > makeHolder ( _Arguments && ... arguments )
@@ -109,18 +108,3 @@ namespace Cpp
         };
     }
 }
-
-#include <Helper/InstanceHelper.h>
-
-/*!
- * Специализация помошника для вычисления типа type для значений в виде
- * оберток Instance с размещением по месту с помощью инструмента ::Cpp::Inplace::InplaceTool.
- * Инструмент ::Cpp::Inplace::InplaceTool предназначен для предотвращения прямого
- * доступа к значениям.
- */
-template < typename _ValueType >
-struct InstanceHelper< Instance< _ValueType, ::Cpp::Inplace::InplaceTool > >
-{
-    using type = typename InstanceHelper< _ValueType >::type;
-};
-

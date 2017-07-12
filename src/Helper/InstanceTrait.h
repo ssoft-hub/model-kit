@@ -2,26 +2,22 @@
 #ifndef INSTANCE_TRAIT_H
 #define INSTANCE_TRAIT_H
 
-#include <type_traits>
+#include <Helper/ValueTrait.h>
 
 // Предварительная декларация Instance
 template < typename _ValueType, typename _ValueTool > class Instance;
 
 /*!
- * Класс для проверки совместимости типов.
- * По умолчанию, типы являются совместимыми, если типы одинаковые или
- * проверяемый тип _CheckType является производным от другого _OtherType.
+ * Специализация кдасса для проверки того, что значение является Instance.
  */
-template < typename _CheckType, typename _OtherType >
-struct IsCompatible
-    : public ::std::integral_constant< bool,
-        ::std::is_same< _CheckType, _OtherType >::value
-        || ::std::is_base_of< _OtherType, _CheckType >::value >
+template < typename _ValueType, typename _ValueTool >
+struct IsInstance< Instance< _ValueType, _ValueTool > >
+    : public ::std::true_type
 {
 };
 
 /*!
- * Специализация класса для проверки совместимости Instance.
+ * Специализация класса для проверки совместимости между Instance.
  * Типы являются совместимыми, если используются идентичные инструмент управления
  * значением Instance и вложенные типы также являются совместимыми.
  */
@@ -32,18 +28,7 @@ struct IsCompatible< Instance< _ThisType, _ValueTool >, Instance< _OtherType, _V
 };
 
 /*!
- * Класс для проверки вложенности одного типа в другой.
- * По умолчанию, нет никакой вложенности.
- */
-template < typename _ValueType, typename _ContainerType >
-struct IsPartOf
-    : public ::std::false_type
-{
-};
-
-/*!
  * Специализация проверки вложенности одного Instance в другой.
- * This
  */
 template < typename _ValueType, typename _ValueTool, typename _ContainerType, typename _ContainerTool >
 struct IsPartOf< Instance< _ValueType, _ValueTool >, Instance< _ContainerType, _ContainerTool > >
@@ -52,6 +37,5 @@ struct IsPartOf< Instance< _ValueType, _ValueTool >, Instance< _ContainerType, _
         || IsPartOf< Instance< _ValueType, _ValueTool >, _ContainerType >::value >
 {
 };
-
 
 #endif

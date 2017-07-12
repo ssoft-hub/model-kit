@@ -1,6 +1,8 @@
 #pragma once
+
+#include <Helper/FeatureGuard.h>
+#include <Helper/ValueTrait.h>
 #include <mutex>
-#include <iostream>
 
 namespace Std
 {
@@ -132,9 +134,6 @@ namespace Std
     }
 }
 
-#include <Helper/InstanceHelper.h>
-#include <Helper/ValueTrait.h>
-
 /*!
  * Специализация проверки свойства размещения значения в куче.
  */
@@ -142,20 +141,4 @@ template < typename _Value >
 struct IsAtomic< Instance< _Value, ::Std::Mutex::AtomicTool > >
     : public ::std::true_type
 {
-};
-
-/*!
- * Специализация помошника для вычисления типа type для значений в виде
- * оберток Instance с размещением в куче с помощью инструмента ::Std::Unique::HeapTool.
- *
- * Если оборачиваемое значений уже размещается в куче, то данный вид обертки игнорируется.
- */
-template < typename _ValueType >
-struct InstanceHelper< Instance< _ValueType, ::Std::Mutex::AtomicTool > >
-{
-
-    using type = typename ::std::conditional<
-        IsAtomic< _ValueType >::value,
-        typename InstanceHelper< _ValueType >::type,
-        Instance< _ValueType, ::Std::Mutex::AtomicTool > >::type;
 };

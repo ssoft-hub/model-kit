@@ -10,8 +10,8 @@
 //using Variable = _Type;
 
 #include "Helper/FeatureGuard.h"
-//#include "Helper/InstanceHelper.h"
-//#include "Helper/TypeHelper.h"
+#include "Helper/InstanceHelper.h"
+#include "Helper/ValueTrait.h"
 
 //#include "Relation/AggregationEnd.h"
 //#include "Relation/AssociationEnd.h"

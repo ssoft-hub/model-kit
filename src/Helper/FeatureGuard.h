@@ -2,7 +2,7 @@
 #ifndef ACCESS_HELPER_H
 #define ACCESS_HELPER_H
 
-#include <memory>
+#include <utility>
 
 template < typename _ReferType >
 class ValueProxy

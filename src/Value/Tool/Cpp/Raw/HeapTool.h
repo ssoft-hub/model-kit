@@ -1,5 +1,8 @@
 #pragma once
 
+#include <Helper/FeatureGuard.h>
+#include <Helper/ValueTrait.h>
+
 namespace Cpp
 {
     namespace Raw
@@ -94,9 +97,6 @@ namespace Cpp
     }
 }
 
-#include <Helper/InstanceHelper.h>
-#include <Helper/ValueTrait.h>
-
 /*!
  * Специализация проверки свойства размещения значения в куче.
  */
@@ -104,18 +104,4 @@ template < typename _Value >
 struct IsHeap< Instance< _Value, ::Cpp::Raw::HeapTool > >
     : public ::std::true_type
 {
-};
-
-/*!
- * Специализация помошника для вычисления типа type для значений в виде
- * оберток Instance с размещением в куче с помощью инструмента ::Cpp::Raw::HeapTool.
- *
- * Если оборачиваемое значений уже размещается в куче, то данный вид обертки игнорируется.
- */
-template < typename _ValueType >
-struct InstanceHelper< Instance< _ValueType, ::Cpp::Raw::HeapTool > >
-{
-    using type = typename ::std::conditional< IsHeap< _ValueType >::value,
-        typename InstanceHelper< _ValueType >::type,
-        Instance< _ValueType, ::Cpp::Raw::HeapTool > >::type;
 };

@@ -1,4 +1,7 @@
 #pragma once
+
+#include <Helper/FeatureGuard.h>
+#include <Helper/ValueTrait.h>
 #include <memory>
 
 namespace Std
@@ -95,9 +98,6 @@ namespace Std
     }
 }
 
-#include <Helper/InstanceHelper.h>
-#include <Helper/ValueTrait.h>
-
 /*!
  * Специализация проверки свойства размещения значения в куче.
  */
@@ -108,16 +108,10 @@ struct IsHeap< Instance< _Value, ::Std::Unique::HeapTool > >
 };
 
 /*!
- * Специализация помошника для вычисления типа type для значений в виде
- * оберток Instance с размещением в куче с помощью инструмента ::Std::Unique::HeapTool.
- *
- * Если оборачиваемое значений уже размещается в куче, то данный вид обертки игнорируется.
+ * Специализация проверки свойства опциональности.
  */
-template < typename _ValueType >
-struct InstanceHelper< Instance< _ValueType, ::Std::Unique::HeapTool > >
+template < typename _Value >
+struct IsOptional< Instance< _Value, ::Std::Unique::HeapTool > >
+    : public ::std::true_type
 {
-
-    using type = typename ::std::conditional< IsHeap< _ValueType >::value,
-        typename InstanceHelper< _ValueType >::type,
-        Instance< _ValueType, ::Std::Unique::HeapTool > >::type;
 };

@@ -1,4 +1,7 @@
 #pragma once
+
+#include <Helper/FeatureGuard.h>
+#include <Helper/ValueTrait.h>
 #include <memory>
 
 namespace Std
@@ -99,9 +102,6 @@ namespace Std
     }
 }
 
-#include <Helper/InstanceHelper.h>
-#include <Helper/ValueTrait.h>
-
 /*!
  * Специализация проверки свойства размещения значения в куче.
  */
@@ -121,24 +121,10 @@ struct IsImplicit< Instance< _Value, ::Std::Shared::ImplicitTool > >
 };
 
 /*!
- * Специализация проверки свойства размещения значения в куче.
+ * Специализация проверки свойства опциональности.
  */
 template < typename _Value >
 struct IsOptional< Instance< _Value, ::Std::Shared::ImplicitTool > >
     : public ::std::true_type
 {
-};
-
-/*!
- * Специализация помошника для вычисления типа type для неявно обобщенных значений в виде
- * оберток Instance с размещением в куче с помощью инструмента ::Std::Shared::ImplicitTool.
- *
- * Если оборачиваемое значений уже размещается в куче, то данный вид обертки игнорируется.
- */
-template < typename _ValueType >
-struct InstanceHelper< Instance< _ValueType, ::Std::Shared::ImplicitTool > >
-{
-    using type = typename ::std::conditional< IsImplicit< _ValueType >::value,
-        typename InstanceHelper< _ValueType >::type,
-        Instance< _ValueType, ::Std::Shared::ImplicitTool > >::type;
 };
