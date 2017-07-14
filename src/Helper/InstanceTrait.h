@@ -1,6 +1,4 @@
 #pragma once
-#ifndef INSTANCE_TRAIT_H
-#define INSTANCE_TRAIT_H
 
 #include <Helper/ValueTrait.h>
 
@@ -37,5 +35,3 @@ struct IsPartOf< Instance< _ValueType, _ValueTool >, Instance< _ContainerType, _
         || IsPartOf< Instance< _ValueType, _ValueTool >, _ContainerType >::value >
 {
 };
-
-#endif

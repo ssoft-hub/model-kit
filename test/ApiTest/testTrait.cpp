@@ -63,11 +63,11 @@ int testTrait ()
         << "IsPartOf< FirstPartType, SecondPartType >::value" << ::std::endl
         << IsPartOf< FirstPartType, SecondPartType >::value << ::std::endl;
 
-//    FirstType first_value;
-//    FirstPartType first_part_value;
+    FirstType first_value;
+    FirstPartType first_part_value;
 
-//    FirstType check_value( first_part_value );
-//    FirstPartType check_part_value( first_value );
+    FirstType check_value( first_part_value );
+    FirstPartType check_part_value( first_value );
 
     return 0;
 }

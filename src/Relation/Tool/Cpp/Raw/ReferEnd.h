@@ -40,4 +40,4 @@ public:
  * Требуется вспомогательный объект Accessor.
  */
 //template < typename _Type >
-//struct FeatureGuard< ReferEnd< _Type, ::Cpp::Raw::RelationTool > > {};
+//struct ValueGuard< ReferEnd< _Type, ::Cpp::Raw::RelationTool > > {};

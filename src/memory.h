@@ -9,7 +9,7 @@
 //template < typename _Type >
 //using Variable = _Type;
 
-#include "Helper/FeatureGuard.h"
+#include "Helper/ValueGuard.h"
 #include "Helper/InstanceHelper.h"
 #include "Helper/ValueTrait.h"
 

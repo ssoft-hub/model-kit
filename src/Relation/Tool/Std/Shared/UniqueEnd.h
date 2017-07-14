@@ -93,7 +93,7 @@ public:
  * то возвращаемый тип Type & для writable и readable доступа.
  */
 //template < typename _Type >
-//struct FeatureGuard< UniqueEnd< _Type, ::Std::Shared::RelationTool > >
+//struct ValueGuard< UniqueEnd< _Type, ::Std::Shared::RelationTool > >
 //{
 //    using Wrapper = UniqueEnd< _Type, ::Std::Shared::RelationTool >;
 //    using Holder = typename Wrapper::Holder;

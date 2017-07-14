@@ -1,6 +1,4 @@
 #pragma once
-#ifndef VALUE_TRAIT_H
-#define VALUE_TRAIT_H
 
 #include <type_traits>
 
@@ -84,5 +82,3 @@ struct IsPartOf
     : public ::std::false_type
 {
 };
-
-#endif

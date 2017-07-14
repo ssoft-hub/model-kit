@@ -1,41 +1,12 @@
 #pragma once
-#ifndef ACCESS_HELPER_H
-#define ACCESS_HELPER_H
 
+#include <Helper/ReferPointer.h>
 #include <utility>
 
-template < typename _ReferType >
-class ValueProxy
-{
-    using ThisType = ValueProxy< _ReferType >;
-
-public:
-    using ReferType = _ReferType;
-    using ValueType = typename ::std::remove_reference< ReferType >::type;
-
-private:
-    ReferType m_refer;
-
-public:
-    ValueProxy ( ReferType refer )
-    : m_refer( ::std::forward< ReferType >( refer ) )
-    {
-        static_assert( ::std::is_reference< ReferType >::value
-            , "The template parameter must be a reference." );
-    }
-
-    ValueProxy ( ThisType && other ) = default;
-    ValueProxy ( const ThisType & other ) = delete;
-
-    ReferType access () const
-    {
-        return ::std::forward< ReferType >( m_refer );
-    }
-};
-
 /*!
- * Шаблоный класс, специализация которого определяет правила доступа
- * к внутреннему значению обертки.
+ * Класс - защитник свойства значения.
+ * Предоставляет доступ к занчению посредством метода access().
+ * Специализация данного шаблона определеяет каким образом защищается значение.
  */
 template < typename _ReferType >
 class FeatureGuard
@@ -44,37 +15,48 @@ class FeatureGuard
 
 public:
     using ReferType = _ReferType;
-    using ValueType = typename ::std::remove_reference< ReferType >::type;
-    using ProxyType = ValueProxy< _ReferType >;
+    using ValuePointer = ReferPointer< ReferType >;
 
 private:
-    ProxyType m_proxy;
+    ValuePointer m_pointer;
 
 public:
-    FeatureGuard ( ReferType refer )
-    : m_proxy( ::std::forward< ReferType >( refer ) )
+    constexpr FeatureGuard ()
+    : m_pointer()
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
     }
 
-    FeatureGuard ( ThisType && other ) = default;
-    FeatureGuard ( const ThisType & other ) = delete;
-
-    constexpr ReferType value ()
+    FeatureGuard ( ReferType refer )
+    : m_pointer( ::std::forward< ReferType >( refer ) )
     {
-        return ::std::forward< ReferType >( m_proxy.access() );
+        static_assert( ::std::is_reference< ReferType >::value
+            , "The template parameter must be a reference." );
     }
 
-    constexpr ProxyType * operator -> ()
+    FeatureGuard ( ThisType && other )
+    : m_pointer( ::std::forward< ValuePointer >( other.m_pointer ) )
     {
-        return &m_proxy;
+        static_assert( ::std::is_reference< ReferType >::value
+            , "The template parameter must be a reference." );
+    }
+
+    bool operator ! () const
+    {
+        return !m_pointer;
+    }
+
+    ReferType access () const
+    {
+        assert( !!m_pointer );
+        return ::std::forward< ReferType >( *m_pointer );
     }
 };
 
+
 /*!
- * Методы формирования FeatureGuard для применения заданного к внутреннему
- * экземпляру значения свойства.
+ * Методы для формирования защитников текущего свойства значения.
  */
 template < typename _WrapperType >
 inline constexpr FeatureGuard< _WrapperType & > valueFeatureGuard ( _WrapperType & wrapper ) noexcept
@@ -107,16 +89,12 @@ inline constexpr FeatureGuard< _WrapperType && > mvalueFeatureGuard ( _WrapperTy
 }
 
 /*!
- * Методы доступа к экземпляру значения с применеием всех задекларированных свойств.
+ * Макросы, сокращающие запись при использовании защитников текущего свойства значения.
  */
-#define vGuard( value )  valueFeatureGuard( value )
-#define cGuard( value ) cvalueFeatureGuard( value )
-#define mGuard( value ) mvalueFeatureGuard( ::std::forward< decltype(value) >( value ) )
+#define vFGuard( value )  valueFeatureGuard( value )
+#define cFGuard( value ) cvalueFeatureGuard( value )
+#define mFGuard( value ) mvalueFeatureGuard( ::std::forward< decltype(value) >( value ) )
 
-#define gGet( value ) value->access()
-
-#define vGet( value ) gGet( vGuard( value ) )
-#define cGet( value ) gGet( cGuard( value ) )
-#define mGet( value ) gGet( mGuard( value ) )
-
-#endif
+#define vFGet( value ) vFGuard( value ).access()
+#define cFGet( value ) cFGuard( value ).access()
+#define mFGet( value ) mFGuard( value ).access()

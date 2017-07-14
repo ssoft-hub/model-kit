@@ -1,6 +1,4 @@
 #pragma once
-#ifndef INSTANCE_HELPER_H
-#define INSTANCE_HELPER_H
 
 #include <Helper/ValueTrait.h>
 
@@ -77,5 +75,3 @@ struct InstanceHelper< Instance< Instance< _ValueType, _ValueTool >, _RequaredTo
             >::type
         >::type;
 };
-
-#endif

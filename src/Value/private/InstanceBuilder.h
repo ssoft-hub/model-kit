@@ -1,8 +1,6 @@
 #pragma once
-#ifndef INSTANCE_BUILDER_H
-#define INSTANCE_BUILDER_H
 
-#include <Helper/FeatureGuard.h>
+#include <Helper/ValueGuard.h>
 #include <Helper/InstanceTrait.h>
 
 enum InstanceBuildSwitchType
@@ -86,14 +84,14 @@ struct InstanceBuildSwither< CompatibleInstanceBuild >
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
     static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( const Instance< _OtherType, _OtherTool > & other )
     {
-        return _ThisTool:: template copyHolder< _ThisType >( cGuard( other ).value().m_holder );
+        return _ThisTool:: template copyHolder< _ThisType >( cFGet( other ).m_holder );
     }
 
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
     static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( Instance< _OtherType, _OtherTool > && other )
     {
         return _ThisTool:: template moveHolder< _ThisType >(
-            ::std::forward< typename Instance< _OtherType, _OtherTool >::HolderType >( mGuard( other ).value().m_holder ) );
+            ::std::forward< typename Instance< _OtherType, _OtherTool >::HolderType >( mFGet( other ).m_holder ) );
     }
 };
 
@@ -116,7 +114,7 @@ struct InstanceBuildSwither< ThisPartOfOtherInstanceBuild >
         using _SubValueTool = typename Subtype::ValueTool;
         return  InstanceBuildSwither< InstanceBuildTypeDefiner< _ThisType, _ThisTool, _SubValueType, _SubValueTool >::value >
             :: template construct< _ThisType, _ThisTool, _SubValueType, _SubValueTool >(
-                _OtherTool:: template readableValueGuard< _OtherType >( cGuard( other ).value().m_holder ).value() );
+                _OtherTool:: template featureGuard< _OtherType >( cFGet( other ).m_holder ).access() );
     }
 
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
@@ -128,7 +126,7 @@ struct InstanceBuildSwither< ThisPartOfOtherInstanceBuild >
         using OtherHolderType = typename Instance< _OtherType, _OtherTool >::HolderType;
         return  InstanceBuildSwither< InstanceBuildTypeDefiner< _ThisType, _ThisTool, SubValueType, SubValueTool >::value >
             :: template construct< _ThisType, _ThisTool, SubValueType, SubValueTool >( ::std::forward< Subtype >(
-                _OtherTool:: template movableValueGuard< _OtherType >( ::std::forward< OtherHolderType >( mGuard( other ).value().m_holder ) ).value() ) );
+                _OtherTool:: template featureGuard< _OtherType >( ::std::forward< OtherHolderType >( mFGet( other ).m_holder ) ).access() ) );
     }
 };
 
@@ -174,5 +172,3 @@ struct InstanceBuilder
             :: template construct< _ThisType, _ThisTool, _OtherType, _OtherTool >( ::std::forward< Instance< _OtherType, _OtherTool > >( other ) );
     }
 };
-
-#endif

@@ -16,10 +16,10 @@ using HeapString = Instance< ::std::string, ValueTool >;
 
 void printBase ( const BaseType & base_value )
 {
-    std::cout
+    ::std::cout
         << "Base: "
         << cGet( cGet( base_value ).m_int ) << " "
-        << cGet( cGet( base_value ).m_string ) << std::endl;
+        << cGet( cGet( base_value ).m_string ) << ::std::endl;
 }
 
 void testBase ()
@@ -59,10 +59,10 @@ void testBaseSetting ()
 void printDerived ( const DerivedType & derived_value )
 {
     printBase( derived_value );
-    std::cout
+    ::std::cout
         << "Derived: "
         << cGet( cGet( derived_value ).m_int ) << " "
-        << cGet( cGet( derived_value ).m_string ) << std::endl;
+        << cGet( cGet( derived_value ).m_string ) << ::std::endl;
 }
 
 void testDerived ()
@@ -113,7 +113,7 @@ void testBaseDerivedSetting ()
     base_value = derived_value; // OK
     printBase( cGet( base_value ) );
 
-    //Variable< DerivedType > other_derived_value = base_value; //ERROR
+//    Variable< DerivedType > other_derived_value = base_value; //ERROR
 }
 
 void testBaseDerived ()

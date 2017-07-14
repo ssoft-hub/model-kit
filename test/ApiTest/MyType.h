@@ -13,6 +13,7 @@ struct MyType
     MyType () = default;
     MyType ( MyType && ) = default;
     MyType ( const MyType & ) = default;
+    ~MyType () = default;
 
     MyType & operator = ( MyType && other )
     {

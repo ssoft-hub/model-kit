@@ -78,8 +78,8 @@ extern void testTrait ();
 
 int main ( int /*argc*/, char ** /*argv*/ )
 {
-    testBaseDerived();
-    testAllTool();
+//    testBaseDerived();
+//    testAllTool();
     testTrait();
 
 //    int int_value; // OK
