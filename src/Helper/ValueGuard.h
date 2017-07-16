@@ -67,45 +67,37 @@ public:
  * при осущесвлении доступа к внутреннему экземпляру значения.
  */
 template < typename _WrapperType >
-inline constexpr ValueGuard< _WrapperType & > valueValueGuard ( _WrapperType & wrapper ) noexcept
+inline constexpr ValueGuard< _WrapperType & > valueGuard ( _WrapperType & wrapper ) noexcept
 {
     return ValueGuard< _WrapperType & >( wrapper );
 }
 
 template < typename _WrapperType >
-inline constexpr ValueGuard< const _WrapperType & > valueValueGuard ( const _WrapperType & wrapper ) noexcept
+inline constexpr ValueGuard< const _WrapperType & > valueGuard ( const _WrapperType & wrapper ) noexcept
 {
     return ValueGuard< const _WrapperType & >( wrapper );
 }
 
 template < typename _WrapperType >
-inline constexpr ValueGuard< _WrapperType && > valueValueGuard ( _WrapperType && wrapper ) noexcept
+inline constexpr ValueGuard< _WrapperType && > valueGuard ( _WrapperType && wrapper ) noexcept
 {
     return ValueGuard< _WrapperType && >( ::std::forward< _WrapperType >( wrapper ) );
 }
 
 template < typename _WrapperType >
-inline constexpr ValueGuard< const _WrapperType & > cvalueValueGuard ( const _WrapperType & wrapper ) noexcept
+inline constexpr ValueGuard< const _WrapperType & > cvalueGuard ( const _WrapperType & wrapper ) noexcept
 {
     return ValueGuard< const _WrapperType & >( wrapper );
-}
-
-template < typename _WrapperType >
-inline constexpr ValueGuard< _WrapperType && > mvalueValueGuard ( _WrapperType && wrapper ) noexcept
-{
-    return ValueGuard< _WrapperType && >( ::std::forward< _WrapperType >( wrapper ) );
 }
 
 /*!
  * Макросы, сокращающие запись при использовании защитников для доступа к внутреннему
  * экземпляру значения.
  */
-#define vGuard( value )  valueValueGuard( value )
-#define cGuard( value ) cvalueValueGuard( value )
-#define mGuard( value ) mvalueValueGuard( ::std::forward< decltype(value) >( value ) )
+#define vGuard( value )  valueGuard( value )
+#define cGuard( value ) cvalueGuard( value )
 
 #define gGet( value ) value->access()
 
 #define vGet( value ) gGet( vGuard( value ) )
 #define cGet( value ) gGet( cGuard( value ) )
-#define mGet( value ) gGet( mGuard( value ) )

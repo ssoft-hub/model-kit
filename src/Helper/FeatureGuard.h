@@ -59,42 +59,34 @@ public:
  * Методы для формирования защитников текущего свойства значения.
  */
 template < typename _WrapperType >
-inline constexpr FeatureGuard< _WrapperType & > valueFeatureGuard ( _WrapperType & wrapper ) noexcept
+inline constexpr FeatureGuard< _WrapperType & > featureGuard ( _WrapperType & wrapper ) noexcept
 {
     return FeatureGuard< _WrapperType & >( wrapper );
 }
 
 template < typename _WrapperType >
-inline constexpr FeatureGuard< const _WrapperType & > valueFeatureGuard ( const _WrapperType & wrapper ) noexcept
+inline constexpr FeatureGuard< const _WrapperType & > featureGuard ( const _WrapperType & wrapper ) noexcept
 {
     return FeatureGuard< const _WrapperType & >( wrapper );
 }
 
 template < typename _WrapperType >
-inline constexpr FeatureGuard< _WrapperType && > valueFeatureGuard ( _WrapperType && wrapper ) noexcept
+inline constexpr FeatureGuard< _WrapperType && > featureGuard ( _WrapperType && wrapper ) noexcept
 {
     return FeatureGuard< _WrapperType && >( ::std::forward< _WrapperType >( wrapper ) );
 }
 
 template < typename _WrapperType >
-inline constexpr FeatureGuard< const _WrapperType & > cvalueFeatureGuard ( const _WrapperType & wrapper ) noexcept
+inline constexpr FeatureGuard< const _WrapperType & > cfeatureGuard ( const _WrapperType & wrapper ) noexcept
 {
     return FeatureGuard< const _WrapperType & >( wrapper );
-}
-
-template < typename _WrapperType >
-inline constexpr FeatureGuard< _WrapperType && > mvalueFeatureGuard ( _WrapperType && wrapper ) noexcept
-{
-    return FeatureGuard< _WrapperType && >( ::std::forward< _WrapperType >( wrapper ) );
 }
 
 /*!
  * Макросы, сокращающие запись при использовании защитников текущего свойства значения.
  */
-#define vFGuard( value )  valueFeatureGuard( value )
-#define cFGuard( value ) cvalueFeatureGuard( value )
-#define mFGuard( value ) mvalueFeatureGuard( ::std::forward< decltype(value) >( value ) )
+#define vFGuard( value )  featureGuard( value )
+#define cFGuard( value ) cfeatureGuard( value )
 
 #define vFGet( value ) vFGuard( value ).access()
 #define cFGet( value ) cFGuard( value ).access()
-#define mFGet( value ) mFGuard( value ).access()

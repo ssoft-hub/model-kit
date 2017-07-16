@@ -65,7 +65,8 @@ struct InstanceBuildSwither
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
     static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( Instance< _OtherType, _OtherTool > && other )
     {
-        return _ThisTool:: template makeHolder< _ThisType >( mGet( other ) );
+        return _ThisTool:: template makeHolder< _ThisType >(
+            valueGuard( ::std::forward< Instance< _OtherType, _OtherTool > >( other ) )->access() );
     }
 };
 
@@ -90,8 +91,10 @@ struct InstanceBuildSwither< CompatibleInstanceBuild >
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
     static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( Instance< _OtherType, _OtherTool > && other )
     {
+        using OtherInstanceType = Instance< _OtherType, _OtherTool >;
         return _ThisTool:: template moveHolder< _ThisType >(
-            ::std::forward< typename Instance< _OtherType, _OtherTool >::HolderType >( mFGet( other ).m_holder ) );
+            ::std::forward< typename OtherInstanceType::HolderType >( featureGuard(
+                ::std::forward< OtherInstanceType >( other ) ).access().m_holder ) );
     }
 };
 
@@ -123,10 +126,12 @@ struct InstanceBuildSwither< ThisPartOfOtherInstanceBuild >
         using Subtype = _OtherType;
         using SubValueType = typename Subtype::ValueType;
         using SubValueTool = typename Subtype::ValueTool;
-        using OtherHolderType = typename Instance< _OtherType, _OtherTool >::HolderType;
+        using OtherInstanceType = Instance< _OtherType, _OtherTool >;
+        using OtherHolderType = typename OtherInstanceType::HolderType;
         return  InstanceBuildSwither< InstanceBuildTypeDefiner< _ThisType, _ThisTool, SubValueType, SubValueTool >::value >
             :: template construct< _ThisType, _ThisTool, SubValueType, SubValueTool >( ::std::forward< Subtype >(
-                _OtherTool:: template featureGuard< _OtherType >( ::std::forward< OtherHolderType >( mFGet( other ).m_holder ) ).access() ) );
+                _OtherTool:: template featureGuard< _OtherType >( ::std::forward< OtherHolderType >( featureGuard(
+                    ::std::forward< OtherInstanceType >( other ) ).access().m_holder ) ).access() ) );
     }
 };
 
