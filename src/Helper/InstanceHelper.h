@@ -39,15 +39,15 @@ struct InstanceHelper< Instance< _ValueType, _ValueTool > >
     using type = Instance< _ValueType, _ValueTool >;
 };
 
-// true, если _CheckType полностью покрывает свойства _OtherType
-template < typename _CheckType, typename _OtherType >
+// true, если _TestType полностью покрывает свойства _OtherType
+template < typename _TestType, typename _OtherType >
 struct TraitChecker
     : ::std::integral_constant< bool,
-        ( !IsInstance< _OtherType >::value || ( IsInstance< _OtherType >::value && IsInstance< _CheckType >::value ) )
-        && ( !IsHeap< _OtherType >::value || ( IsHeap< _OtherType >::value && IsHeap< _CheckType >::value ) )
-        && ( !IsOptional< _OtherType >::value || ( IsOptional< _OtherType >::value && IsOptional< _CheckType >::value ) )
-        && ( !IsImplicit< _OtherType >::value || ( IsImplicit< _OtherType >::value && IsImplicit< _CheckType >::value ) )
-        && ( !IsAtomic< _OtherType >::value || ( IsAtomic< _OtherType >::value && IsAtomic< _CheckType >::value ) ) >
+        ( !IsInstance< _OtherType >::value || ( IsInstance< _OtherType >::value && IsInstance< _TestType >::value ) )
+        && ( !IsHeap< _OtherType >::value || ( IsHeap< _OtherType >::value && IsHeap< _TestType >::value ) )
+        && ( !IsOptional< _OtherType >::value || ( IsOptional< _OtherType >::value && IsOptional< _TestType >::value ) )
+        && ( !IsImplicit< _OtherType >::value || ( IsImplicit< _OtherType >::value && IsImplicit< _TestType >::value ) )
+        && ( !IsAtomic< _OtherType >::value || ( IsAtomic< _OtherType >::value && IsAtomic< _TestType >::value ) ) >
 
 {
 };

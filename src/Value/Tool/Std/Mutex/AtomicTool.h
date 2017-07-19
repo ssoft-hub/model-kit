@@ -72,63 +72,43 @@ namespace Std
             }
 
             template < typename _Type >
-            static constexpr void destroyHolder ( HolderType< _Type > & /*holder*/ )
+            static constexpr void destroyHolder ( HolderType< _Type > & )
             {
                 // nothing to do
             }
 
-//            template < typename _Type >
-//            static constexpr void guardHolder ( HolderType< _Type > & holder )
-//            {
-//                holder.m_lock.lock();
-//            }
-
-//            template < typename _Type >
-//            static constexpr void unguardHolder ( HolderType< _Type > & holder )
-//            {
-//                holder.m_lock.unlock();
-//            }
-
             template < typename _Type >
+            //static constexpr void guardHolder ( HolderType< _Type > & )
+            //static constexpr void guardHolder ( HolderType< _Type > && )
             static constexpr void guardHolder ( const HolderType< _Type > & holder )
             {
                 holder.m_lock.lock();
             }
 
             template < typename _Type >
+            //static constexpr void unguardHolder ( HolderType< _Type > & )
+            //static constexpr void unguardHolder ( HolderType< _Type > && )
             static constexpr void unguardHolder ( const HolderType< _Type > & holder )
             {
                 holder.m_lock.unlock();
             }
 
-//            template < typename _Type >
-//            static constexpr void guardHolder ( HolderType< _Type > && holder )
-//            {
-//                holder.m_lock.lock();
-//            }
-
-//            template < typename _Type >
-//            static constexpr void unguardHolder ( HolderType< _Type > && holder )
-//            {
-//                holder.m_lock.unlock();
-//            }
-
             template < typename _Type >
-            static constexpr FeatureGuard< _Type & > featureGuard ( HolderType< _Type > & holder )
+            static constexpr _Type & value ( HolderType< _Type > & holder )
             {
-                return FeatureGuard< _Type & >( holder.m_value );
+                return holder.m_value;
             }
 
             template < typename _Type >
-            static constexpr FeatureGuard< const _Type & > featureGuard ( const HolderType< _Type > & holder )
+            static constexpr const _Type & value ( const HolderType< _Type > & holder )
             {
-                return FeatureGuard< const _Type & >( holder.m_value );
+                return holder.m_value;
             }
 
             template < typename _Type >
-            static constexpr FeatureGuard< _Type && > featureGuard ( HolderType< _Type > && holder )
+            static constexpr _Type && value ( HolderType< _Type > && holder )
             {
-                return FeatureGuard< _Type && >( ::std::forward< _Type >( holder.m_value ) );
+                return ::std::forward< _Type >( holder.m_value );
             }
         };
     }

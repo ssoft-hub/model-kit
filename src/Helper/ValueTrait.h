@@ -63,13 +63,13 @@ struct IsInstance
 /*!
  * Класс для проверки совместимости типов.
  * По умолчанию, типы являются совместимыми, если типы одинаковые или
- * проверяемый тип _CheckType является производным от другого _OtherType.
+ * проверяемый тип _TestType является производным от другого _OtherType.
  */
-template < typename _CheckType, typename _OtherType >
+template < typename _TestType, typename _OtherType >
 struct IsCompatible
     : public ::std::integral_constant< bool,
-        ::std::is_same< _CheckType, _OtherType >::value
-        || ::std::is_base_of< _OtherType, _CheckType >::value >
+        ::std::is_same< _TestType, _OtherType >::value
+        || ::std::is_base_of< _TestType, _OtherType >::value >
 {
 };
 

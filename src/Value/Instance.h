@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Helper/InitializeFlag.h>
 #include "private/InstanceBuilder.h"
 #include "private/InstanceGuard.h"
 
@@ -30,8 +31,6 @@ public:
     using ValueTool = _ValueTool;
     using HolderType = typename ValueTool:: template HolderType< _ValueType >;
 
-    enum InitializeFlag { NotInitialized };
-
 private:
     HolderType m_holder;
 
@@ -45,8 +44,8 @@ public:
     //! Конструктор инициализации значения по заданным параметрам
     template < typename ... _Arguments >
     constexpr Instance ( _Arguments && ... arguments )
-    : m_holder( ValueTool:: template makeHolder< ValueType >(
-        ::std::forward< _Arguments >( arguments ) ... ) )
+    : m_holder( InstanceBuilder< _ValueType, _ValueTool, _Arguments ... >
+        ::construct( ::std::forward< _Arguments >( arguments ) ... ) )
     {
     }
 
@@ -54,7 +53,7 @@ public:
     ThisType & operator = ( _Type & other )
     {
         vFGet( *this ).m_holder
-            = ValueTool::template makeHolder< ValueType >( other );
+            =  InstanceBuilder< _ValueType, _ValueTool, _Type >::construct( other ) ;
         return *this;
 
     }
@@ -63,7 +62,8 @@ public:
     ThisType & operator = ( _Type && other )
     {
         vFGet( *this ).m_holder
-            = ValueTool::template makeHolder< ValueType >( ::std::forward< _Type >( other ) );
+            = InstanceBuilder< _ValueType, _ValueTool, _Type >
+                ::construct( ::std::forward< _Type >( other ) );
         return *this;
 
     }
@@ -72,25 +72,24 @@ public:
     ThisType & operator = ( const _Type & other )
     {
         vFGet( *this ).m_holder
-            = ValueTool::template makeHolder< ValueType >( other );
+            =  InstanceBuilder< _ValueType, _ValueTool, const _Type & >::construct( other ) ;
         return *this;
-
     }
 
     constexpr Instance ( ThisType & other )
-    : m_holder( InstanceBuilder< _ValueType, _ValueTool, _ValueType, _ValueTool >::construct( other ) )
+    : m_holder( InstanceBuilder< _ValueType, _ValueTool, ThisType >::construct( other ) )
     {
     }
 
     ThisType & operator = ( ThisType & other )
     {
         vFGet( *this ).m_holder
-            =  InstanceBuilder< _ValueType, _ValueTool, _ValueType, _ValueTool >::construct( other ) ;
+            =  InstanceBuilder< _ValueType, _ValueTool, ThisType >::construct( other ) ;
         return *this;
     }
 
     constexpr Instance ( ThisType && other )
-    : m_holder( InstanceBuilder< _ValueType, _ValueTool, _ValueType, _ValueTool >::construct(
+    : m_holder( InstanceBuilder< _ValueType, _ValueTool, ThisType >::construct(
         ::std::forward< ThisType >( other ) ) )
     {
     }
@@ -98,26 +97,26 @@ public:
     ThisType & operator = ( ThisType && other )
     {
         vFGet( *this ).m_holder
-            =  InstanceBuilder< _ValueType, _ValueTool, _ValueType, _ValueTool >::construct(
+            =  InstanceBuilder< _ValueType, _ValueTool, ThisType >::construct(
                 ::std::forward< ThisType >( other ) );
         return *this;
     }
 
     constexpr Instance ( const ThisType & other )
-    : m_holder( InstanceBuilder< _ValueType, _ValueTool, _ValueType, _ValueTool >::construct( other ) )
+    : m_holder( InstanceBuilder< _ValueType, _ValueTool, ThisType >::construct( other ) )
     {
     }
 
     ThisType & operator = ( const ThisType & other )
     {
         vFGet( *this ).m_holder
-            =  InstanceBuilder< _ValueType, _ValueTool, _ValueType, _ValueTool >::construct( other ) ;
+            =  InstanceBuilder< _ValueType, _ValueTool, ThisType >::construct( other ) ;
         return *this;
     }
 
     template < typename _OtherType, typename _OtherTool >
     constexpr Instance ( Instance< _OtherType, _OtherTool > & other )
-    : m_holder( InstanceBuilder< _ValueType, _ValueTool, _OtherType, _OtherTool >::construct( other ) )
+    : m_holder( InstanceBuilder< _ValueType, _ValueTool, Instance< _OtherType, _OtherTool > >::construct( other ) )
     {
     }
 
@@ -125,13 +124,13 @@ public:
     ThisType & operator = ( Instance< _OtherType, _OtherTool > & other )
     {
         vFGet( *this ).m_holder
-            = InstanceBuilder< _ValueType, _ValueTool, _OtherType, _OtherTool >::construct( other );
+            = InstanceBuilder< _ValueType, _ValueTool, Instance< _OtherType, _OtherTool > >::construct( other );
         return *this;
     }
 
     template < typename _OtherType, typename _OtherTool >
     constexpr Instance ( Instance< _OtherType, _OtherTool > && other )
-    : m_holder( InstanceBuilder< _ValueType, _ValueTool, _OtherType, _OtherTool >::construct(
+    : m_holder( InstanceBuilder< _ValueType, _ValueTool, Instance< _OtherType, _OtherTool > >::construct(
         ::std::forward< Instance< _OtherType, _OtherTool > >( other ) ) )
     {
     }
@@ -140,14 +139,14 @@ public:
     ThisType & operator = ( Instance< _OtherType, _OtherTool > && other )
     {
         vFGet( *this ).m_holder
-            = InstanceBuilder< _ValueType, _ValueTool, _OtherType, _OtherTool >::construct(
+            = InstanceBuilder< _ValueType, _ValueTool, Instance< _OtherType, _OtherTool > >::construct(
                 ::std::forward< Instance< _OtherType, _OtherTool > >( other ) );
         return *this;
     }
 
     template < typename _OtherType, typename _OtherTool >
     constexpr Instance ( const Instance< _OtherType, _OtherTool > & other )
-    : m_holder( InstanceBuilder< _ValueType, _ValueTool, _OtherType, _OtherTool >::construct( other ) )
+    : m_holder( InstanceBuilder< _ValueType, _ValueTool, Instance< _OtherType, _OtherTool > >::construct( other ) )
     {
     }
 
@@ -155,7 +154,7 @@ public:
     ThisType & operator = ( const Instance< _OtherType, _OtherTool > & other )
     {
         vFGet( *this ).m_holder
-            = InstanceBuilder< _ValueType, _ValueTool, _OtherType, _OtherTool >::construct( other );
+            = InstanceBuilder< _ValueType, _ValueTool, Instance< _OtherType, _OtherTool > >::construct( other );
         return *this;
     }
 

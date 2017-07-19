@@ -224,7 +224,7 @@ public:
 
     ValueGuard ( ReferType refer )
     : m_guard( ::std::forward< ReferType >( refer ) )
-    , m_next_guard( ValueTool::featureGuard( m_guard.access().m_holder ) )
+    , m_next_guard( featureGuard( ValueTool::value( m_guard.access().m_holder ) ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
@@ -232,7 +232,7 @@ public:
 
     ValueGuard ( GuardType && other )
     : m_guard( ::std::forward< GuardType >( other ) )
-    , m_next_guard( ValueTool::featureGuard( m_guard.access().m_holder ) )
+    , m_next_guard( featureGuard( ValueTool::value( m_guard.access().m_holder ) ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
@@ -249,7 +249,7 @@ public:
     ~ValueGuard ()
     {
         if ( !!m_guard )
-            ValueTool::featureGuard( m_guard.access().m_holder );
+            featureGuard( ValueTool::value( m_guard.access().m_holder ) );
     }
 
     constexpr bool operator ! () const
@@ -296,7 +296,7 @@ public:
 
     ValueGuard ( ReferType refer )
     : m_guard( ::std::forward< ReferType >( refer ) )
-    , m_next_guard( ValueTool::featureGuard( m_guard.access().m_holder ) )
+    , m_next_guard( featureGuard( ValueTool::value( m_guard.access().m_holder ) ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
@@ -304,7 +304,7 @@ public:
 
     ValueGuard ( GuardType && other )
     : m_guard( ::std::forward< GuardType >( other ) )
-    , m_next_guard( ValueTool::featureGuard( m_guard.access().m_holder ) )
+    , m_next_guard( featureGuard( ValueTool::value( m_guard.access().m_holder ) ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
@@ -321,7 +321,7 @@ public:
     ~ValueGuard ()
     {
         if ( !!m_guard )
-            ValueTool::featureGuard( m_guard.access().m_holder );
+            featureGuard( ValueTool::value( m_guard.access().m_holder ) );
     }
 
     constexpr bool operator ! () const
@@ -368,7 +368,8 @@ public:
 
     ValueGuard ( ReferType refer )
     : m_guard( ::std::forward< ReferType >( refer ) )
-    , m_next_guard( ValueTool::featureGuard( m_guard.access().m_holder ) )
+    , m_next_guard( featureGuard( ValueTool::value(
+        ::std::forward< HolderType >( m_guard.access().m_holder ) ) ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
@@ -376,7 +377,8 @@ public:
 
     ValueGuard ( GuardType && other )
     : m_guard( ::std::forward< GuardType >( other ) )
-    , m_next_guard( ValueTool::featureGuard( m_guard.access().m_holder ) )
+    , m_next_guard( featureGuard( ValueTool::value(
+        ::std::forward< HolderType >( m_guard.access().m_holder ) ) ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
@@ -393,7 +395,8 @@ public:
     ~ValueGuard ()
     {
         if ( !!m_guard )
-            ValueTool::featureGuard( m_guard.access().m_holder );
+            featureGuard( ValueTool::value(
+                ::std::forward< HolderType >( m_guard.access().m_holder ) ) );
     }
 
     constexpr bool operator ! () const

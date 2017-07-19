@@ -15,9 +15,9 @@
 
 //#include "Relation/AggregationEnd.h"
 //#include "Relation/AssociationEnd.h"
-//#include "Relation/ReferEnd.h"
-//#include "Relation/SharedEnd.h"
-//#include "Relation/UniqueEnd.h"
+#include "Relation/ReferEnd.h"
+#include "Relation/SharedEnd.h"
+#include "Relation/UniqueEnd.h"
 
 //#include "Relation/Tool/Cpp/Raw/ReferEnd.h"
 //#include "Relation/Tool/Std/Shared/ReferEnd.h"

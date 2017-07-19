@@ -12,32 +12,28 @@ struct Item
 {
     using Int = int;
     using String = ::std::string;
-
-    ////    using StringRef = ::std::reference_wrapper< String >;
-//    using Int = Implicit< int, ValueTool >;
-//    using String = Implicit< ::std::string, ValueTool >;
-//    using StringRef = String *;
-////    using Int = UniqueEnd< int, RelationTool >;
-////    using String = UniqueEnd< ::std::string, RelationTool  >;
-////    using StringRef = ReferEnd< ::std::string, RelationTool  >;
+//    using StringRef = ::std::reference_wrapper< String >;
+//    using Int = SharedEnd< int, RelationTool >;
+//    using String = UniqueEnd< ::std::string, RelationTool  >;
+//    using StringRef = ReferEnd< ::std::string, RelationTool  >;
 
     Property< Int > m_int;
     Property< String > m_string;
 //    Property< StringRef > m_string_refer;
 
-    Item ()
-    : m_int( Int() )
-    , m_string( "" )
-//    , m_string_refer()
-    {
-    }
+//    Item ()
+//    : m_int() // создано значение
+//    , m_string() // создано значение
+//    , m_string_refer() // ничего не создано
+//    {
+//    }
 
-    Item ( const Item & other )
-    : m_int( other.m_int )
-    , m_string( other.m_string )
-//    , m_string_refer()
-    {
-    }
+//    Item ( const Item & other )
+//    : m_int( other.m_int ) // копирование
+//    , m_string( other.m_string ) // копирование
+//    , m_string_refer() // копирование
+//    {
+//    }
 
 //    ReturnUpdate< StringRef > stringRefer ();
 //    ReturnRead< StringRef > stringRefer () const;
@@ -75,12 +71,30 @@ struct Item
 extern void testAllTool ();
 extern void testBaseDerived ();
 extern void testTrait ();
+extern void testRelation ();
+
+void testRelation ()
+{
+    // Значения определенного типа
+//    using UniqueInt = UniqueEnd< int, ::Cpp::Inplace::InplaceTool >;
+//    using SharedInt = SharedEnd< int, ::Cpp::Inplace::InplaceTool >;
+    using UniqueInt = Instance< int, ::Cpp::Inplace::InplaceTool >;
+    using SharedInt = Instance< int, ::Cpp::Inplace::InplaceTool >;
+
+    Variable< UniqueInt > unique_int;
+    Variable< SharedInt > shared_int;
+
+    shared_int = unique_int; // равенство на уровне внутренних значений.
+
+}
 
 int main ( int /*argc*/, char ** /*argv*/ )
 {
-//    testBaseDerived();
-//    testAllTool();
+    testBaseDerived();
+    testAllTool();
     testTrait();
+    testRelation();
+
 
 //    int int_value; // OK
 //    const int int_value = 0; // ERROR
