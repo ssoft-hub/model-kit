@@ -74,51 +74,80 @@ extern void testTrait ();
 extern void testRelation ();
 
 template < typename _Type >
-void foo ( const _Type & ) {}
+void foo ( const _Type & ) { ::std::cout << std::endl; }
+
+template < typename _Type >
+void overloaded( _Type const & ) { ::std::cout << "by lvalue" << std::endl; }
+
+template < typename _Type >
+void overloaded( _Type && ) { ::std::cout << "by rvalue" << std::endl; }
+
+struct TestType
+{
+    ::std::string m_string;
+
+
+    TestType () : m_string() { ::std::cout << "construct default" << ::std::endl; }
+    TestType ( ::std::string && other ) : m_string( other ) { ::std::cout << "construct from string && "; overloaded( other ); }
+    TestType ( const ::std::string & other ) : m_string( other ) { ::std::cout << "construct from string & "; overloaded( other ); }
+
+    TestType & operator = ( ::std::string && other ) { ::std::cout << "operate from string && "; overloaded( other ); return *this; }
+    TestType & operator = ( const ::std::string & other ) { ::std::cout << "operate from string & "; overloaded( other ); return *this; }
+
+    TestType & operator = ( TestType && other ) { ::std::cout << "operate from TestType && "; overloaded( other ); return *this; }
+    TestType & operator = ( const TestType & other ) { ::std::cout << "operate from TestType & "; overloaded( other ); return *this; }
+
+    TestType ( TestType && other ) : m_string( ::std::forward< ::std::string >( other.m_string ) ) { ::std::cout << "construct from TestType && "; overloaded( other ); }
+    TestType ( const TestType & other ) : m_string( ::std::forward< const ::std::string & >( other.m_string ) ) { ::std::cout << "construct from TestType & "; overloaded( other ); }
+};
 
 void testConstructor ()
 {
-    using TestType = ::std::string;
+    //using TestVariable = Instance< TestType, ::Cpp::Inplace::InplaceTool >;
+    using TestVariable = Variable< TestType >;
 
     // Конструктор без инициализации
     {
-        Variable< TestType > value( NotInitialized );
+        TestVariable value( NotInitialized );
         foo( value );
     }
 
     // Конструктор по умолчанию
     {
-        Variable< TestType > value;
+        TestVariable value;
         foo( value );
     }
 
     // Конструктор инициализации по значению и соответсвующий оператор равенства
     {
-        Variable< TestType > value( "Hello!" );
+        TestVariable value( "Hello!" );
         value = "Hello Memory!";
+        foo( value );
     }
 
     // Конструктор инициализации по копии значения и соответсвующий оператор равенства
     {
-        const char first_text[] = "Hello!";
-        const char second_text[] = "Hello Memory!";
-        Variable< TestType > value( first_text );
+        const TestType first_text = ::std::string( "Hello!" );
+        const TestType second_text = ::std::string( "Hello Memory!" );
+        TestVariable value( first_text );
         value = second_text;
+        foo( value );
     }
 
     // Конструктор перемещения и соответсвующий оператор равенства
     {
-        Variable< TestType > first;
-        Variable< TestType > second( ::std::move( first ) );
+        TestVariable first( "Move test" );
+        TestVariable second( ::std::move( first ) );
         first = ::std::move( second );
-        foo( second );
+        foo( first );
     }
 
     // Конструктор копирования и соответсвующий оператор равенства
     {
-        Variable< TestType > first;
-        Variable< TestType > second( first );
+        TestVariable first( "Copy test" );
+        TestVariable second( first );
         second = first;
+        foo( first );
     }
 }
 

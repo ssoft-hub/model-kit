@@ -101,7 +101,7 @@ struct InstanceBuildSwither< CompatibleInstanceBuild >
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
     static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( const Instance< _OtherType, _OtherTool > & other )
     {
-        return _ThisTool:: template copyHolder< _ThisType >( cFGet( other ).m_holder );
+        return _ThisTool:: template copyHolder< _ThisType >( featureGuard( other ).access().m_holder );
     }
 
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
@@ -150,6 +150,7 @@ struct InstanceBuilder< _ThisType, _ThisTool, Instance< _OtherType, _OtherTool >
 {
 //    можно использовать в определениях методов
 //    static constexpr decltype(auto) construct (...)
+
     static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( const Instance< _OtherType, _OtherTool > & other )
     {
         return InstanceBuildSwither< InstanceBuildTypeDefiner< Instance< _ThisType, _ThisTool >, Instance< _OtherType, _OtherTool > >::value >

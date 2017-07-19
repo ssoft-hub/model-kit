@@ -23,6 +23,7 @@ namespace Std
 
                 using LockType = _LockType;
                 using ValueType = _Type;
+                using LockGuardType = ::std::lock_guard< LockType >;
 
                 mutable LockType m_lock;
                 ValueType m_value;
@@ -35,12 +36,14 @@ namespace Std
 
                 ThisType & operator = ( ThisType && other )
                 {
+                    LockGuardType guard( m_lock );
                     m_value = ::std::forward< ValueType >( other.m_value );
                     return *this;
                 }
 
                 ThisType & operator = ( const ThisType & other )
                 {
+                    LockGuardType guard( m_lock );
                     m_value = other.m_value;
                     return *this;
                 }

@@ -71,32 +71,30 @@ public:
     template < typename _Type >
     ThisType & operator = ( _Type && other )
     {
-        vFGet( *this ).m_holder
-            = InstanceBuilder< _ValueType, _ValueTool, _Type >
-                ::construct( ::std::forward< _Type >( other ) );
+        m_holder = InstanceBuilder< _ValueType, _ValueTool, _Type && >
+            ::construct( ::std::forward< _Type >( other ) );
         return *this;
     }
 
     template < typename _Type >
     ThisType & operator = ( const _Type & other )
     {
-        vFGet( *this ).m_holder
-            =  InstanceBuilder< _ValueType, _ValueTool, const _Type & >::construct( other ) ;
+        m_holder = InstanceBuilder< _ValueType, _ValueTool, const _Type & >
+            ::construct( other ) ;
         return *this;
     }
 
     ThisType & operator = ( ThisType && other )
     {
-        vFGet( *this ).m_holder
-            =  InstanceBuilder< _ValueType, _ValueTool, ThisType >::construct(
-                ::std::forward< ThisType >( other ) );
+        m_holder = InstanceBuilder< _ValueType, _ValueTool, ThisType && >
+            ::construct( ::std::forward< ThisType >( other ) );
         return *this;
     }
 
     ThisType & operator = ( const ThisType & other )
     {
-        vFGet( *this ).m_holder
-            =  InstanceBuilder< _ValueType, _ValueTool, ThisType >::construct( other ) ;
+        m_holder = InstanceBuilder< _ValueType, _ValueTool, const ThisType & >
+            ::construct( other ) ;
         return *this;
     }
 };
