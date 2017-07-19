@@ -73,6 +73,56 @@ extern void testBaseDerived ();
 extern void testTrait ();
 extern void testRelation ();
 
+template < typename _Type >
+void foo ( const _Type & ) {}
+
+void testConstructor ()
+{
+    using TestType = ::std::string;
+
+    // Конструктор без инициализации
+    {
+        Variable< TestType > value( NotInitialized );
+        foo( value );
+    }
+
+    // Конструктор по умолчанию
+    {
+        Variable< TestType > value;
+        foo( value );
+    }
+
+    // Конструктор инициализации по значению и соответсвующий оператор равенства
+    {
+        Variable< TestType > value( "Hello!" );
+        value = "Hello Memory!";
+    }
+
+    // Конструктор инициализации по копии значения и соответсвующий оператор равенства
+    {
+        const char first_text[] = "Hello!";
+        const char second_text[] = "Hello Memory!";
+        Variable< TestType > value( first_text );
+        value = second_text;
+    }
+
+    // Конструктор перемещения и соответсвующий оператор равенства
+    {
+        Variable< TestType > first;
+        Variable< TestType > second( ::std::move( first ) );
+        first = ::std::move( second );
+        foo( second );
+    }
+
+    // Конструктор копирования и соответсвующий оператор равенства
+    {
+        Variable< TestType > first;
+        Variable< TestType > second( first );
+        second = first;
+    }
+}
+
+
 void testRelation ()
 {
     // Значения определенного типа
@@ -90,6 +140,7 @@ void testRelation ()
 
 int main ( int /*argc*/, char ** /*argv*/ )
 {
+    testConstructor();
     testBaseDerived();
     testAllTool();
     testTrait();

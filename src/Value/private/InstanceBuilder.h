@@ -108,9 +108,8 @@ struct InstanceBuildSwither< CompatibleInstanceBuild >
     static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( Instance< _OtherType, _OtherTool > && other )
     {
         using OtherInstanceType = Instance< _OtherType, _OtherTool >;
-        return _ThisTool:: template moveHolder< _ThisType >(
-            ::std::forward< typename OtherInstanceType::HolderType >( featureGuard(
-                ::std::forward< OtherInstanceType >( other ) ).access().m_holder ) );
+        return _ThisTool:: template moveHolder< _ThisType >( featureGuard(
+                ::std::forward< OtherInstanceType >( other ) ).access().m_holder );
     }
 };
 
@@ -162,4 +161,28 @@ struct InstanceBuilder< _ThisType, _ThisTool, Instance< _OtherType, _OtherTool >
         return InstanceBuildSwither< InstanceBuildTypeDefiner< Instance< _ThisType, _ThisTool >, Instance< _OtherType, _OtherTool > >::value >
             :: template construct< _ThisType, _ThisTool, _OtherType, _OtherTool >( ::std::forward< Instance< _OtherType, _OtherTool > >( other ) );
     }
+};
+
+template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
+struct InstanceBuilder< _ThisType, _ThisTool, Instance< _OtherType, _OtherTool > & >
+    : public InstanceBuilder< _ThisType, _ThisTool, Instance< _OtherType, _OtherTool > >
+{
+};
+
+template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
+struct InstanceBuilder< _ThisType, _ThisTool, Instance< _OtherType, _OtherTool > && >
+    : public InstanceBuilder< _ThisType, _ThisTool, Instance< _OtherType, _OtherTool > >
+{
+};
+
+template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
+struct InstanceBuilder< _ThisType, _ThisTool, const Instance< _OtherType, _OtherTool > & >
+    : public InstanceBuilder< _ThisType, _ThisTool, Instance< _OtherType, _OtherTool > >
+{
+};
+
+template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
+struct InstanceBuilder< _ThisType, _ThisTool, const Instance< _OtherType, _OtherTool > && >
+    : public InstanceBuilder< _ThisType, _ThisTool, Instance< _OtherType, _OtherTool > >
+{
 };
