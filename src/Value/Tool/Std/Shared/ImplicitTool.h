@@ -23,7 +23,7 @@ namespace Std
                 using ThisType = HolderType< _Type >;
                 using PointerType = ::std::shared_ptr< _Type >;
 
-                struct HolderGuard
+                struct HolderGuard // TODO: вынести в общий отдельный файл
                 {
                     ThisType & m_holder;
                     HolderGuard ( ThisType & holder ) : m_holder( holder ) { guardHolder( m_holder ); }
@@ -56,7 +56,7 @@ namespace Std
 
                 template < typename _OtherType >
                 HolderType ( const HolderType< _OtherType > & other )
-                : HolderType( *other.m_pointer.get() )
+                : m_pointer( other.m_pointer )
                 {
                 }
 
@@ -111,29 +111,11 @@ namespace Std
                 }
             };
 
-            template < typename _Type, typename ... _Arguments >
-            static constexpr HolderType< _Type > makeHolder ( _Arguments && ... arguments )
-            {
-                return HolderType< _Type >( ::std::forward< _Arguments >( arguments ) ... );
-            }
-
-            template < typename _Type >
-            static constexpr HolderType< _Type > copyHolder ( const HolderType< _Type > & holder )
-            {
-                return holder;
-            }
-
-            template < typename _Type >
-            static constexpr HolderType< _Type > moveHolder ( HolderType< _Type > && holder )
-            {
-                return ::std::forward< HolderType< _Type > && >( holder );
-            }
-
             template < typename _Type >
             static constexpr void guardHolder ( HolderType< _Type > & holder )
             {
                 if ( !!holder.m_pointer && !holder.m_pointer.unique() )
-                    holder = makeHolder< _Type >( *holder.m_pointer.get() );
+                    holder = HolderType< _Type >( *holder.m_pointer.get() );
             }
 
             template < typename _Type >

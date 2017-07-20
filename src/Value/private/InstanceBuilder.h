@@ -53,7 +53,7 @@ struct InstanceBuilder
 //    static constexpr decltype(auto) construct (...)
     static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( _Arguments && ... arguments )
     {
-        return _ThisTool:: template makeHolder< _ThisType >( ::std::forward< _Arguments >( arguments ) ... );
+        return typename Instance< _ThisType, _ThisTool >::HolderType( ::std::forward< _Arguments >( arguments ) ... );
     }
 };
 
@@ -62,12 +62,7 @@ struct InstanceBuilder< _ThisType, _ThisTool, _Type >
 {
 //    можно использовать в определениях методов
 //    static constexpr decltype(auto) construct (...)
-    static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( _Type && other )
-    {
-        return _ThisTool:: template makeHolder< _ThisType >( ::std::forward< _Type >( other ) );
-    }
-
-    static constexpr _Type && assign ( _Type && other )
+    static constexpr _Type && construct ( _Type && other )
     {
         return ::std::forward< _Type >( other );
     }
@@ -117,15 +112,14 @@ struct InstanceBuildSwither< CompatibleInstanceBuild >
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
     static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( const Instance< _OtherType, _OtherTool > & other )
     {
-        return _ThisTool:: template copyHolder< _ThisType >( featureGuard( other ).access().m_holder );
+        return featureGuard( other ).access().m_holder;
     }
 
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
     static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( Instance< _OtherType, _OtherTool > && other )
     {
         using OtherInstanceType = Instance< _OtherType, _OtherTool >;
-        return _ThisTool:: template moveHolder< _ThisType >( featureGuard(
-                ::std::forward< OtherInstanceType >( other ) ).access().m_holder );
+        return featureGuard( ::std::forward< OtherInstanceType >( other ) ).access().m_holder;
     }
 };
 
@@ -144,13 +138,13 @@ struct InstanceBuildSwither< OtherPartOfThisInstanceBuild >
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
     static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( const Instance< _OtherType, _OtherTool > & other )
     {
-        return _ThisTool:: template makeHolder< _ThisType >( other );
+        return typename Instance< _ThisType, _ThisTool >::HolderType( other );
     }
 
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
     static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( Instance< _OtherType, _OtherTool > && other )
     {
-        return _ThisTool:: template makeHolder< _ThisType >( ::std::forward< Instance< _OtherType, _OtherTool > >( other ) );
+        return typename Instance< _ThisType, _ThisTool >::HolderType( ::std::forward< Instance< _OtherType, _OtherTool > >( other ) );
     }
 };
 

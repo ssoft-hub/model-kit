@@ -28,31 +28,6 @@ namespace Cpp
                 }
             };
 
-
-            template < typename _Type >
-            static constexpr _Type && makeHolder ( _Type && value )
-            {
-                return ::std::forward< _Type >( value );
-            }
-
-            template < typename _Type, typename ... _Arguments >
-            static constexpr HolderType< _Type > makeHolder ( _Arguments && ... arguments )
-            {
-                return HolderType< _Type >( ::std::forward< _Arguments >( arguments ) ... );
-            }
-
-            template < typename _Type >
-            static constexpr HolderType< _Type > copyHolder ( const HolderType< _Type > & holder )
-            {
-                return makeHolder< _Type >( holder.m_value );
-            }
-
-            template < typename _Type >
-            static constexpr HolderType< _Type > moveHolder ( HolderType< _Type > && holder )
-            {
-                return makeHolder< _Type >( ::std::forward< _Type && >( holder.m_value ) );
-            }
-
             template < typename _Type >
             //static constexpr void guardHolder ( HolderType< _Type > & )
             //static constexpr void guardHolder ( HolderType< _Type > && )

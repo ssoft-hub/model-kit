@@ -25,7 +25,7 @@ namespace Std
                 using ValueType = _Type;
                 using LockGuardType = ::std::lock_guard< LockType >;
 
-                struct HolderGuard
+                struct HolderGuard // TODO: вынести в общий отдельный файл
                 {
                     ThisType & m_holder;
                     HolderGuard ( ThisType & holder ) : m_holder( holder ) { guardHolder( m_holder ); }
@@ -48,9 +48,43 @@ namespace Std
                 {
                 }
 
+                HolderType ( const ThisType & other )
+                : HolderType( other.m_value )
+                {
+                }
+
+                template < typename _OtherType >
+                HolderType ( HolderType< _OtherType > && other )
+                : m_lock()
+                , m_value( ::std::forward< typename HolderType< _OtherType >::ValueType >( other.m_value ) )
+                {
+                }
+
+                template < typename _OtherType >
+                HolderType ( const HolderType< _OtherType > & other )
+                : HolderType( other.m_value )
+                {
+                }
+
                 ~HolderType ()
                 {
                     HolderGuard guard( *this );
+                }
+
+                template < typename _OtherType >
+                ThisType & operator = ( _OtherType && other )
+                {
+                    HolderGuard holder_guard( *this );
+                    m_value = ::std::forward< _OtherType >( other );
+                    return *this;
+                }
+
+                template < typename _OtherType >
+                ThisType & operator = ( const _OtherType & other )
+                {
+                    HolderGuard holder_guard( *this );
+                    m_value = other;
+                    return *this;
                 }
 
                 ThisType & operator = ( ThisType && other )
@@ -66,25 +100,23 @@ namespace Std
                     m_value = other.m_value;
                     return *this;
                 }
+
+                template < typename _OtherType >
+                ThisType & operator = ( HolderType< _OtherType > && other )
+                {
+                    HolderGuard guard( *this );
+                    m_value = ::std::forward< typename HolderType< _OtherType >::ValueType >( other.m_value );
+                    return *this;
+                }
+
+                template < typename _OtherType >
+                ThisType & operator = ( const HolderType< _OtherType > & other )
+                {
+                    HolderGuard guard( *this );
+                    m_value = other.m_value;
+                    return *this;
+                }
             };
-
-            template < typename _Type, typename ... _Arguments >
-            static constexpr HolderType< _Type > makeHolder ( _Arguments && ... arguments )
-            {
-                return HolderType< _Type >( ::std::forward< _Arguments >( arguments ) ... );
-            }
-
-            template < typename _Type >
-            static constexpr HolderType< _Type > copyHolder ( const HolderType< _Type > & holder )
-            {
-                return makeHolder< _Type >( holder.m_value );
-            }
-
-            template < typename _Type >
-            static constexpr HolderType< _Type > moveHolder ( HolderType< _Type > && holder )
-            {
-                return makeHolder< _Type >( ::std::forward< _Type >( holder.m_value ) );
-            }
 
             template < typename _Type >
             //static constexpr void guardHolder ( HolderType< _Type > & )

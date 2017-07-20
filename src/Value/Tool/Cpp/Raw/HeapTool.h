@@ -19,13 +19,6 @@ namespace Cpp
                 using ThisType = HolderType< _Type >;
                 using PointerType = _Type *;
 
-                struct HolderGuard
-                {
-                    ThisType & m_holder;
-                    HolderGuard ( ThisType & holder ) : m_holder( holder ) { guardHolder( m_holder ); }
-                    ~HolderGuard () { unguardHolder( m_holder ); }
-                };
-
                 PointerType m_pointer;
 
                 template < typename ... _Arguments >
@@ -36,6 +29,25 @@ namespace Cpp
 
                 HolderType ( ThisType && other )
                 : m_pointer( ::std::forward< PointerType >( other.m_pointer ) )
+                {
+                    other.m_pointer = nullptr;
+                }
+
+                HolderType ( const ThisType & other )
+                : HolderType( *other.m_pointer )
+                {
+                }
+
+                template < typename _OtherType >
+                HolderType ( HolderType< _OtherType > && other )
+                : m_pointer( ::std::forward< typename HolderType< _OtherType >::PointerType >( other.m_pointer ) )
+                {
+                    other.m_pointer = nullptr;
+                }
+
+                template < typename _OtherType >
+                HolderType ( const HolderType< _OtherType > & other )
+                : HolderType( *other.m_pointer )
                 {
                 }
 
@@ -48,7 +60,6 @@ namespace Cpp
                 ThisType & operator = ( _OtherType && other )
                 {
                     assert( m_pointer );
-                    HolderGuard holder_guard( *this );
                     *m_pointer = ::std::forward< _OtherType >( other );
                     return *this;
                 }
@@ -57,14 +68,13 @@ namespace Cpp
                 ThisType & operator = ( const _OtherType & other )
                 {
                     assert( m_pointer );
-                    HolderGuard holder_guard( *this );
                     *m_pointer = other;
                     return *this;
                 }
 
                 ThisType & operator = ( ThisType && other )
                 {
-                    m_pointer = ::std::forward< PointerType >( other.m_pointer );
+                    ::std::swap( m_pointer, other.m_pointer );
                     return *this;
                 }
 
@@ -77,8 +87,7 @@ namespace Cpp
                 template < typename _OtherType >
                 ThisType & operator = ( HolderType< _OtherType > && other )
                 {
-                    using OtherPointerType = typename HolderType< _OtherType >::PointerType;
-                    m_pointer = ::std::forward< OtherPointerType >( other.m_pointer );
+                    ::std::swap< PointerType >( m_pointer, other.m_pointer );
                     return *this;
                 }
 
@@ -89,24 +98,6 @@ namespace Cpp
                     return *this = *other.m_pointer;
                 }
             };
-
-            template < typename _Type, typename ... _Arguments >
-            static constexpr HolderType< _Type > makeHolder ( _Arguments && ... arguments )
-            {
-                return HolderType< _Type >( ::std::forward< _Arguments >( arguments ) ... );
-            }
-
-            template < typename _Type >
-            static constexpr HolderType< _Type > copyHolder ( const HolderType< _Type > & holder )
-            {
-                return makeHolder< _Type >( *holder.m_pointer );
-            }
-
-            template < typename _Type >
-            static constexpr HolderType< _Type > moveHolder ( HolderType< _Type > && holder )
-            {
-                return makeHolder< _Type >( ::std::forward< _Type >( *holder.m_pointer ) );
-            }
 
             template < typename _Type >
             //static constexpr void guardHolder ( HolderType< _Type > & )
