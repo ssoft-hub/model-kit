@@ -62,12 +62,6 @@ public:
     {
     }
 
-    //! Деструктор.
-    ~Instance ()
-    {
-        ValueTool::destroyHolder( m_holder );
-    }
-
     template < typename _Type >
     ThisType & operator = ( _Type && other )
     {

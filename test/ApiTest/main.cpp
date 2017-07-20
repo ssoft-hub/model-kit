@@ -130,6 +130,7 @@ void testConstructor ()
         const TestType first_text = ::std::string( "Hello!" );
         const TestType second_text = ::std::string( "Hello Memory!" );
         TestVariable value( first_text );
+        // TODO: операция присвоения не должна приводить к созданию нового экземпляра значения
         value = second_text;
         foo( value );
     }

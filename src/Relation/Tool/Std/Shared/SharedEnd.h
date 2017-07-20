@@ -106,19 +106,19 @@ public:
 //    template < typename _Value >
 //    static /*constexpr*/ _Value & writable ( Wrapper & wrapper )
 //    {
-//        return get< _Value >( *wrapper.m_holder.get() );
+//        return get< _Value >( *wrapper.m_holder.m_pointer.get() );
 //    }
 
 //    template < typename _Value >
 //    static /*constexpr*/ _Value & readable ( const Wrapper & wrapper )
 //    {
-//        return get< _Value >( *wrapper.m_holder.get() );
+//        return get< _Value >( *wrapper.m_holder.m_pointer.get() );
 //    }
 
 //    template < typename _Value >
 //    static /*constexpr*/ _Value && writable ( Wrapper && wrapper )
 //    {
-//        return get< _Value >( ::std::forward< Holder >( *wrapper.m_holder.get() ) );
+//        return get< _Value >( ::std::forward< Holder >( *wrapper.m_holder.m_pointer.get() ) );
 //    }
 //};
 

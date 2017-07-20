@@ -25,8 +25,22 @@ namespace Std
                 using ValueType = _Type;
                 using LockGuardType = ::std::lock_guard< LockType >;
 
+                struct HolderGuard
+                {
+                    ThisType & m_holder;
+                    HolderGuard ( ThisType & holder ) : m_holder( holder ) { guardHolder( m_holder ); }
+                    ~HolderGuard () { unguardHolder( m_holder ); }
+                };
+
                 mutable LockType m_lock;
                 ValueType m_value;
+
+                template < typename ... _Arguments >
+                HolderType ( _Arguments && ... arguments )
+                : m_lock()
+                , m_value( ::std::forward< _Arguments >( arguments ) ... )
+                {
+                }
 
                 HolderType ( ThisType && other )
                 : m_lock()
@@ -34,25 +48,23 @@ namespace Std
                 {
                 }
 
+                ~HolderType ()
+                {
+                    HolderGuard guard( *this );
+                }
+
                 ThisType & operator = ( ThisType && other )
                 {
-                    LockGuardType guard( m_lock );
+                    HolderGuard guard( *this );
                     m_value = ::std::forward< ValueType >( other.m_value );
                     return *this;
                 }
 
                 ThisType & operator = ( const ThisType & other )
                 {
-                    LockGuardType guard( m_lock );
+                    HolderGuard guard( *this );
                     m_value = other.m_value;
                     return *this;
-                }
-
-                template < typename ... _Arguments >
-                HolderType ( _Arguments && ... arguments )
-                : m_lock()
-                , m_value( ::std::forward< _Arguments >( arguments ) ... )
-                {
                 }
             };
 
@@ -72,12 +84,6 @@ namespace Std
             static constexpr HolderType< _Type > moveHolder ( HolderType< _Type > && holder )
             {
                 return makeHolder< _Type >( ::std::forward< _Type >( holder.m_value ) );
-            }
-
-            template < typename _Type >
-            static constexpr void destroyHolder ( HolderType< _Type > & )
-            {
-                // nothing to do
             }
 
             template < typename _Type >

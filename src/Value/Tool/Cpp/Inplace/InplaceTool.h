@@ -28,6 +28,13 @@ namespace Cpp
                 }
             };
 
+
+            template < typename _Type >
+            static constexpr _Type && makeHolder ( _Type && value )
+            {
+                return ::std::forward< _Type >( value );
+            }
+
             template < typename _Type, typename ... _Arguments >
             static constexpr HolderType< _Type > makeHolder ( _Arguments && ... arguments )
             {
@@ -44,12 +51,6 @@ namespace Cpp
             static constexpr HolderType< _Type > moveHolder ( HolderType< _Type > && holder )
             {
                 return makeHolder< _Type >( ::std::forward< _Type && >( holder.m_value ) );
-            }
-
-            template < typename _Type >
-            static constexpr void destroyHolder ( HolderType< _Type > & )
-            {
-                // nothing to do
             }
 
             template < typename _Type >

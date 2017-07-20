@@ -57,6 +57,22 @@ struct InstanceBuilder
     }
 };
 
+template < typename _ThisType, typename _ThisTool, typename _Type >
+struct InstanceBuilder< _ThisType, _ThisTool, _Type >
+{
+//    можно использовать в определениях методов
+//    static constexpr decltype(auto) construct (...)
+    static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( _Type && other )
+    {
+        return _ThisTool:: template makeHolder< _ThisType >( ::std::forward< _Type >( other ) );
+    }
+
+    static constexpr _Type && assign ( _Type && other )
+    {
+        return ::std::forward< _Type >( other );
+    }
+};
+
 /*!
  * Eсли необходимый Instance совместим с внутренней частью исходного,
  * то необходимо сформировать необходимый Instance на основе внутреннего
