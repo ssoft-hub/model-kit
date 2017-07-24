@@ -86,7 +86,7 @@ struct InstanceBuildSwither
     static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( const Instance< _OtherType, _OtherTool > & other )
     {
         return  InstanceBuilder< _ThisType, _ThisTool, _OtherType >::construct(
-                _OtherTool:: template value< _OtherType >( featureGuard( other ).access().m_holder ) );
+            _OtherTool:: template value< _OtherType >( featureGuard( other ).access().m_holder ) );
     }
 
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
@@ -110,13 +110,13 @@ struct InstanceBuildSwither< CompatibleInstanceBuild >
 //    static constexpr decltype(auto) construct (...)
 
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
-    static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( const Instance< _OtherType, _OtherTool > & other )
+    static constexpr const typename Instance< _OtherType, _OtherTool >::HolderType & construct ( const Instance< _OtherType, _OtherTool > & other )
     {
         return featureGuard( other ).access().m_holder;
     }
 
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
-    static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( Instance< _OtherType, _OtherTool > && other )
+    static constexpr typename Instance< _OtherType, _OtherTool >::HolderType && construct ( Instance< _OtherType, _OtherTool > && other )
     {
         using OtherInstanceType = Instance< _OtherType, _OtherTool >;
         return featureGuard( ::std::forward< OtherInstanceType >( other ) ).access().m_holder;
@@ -136,15 +136,15 @@ struct InstanceBuildSwither< OtherPartOfThisInstanceBuild >
 //    static constexpr decltype(auto) construct (...)
 
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
-    static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( const Instance< _OtherType, _OtherTool > & other )
+    static constexpr const Instance< _OtherType, _OtherTool > & construct ( const Instance< _OtherType, _OtherTool > & other )
     {
-        return typename Instance< _ThisType, _ThisTool >::HolderType( other );
+        return other;
     }
 
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
-    static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( Instance< _OtherType, _OtherTool > && other )
+    static constexpr Instance< _OtherType, _OtherTool > && construct ( Instance< _OtherType, _OtherTool > && other )
     {
-        return typename Instance< _ThisType, _ThisTool >::HolderType( ::std::forward< Instance< _OtherType, _OtherTool > >( other ) );
+        return ::std::forward< Instance< _OtherType, _OtherTool > >( other );
     }
 };
 
@@ -158,16 +158,16 @@ struct InstanceBuildSwither< OtherPartOfThisInstanceBuild >
 template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
 struct InstanceBuilder< _ThisType, _ThisTool, Instance< _OtherType, _OtherTool > >
 {
-//    можно использовать в определениях методов
-//    static constexpr decltype(auto) construct (...)
+    //! Тип возвращаемого значения зависит от вычисленного варианта операции,
+    /// поэтому в определении используется decltype(auto).
 
-    static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( const Instance< _OtherType, _OtherTool > & other )
+    static constexpr decltype(auto) construct ( const Instance< _OtherType, _OtherTool > & other )
     {
         return InstanceBuildSwither< InstanceBuildTypeDefiner< Instance< _ThisType, _ThisTool >, Instance< _OtherType, _OtherTool > >::value >
             :: template construct< _ThisType, _ThisTool, _OtherType, _OtherTool >( other );
     }
 
-    static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( Instance< _OtherType, _OtherTool > && other )
+    static constexpr decltype(auto) construct ( Instance< _OtherType, _OtherTool > && other )
     {
         return InstanceBuildSwither< InstanceBuildTypeDefiner< Instance< _ThisType, _ThisTool >, Instance< _OtherType, _OtherTool > >::value >
             :: template construct< _ThisType, _ThisTool, _OtherType, _OtherTool >( ::std::forward< Instance< _OtherType, _OtherTool > >( other ) );

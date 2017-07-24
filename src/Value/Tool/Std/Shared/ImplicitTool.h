@@ -91,8 +91,8 @@ namespace Std
 
                 ThisType & operator = ( const ThisType & other )
                 {
-                    assert( other.m_pointer );
-                    return *this = *other.m_pointer.get();
+                    m_pointer = other.m_pointer;
+                    return *this;
                 }
 
                 template < typename _OtherType >
@@ -106,8 +106,8 @@ namespace Std
                 template < typename _OtherType >
                 ThisType & operator = ( const HolderType< _OtherType > & other )
                 {
-                    assert( other.m_pointer );
-                    return *this = *other.m_pointer.get();
+                    m_pointer = other.m_pointer;
+                    return *this;
                 }
             };
 

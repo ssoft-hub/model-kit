@@ -9,7 +9,8 @@ void testTool ()
     Variable< _TestType > other;
 
     other = _TestType();
-    value = ::std::move( other );
+    value = ::std::move( other ); // other not valid!!!
+    other = Variable< _TestType >(); // initialize other
     other = value;
     vGet( value ) = vGet( _TestType() );
 

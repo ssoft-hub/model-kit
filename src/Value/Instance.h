@@ -44,51 +44,98 @@ public:
     //! Конструктор инициализации значения по заданным параметрам.
     template < typename ... _Arguments >
     constexpr Instance ( _Arguments && ... arguments )
-    : m_holder( InstanceBuilder< _ValueType, _ValueTool, _Arguments ... >
-        ::construct( ::std::forward< _Arguments >( arguments ) ... ) )
+    : m_holder( ::std::forward< _Arguments >( arguments ) ... )
     {
     }
 
-    //! Конструктор перемещения
-    constexpr Instance ( ThisType && other )
-    : m_holder( InstanceBuilder< _ValueType, _ValueTool, ThisType >::construct(
-        ::std::forward< ThisType >( other ) ) )
+    //! Конструкторы перемещения
+    constexpr Instance ( ThisType && other ) = default;
+
+    template < typename _OtherType, typename _OtherTool >
+    constexpr Instance ( Instance< _OtherType, _OtherTool > && other )
+    : m_holder( InstanceBuilder< _ValueType, _ValueTool, Instance< _OtherType, _OtherTool > && >
+        ::construct( ::std::forward< Instance< _OtherType, _OtherTool > >( other ) ) )
     {
     }
 
-    //! Конструктор копирования
-    constexpr Instance ( const ThisType & other )
-    : m_holder( InstanceBuilder< _ValueType, _ValueTool, ThisType >::construct( other ) )
+    //! Конструкторы копирования
+    constexpr Instance ( const ThisType & other ) = default;
+
+    template < typename _OtherType, typename _OtherTool >
+    constexpr Instance ( const Instance< _OtherType, _OtherTool > & other )
+    : m_holder( InstanceBuilder< _ValueType, _ValueTool,
+        const Instance< _OtherType, _OtherTool > & >::construct( other ) )
     {
     }
 
+    // NOTE: Определен из-за наличия Instance ( _Arguments && ... ).
+    constexpr Instance ( ThisType & other )
+    : Instance( const_cast< const ThisType & >( other ) ) {}
+
+    // NOTE: Определен из-за наличия Instance ( _Arguments && ... ).
+    template < typename _OtherType, typename _OtherTool >
+    constexpr Instance ( Instance< _OtherType, _OtherTool > & other )
+    : Instance( const_cast< const Instance< _OtherType, _OtherTool > & >( other ) )
+    {
+    }
+
+    //! Операторы присвоения rvalue значений
     template < typename _Type >
     ThisType & operator = ( _Type && other )
     {
-        m_holder = InstanceBuilder< _ValueType, _ValueTool, _Type && >
-            ::construct( ::std::forward< _Type >( other ) );
-        return *this;
-    }
-
-    template < typename _Type >
-    ThisType & operator = ( const _Type & other )
-    {
-        m_holder = InstanceBuilder< _ValueType, _ValueTool, const _Type & >
-            ::construct( other ) ;
+        m_holder = ::std::forward< _Type >( other );
         return *this;
     }
 
     ThisType & operator = ( ThisType && other )
     {
-        m_holder = InstanceBuilder< _ValueType, _ValueTool, ThisType && >
-            ::construct( ::std::forward< ThisType >( other ) );
+        m_holder = ::std::forward< HolderType >( other.m_holder );
+        return *this;
+    }
+
+    template < typename _OtherType, typename _OtherTool >
+    ThisType & operator = ( Instance< _OtherType, _OtherTool > && other )
+    {
+        using OtherType = Instance< _OtherType, _OtherTool >;
+        m_holder = InstanceBuilder< _ValueType, _ValueTool, OtherType && >
+            ::construct( ::std::forward< OtherType >( other ) );
+        return *this;
+    }
+
+    //! Операторы присвоения lvalue значения
+    template < typename _Type >
+    ThisType & operator = ( const _Type & other )
+    {
+        m_holder = other;
         return *this;
     }
 
     ThisType & operator = ( const ThisType & other )
     {
-        m_holder = InstanceBuilder< _ValueType, _ValueTool, const ThisType & >
+        m_holder = other.m_holder;
+        return *this;
+    }
+
+    template < typename _OtherType, typename _OtherTool >
+    ThisType & operator = ( const Instance< _OtherType, _OtherTool > & other )
+    {
+        using OtherType = Instance< _OtherType, _OtherTool >;
+        m_holder = InstanceBuilder< _ValueType, _ValueTool, const OtherType & >
             ::construct( other ) ;
         return *this;
+    }
+
+    // NOTE: Определен из-за наличия operator = ( _Type && ).
+    ThisType & operator = ( ThisType & other )
+    {
+        return *this = const_cast< const ThisType & >( other );
+    }
+
+    // NOTE: Определен из-за наличия operator = ( _Type && ).
+    template < typename _OtherType, typename _OtherTool >
+    ThisType & operator = ( Instance< _OtherType, _OtherTool > & other )
+    {
+        using OtherType = Instance< _OtherType, _OtherTool >;
+        return *this = const_cast< const OtherType & >( other );
     }
 };
