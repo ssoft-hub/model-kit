@@ -138,4 +138,15 @@ public:
         using OtherType = Instance< _OtherType, _OtherTool >;
         return *this = const_cast< const OtherType & >( other );
     }
+
+    //! Операторы преобразования к типу
+    operator Instance< const _ValueType, _ValueTool > & ()
+    {
+        return reinterpret_cast< Instance< const _ValueType, _ValueTool > & >( *this );
+    }
+
+    operator const Instance< const _ValueType, _ValueTool > & () const
+    {
+        return reinterpret_cast< const Instance< const _ValueType, _ValueTool > & >( *this );
+    }
 };
