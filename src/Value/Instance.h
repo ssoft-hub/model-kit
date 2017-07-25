@@ -79,7 +79,7 @@ public:
     {
     }
 
-    //! Операторы присвоения rvalue значений
+    //! Оператор присвоения rvalue значений
     template < typename _Type >
     ThisType & operator = ( _Type && other )
     {
@@ -102,7 +102,7 @@ public:
         return *this;
     }
 
-    //! Операторы присвоения lvalue значения
+    /// Операторы присвоения lvalue значения
     template < typename _Type >
     ThisType & operator = ( const _Type & other )
     {
@@ -139,7 +139,7 @@ public:
         return *this = const_cast< const OtherType & >( other );
     }
 
-    //! Операторы преобразования к типу
+    /// Операторы преобразования к типу
     operator Instance< const _ValueType, _ValueTool > & ()
     {
         return reinterpret_cast< Instance< const _ValueType, _ValueTool > & >( *this );
@@ -149,4 +149,38 @@ public:
     {
         return reinterpret_cast< const Instance< const _ValueType, _ValueTool > & >( *this );
     }
+
+    /// Альтернативные методы доступа к значению
+    // NOTE: Требуется оценка необходимости, так как методы не совместимы
+    // с типами, отличными от Instance.
+    ValueGuard< ThisType & > data ()
+    {
+        return *this;
+    }
+
+    ValueGuard< const ThisType & > data () const
+    {
+        return *this;
+    }
+
+    ValueGuard< const ThisType & > constData () const
+    {
+        return *this;
+    }
+
+    ValueGuard< ThisType & > operator -> ()
+    {
+        return *this;
+    }
+
+    ValueGuard< const ThisType & > operator -> () const
+    {
+        return *this;
+    }
 };
+
+template < typename _Type >
+inline constexpr const _Type & cnst ( const _Type & value )
+{
+    return value;
+}

@@ -2,6 +2,7 @@
 
 #include <Helper/ReferPointer.h>
 #include <utility>
+#include <iostream>
 
 /*!
  * Класс - защитник свойства значения.
@@ -15,6 +16,7 @@ class FeatureGuard
 
 public:
     using ReferType = _ReferType;
+    using AccessType = _ReferType;
     using ValuePointer = ReferPointer< ReferType >;
 
 private:
@@ -26,6 +28,7 @@ public:
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
+        ::std::cout << "FeatureGuard()" << ::std::endl;
     }
 
     FeatureGuard ( ReferType refer )
@@ -33,6 +36,7 @@ public:
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
+        ::std::cout << "FeatureGuard(Refer)" << ::std::endl;
     }
 
     FeatureGuard ( ThisType && other )
@@ -40,20 +44,35 @@ public:
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
+        ::std::cout << "FeatureGuard(FeatureGuard)" << ::std::endl;
     }
 
-    bool operator ! () const
+    ~FeatureGuard ()
+    {
+        if ( !!m_pointer )
+            ::std::cout << "~FeatureGuard" << ::std::endl;
+    }
+
+    constexpr bool operator ! () const
     {
         return !m_pointer;
     }
 
-    ReferType access () const
+    constexpr AccessType access () const
     {
-        assert( !!m_pointer );
-        return ::std::forward< ReferType >( *m_pointer );
+        return ::std::forward< AccessType >( *m_pointer );
+    }
+
+    constexpr AccessType operator * () const
+    {
+        return ::std::forward< AccessType >( access() );
+    }
+
+    constexpr const ValuePointer & operator -> () const
+    {
+        return m_pointer;
     }
 };
-
 
 /*!
  * Методы для формирования защитников текущего свойства значения.
@@ -81,12 +100,3 @@ inline constexpr FeatureGuard< const _WrapperType & > cfeatureGuard ( const _Wra
 {
     return FeatureGuard< const _WrapperType & >( wrapper );
 }
-
-/*!
- * Макросы, сокращающие запись при использовании защитников текущего свойства значения.
- */
-#define vFGuard( value )  featureGuard( value )
-#define cFGuard( value ) cfeatureGuard( value )
-
-#define vFGet( value ) vFGuard( value ).access()
-#define cFGet( value ) cFGuard( value ).access()

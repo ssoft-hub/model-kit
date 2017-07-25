@@ -18,8 +18,8 @@ void printBase ( const BaseType & base_value )
 {
     ::std::cout
         << "Base: "
-        << cGet( cGet( base_value ).m_int ) << " "
-        << cGet( cGet( base_value ).m_string ) << ::std::endl;
+        << *cguard( cguard( base_value )->m_int ) << " "
+        << *cguard( cguard( base_value )->m_string ) << ::std::endl;
 }
 
 void testBase ()
@@ -30,30 +30,30 @@ void testBase ()
 
     default_base_value = contruct_base_value;
 
-    printBase( cGet( default_base_value ) );
-    printBase( cGet( contruct_base_value ) );
-    printBase( cGet( move_base_value ) );
+    printBase( *cguard( default_base_value ) );
+    printBase( *cguard( contruct_base_value ) );
+    printBase( *cguard( move_base_value ) );
 }
 
 void testBaseSetting ()
 {
     Variable< BaseType > base_value;
 
-    vGet( base_value ).m_int = 1;
-    vGet( base_value ).m_string = "one";
-    printBase( cGet( base_value ) );
+    guard( base_value )->m_int = 1;
+    guard( base_value )->m_string = "one";
+    printBase( *cguard( base_value ) );
 
-    vGet( base_value ).m_int = BaseInt( 2 );
-    vGet( base_value ).m_string = BaseString( "two" );
-    printBase( cGet( base_value ) );
+    guard( base_value )->m_int = BaseInt( 2 );
+    guard( base_value )->m_string = BaseString( "two" );
+    printBase( *cguard( base_value ) );
 
-    vGet( base_value ).m_int = DerivedInt( 3 );
-    vGet( base_value ).m_string = DerivedString( "three" );
-    printBase( cGet( base_value ) );
+    guard( base_value )->m_int = DerivedInt( 3 );
+    guard( base_value )->m_string = DerivedString( "three" );
+    printBase( *cguard( base_value ) );
 
-    vGet( base_value ).m_int = HeapInt( 4 );
-    vGet( base_value ).m_string = HeapString( "four" );
-    printBase( cGet( base_value ) );
+    guard( base_value )->m_int = HeapInt( 4 );
+    guard( base_value )->m_string = HeapString( "four" );
+    printBase( *cguard( base_value ) );
 }
 
 void printDerived ( const DerivedType & derived_value )
@@ -61,8 +61,8 @@ void printDerived ( const DerivedType & derived_value )
     printBase( derived_value );
     ::std::cout
         << "Derived: "
-        << cGet( cGet( derived_value ).m_int ) << " "
-        << cGet( cGet( derived_value ).m_string ) << ::std::endl;
+        << *cguard( cguard( derived_value )->m_int ) << " "
+        << *cguard( cguard( derived_value )->m_string ) << ::std::endl;
 }
 
 void testDerived ()
@@ -73,9 +73,9 @@ void testDerived ()
 
     default_derived_value = contruct_derived_value; //
 
-    printDerived( cGet( default_derived_value ) );
-    printDerived( cGet( contruct_derived_value ) );
-    printDerived( cGet( move_derived_value ) );
+    printDerived( *cguard( default_derived_value ) );
+    printDerived( *cguard( contruct_derived_value ) );
+    printDerived( *cguard( move_derived_value ) );
 }
 
 void testBaseDerivedSetting ()
@@ -85,33 +85,33 @@ void testBaseDerivedSetting ()
 
     Variable< DerivedTestType > derived_value;
 
-    vGet( derived_value ).BaseType::m_int = 1;
-    vGet( derived_value ).BaseType::m_string = "one";
-    vGet( derived_value ).m_int = -1;
-    vGet( derived_value ).m_string = "negative one";
-    printDerived( cGet( derived_value ) );
+    guard( derived_value )->BaseType::m_int = 1;
+    guard( derived_value )->BaseType::m_string = "one";
+    guard( derived_value )->m_int = -1;
+    guard( derived_value )->m_string = "negative one";
+    printDerived( *cguard( derived_value ) );
 
-    vGet( derived_value ).BaseType::m_int = BaseInt( 2 );
-    vGet( derived_value ).BaseType::m_string = BaseString( "two" );
-    vGet( derived_value ).m_int = BaseInt( -2 );
-    vGet( derived_value ).m_string = BaseString( "negative two" );
-    printDerived( cGet( derived_value ) );
+    guard( derived_value )->BaseType::m_int = BaseInt( 2 );
+    guard( derived_value )->BaseType::m_string = BaseString( "two" );
+    guard( derived_value )->m_int = BaseInt( -2 );
+    guard( derived_value )->m_string = BaseString( "negative two" );
+    printDerived( *cguard( derived_value ) );
 
-    vGet( derived_value ).BaseType::m_int = DerivedInt( 3 );
-    vGet( derived_value ).BaseType::m_string = DerivedString( "three" );
-    vGet( derived_value ).m_int = DerivedInt( -3 );
-    vGet( derived_value ).m_string = DerivedString( "negative three" );
-    printDerived( cGet( derived_value ) );
+    guard( derived_value )->BaseType::m_int = DerivedInt( 3 );
+    guard( derived_value )->BaseType::m_string = DerivedString( "three" );
+    guard( derived_value )->m_int = DerivedInt( -3 );
+    guard( derived_value )->m_string = DerivedString( "negative three" );
+    printDerived( *cguard( derived_value ) );
 
-    vGet( derived_value ).BaseType::m_int = HeapInt( 4 );
-    vGet( derived_value ).BaseType::m_string = HeapString( "four" );
-    vGet( derived_value ).m_int = HeapInt( -4 );
-    vGet( derived_value ).m_string = HeapString( "negative four" );
-    printDerived( cGet( derived_value ) );
+    guard( derived_value )->BaseType::m_int = HeapInt( 4 );
+    guard( derived_value )->BaseType::m_string = HeapString( "four" );
+    guard( derived_value )->m_int = HeapInt( -4 );
+    guard( derived_value )->m_string = HeapString( "negative four" );
+    printDerived( *cguard( derived_value ) );
 
     Variable< BaseTestType > base_value;
     base_value = derived_value; // OK
-    printBase( cGet( base_value ) );
+    printBase( *cguard( base_value ) );
 
 //    Variable< DerivedType > other_derived_value = base_value; //ERROR
 }

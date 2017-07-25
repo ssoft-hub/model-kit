@@ -15,50 +15,56 @@ class ValueGuard
 public:
     using ReferType = _ReferType;
     using GuardType = FeatureGuard< _ReferType >;
+    using AccessType = ReferType;
 
 private:
-    GuardType m_guard;
+    GuardType m_feature_guard;
 
 public:
     constexpr ValueGuard ()
-    : m_guard()
+    : m_feature_guard()
     {
     }
 
     ValueGuard ( ReferType refer )
-    : m_guard( ::std::forward< ReferType >( refer ) )
+    : m_feature_guard( ::std::forward< ReferType >( refer ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
     }
 
     ValueGuard ( GuardType && other )
-    : m_guard( ::std::forward< GuardType >( other ) )
+    : m_feature_guard( ::std::forward< GuardType >( other ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
     }
 
     ValueGuard ( ThisType && other )
-    : m_guard( ::std::forward< GuardType >( other.m_guard ) )
+    : m_feature_guard( ::std::forward< GuardType >( other.m_feature_guard ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
     }
 
-    bool operator ! () const
+    constexpr bool operator ! () const
     {
-        return !m_guard;
+        return !m_feature_guard;
     }
 
-    constexpr GuardType * operator -> ()
+    constexpr AccessType access () const
     {
-        return &m_guard;
+        return ::std::forward< AccessType >( m_feature_guard.access() );
     }
 
-    constexpr GuardType const * operator -> () const
+    constexpr AccessType operator * () const
     {
-        return &m_guard;
+        return ::std::forward< AccessType >( access() );
+    }
+
+    constexpr const GuardType & operator -> () const
+    {
+        return m_feature_guard;
     }
 };
 
@@ -67,37 +73,25 @@ public:
  * при осущесвлении доступа к внутреннему экземпляру значения.
  */
 template < typename _WrapperType >
-inline constexpr ValueGuard< _WrapperType & > valueGuard ( _WrapperType & wrapper ) noexcept
+inline constexpr ValueGuard< _WrapperType & > guard ( _WrapperType & wrapper ) noexcept
 {
     return ValueGuard< _WrapperType & >( wrapper );
 }
 
 template < typename _WrapperType >
-inline constexpr ValueGuard< const _WrapperType & > valueGuard ( const _WrapperType & wrapper ) noexcept
+inline constexpr ValueGuard< const _WrapperType & > guard ( const _WrapperType & wrapper ) noexcept
 {
-    return ValueGuard< const _WrapperType & >( wrapper );
+    return wrapper;
 }
 
 template < typename _WrapperType >
-inline constexpr ValueGuard< _WrapperType && > valueGuard ( _WrapperType && wrapper ) noexcept
+inline constexpr ValueGuard< _WrapperType && > guard ( _WrapperType && wrapper ) noexcept
 {
-    return ValueGuard< _WrapperType && >( ::std::forward< _WrapperType >( wrapper ) );
+    return ::std::forward< _WrapperType >( wrapper );
 }
 
 template < typename _WrapperType >
-inline constexpr ValueGuard< const _WrapperType & > cvalueGuard ( const _WrapperType & wrapper ) noexcept
+inline constexpr ValueGuard< const _WrapperType & > cguard ( const _WrapperType & wrapper ) noexcept
 {
-    return ValueGuard< const _WrapperType & >( wrapper );
+    return wrapper;
 }
-
-/*!
- * Макросы, сокращающие запись при использовании защитников для доступа к внутреннему
- * экземпляру значения.
- */
-#define vGuard( value )  valueGuard( value )
-#define cGuard( value ) cvalueGuard( value )
-
-#define gGet( value ) value->access()
-
-#define vGet( value ) gGet( vGuard( value ) )
-#define cGet( value ) gGet( cGuard( value ) )

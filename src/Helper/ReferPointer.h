@@ -42,30 +42,18 @@ public:
         return *this;
     }
 
-    bool operator ! () const
+    constexpr bool operator ! () const
     {
         return !m_pointer;
     }
 
-    ReferType operator * ()
+    constexpr ReferType operator * () const
     {
         assert( !!m_pointer );
         return ::std::forward< ReferType >( *m_pointer );
     }
 
-    const ReferType operator * () const
-    {
-        assert( !!m_pointer );
-        return ::std::forward< const ReferType >( *m_pointer );
-    }
-
-    ValueType * operator -> ()
-    {
-        assert( !!m_pointer );
-        return m_pointer;
-    }
-
-    ValueType const * operator -> () const
+    constexpr ValueType * operator -> () const
     {
         assert( !!m_pointer );
         return m_pointer;

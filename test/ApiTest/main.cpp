@@ -165,11 +165,78 @@ void testRelation ()
     Variable< SharedInt > shared_int;
 
     shared_int = unique_int; // равенство на уровне внутренних значений.
-
 }
+
+
+struct MyTest
+{
+    int m_ints[200];
+
+    MyTest()
+    {
+        ::std::cout
+            << "Construct" << ::std::endl;
+    }
+
+    MyTest ( const MyTest & )
+    {
+        ::std::cout
+            << "Copy" << ::std::endl;
+    }
+
+    MyTest & operator = ( const MyTest & )
+    {
+        ::std::cout
+            << "Assign" << ::std::endl;
+        return *this;
+    }
+
+    ~MyTest ()
+    {
+        ::std::cout
+            << "Destruct" << ::std::endl;
+    }
+
+    void foo () const
+    {
+        ::std::cout
+            << "Foo" << ::std::endl;
+    }
+};
+
 
 int main ( int /*argc*/, char ** /*argv*/ )
 {
+//    Variable< MyTest > my_test;
+//    Variable< MyTest > my_other = my_test;
+
+    Instance< Instance< MyTest, ::Std::Shared::ImplicitTool >, ::Std::Mutex::AtomicTool > my_test;
+    Instance< Instance< MyTest, ::Std::Shared::ImplicitTool >, ::Std::Mutex::AtomicTool > my_other = my_test;
+
+//    ::std::cout
+//        << "Before foo" << ::std::endl;
+//    guard( my_other )->foo();
+//    ::std::cout
+//        << "After foo" << ::std::endl;
+
+//    return 0;
+
+
+    using TestType = Instance< const MyTest, ::Cpp::Inplace::InplaceTool >;
+    const Instance< const MyTest, ::Cpp::Inplace::InplaceTool > value;
+//    MyTest value;
+
+    value->foo();
+    cnst(value)->foo();
+
+    guard( TestType() )->foo();
+    guard( TestType() ).access().foo();
+
+    ( *guard( TestType() ) ).foo();
+
+    TestType().data()->foo();
+    TestType().constData()->foo();
+
     testConstructor();
     testBaseDerived();
     testAllTool();
@@ -199,35 +266,35 @@ int main ( int /*argc*/, char ** /*argv*/ )
 //    Variable< const SharedEnd< int, ToolType >  > int_value; // OK
 //    Variable< SharedEnd< const int, ToolType > > int_value; // ERROR
 
-    vGet( int_value ) += 12345;
-    cGet( int_value );
+//    *guard( int_value ) += 12345;
+//    *cguard( int_value );
 
-    Variable< ::std::string > name;
-    vGet( name ) = "Hello";
+//    Variable< ::std::string > name;
+//    guard( name ) = "Hello";
 
-    Variable< Instance< Item, ValueTool >, ImplicitTool > item;
-    vGet( item ); // ОК
-    vGet( vGet( item ).m_int ) = 67890;
-    vGet( vGet( item ).m_string ) = "Item";
+//    Variable< Instance< Item, ValueTool >, ImplicitTool > item;
+//    guard( item ); // ОК
+//    guard( vGet( item ).m_int ) = 67890;
+//    guard( vGet( item ).m_string ) = "Item";
 
-    ::std::cout
-        << cGet( int_value ) << ::std::endl
-        << cGet( name ) << ::std::endl
-        << cGet( cGet( item ).m_int ) << ::std::endl
-        << cGet( cGet( item ).m_string ) << ::std::endl
-    ;
+//    ::std::cout
+//        << cguard( int_value ) << ::std::endl
+//        << cguard( name ) << ::std::endl
+//        << cguard( cGet( item ).m_int ) << ::std::endl
+//        << cguard( cGet( item ).m_string ) << ::std::endl
+//    ;
 
-    Variable< Instance< Item, ValueTool >, ImplicitTool > other_item;// = item;
-//    vGet( other_item ).m_refer = cGet( item ).m_string;
+//    Variable< Instance< Item, ValueTool >, ImplicitTool > other_item;// = item;
+////    vGet( other_item ).m_refer = cGet( item ).m_string;
 
-    vGet( vGet( other_item ).m_int ) = 1;
-    vGet( vGet( other_item ).m_string ) = "Word";
+//    guard( vGet( other_item ).m_int ) = 1;
+//    guard( vGet( other_item ).m_string ) = "Word";
 
-    ::std::cout
-        << cGet( vGet( other_item ).m_int ) << ::std::endl
-        << cGet( cGet( other_item ).m_string ) << ::std::endl
-//        << cGet( cGet( other_item ).m_string_refer ) << ::std::endl
-    ;
+//    ::std::cout
+//        << cguard( guard( other_item ).m_int ) << ::std::endl
+//        << cguard( cGet( other_item ).m_string ) << ::std::endl
+////        << cGet( cGet( other_item ).m_string_refer ) << ::std::endl
+//    ;
 
     return 0;
 }

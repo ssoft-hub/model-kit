@@ -12,21 +12,30 @@ void testTool ()
     value = ::std::move( other ); // other not valid!!!
     other = Variable< _TestType >(); // initialize other
     other = value;
-    vGet( value ) = vGet( _TestType() );
+    guard( value ).access() = guard( _TestType() ).access();
 
-    vGet( value ).m_first_name = "first name";
-    vGet( value ).m_last_name = "last name";
-    vGet( value ).m_age = 50;
-    vGet( value ).m_stature = 178.5;
+    guard( value )->m_first_name = "first name";
+    guard( value )->m_last_name = "last name";
+    guard( value )->m_age = 50;
+    guard( value )->m_stature = 178.5;
 
-    // Явное использование ValueGuard гарантирует применение только того
+    // Альтернативный синтаксис
+    value->m_first_name = "Operator -> syntax";
+    guard( value )->m_first_name = "Pointer syntax";
+    guard( value ).access().m_first_name = "Access method syntax";
+    (*guard( value )).m_first_name = "Dereferencing operator syntax";
+
+    if ( *cguard( value.constData()->m_first_name ) != "Member method syntax" )
+        value.data()->m_first_name = "Member method syntax";
+
+    // Явное использование guard гарантирует применение только того
     // свойства, за которое он отвечает.
 
     // Доступ к значению дожно осуществляться строго через метод access(),
     // так как фактическое размещение экземляра значения может измениться
     // (например, в случае implicit shared значения).
-    //
-    // Например, использование кода: auto x = cvalueGuard( value )->access();
+
+    // Например, использование кода: auto x = cguard( value )->access();
     // или эквивалентного: auto x = cGet( value ); не гарантирует корректный
     // доступ по значению x.
 
@@ -35,15 +44,15 @@ void testTool ()
     // (например, системные блокировки и т.п.)
 
     // Гарант свойств для применения константного значения value
-    auto cguard = cGuard( value );
+    auto guarder = cguard( value );
 
     // value
     ::std::cout
         << "Test tool:" << ::std::endl
-        << ( cGet( gGet( cguard ).m_first_name ) ) << ::std::endl
-        << ( cGet( gGet( cguard ).m_last_name ) ) << ::std::endl
-        << ( cGet( gGet( cguard ).m_age ) ) << ::std::endl
-        << ( cGet( gGet( cguard ).m_stature ) ) << ::std::endl;
+        << ( *cguard( guarder->m_first_name ) ) << ::std::endl
+        << ( *cguard( guarder->m_last_name ) ) << ::std::endl
+        << ( *cguard( guarder->m_age ) ) << ::std::endl
+        << ( *cguard( guarder->m_stature ) ) << ::std::endl;
 }
 
 template < typename _Type >
