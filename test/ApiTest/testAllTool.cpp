@@ -12,21 +12,22 @@ void testTool ()
     value = ::std::move( other ); // other not valid!!!
     other = Variable< _TestType >(); // initialize other
     other = value;
-    guard( value ).access() = guard( _TestType() ).access();
+    value = _TestType();
 
-    guard( value )->m_first_name = "first name";
-    guard( value )->m_last_name = "last name";
-    guard( value )->m_age = 50;
-    guard( value )->m_stature = 178.5;
+    value->m_first_name = "first name";
+    value->m_last_name = "last name";
+    value->m_age = 50;
+    value->m_stature = 178.5;
 
     // Альтернативный синтаксис
     value->m_first_name = "Operator -> syntax";
-    guard( value )->m_first_name = "Pointer syntax";
-    guard( value ).access().m_first_name = "Access method syntax";
-    (*guard( value )).m_first_name = "Dereferencing operator syntax";
+    (**value).m_first_name = "Dereferencing operator syntax";
+    **(**cnst(value)).m_first_name;
+    guard(value)->m_first_name = "Pointer syntax";
+    guard(value).access().m_first_name = "Access method syntax";
 
-    if ( *cguard( value.constData()->m_first_name ) != "Member method syntax" )
-        value.data()->m_first_name = "Member method syntax";
+    if ( **(cnst(value)->m_first_name) != "Member method syntax" )
+        value->m_first_name = "Member method syntax";
 
     // Явное использование guard гарантирует применение только того
     // свойства, за которое он отвечает.
@@ -49,10 +50,10 @@ void testTool ()
     // value
     ::std::cout
         << "Test tool:" << ::std::endl
-        << ( *cguard( guarder->m_first_name ) ) << ::std::endl
-        << ( *cguard( guarder->m_last_name ) ) << ::std::endl
-        << ( *cguard( guarder->m_age ) ) << ::std::endl
-        << ( *cguard( guarder->m_stature ) ) << ::std::endl;
+        << ( **( (*guarder).m_first_name ) ) << ::std::endl
+        << ( **( (*guarder).m_last_name ) ) << ::std::endl
+        << ( **( guarder->m_age ) ) << ::std::endl
+        << ( **( guarder->m_stature ) ) << ::std::endl;
 }
 
 template < typename _Type >

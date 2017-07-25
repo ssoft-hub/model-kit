@@ -153,27 +153,22 @@ public:
     /// Альтернативные методы доступа к значению
     // NOTE: Требуется оценка необходимости, так как методы не совместимы
     // с типами, отличными от Instance.
-    ValueGuard< ThisType & > data ()
-    {
-        return *this;
-    }
-
-    ValueGuard< const ThisType & > data () const
-    {
-        return *this;
-    }
-
-    ValueGuard< const ThisType & > constData () const
-    {
-        return *this;
-    }
-
     ValueGuard< ThisType & > operator -> ()
     {
         return *this;
     }
 
     ValueGuard< const ThisType & > operator -> () const
+    {
+        return *this;
+    }
+
+    ValueGuard< ThisType & > operator * ()
+    {
+        return *this;
+    }
+
+    ValueGuard< const ThisType & > operator * () const
     {
         return *this;
     }

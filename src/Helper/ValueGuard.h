@@ -81,17 +81,17 @@ inline constexpr ValueGuard< _WrapperType & > guard ( _WrapperType & wrapper ) n
 template < typename _WrapperType >
 inline constexpr ValueGuard< const _WrapperType & > guard ( const _WrapperType & wrapper ) noexcept
 {
-    return wrapper;
+    return ValueGuard< const _WrapperType & >( wrapper );
 }
 
 template < typename _WrapperType >
 inline constexpr ValueGuard< _WrapperType && > guard ( _WrapperType && wrapper ) noexcept
 {
-    return ::std::forward< _WrapperType >( wrapper );
+    return ValueGuard< _WrapperType && >( ::std::forward< _WrapperType >( wrapper ) );
 }
 
 template < typename _WrapperType >
 inline constexpr ValueGuard< const _WrapperType & > cguard ( const _WrapperType & wrapper ) noexcept
 {
-    return wrapper;
+    return ValueGuard< const _WrapperType & >( wrapper );
 }

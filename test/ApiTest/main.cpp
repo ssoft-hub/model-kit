@@ -234,8 +234,8 @@ int main ( int /*argc*/, char ** /*argv*/ )
 
     ( *guard( TestType() ) ).foo();
 
-    TestType().data()->foo();
-    TestType().constData()->foo();
+    TestType()->foo();
+    cnst( TestType() )->foo();
 
     testConstructor();
     testBaseDerived();
@@ -266,35 +266,35 @@ int main ( int /*argc*/, char ** /*argv*/ )
 //    Variable< const SharedEnd< int, ToolType >  > int_value; // OK
 //    Variable< SharedEnd< const int, ToolType > > int_value; // ERROR
 
-//    *guard( int_value ) += 12345;
-//    *cguard( int_value );
+    ( **int_value ) += 12345;
+    **cnst( int_value );
 
-//    Variable< ::std::string > name;
-//    guard( name ) = "Hello";
+    Variable< ::std::string > name;
+    name = "Hello";
 
-//    Variable< Instance< Item, ValueTool >, ImplicitTool > item;
-//    guard( item ); // ОК
-//    guard( vGet( item ).m_int ) = 67890;
-//    guard( vGet( item ).m_string ) = "Item";
+    Variable< Instance< Item, ValueTool >, ImplicitTool > item;
+    guard( item ); // ОК
+    item->m_int = 67890;
+    item->m_string = "Item";
 
-//    ::std::cout
-//        << cguard( int_value ) << ::std::endl
-//        << cguard( name ) << ::std::endl
-//        << cguard( cGet( item ).m_int ) << ::std::endl
-//        << cguard( cGet( item ).m_string ) << ::std::endl
-//    ;
+    ::std::cout
+        << **cnst( int_value ) << ::std::endl
+        << **cnst( name ) << ::std::endl
+        << **( cnst( item )->m_int ) << ::std::endl
+        << **( cnst( item )->m_string ) << ::std::endl
+    ;
 
-//    Variable< Instance< Item, ValueTool >, ImplicitTool > other_item;// = item;
-////    vGet( other_item ).m_refer = cGet( item ).m_string;
+    Variable< Instance< Item, ValueTool >, ImplicitTool > other_item;// = item;
+//    vGet( other_item ).m_refer = cGet( item ).m_string;
 
-//    guard( vGet( other_item ).m_int ) = 1;
-//    guard( vGet( other_item ).m_string ) = "Word";
+    other_item->m_int = 1;
+    other_item->m_string = "Word";
 
-//    ::std::cout
-//        << cguard( guard( other_item ).m_int ) << ::std::endl
-//        << cguard( cGet( other_item ).m_string ) << ::std::endl
-////        << cGet( cGet( other_item ).m_string_refer ) << ::std::endl
-//    ;
+    ::std::cout
+        << **cguard( other_item )->m_int << ::std::endl
+        << **cguard( other_item )->m_string << ::std::endl
+//        << **cguard( other_item )->m_string_refer << ::std::endl
+    ;
 
     return 0;
 }
