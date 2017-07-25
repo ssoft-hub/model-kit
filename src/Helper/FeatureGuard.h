@@ -2,7 +2,6 @@
 
 #include <Helper/ReferPointer.h>
 #include <utility>
-#include <iostream>
 
 /*!
  * Класс - защитник свойства значения.
@@ -28,7 +27,6 @@ public:
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
-        ::std::cout << "FeatureGuard()" << ::std::endl;
     }
 
     FeatureGuard ( ReferType refer )
@@ -36,7 +34,6 @@ public:
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
-        ::std::cout << "FeatureGuard(Refer)" << ::std::endl;
     }
 
     FeatureGuard ( ThisType && other )
@@ -44,13 +41,6 @@ public:
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
-        ::std::cout << "FeatureGuard(FeatureGuard)" << ::std::endl;
-    }
-
-    ~FeatureGuard ()
-    {
-        if ( !!m_pointer )
-            ::std::cout << "~FeatureGuard" << ::std::endl;
     }
 
     constexpr bool operator ! () const

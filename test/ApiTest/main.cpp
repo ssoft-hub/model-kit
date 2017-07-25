@@ -213,11 +213,11 @@ int main ( int /*argc*/, char ** /*argv*/ )
     Instance< Instance< MyTest, ::Std::Shared::ImplicitTool >, ::Std::Mutex::AtomicTool > my_test;
     Instance< Instance< MyTest, ::Std::Shared::ImplicitTool >, ::Std::Mutex::AtomicTool > my_other = my_test;
 
-//    ::std::cout
-//        << "Before foo" << ::std::endl;
-//    guard( my_other )->foo();
-//    ::std::cout
-//        << "After foo" << ::std::endl;
+    ::std::cout
+        << "Before foo" << ::std::endl;
+    my_other->foo();
+    ::std::cout
+        << "After foo" << ::std::endl;
 
 //    return 0;
 
