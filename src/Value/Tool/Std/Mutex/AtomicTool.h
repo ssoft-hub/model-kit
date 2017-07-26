@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Common/HolderGuard.h>
 #include <Common/InitializeFlag.h>
 #include <Common/ValueTrait.h>
 #include <mutex>
@@ -24,13 +25,7 @@ namespace Std
                 using LockType = _LockType;
                 using ValueType = _Type;
                 using LockGuardType = ::std::lock_guard< LockType >;
-
-                struct HolderGuard // TODO: вынести в общий отдельный файл
-                {
-                    ThisType & m_holder;
-                    HolderGuard ( ThisType & holder ) : m_holder( holder ) { guardHolder( m_holder ); }
-                    ~HolderGuard () { unguardHolder( m_holder ); }
-                };
+                using WritableHolderGuard = ::HolderGuard< ThisType &, ::Std::Mutex::AtomicTool >;
 
                 mutable LockType m_lock;
                 ValueType m_value;
@@ -70,13 +65,13 @@ namespace Std
 
                 ~HolderType ()
                 {
-                    HolderGuard guard( *this );
+                    WritableHolderGuard guard( *this );
                 }
 
                 template < typename _OtherType >
                 ThisType & operator = ( _OtherType && other )
                 {
-                    HolderGuard holder_guard( *this );
+                    WritableHolderGuard guard( *this );
                     m_value = ::std::forward< _OtherType >( other );
                     return *this;
                 }
@@ -84,21 +79,21 @@ namespace Std
                 template < typename _OtherType >
                 ThisType & operator = ( const _OtherType & other )
                 {
-                    HolderGuard holder_guard( *this );
+                    WritableHolderGuard guard( *this );
                     m_value = other;
                     return *this;
                 }
 
                 ThisType & operator = ( ThisType && other )
                 {
-                    HolderGuard guard( *this );
+                    WritableHolderGuard guard( *this );
                     m_value = ::std::forward< ValueType >( other.m_value );
                     return *this;
                 }
 
                 ThisType & operator = ( const ThisType & other )
                 {
-                    HolderGuard guard( *this );
+                    WritableHolderGuard guard( *this );
                     m_value = other.m_value;
                     return *this;
                 }
@@ -106,7 +101,7 @@ namespace Std
                 template < typename _OtherType >
                 ThisType & operator = ( HolderType< _OtherType > && other )
                 {
-                    HolderGuard guard( *this );
+                    WritableHolderGuard guard( *this );
                     m_value = ::std::forward< typename HolderType< _OtherType >::ValueType >( other.m_value );
                     return *this;
                 }
@@ -114,7 +109,7 @@ namespace Std
                 template < typename _OtherType >
                 ThisType & operator = ( const HolderType< _OtherType > & other )
                 {
-                    HolderGuard guard( *this );
+                    WritableHolderGuard guard( *this );
                     m_value = other.m_value;
                     return *this;
                 }

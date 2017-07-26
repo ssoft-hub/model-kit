@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Common/HolderGuard.h>
 #include <Common/InitializeFlag.h>
 #include <Common/ValueTrait.h>
 #include <memory>
@@ -22,13 +23,7 @@ namespace Std
             {
                 using ThisType = HolderType< _Type >;
                 using PointerType = ::std::shared_ptr< _Type >;
-
-                struct HolderGuard // TODO: вынести в общий отдельный файл
-                {
-                    ThisType & m_holder;
-                    HolderGuard ( ThisType & holder ) : m_holder( holder ) { guardHolder( m_holder ); }
-                    ~HolderGuard () { unguardHolder( m_holder ); }
-                };
+                using WritableHolderGuard = ::HolderGuard< ThisType &, ::Std::Shared::ImplicitTool >;
 
                 PointerType m_pointer;
 
@@ -73,7 +68,7 @@ namespace Std
                 ThisType & operator = ( _OtherType && other )
                 {
                     assert( m_pointer );
-                    HolderGuard holder_guard( *this );
+                    WritableHolderGuard guard( *this );
                     *m_pointer.get() = ::std::forward< _OtherType >( other );
                     return *this;
                 }
@@ -82,7 +77,7 @@ namespace Std
                 ThisType & operator = ( const _OtherType & other )
                 {
                     assert( m_pointer );
-                    HolderGuard holder_guard( *this );
+                    WritableHolderGuard guard( *this );
                     *m_pointer.get() = other;
                     return *this;
                 }
