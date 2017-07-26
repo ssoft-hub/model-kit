@@ -167,76 +167,8 @@ void testRelation ()
     shared_int = unique_int; // равенство на уровне внутренних значений.
 }
 
-
-struct MyTest
-{
-    int m_ints[200];
-
-    MyTest()
-    {
-        ::std::cout
-            << "Construct" << ::std::endl;
-    }
-
-    MyTest ( const MyTest & )
-    {
-        ::std::cout
-            << "Copy" << ::std::endl;
-    }
-
-    MyTest & operator = ( const MyTest & )
-    {
-        ::std::cout
-            << "Assign" << ::std::endl;
-        return *this;
-    }
-
-    ~MyTest ()
-    {
-        ::std::cout
-            << "Destruct" << ::std::endl;
-    }
-
-    void foo () const
-    {
-        ::std::cout
-            << "Foo" << ::std::endl;
-    }
-};
-
-
 int main ( int /*argc*/, char ** /*argv*/ )
 {
-//    Variable< MyTest > my_test;
-//    Variable< MyTest > my_other = my_test;
-
-    Instance< Instance< MyTest, ::Std::Shared::ImplicitTool >, ::Std::Mutex::AtomicTool > my_test;
-    Instance< Instance< MyTest, ::Std::Shared::ImplicitTool >, ::Std::Mutex::AtomicTool > my_other = my_test;
-
-    ::std::cout
-        << "Before foo" << ::std::endl;
-    my_other->foo();
-    ::std::cout
-        << "After foo" << ::std::endl;
-
-//    return 0;
-
-
-    using TestType = Instance< const MyTest, ::Cpp::Inplace::InplaceTool >;
-    const Instance< const MyTest, ::Cpp::Inplace::InplaceTool > value;
-//    MyTest value;
-
-    value->foo();
-    cnst(value)->foo();
-
-    guard( TestType() )->foo();
-    guard( TestType() ).access().foo();
-
-    ( *guard( TestType() ) ).foo();
-
-    TestType()->foo();
-    cnst( TestType() )->foo();
-
     testConstructor();
     testBaseDerived();
     testAllTool();
@@ -297,4 +229,101 @@ int main ( int /*argc*/, char ** /*argv*/ )
     ;
 
     return 0;
+}
+
+
+// Альтернативный синтаксис
+void syntaxExample ()
+{
+    struct ExampleType
+    {
+        int m_member;
+    };
+
+    Variable< ExampleType > value;
+
+    // Синтаксис подобный значению:
+    // распределяет значение в соответсвии с типом value.
+    value = ExampleType();
+
+    // Доступ к неконстантному внутреннему значению
+    value.guard().access();
+    *value.guard();
+    guard(value).access();      // совместим с любым типом (*)
+    *guard(value);              // совместим с любым типом
+    (**value);
+
+    vGet(value);                // реализуется через макрос (!)
+
+    // Доступ к константному вутреннему значению
+    value.cguard().access();
+    *value.cguard();
+    cguard(value).access();     // совместим с любым типом (*)
+    cGet(value);                // то же, но реализуется через макрос (*!)
+    *cguard(value);             // совместим с любым типом
+
+    value.cnst().guard().access();
+    *value.cnst().guard();
+    guard(value.cnst()).access();
+    *guard(value.cnst());
+    (**value.cnst());
+
+    cnst(value).guard().access();
+    *cnst(value).guard();
+    guard(cnst(value)).access();    // совместим с любым типом
+    *guard(cnst(value));            // совместим с любым типом
+    (**cnst(value));
+
+    // Доступ к неконстантному члену класса
+    value->m_member;
+
+    value.guard().access().m_member;
+    value.guard()->m_member;
+    (*value.guard()).m_member;
+
+    guard(value).access().m_member; // совместим с любым типом (*)
+    vGet(value).m_member;           // то же, но реализуется через макрос (*!)
+    guard(value)->m_member;         // совместим с любым типом
+    (*guard(value)).m_member;       // совместим с любым типом
+
+    (*value).access().m_member;
+    (*value)->m_member;
+    (**value).m_member;
+
+    // Доступ к константному члену класса
+    value.cnst()->m_member;
+    cnst(value)->m_member;
+
+    value.cguard().access().m_member;
+    value.cguard()->m_member;
+    (*value.cguard()).m_member;
+
+    cguard(value).access().m_member;    // совместим с любым типом (*)
+    cGet(value).m_member;               // то же, но реализуется через макрос (*!)
+    cguard(value)->m_member;            // совместим с любым типом
+    (*cguard(value)).m_member;          // совместим с любым типом
+
+    value.cnst().guard().access().m_member;
+    value.cnst().guard()->m_member;
+    (*value.cnst().guard()).m_member;
+
+    guard(value.cnst()).access().m_member;
+    guard(value.cnst())->m_member;
+    (*guard(value.cnst())).m_member;
+
+    (*value.cnst()).access().m_member;
+    (*value.cnst())->m_member;
+    (**value.cnst()).m_member;
+
+    cnst(value).guard().access().m_member;
+    cnst(value).guard()->m_member;
+    (*cnst(value).guard()).m_member;
+
+    guard(cnst(value)).access().m_member;   // совместим с любым типом
+    guard(cnst(value))->m_member;           // совместим с любым типом
+    (*guard(cnst(value))).m_member;         // совместим с любым типом
+
+    (*cnst(value)).access().m_member;
+    (*cnst(value))->m_member;
+    (**cnst(value)).m_member;
 }

@@ -95,3 +95,6 @@ inline constexpr ValueGuard< const _WrapperType & > cguard ( const _WrapperType 
 {
     return ValueGuard< const _WrapperType & >( wrapper );
 }
+
+#define vGet( value ) guard( value ).access()
+#define cGet( value ) cguard( value ).access()

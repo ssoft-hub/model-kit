@@ -172,6 +172,26 @@ public:
     {
         return *this;
     }
+
+    ValueGuard< ThisType & > guard ()
+    {
+        return *this;
+    }
+
+    ValueGuard< const ThisType & > guard () const
+    {
+        return *this;
+    }
+
+    ValueGuard< const ThisType & > cguard () const
+    {
+        return *this;
+    }
+
+    const ThisType & cnst () const
+    {
+        return *this;
+    }
 };
 
 template < typename _Type >

@@ -92,9 +92,10 @@ struct InstanceBuildSwither
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
     static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( Instance< _OtherType, _OtherTool > && other )
     {
+        using OtherInstanceType = Instance< _OtherType, _OtherTool >;
         return  InstanceBuilder< _ThisType, _ThisTool, _OtherType >::construct(
             _OtherTool:: template value< _OtherType >( featureGuard(
-                    ::std::forward< Instance< _OtherType, _OtherTool > >( other ) ).access().m_holder ) );
+                    ::std::forward< OtherInstanceType >( other ) ).access().m_holder ) );
     }
 };
 

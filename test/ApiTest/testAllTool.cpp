@@ -19,16 +19,6 @@ void testTool ()
     value->m_age = 50;
     value->m_stature = 178.5;
 
-    // Альтернативный синтаксис
-    value->m_first_name = "Operator -> syntax";
-    (**value).m_first_name = "Dereferencing operator syntax";
-    **(**cnst(value)).m_first_name;
-    guard(value)->m_first_name = "Pointer syntax";
-    guard(value).access().m_first_name = "Access method syntax";
-
-    if ( **(cnst(value)->m_first_name) != "Member method syntax" )
-        value->m_first_name = "Member method syntax";
-
     // Явное использование guard гарантирует применение только того
     // свойства, за которое он отвечает.
 
