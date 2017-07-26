@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Helper/FeatureGuard.h>
-#include <Helper/ValueTrait.h>
+#include <Common/InitializeFlag.h>
+#include <Common/ValueTrait.h>
 #include <mutex>
 
 namespace Std
@@ -35,6 +35,10 @@ namespace Std
                 mutable LockType m_lock;
                 ValueType m_value;
 
+                constexpr HolderType ( InitializeFlag )
+                {
+                }
+
                 template < typename ... _Arguments >
                 HolderType ( _Arguments && ... arguments )
                 : m_lock()
@@ -43,8 +47,7 @@ namespace Std
                 }
 
                 HolderType ( ThisType && other )
-                : m_lock()
-                , m_value( ::std::forward< ValueType >( other.m_value ) )
+                : HolderType( ::std::forward< ValueType >( other.m_value ) )
                 {
                 }
 
@@ -55,8 +58,7 @@ namespace Std
 
                 template < typename _OtherType >
                 HolderType ( HolderType< _OtherType > && other )
-                : m_lock()
-                , m_value( ::std::forward< typename HolderType< _OtherType >::ValueType >( other.m_value ) )
+                : HolderType( ::std::forward< typename HolderType< _OtherType >::ValueType >( other.m_value ) )
                 {
                 }
 

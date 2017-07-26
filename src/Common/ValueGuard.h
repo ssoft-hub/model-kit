@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Helper/FeatureGuard.h>
+#include <Common/FeatureGuard.h>
 
 /*!
  * Класс - защитник всех свойств текущего значения. Предоставляет доступ к
@@ -8,9 +8,9 @@
  * Специализация данного шаблона определеяет каким образом защищается значение.
  */
 template < typename _ReferType >
-class ValueGuard
+class DefaultValueGuard
 {
-    using ThisType = ValueGuard< _ReferType >;
+    using ThisType = DefaultValueGuard< _ReferType >;
 
 public:
     using ReferType = _ReferType;
@@ -21,26 +21,26 @@ private:
     GuardType m_feature_guard;
 
 public:
-    constexpr ValueGuard ()
+    constexpr DefaultValueGuard ()
     : m_feature_guard()
     {
     }
 
-    ValueGuard ( ReferType refer )
+    DefaultValueGuard ( ReferType refer )
     : m_feature_guard( ::std::forward< ReferType >( refer ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
     }
 
-    ValueGuard ( GuardType && other )
+    DefaultValueGuard ( GuardType && other )
     : m_feature_guard( ::std::forward< GuardType >( other ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
     }
 
-    ValueGuard ( ThisType && other )
+    DefaultValueGuard ( ThisType && other )
     : m_feature_guard( ::std::forward< GuardType >( other.m_feature_guard ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
@@ -69,31 +69,48 @@ public:
 };
 
 /*!
+ * Специализация данного шаблона определеяет каким образом защищается значение.
+ * По умолчанию для всех видов ссылок используется DefaultValueGuard.
+ */
+template < typename _ReferType >
+struct ValueGuardHelper
+{
+    using type = DefaultValueGuard< _ReferType >;
+};
+
+/*!
+ * Класс - защитник свойства значения. Введен для удобства использования,
+ * переопределяет typename ValueGuardHelper< _ReferType >::type.
+ */
+template < typename _ReferType >
+using ValueGuard = typename ValueGuardHelper< _ReferType >::type;
+
+/*!
  * Методы формирования ValueGuard для применения заданного набора свойств
  * при осущесвлении доступа к внутреннему экземпляру значения.
  */
 template < typename _WrapperType >
 inline constexpr ValueGuard< _WrapperType & > guard ( _WrapperType & wrapper ) noexcept
 {
-    return ValueGuard< _WrapperType & >( wrapper );
+    return wrapper;
 }
 
 template < typename _WrapperType >
 inline constexpr ValueGuard< const _WrapperType & > guard ( const _WrapperType & wrapper ) noexcept
 {
-    return ValueGuard< const _WrapperType & >( wrapper );
+    return wrapper;
 }
 
 template < typename _WrapperType >
 inline constexpr ValueGuard< _WrapperType && > guard ( _WrapperType && wrapper ) noexcept
 {
-    return ValueGuard< _WrapperType && >( ::std::forward< _WrapperType >( wrapper ) );
+    return ::std::forward< _WrapperType >( wrapper );
 }
 
 template < typename _WrapperType >
 inline constexpr ValueGuard< const _WrapperType & > cguard ( const _WrapperType & wrapper ) noexcept
 {
-    return ValueGuard< const _WrapperType & >( wrapper );
+    return wrapper;
 }
 
 #define vGet( value ) guard( value ).access()

@@ -1,8 +1,9 @@
 #pragma once
 
-#include <Helper/InitializeFlag.h>
+#include <Common/InitializeFlag.h>
 #include "private/InstanceBuilder.h"
-#include "private/InstanceGuard.h"
+#include "private/InstanceFeatureGuard.h"
+#include "private/InstanceValueGuard.h"
 
 /*!
  * Класс для формирования экземпляра значения, наделенными дополнительными
@@ -13,10 +14,10 @@ template < typename _ValueType, typename _ValueTool >
 class Instance
 {
     template < typename >
-    friend struct ValueGuard;
+    friend struct InstanceValueGuard;
 
     template < typename >
-    friend struct FeatureGuard;
+    friend struct InstanceFeatureGuard;
 
     template < InstanceBuildSwitchType >
     friend struct InstanceBuildSwither;
@@ -37,7 +38,8 @@ private:
 public:
     //! Конструктор без специальной инициализации значения.
     /// В зависимости от инструмента, значение может не существовать.
-    constexpr Instance ( InitializeFlag )
+    constexpr Instance ( InitializeFlag flag )
+    : m_holder( flag )
     {
     }
 

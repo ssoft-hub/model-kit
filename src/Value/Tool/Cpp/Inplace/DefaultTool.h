@@ -1,107 +1,97 @@
 #pragma once
 
-#include <assert.h>
 #include <Common/InitializeFlag.h>
-#include <Common/ValueTrait.h>
+#include <utility>
 
 namespace Cpp
 {
-    namespace Raw
+    namespace Inplace
     {
         /*!
-         * Инструмент для формирования значения в "куче" на основе
-         * "голого" raw указателя.
+         * Инструмент для формирования значения "по месту". Определение "по месту" означает,
+         * что для значения не используется специальное размещение в куче и оно является
+         * неотъемлемой частью пространства имен, в котором это значение определено:
          */
-        struct HeapTool
+        struct DefaultTool
         {
             template < typename _Type >
             struct HolderType
             {
                 using ThisType = HolderType< _Type >;
-                using PointerType = _Type *;
+                using ValueType = _Type;
 
-                PointerType m_pointer;
+                ValueType m_value;
 
                 constexpr HolderType ( InitializeFlag )
-                : m_pointer()
                 {
                 }
 
                 template < typename ... _Arguments >
-                HolderType ( _Arguments && ... arguments )
-                : m_pointer( new _Type( ::std::forward< _Arguments >( arguments ) ... ) )
+                constexpr HolderType ( _Arguments && ... arguments )
+                : m_value( ::std::forward< _Arguments >( arguments ) ... )
                 {
                 }
 
                 HolderType ( ThisType && other )
-                : m_pointer( ::std::forward< PointerType >( other.m_pointer ) )
+                : HolderType( ::std::forward< ValueType >( other.m_value ) )
                 {
-                    other.m_pointer = nullptr;
                 }
 
                 HolderType ( const ThisType & other )
-                : HolderType( *other.m_pointer )
+                : HolderType( other.m_value )
                 {
                 }
 
                 template < typename _OtherType >
                 HolderType ( HolderType< _OtherType > && other )
-                : m_pointer( ::std::forward< typename HolderType< _OtherType >::PointerType >( other.m_pointer ) )
+                : HolderType( ::std::forward< typename HolderType< _OtherType >::ValueType >( other.m_value ) )
                 {
-                    other.m_pointer = nullptr;
                 }
 
                 template < typename _OtherType >
                 HolderType ( const HolderType< _OtherType > & other )
-                : HolderType( *other.m_pointer )
+                : HolderType( other.m_value )
                 {
                 }
 
                 ~HolderType ()
                 {
-                    delete m_pointer;
                 }
 
                 template < typename _OtherType >
                 ThisType & operator = ( _OtherType && other )
                 {
-                    assert( m_pointer );
-                    *m_pointer = ::std::forward< _OtherType >( other );
+                    m_value = ::std::forward< _OtherType >( other );
                     return *this;
                 }
 
                 template < typename _OtherType >
                 ThisType & operator = ( const _OtherType & other )
                 {
-                    assert( m_pointer );
-                    *m_pointer = other;
+                    m_value = other;
                     return *this;
                 }
 
                 ThisType & operator = ( ThisType && other )
                 {
-                    ::std::swap( m_pointer, other.m_pointer );
-                    return *this;
+                    return *this = ::std::forward< ValueType >( other.m_value );
                 }
 
                 ThisType & operator = ( const ThisType & other )
                 {
-                    assert( other.m_pointer );
-                    return *this = *other.m_pointer;
+                    return *this = other.m_value;
                 }
 
                 template < typename _OtherType >
                 ThisType & operator = ( HolderType< _OtherType > && other )
                 {
-                    ::std::swap< PointerType >( m_pointer, other.m_pointer );
-                    return *this;
+                    return *this = ::std::forward< typename HolderType< _OtherType >::ValueType >( other.m_value );
                 }
 
                 template < typename _OtherType >
                 ThisType & operator = ( const HolderType< _OtherType > & other )
                 {
-                    assert( other.m_pointer );
-                    return *this = *other.m_pointer;
+                    return *this = other.m_value;
                 }
             };
 
@@ -124,29 +114,20 @@ namespace Cpp
             template < typename _Type >
             static constexpr _Type & value ( HolderType< _Type > & holder )
             {
-                return *holder.m_pointer;
+                return holder.m_value;
             }
 
             template < typename _Type >
             static constexpr const _Type & value ( const HolderType< _Type > & holder )
             {
-                return *holder.m_pointer;
+                return holder.m_value;
             }
 
             template < typename _Type >
             static constexpr _Type && value ( HolderType< _Type > && holder )
             {
-                return ::std::forward< _Type >( *holder.m_pointer );
+                return ::std::forward< _Type >( holder.m_value );
             }
         };
     }
 }
-
-/*!
- * Специализация проверки свойства размещения значения в куче.
- */
-template < typename _Value >
-struct IsHeap< Instance< _Value, ::Cpp::Raw::HeapTool > >
-    : public ::std::true_type
-{
-};

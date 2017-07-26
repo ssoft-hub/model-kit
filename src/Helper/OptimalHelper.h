@@ -1,12 +1,12 @@
 #pragma once
 
-#include <Helper/ValueTrait.h>
+#include <Common/ValueTrait.h>
 
 // Предварительная декларация Instance
 template < typename _ValueType, typename _ValueTool > class Instance;
 
 // Базовые инструменты для размещения значения
-namespace Cpp { namespace Inplace { struct InplaceTool; } }
+namespace Cpp { namespace Inplace { struct DefaultTool; } }
 namespace Std { namespace Shared { struct ImplicitTool; } }
 
 /*!
@@ -17,12 +17,12 @@ namespace Std { namespace Shared { struct ImplicitTool; } }
  * дополнительных свойств, игнорируются.
  *
  * По умолчанию все типы оборачиваются типом Instance c размещением значения
- * по месту (::Cpp::Inplace::InplaceTool).
+ * по месту (::Cpp::Inplace::DefaultTool).
  */
 template < typename _ValueType >
-struct InstanceHelper
+struct OptimalHelper
 {
-    using DefaultTool = ::Cpp::Inplace::InplaceTool;
+    using DefaultTool = ::Cpp::Inplace::DefaultTool;
     using ImplicitTool = ::Std::Shared::ImplicitTool;
 
     using type = typename ::std::conditional<
@@ -34,14 +34,14 @@ struct InstanceHelper
 };
 
 template < typename _ValueType, typename _ValueTool >
-struct InstanceHelper< Instance< _ValueType, _ValueTool > >
+struct OptimalHelper< Instance< _ValueType, _ValueTool > >
 {
     using type = Instance< _ValueType, _ValueTool >;
 };
 
 // true, если _TestType полностью покрывает свойства _OtherType
 template < typename _TestType, typename _OtherType >
-struct TraitChecker
+struct OptimalTraitChecker
     : ::std::integral_constant< bool,
         ( !IsInstance< _OtherType >::value || ( IsInstance< _OtherType >::value && IsInstance< _TestType >::value ) )
         && ( !IsHeap< _OtherType >::value || ( IsHeap< _OtherType >::value && IsHeap< _TestType >::value ) )
@@ -59,18 +59,18 @@ struct TraitChecker
  * тип Instance не изменяет набор необходимых свойств, то исходный тип исключается.
  */
 template < typename _ValueType, typename _ValueTool, typename _RequaredTool >
-struct InstanceHelper< Instance< Instance< _ValueType, _ValueTool >, _RequaredTool > >
+struct OptimalHelper< Instance< Instance< _ValueType, _ValueTool >, _RequaredTool > >
 {
     using FullType = Instance< Instance< _ValueType, _ValueTool >, _RequaredTool >;
     using ShortType = Instance< _ValueType, _RequaredTool >;
     using InnerType = Instance< _ValueType, _ValueTool >;
 
     using type = typename ::std::conditional<
-        TraitChecker< ShortType, InnerType >::value,
-        typename InstanceHelper< ShortType >::type,
+        OptimalTraitChecker< ShortType, InnerType >::value,
+        typename OptimalHelper< ShortType >::type,
             typename ::std::conditional<
-                TraitChecker< InnerType, ShortType >::value,
-                typename InstanceHelper< InnerType >::type,
+                OptimalTraitChecker< InnerType, ShortType >::value,
+                typename OptimalHelper< InnerType >::type,
                 FullType
             >::type
         >::type;

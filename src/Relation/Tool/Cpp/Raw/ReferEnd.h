@@ -1,5 +1,5 @@
 #pragma once
-#include <Helper/FeatureGuard.h>
+#include <Common/FeatureGuard.h>
 #include <Relation/ReferEnd.h>
 #include <Relation/Tool/Cpp/Raw/RelationTool.h>
 

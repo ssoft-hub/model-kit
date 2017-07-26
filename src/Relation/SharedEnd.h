@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Helper/InitializeFlag.h>
+#include <Common/InitializeFlag.h>
 #include <Relation/AggregationEnd.h>
 #include <Relation/AssociationEnd.h>
 
@@ -13,11 +13,11 @@
 template < typename _ValueType, typename _RelationTool >
 class SharedEnd
 {
-    template < typename >
-    friend struct ValueGuard;
+//    template < typename >
+//    friend struct ValueGuard;
 
-    template < typename >
-    friend struct FeatureGuard;
+//    template < typename >
+//    friend struct FeatureGuard;
 
     using ThisType = SharedEnd< _ValueType, _RelationTool >;
 

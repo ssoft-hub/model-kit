@@ -6,7 +6,7 @@
 
 using ImplicitTool = ::Std::Shared::ImplicitTool;
 //using RelationTool = ::Std::Shared::RelationTool;
-using ValueTool = ::Cpp::Inplace::InplaceTool;
+using ValueTool = ::Cpp::Inplace::DefaultTool;
 
 struct Item
 {
@@ -103,8 +103,8 @@ struct TestType
 
 void testConstructor ()
 {
-    //using TestVariable = Instance< TestType, ::Cpp::Inplace::InplaceTool >;
     using TestVariable = Variable< TestType >;
+//    using TestVariable = Variable< typename OptimalHelper< TestType >::type >;
 
     // Конструктор без инициализации
     {
@@ -121,7 +121,7 @@ void testConstructor ()
     // Конструктор инициализации по значению и соответсвующий оператор равенства
     {
         TestVariable value( "Hello!" );
-        value = "Hello Memory!";
+        value = ::std::string( "Hello Memory!" );
         foo( value );
     }
 
@@ -130,7 +130,6 @@ void testConstructor ()
         const TestType first_text = ::std::string( "Hello!" );
         const TestType second_text = ::std::string( "Hello Memory!" );
         TestVariable value( first_text );
-        // TODO: операция присвоения не должна приводить к созданию нового экземпляра значения
         value = second_text;
         foo( value );
     }
@@ -156,10 +155,10 @@ void testConstructor ()
 void testRelation ()
 {
     // Значения определенного типа
-//    using UniqueInt = UniqueEnd< int, ::Cpp::Inplace::InplaceTool >;
-//    using SharedInt = SharedEnd< int, ::Cpp::Inplace::InplaceTool >;
-    using UniqueInt = Instance< int, ::Cpp::Inplace::InplaceTool >;
-    using SharedInt = Instance< int, ::Cpp::Inplace::InplaceTool >;
+//    using UniqueInt = UniqueEnd< int, ::Cpp::Inplace::DefaultTool >;
+//    using SharedInt = SharedEnd< int, ::Cpp::Inplace::DefaultTool >;
+    using UniqueInt = Instance< int, ::Cpp::Inplace::DefaultTool >;
+    using SharedInt = Instance< int, ::Cpp::Inplace::DefaultTool >;
 
     Variable< UniqueInt > unique_int;
     Variable< SharedInt > shared_int;

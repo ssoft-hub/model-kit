@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Helper/ValueGuard.h>
-#include <Helper/InstanceTrait.h>
+#include <Common/ValueGuard.h>
+#include <Common/InstanceTrait.h>
 
 enum InstanceBuildSwitchType
 {

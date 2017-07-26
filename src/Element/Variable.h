@@ -3,7 +3,6 @@
 
 /*!
  * Переменная поведенческой сущности (пространства имен метода).
- * Переопределяет тип Inplace, имеет условно-декларативный смысл.
  */
-template < typename _ValueType, typename _ValueTool = ::Cpp::Inplace::InplaceTool >
+template < typename _ValueType, typename _ValueTool = ::Cpp::Inplace::DefaultTool >
 using Variable = Property< _ValueType, _ValueTool >;

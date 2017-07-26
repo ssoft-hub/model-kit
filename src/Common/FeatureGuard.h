@@ -1,17 +1,15 @@
 #pragma once
 
-#include <Helper/ReferPointer.h>
+#include <Common/ReferPointer.h>
 #include <utility>
 
 /*!
- * Класс - защитник свойства значения.
- * Предоставляет доступ к занчению посредством метода access().
- * Специализация данного шаблона определеяет каким образом защищается значение.
+ *
  */
 template < typename _ReferType >
-class FeatureGuard
+class DefaultFeatureGuard
 {
-    using ThisType = FeatureGuard< _ReferType >;
+    using ThisType = DefaultFeatureGuard< _ReferType >;
 
 public:
     using ReferType = _ReferType;
@@ -22,21 +20,21 @@ private:
     ValuePointer m_pointer;
 
 public:
-    constexpr FeatureGuard ()
+    constexpr DefaultFeatureGuard ()
     : m_pointer()
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
     }
 
-    FeatureGuard ( ReferType refer )
+    DefaultFeatureGuard ( ReferType refer )
     : m_pointer( ::std::forward< ReferType >( refer ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
     }
 
-    FeatureGuard ( ThisType && other )
+    DefaultFeatureGuard ( ThisType && other )
     : m_pointer( ::std::forward< ValuePointer >( other.m_pointer ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
@@ -65,28 +63,49 @@ public:
 };
 
 /*!
+ * Специализация данного шаблона определеяет каким образом защищается значение.
+ * По умолчанию для всех видов ссылок используется DefaultFeatureGuard.
+ */
+template < typename _ReferType >
+struct FeatureGuardHelper
+{
+    using type = DefaultFeatureGuard< _ReferType >;
+};
+
+/*!
+ * Класс - защитник свойства значения. Введен для удобства использования,
+ * переопределяет typename FeatureGuardHelper< _ReferType >::type.
+ */
+template < typename _ReferType >
+using FeatureGuard = typename FeatureGuardHelper< _ReferType >::type;
+
+/*!
  * Методы для формирования защитников текущего свойства значения.
  */
 template < typename _WrapperType >
-inline constexpr FeatureGuard< _WrapperType & > featureGuard ( _WrapperType & wrapper ) noexcept
+inline constexpr FeatureGuard< _WrapperType & >
+    featureGuard ( _WrapperType & wrapper ) noexcept
 {
-    return FeatureGuard< _WrapperType & >( wrapper );
+    return wrapper;
 }
 
 template < typename _WrapperType >
-inline constexpr FeatureGuard< const _WrapperType & > featureGuard ( const _WrapperType & wrapper ) noexcept
+inline constexpr FeatureGuard< const _WrapperType & >
+    featureGuard ( const _WrapperType & wrapper ) noexcept
 {
-    return FeatureGuard< const _WrapperType & >( wrapper );
+    return wrapper;
 }
 
 template < typename _WrapperType >
-inline constexpr FeatureGuard< _WrapperType && > featureGuard ( _WrapperType && wrapper ) noexcept
+inline constexpr FeatureGuard< _WrapperType && >
+    featureGuard ( _WrapperType && wrapper ) noexcept
 {
-    return FeatureGuard< _WrapperType && >( ::std::forward< _WrapperType >( wrapper ) );
+    return ::std::forward< _WrapperType >( wrapper );
 }
 
 template < typename _WrapperType >
-inline constexpr FeatureGuard< const _WrapperType & > cfeatureGuard ( const _WrapperType & wrapper ) noexcept
+inline constexpr FeatureGuard< const _WrapperType & >
+    cfeatureGuard ( const _WrapperType & wrapper ) noexcept
 {
-    return FeatureGuard< const _WrapperType & >( wrapper );
+    return wrapper;
 }

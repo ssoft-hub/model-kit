@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Helper/FeatureGuard.h>
-#include <Helper/ValueTrait.h>
+#include <Common/InitializeFlag.h>
+#include <Common/ValueTrait.h>
 #include <memory>
 
 namespace Std
@@ -31,6 +31,10 @@ namespace Std
                 };
 
                 PointerType m_pointer;
+
+                constexpr HolderType ( InitializeFlag )
+                {
+                }
 
                 template < typename ... _Arguments >
                 HolderType ( _Arguments && ... arguments )

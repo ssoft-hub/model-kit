@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Helper/InitializeFlag.h>
+#include <Common/InitializeFlag.h>
 #include <Relation/AssociationEnd.h>
 
 /*!
@@ -12,11 +12,11 @@
 template < typename _ValueType, typename _RelationTool >
 class ReferEnd
 {
-    template < typename >
-    friend struct ValueGuard;
+//    template < typename >
+//    friend struct ValueGuard;
 
-    template < typename >
-    friend struct FeatureGuard;
+//    template < typename >
+//    friend struct FeatureGuard;
 
     using ThisType = ReferEnd< _ValueType, _RelationTool >;
 

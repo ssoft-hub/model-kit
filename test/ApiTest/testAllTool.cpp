@@ -50,7 +50,7 @@ template < typename _Type >
 void testToolByTool ()
 {
     testTool< _Type >();
-    testTool< Instance< _Type, ::Cpp::Inplace::InplaceTool > >();
+    testTool< Instance< _Type, ::Cpp::Inplace::DefaultTool > >();
     testTool< Instance< _Type, ::Cpp::Raw::HeapTool > >();
     testTool< Instance< _Type, ::Std::Mutex::AtomicTool > >();
     testTool< Instance< _Type, ::Std::Shared::ImplicitTool > >();
@@ -61,7 +61,7 @@ void testToolByTool ()
 void testAllTool ()
 {
     testToolByTool< MyType >();
-    testToolByTool< Instance< MyType, ::Cpp::Inplace::InplaceTool > >();
+    testToolByTool< Instance< MyType, ::Cpp::Inplace::DefaultTool > >();
     testToolByTool< Instance< MyType, ::Cpp::Raw::HeapTool > >();
     testToolByTool< Instance< MyType, ::Std::Mutex::AtomicTool > >();
     testToolByTool< Instance< MyType, ::Std::Shared::ImplicitTool > >();

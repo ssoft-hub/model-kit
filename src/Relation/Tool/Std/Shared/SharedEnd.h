@@ -1,5 +1,5 @@
 #pragma once
-#include <Helper/FeatureGuard.h>
+#include <Common/FeatureGuard.h>
 #include <Relation/SharedEnd.h>
 #include <Relation/Tool/Std/Shared/RelationTool.h>
 
