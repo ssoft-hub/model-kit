@@ -19,4 +19,10 @@ struct BaseType
     , m_string( string_value )
     {
     }
+
+    BaseType ( BaseType && ) = default;
+    BaseType ( const BaseType & ) = default;
+
+    BaseType & operator = ( BaseType && ) = default;
+    BaseType & operator = ( const BaseType & ) = default;
 };

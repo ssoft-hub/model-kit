@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef _MSC_VER
+#pragma warning( disable : 4521 4522 )
+#endif
+
 #include <ModelKit/Common/InitializeFlag.h>
 #include "private/InstanceBuilder.h"
 #include "private/InstanceFeatureGuard.h"
@@ -51,32 +55,38 @@ public:
     }
 
     //! Конструкторы перемещения
-    constexpr Instance ( ThisType && other ) = default;
+    Instance ( ThisType && other )
+    : m_holder( ::std::forward< HolderType >( other.m_holder ) )
+    {
+    }
 
     template < typename _OtherType, typename _OtherTool >
-    constexpr Instance ( Instance< _OtherType, _OtherTool > && other )
+    Instance ( Instance< _OtherType, _OtherTool > && other )
     : m_holder( InstanceBuilder< _ValueType, _ValueTool, Instance< _OtherType, _OtherTool > && >
         ::construct( ::std::forward< Instance< _OtherType, _OtherTool > >( other ) ) )
     {
     }
 
     //! Конструкторы копирования
-    constexpr Instance ( const ThisType & other ) = default;
+    Instance ( const ThisType & other )
+    : m_holder( other.m_holder )
+    {
+    }
 
     template < typename _OtherType, typename _OtherTool >
-    constexpr Instance ( const Instance< _OtherType, _OtherTool > & other )
+    Instance ( const Instance< _OtherType, _OtherTool > & other )
     : m_holder( InstanceBuilder< _ValueType, _ValueTool,
         const Instance< _OtherType, _OtherTool > & >::construct( other ) )
     {
     }
 
     // NOTE: Определен из-за наличия Instance ( _Arguments && ... ).
-    constexpr Instance ( ThisType & other )
+    Instance ( ThisType & other )
     : Instance( const_cast< const ThisType & >( other ) ) {}
 
     // NOTE: Определен из-за наличия Instance ( _Arguments && ... ).
     template < typename _OtherType, typename _OtherTool >
-    constexpr Instance ( Instance< _OtherType, _OtherTool > & other )
+    Instance ( Instance< _OtherType, _OtherTool > & other )
     : Instance( const_cast< const Instance< _OtherType, _OtherTool > & >( other ) )
     {
     }

@@ -20,10 +20,9 @@ struct DerivedType
     {
     }
 
-    DerivedType ( const DerivedType & other )
-    : BaseType( other )
-    , m_int( other.m_int )
-    , m_string( other.m_string )
-    {
-    }
+    DerivedType ( DerivedType && ) = default;
+    DerivedType ( const DerivedType & ) = default;
+
+    DerivedType & operator = ( DerivedType && ) = default;
+    DerivedType & operator = ( const DerivedType & ) = default;
 };
