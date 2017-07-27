@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Common/FeatureGuard.h>
+#include <ModelKit/Common/FeatureGuard.h>
 
 /*!
  * Класс - защитник всех свойств текущего значения. Предоставляет доступ к

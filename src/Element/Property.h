@@ -1,5 +1,6 @@
 #pragma once
-#include <Helper/DefaultHelper.h>
+#include <ModelKit/Helper/DefaultHelper.h>
+#include <ModelKit/Value/Instance.h>
 
 /*!
  * Свойство классификатора объекта (структуры или класса).

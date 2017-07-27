@@ -1,3 +1,4 @@
+#include <ModelKit/Value/Tool/Std/Shared/ImplicitTool.h>
 #include "BaseType.h"
 
 struct DerivedType

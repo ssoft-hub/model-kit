@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Common/InitializeFlag.h>
+#include <ModelKit/Common/InitializeFlag.h>
 #include <utility>
 
 namespace Cpp

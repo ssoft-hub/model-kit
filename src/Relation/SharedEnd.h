@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Common/InitializeFlag.h>
+#include <ModelKit/Common/InitializeFlag.h>
 #include <Relation/AggregationEnd.h>
 #include <Relation/AssociationEnd.h>
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Common/InitializeFlag.h>
+#include <ModelKit/Common/InitializeFlag.h>
 #include "private/InstanceBuilder.h"
 #include "private/InstanceFeatureGuard.h"
 #include "private/InstanceValueGuard.h"

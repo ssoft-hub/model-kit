@@ -1,8 +1,8 @@
 #pragma once
 
 #include <assert.h>
-#include <Common/InitializeFlag.h>
-#include <Common/ValueTrait.h>
+#include <ModelKit/Common/InitializeFlag.h>
+#include <ModelKit/Common/InstanceTrait.h>
 
 namespace Cpp
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Common/HolderGuard.h>
-#include <Common/InitializeFlag.h>
-#include <Common/ValueTrait.h>
+#include <ModelKit/Common/HolderGuard.h>
+#include <ModelKit/Common/InitializeFlag.h>
+#include <ModelKit/Common/InstanceTrait.h>
 #include <memory>
 
 namespace Std

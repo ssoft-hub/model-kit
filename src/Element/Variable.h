@@ -1,5 +1,5 @@
 #pragma once
-#include <Element/Property.h>
+#include <ModelKit/Element/Property.h>
 
 /*!
  * Переменная поведенческой сущности (пространства имен метода).

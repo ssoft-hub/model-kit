@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Common/ValueGuard.h>
+#include <ModelKit/Common/ValueGuard.h>
 
 template < typename _ValueType, typename _ValueTool >
 class Instance;

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Common/ValueGuard.h>
-#include <Common/InstanceTrait.h>
+#include <ModelKit/Common/ValueGuard.h>
+#include <ModelKit/Common/InstanceTrait.h>
 
 enum InstanceBuildSwitchType
 {
@@ -65,6 +65,11 @@ struct InstanceBuilder< _ThisType, _ThisTool, _Type >
     static constexpr _Type && construct ( _Type && other )
     {
         return ::std::forward< _Type >( other );
+    }
+
+    static constexpr const _Type & construct ( const _Type & other )
+    {
+        return other;
     }
 };
 

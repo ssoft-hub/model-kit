@@ -1,12 +1,10 @@
 #pragma once
 
+#include <ModelKit/Value/Tool/Cpp/Inplace/DefaultTool.h>
 #include <type_traits>
 
 // Предварительная декларация Instance
 template < typename _ValueType, typename _ValueTool > class Instance;
-
-// Базовый инструмент для размещения значения
-namespace Cpp { namespace Inplace { struct DefaultTool; } }
 
 /*!
  * Класс-помошник для вычисления типа обертки Instance для наделения

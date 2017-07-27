@@ -1,8 +1,6 @@
+#include <ModelKit.h>
 #include <iostream>
 #include <string>
-#include "memory.h"
-#include "BaseType.h"
-#include "DerivedType.h"
 
 using ImplicitTool = ::Std::Shared::ImplicitTool;
 //using RelationTool = ::Std::Shared::RelationTool;
@@ -69,8 +67,6 @@ struct Item
 //}
 
 extern void testAllTool ();
-extern void testBaseDerived ();
-extern void testTrait ();
 extern void testRelation ();
 
 template < typename _Type >
@@ -169,9 +165,7 @@ void testRelation ()
 int main ( int /*argc*/, char ** /*argv*/ )
 {
     testConstructor();
-    testBaseDerived();
     testAllTool();
-    testTrait();
     testRelation();
 
 

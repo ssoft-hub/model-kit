@@ -1,5 +1,5 @@
 #pragma once
-#include <Common/FeatureGuard.h>
+#include <ModelKit/Common/FeatureGuard.h>
 #include <Relation/ReferEnd.h>
 #include <Relation/SharedEnd.h>
 #include <Relation/UniqueEnd.h>

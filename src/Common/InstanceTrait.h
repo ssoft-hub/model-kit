@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Common/ValueTrait.h>
+#include <ModelKit/Common/ValueTrait.h>
 
 // Предварительная декларация Instance
 template < typename _ValueType, typename _ValueTool > class Instance;

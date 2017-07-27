@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Common/FeatureGuard.h>
+#include <ModelKit/Common/FeatureGuard.h>
 
 template < typename _ValueType, typename _ValueTool >
 class Instance;
