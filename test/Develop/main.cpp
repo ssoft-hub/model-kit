@@ -240,8 +240,6 @@ void syntaxExample ()
     value = ExampleType();
 
     // Доступ к неконстантному внутреннему значению
-    value.guard().access();
-    *value.guard();
     guard(value).access();      // совместим с любым типом (*)
     *guard(value);              // совместим с любым типом
     (**value);
@@ -249,30 +247,20 @@ void syntaxExample ()
     vGet(value);                // реализуется через макрос (!)
 
     // Доступ к константному вутреннему значению
-    value.cguard().access();
-    *value.cguard();
     cguard(value).access();     // совместим с любым типом (*)
     cGet(value);                // то же, но реализуется через макрос (*!)
     *cguard(value);             // совместим с любым типом
 
-    value.cnst().guard().access();
-    *value.cnst().guard();
     guard(value.cnst()).access();
     *guard(value.cnst());
     (**value.cnst());
 
-    cnst(value).guard().access();
-    *cnst(value).guard();
     guard(cnst(value)).access();    // совместим с любым типом
     *guard(cnst(value));            // совместим с любым типом
     (**cnst(value));
 
     // Доступ к неконстантному члену класса
     value->m_member;
-
-    value.guard().access().m_member;
-    value.guard()->m_member;
-    (*value.guard()).m_member;
 
     guard(value).access().m_member; // совместим с любым типом (*)
     vGet(value).m_member;           // то же, но реализуется через макрос (*!)
@@ -287,18 +275,10 @@ void syntaxExample ()
     value.cnst()->m_member;
     cnst(value)->m_member;
 
-    value.cguard().access().m_member;
-    value.cguard()->m_member;
-    (*value.cguard()).m_member;
-
     cguard(value).access().m_member;    // совместим с любым типом (*)
     cGet(value).m_member;               // то же, но реализуется через макрос (*!)
     cguard(value)->m_member;            // совместим с любым типом
     (*cguard(value)).m_member;          // совместим с любым типом
-
-    value.cnst().guard().access().m_member;
-    value.cnst().guard()->m_member;
-    (*value.cnst().guard()).m_member;
 
     guard(value.cnst()).access().m_member;
     guard(value.cnst())->m_member;
@@ -307,10 +287,6 @@ void syntaxExample ()
     (*value.cnst()).access().m_member;
     (*value.cnst())->m_member;
     (**value.cnst()).m_member;
-
-    cnst(value).guard().access().m_member;
-    cnst(value).guard()->m_member;
-    (*cnst(value).guard()).m_member;
 
     guard(cnst(value)).access().m_member;   // совместим с любым типом
     guard(cnst(value))->m_member;           // совместим с любым типом
