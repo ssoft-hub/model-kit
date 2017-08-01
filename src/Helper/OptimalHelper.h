@@ -2,7 +2,7 @@
 
 #include <ModelKit/Common/ValueTrait.h>
 #include <ModelKit/Value/Tool/Cpp/Inplace/DefaultTool.h>
-#include <ModelKit/Value/Tool/Std/Shared/ImplicitTool.h>
+#include <ModelKit/Value/Tool/Cpp/Raw/ImplicitTool.h>
 
 // Предварительная декларация Instance
 template < typename _ValueType, typename _ValueTool > class Instance;
@@ -21,7 +21,7 @@ template < typename _ValueType >
 struct OptimalHelper
 {
     using DefaultTool = ::Cpp::Inplace::DefaultTool;
-    using ImplicitTool = ::Std::Shared::ImplicitTool;
+    using ImplicitTool = ::Cpp::Raw::ImplicitTool;
 
     using type = typename ::std::conditional<
         ::std::is_trivially_copyable< _ValueType >::value

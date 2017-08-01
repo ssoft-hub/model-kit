@@ -12,7 +12,6 @@ void testTool ()
     value = ::std::move( other ); // other not valid!!!
     other = Variable< _TestType >(); // initialize other
     other = value;
-    value = _TestType();
 
     value->m_first_name = "first name";
     value->m_last_name = "last name";
@@ -52,6 +51,7 @@ void testToolByTool ()
     testTool< _Type >();
     testTool< Instance< _Type, ::Cpp::Inplace::DefaultTool > >();
     testTool< Instance< _Type, ::Cpp::Raw::HeapTool > >();
+    testTool< Instance< _Type, ::Cpp::Raw::ImplicitTool > >();
     testTool< Instance< _Type, ::Std::Mutex::AtomicTool > >();
     testTool< Instance< _Type, ::Std::Shared::ImplicitTool > >();
     testTool< Instance< _Type, ::Std::Shared::HeapTool > >();
@@ -63,6 +63,7 @@ void testAllTool ()
     testToolByTool< MyType >();
     testToolByTool< Instance< MyType, ::Cpp::Inplace::DefaultTool > >();
     testToolByTool< Instance< MyType, ::Cpp::Raw::HeapTool > >();
+    testToolByTool< Instance< MyType, ::Cpp::Raw::ImplicitTool > >();
     testToolByTool< Instance< MyType, ::Std::Mutex::AtomicTool > >();
     testToolByTool< Instance< MyType, ::Std::Shared::ImplicitTool > >();
     testToolByTool< Instance< MyType, ::Std::Shared::HeapTool > >();

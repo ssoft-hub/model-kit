@@ -81,8 +81,8 @@ void testDerived ()
 
 void testBaseDerivedSetting ()
 {
-    using BaseTestType = Instance< BaseType, ::Std::Shared::ImplicitTool >;
-    using DerivedTestType = Instance< DerivedType, ::Std::Shared::ImplicitTool >;
+    using BaseTestType = Instance< BaseType, ::Cpp::Raw::ImplicitTool >;
+    using DerivedTestType = Instance< DerivedType, ::Cpp::Raw::ImplicitTool >;
 
     Variable< DerivedTestType > derived_value;
 
