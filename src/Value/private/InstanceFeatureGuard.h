@@ -16,13 +16,21 @@ struct InstanceFeatureGuard
 public:
     using ReferType = _ReferType;
     using AccessType = ReferType;
+
     using InstancePointer = ReferPointer< ReferType >;
     using InstanceType = typename ::std::remove_reference< ReferType >::type;
     using InstanceTool = typename InstanceType::ValueTool;
-    using HolderType = typename ::std::conditional<
+
+    using HolderReferType = typename ::std::conditional<
         ::std::is_const< InstanceType >::value,
-        const typename InstanceType::HolderType &,
-        typename InstanceType::HolderType >::type;
+        typename ::std::conditional<
+            ::std::is_rvalue_reference< ReferType >::value,
+            const typename InstanceType::HolderType &&,
+            const typename InstanceType::HolderType & >::type,
+        typename ::std::conditional<
+            ::std::is_rvalue_reference< ReferType >::value,
+            typename InstanceType::HolderType &&,
+            typename InstanceType::HolderType & >::type >::type;
 
 private:
     InstancePointer m_pointer;
@@ -40,7 +48,7 @@ public:
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
-        InstanceTool::guardHolder( ::std::forward< HolderType >( m_pointer->m_holder ) );
+        InstanceTool::guardHolder( ::std::forward< HolderReferType >( m_pointer->m_holder ) );
     }
 
     InstanceFeatureGuard ( ThisType && other )
@@ -53,7 +61,7 @@ public:
     ~InstanceFeatureGuard ()
     {
         if ( !!m_pointer )
-            InstanceTool::unguardHolder( ::std::forward< HolderType >( m_pointer->m_holder ) );
+            InstanceTool::unguardHolder( ::std::forward< HolderReferType >( m_pointer->m_holder ) );
     }
 
     constexpr bool operator ! () const
