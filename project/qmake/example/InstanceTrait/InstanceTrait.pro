@@ -1,6 +1,7 @@
 # Тип сборки
 TEMPLATE = app
 TARGET = Example-ModelKit-InstanceTrait
+CONFIG *= console
 
 # Перечень зависимостей
 DEPENDS *= \
