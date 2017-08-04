@@ -4,9 +4,11 @@
 #pragma warning( disable : 4521 4522 )
 #endif
 
+#include <ModelKit/Common/Cnst.h>
 #include <ModelKit/Common/InitializeFlag.h>
 #include "private/InstanceBuilder.h"
 #include "private/InstanceFeatureGuard.h"
+#include "private/InstanceOperation.h"
 #include "private/InstanceValueGuard.h"
 
 /*!
@@ -162,9 +164,8 @@ public:
         return reinterpret_cast< const Instance< const _ValueType, _ValueTool > & >( *this );
     }
 
-    /// Альтернативные методы доступа к значению
-    // NOTE: Требуется оценка необходимости, так как методы не совместимы
-    // с типами, отличными от Instance.
+    // NOTE: Используется доступ через оператор "->", но семантически необходим ".".
+    // TODO: Ожидается с внедрением N4477 или P0352.
     ValueGuard< ThisType & > operator -> ()
     {
         return *this;
@@ -175,168 +176,13 @@ public:
         return *this;
     }
 
-    ValueGuard< ThisType & > operator * ()
+    ValueGuard< ThisType & > operator & ()
     {
         return *this;
     }
 
-    ValueGuard< const ThisType & > operator * () const
-    {
-        return *this;
-    }
-
-    const ThisType & cnst () const
+    ValueGuard< const ThisType & > operator & () const
     {
         return *this;
     }
 };
-
-template < typename _Type >
-inline constexpr const _Type & cnst ( const _Type & value )
-{
-    return value;
-}
-
-template < typename _LeftType, typename _LeftTool, typename _RightType >
-inline constexpr bool operator < (
-    const Instance< _LeftType, _LeftTool > & left,
-    const _RightType & right )
-{
-    return *guard( left ) < *guard( right );
-}
-
-template < typename _LeftType, typename _LeftTool, typename _RightType >
-inline constexpr bool operator <= (
-    const Instance< _LeftType, _LeftTool > & left,
-    const _RightType & right )
-{
-    return *guard( left ) <= *guard( right );
-}
-
-template < typename _LeftType, typename _LeftTool, typename _RightType >
-inline constexpr bool operator > (
-    const Instance< _LeftType, _LeftTool > & left,
-    const _RightType & right )
-{
-    return *guard( left ) > *guard( right );
-}
-
-template < typename _LeftType, typename _LeftTool, typename _RightType >
-inline constexpr bool operator >= (
-    const Instance< _LeftType, _LeftTool > & left,
-    const _RightType & right )
-{
-    return *guard( left ) >= *guard( right );
-}
-
-template < typename _LeftType, typename _LeftTool, typename _RightType >
-inline constexpr bool operator == (
-    const Instance< _LeftType, _LeftTool > & left,
-    const _RightType & right )
-{
-    return *guard( left ) = *guard( right );
-}
-
-template < typename _LeftType, typename _LeftTool, typename _RightType >
-inline constexpr bool operator != (
-    const Instance< _LeftType, _LeftTool > & left,
-    const _RightType & right )
-{
-    return *guard( left ) != *guard( right );
-}
-
-template < typename _LeftType, typename _RightType, typename _RightTool >
-inline constexpr bool operator < (
-    const _LeftType & left,
-    const Instance< _RightType, _RightTool > & right )
-{
-    return *guard( left ) < *guard( right );
-}
-
-template < typename _LeftType, typename _RightType, typename _RightTool >
-inline constexpr bool operator <= (
-    const _LeftType & left,
-    const Instance< _RightType, _RightTool > & right )
-{
-    return *guard( left ) <= *guard( right );
-}
-
-template < typename _LeftType, typename _RightType, typename _RightTool >
-inline constexpr bool operator > (
-    const _LeftType & left,
-    const Instance< _RightType, _RightTool > & right )
-{
-    return *guard( left ) > *guard( right );
-}
-
-template < typename _LeftType, typename _RightType, typename _RightTool >
-inline constexpr bool operator >= (
-    const _LeftType & left,
-    const Instance< _RightType, _RightTool > & right )
-{
-    return *guard( left ) >= *guard( right );
-}
-
-template < typename _LeftType, typename _RightType, typename _RightTool >
-inline constexpr bool operator == (
-    const _LeftType & left,
-    const Instance< _RightType, _RightTool > & right )
-{
-    return *guard( left ) = *guard( right );
-}
-
-template < typename _LeftType, typename _RightType, typename _RightTool >
-inline constexpr bool operator != (
-    const _LeftType & left,
-    const Instance< _RightType, _RightTool > & right )
-{
-    return *guard( left ) != *guard( right );
-}
-
-template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool >
-inline constexpr bool operator < (
-    const Instance< _LeftType, _LeftTool > & left,
-    const Instance< _RightType, _RightTool > & right )
-{
-    return *guard( left ) < *guard( right );
-}
-
-template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool >
-inline constexpr bool operator <= (
-    const Instance< _LeftType, _LeftTool > & left,
-    const Instance< _RightType, _RightTool > & right )
-{
-    return *guard( left ) <= *guard( right );
-}
-
-template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool >
-inline constexpr bool operator > (
-    const Instance< _LeftType, _LeftTool > & left,
-    const Instance< _RightType, _RightTool > & right )
-{
-    return *guard( left ) > *guard( right );
-}
-
-template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool >
-inline constexpr bool operator >= (
-    const Instance< _LeftType, _LeftTool > & left,
-    const Instance< _RightType, _RightTool > & right )
-{
-    return *guard( left ) >= *guard( right );
-}
-
-template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool >
-inline constexpr bool operator == (
-    const Instance< _LeftType, _LeftTool > & left,
-    const Instance< _RightType, _RightTool > & right )
-{
-    return *guard( left ) = *guard( right );
-}
-
-template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool >
-inline constexpr bool operator != (
-    const Instance< _LeftType, _LeftTool > & left,
-    const Instance< _RightType, _RightTool > & right )
-{
-    return *guard( left ) != *guard( right );
-}

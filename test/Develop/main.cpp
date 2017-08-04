@@ -191,8 +191,8 @@ int main ( int /*argc*/, char ** /*argv*/ )
 //    Variable< const SharedEnd< int, ToolType >  > int_value; // OK
 //    Variable< SharedEnd< const int, ToolType > > int_value; // ERROR
 
-    ( **int_value ) += 12345;
-    **cnst( int_value );
+    (*&int_value) += 12345;
+    *&cnst(int_value);
 
     Variable< ::std::string > name;
     name = "Hello";
@@ -203,22 +203,22 @@ int main ( int /*argc*/, char ** /*argv*/ )
     item->m_string = "Item";
 
     ::std::cout
-        << **cnst( int_value ) << ::std::endl
-        << **cnst( name ) << ::std::endl
-        << **( cnst( item )->m_int ) << ::std::endl
-        << **( cnst( item )->m_string ) << ::std::endl
+        << *&cnst(int_value) << ::std::endl
+        << *&cnst(name) << ::std::endl
+        << *&cnst(item)->m_int << ::std::endl
+        << *&cnst(item)->m_string << ::std::endl
     ;
 
     Variable< Instance< Item, ValueTool >, ImplicitTool > other_item;// = item;
-//    vGet( other_item ).m_refer = cGet( item ).m_string;
+//    (*&other_item ).m_refer = (*&cnst(item ).m_string;
 
     other_item->m_int = 1;
     other_item->m_string = "Word";
 
     ::std::cout
-        << **cguard( other_item )->m_int << ::std::endl
-        << **cguard( other_item )->m_string << ::std::endl
-//        << **cguard( other_item )->m_string_refer << ::std::endl
+        << *&cnst(other_item)->m_int << ::std::endl
+        << *&cnst(other_item)->m_string << ::std::endl
+//        << *&cnst(other_item)->m_string_refer << ::std::endl
     ;
 
     return 0;
@@ -242,57 +242,45 @@ void syntaxExample ()
     // Доступ к неконстантному внутреннему значению
     guard(value).access();      // совместим с любым типом (*)
     *guard(value);              // совместим с любым типом
-    (**value);
-
-    vGet(value);                // реализуется через макрос (!)
+    (*&value);
 
     // Доступ к константному вутреннему значению
     cguard(value).access();     // совместим с любым типом (*)
-    cGet(value);                // то же, но реализуется через макрос (*!)
     *cguard(value);             // совместим с любым типом
-
-    guard(value.cnst()).access();
-    *guard(value.cnst());
-    (**value.cnst());
 
     guard(cnst(value)).access();    // совместим с любым типом
     *guard(cnst(value));            // совместим с любым типом
-    (**cnst(value));
+    (*&cnst(value));
 
     // Доступ к неконстантному члену класса
     value->m_member;
 
     guard(value).access().m_member; // совместим с любым типом (*)
-    vGet(value).m_member;           // то же, но реализуется через макрос (*!)
     guard(value)->m_member;         // совместим с любым типом
     (*guard(value)).m_member;       // совместим с любым типом
 
-    (*value).access().m_member;
-    (*value)->m_member;
-    (**value).m_member;
+    (&value).access().m_member;
+    (&value)->m_member;
+    (*&value).m_member;
 
     // Доступ к константному члену класса
-    value.cnst()->m_member;
     cnst(value)->m_member;
 
     cguard(value).access().m_member;    // совместим с любым типом (*)
-    cGet(value).m_member;               // то же, но реализуется через макрос (*!)
     cguard(value)->m_member;            // совместим с любым типом
     (*cguard(value)).m_member;          // совместим с любым типом
-
-    guard(value.cnst()).access().m_member;
-    guard(value.cnst())->m_member;
-    (*guard(value.cnst())).m_member;
-
-    (*value.cnst()).access().m_member;
-    (*value.cnst())->m_member;
-    (**value.cnst()).m_member;
 
     guard(cnst(value)).access().m_member;   // совместим с любым типом
     guard(cnst(value))->m_member;           // совместим с любым типом
     (*guard(cnst(value))).m_member;         // совместим с любым типом
 
-    (*cnst(value)).access().m_member;
-    (*cnst(value))->m_member;
-    (**cnst(value)).m_member;
+    (&cnst(value)).access().m_member;
+    (&cnst(value))->m_member;
+    (*&cnst(value)).m_member;
+
+
+    if ( Variable< int >( 10 ) > 20 )
+    {
+
+    }
 }

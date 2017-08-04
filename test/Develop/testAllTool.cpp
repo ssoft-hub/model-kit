@@ -10,7 +10,6 @@ void testTool ()
 
     other = _TestType();
     value = ::std::move( other ); // other not valid!!!
-    other = Variable< _TestType >(); // initialize other
     other = value;
 
     value->m_first_name = "first name";
@@ -26,7 +25,7 @@ void testTool ()
     // (например, в случае implicit shared значения).
 
     // Например, использование кода: auto x = cguard( value )->access();
-    // или эквивалентного: auto x = cGet( value ); не гарантирует корректный
+    // или эквивалентного: auto x = (*&cnst(value ); не гарантирует корректный
     // доступ по значению x.
 
     // Иногда, имеет смысл применять гаранты, если необходимо снизить
@@ -34,15 +33,15 @@ void testTool ()
     // (например, системные блокировки и т.п.)
 
     // Гарант свойств для применения константного значения value
-    auto guarder = cguard( value );
+    auto cvalue_ptr = &cnst( value );
 
     // value
     ::std::cout
         << "Test tool:" << ::std::endl
-        << ( **( (*guarder).m_first_name ) ) << ::std::endl
-        << ( **( (*guarder).m_last_name ) ) << ::std::endl
-        << ( **( guarder->m_age ) ) << ::std::endl
-        << ( **( guarder->m_stature ) ) << ::std::endl;
+        << *&(cvalue_ptr->m_first_name) << ::std::endl
+        << *&(cvalue_ptr->m_last_name) << ::std::endl
+        << *&(cvalue_ptr->m_age) << ::std::endl
+        << *&(cvalue_ptr->m_stature) << ::std::endl;
 }
 
 template < typename _Type >

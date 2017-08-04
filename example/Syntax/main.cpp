@@ -71,9 +71,9 @@ void appendSecondVariant ()
 void appendThirdVariant ()
 {
     Variable< Key > key = "third";
-    (**(**global_map)[ key ]).m_name = "Third user";
-    (**(**(**global_map)[ key ]).m_card).m_id = 3L;
-    (**(**(**global_map)[ key ]).m_card).m_limit = 333;
+    (*&(*&global_map)[ key ]).m_name = "Third user";
+    (*&(*&(*&global_map)[ key ]).m_card).m_id = 3L;
+    (*&(*&(*&global_map)[ key ]).m_card).m_limit = 333;
 }
 
 // Вариант с использованием оператора ->.
@@ -92,13 +92,14 @@ void appendFourthVariant ()
 void appendFifthVariant ()
 {
     Variable< Key > key = "fifth";
-    (**global_map)[ key ]->m_name = "Fifth user";
-    (**global_map)[ key ]->m_card->m_id = 5L;
-    (**global_map)[ key ]->m_card->m_limit = 55555;
+    (*&global_map)[ key ]->m_name = "Fifth user";
+    (*&global_map)[ key ]->m_card->m_id = 5L;
+    (*&global_map)[ key ]->m_card->m_limit = 55555;
 }
 
 // Вариант с использованием макроса vGet/cGet.
 // Cовместим со значениями отличными от Instance.
+#ifdef _GET_MACROS_
 void appendSixthVariant ()
 {
     Variable< Key > key = "sixth";
@@ -106,6 +107,7 @@ void appendSixthVariant ()
     vGet( vGet( vGet( global_map )[ key ] ).m_card ).m_id = 5L;
     vGet( vGet( vGet( global_map )[ key ] ).m_card ).m_limit = 55555;
 }
+#endif
 
 int main ( int, char ** )
 {
@@ -114,7 +116,6 @@ int main ( int, char ** )
     appendThirdVariant();
     appendFourthVariant();
     appendFifthVariant();
-    appendSixthVariant();
 
     return 0;
 }

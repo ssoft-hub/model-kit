@@ -12,25 +12,25 @@ using DefaultMap = Instance< Map, ::Cpp::Inplace::DefaultTool >;
 using ImplicitMap = Instance< Map, ::Cpp::Raw::ImplicitTool >;
 
 template < typename _MapType >
-void func ( _MapType * map_strings_ptr )
+void func ()
 {
-    auto & map_strings = *map_strings_ptr;
+    static _MapType test_map;
 
-    (**map_strings)[ "apple" ].first = "fruit";
-    (**map_strings)[ "potato" ].first = "vegetable";
+    (*&test_map)[ "apple" ].first = "fruit";
+    (*&test_map)[ "potato" ].first = "vegetable";
 
     for ( size_t i = 0; i < 100000; ++i )
     {
-        map_strings->at( "apple" ).second++;
-        map_strings->find( "potato" )->second.second++;
+        test_map->at( "apple" ).second++;
+        test_map->find( "potato" )->second.second++;
     }
 
-    auto const & readonly_safe_map_string = map_strings;
+    auto const & readonly_map = test_map;
     ::std::cout
-        << "potato is " << readonly_safe_map_string->at( "potato" ).first
-        << " " << readonly_safe_map_string->at( "potato" ).second
-        << ", apple is " << readonly_safe_map_string->at( "apple" ).first
-        << " " << readonly_safe_map_string->at( "apple" ).second
+        << "potato is " << readonly_map->at( "potato" ).first
+        << " " << readonly_map->at( "potato" ).second
+        << ", apple is " << readonly_map->at( "apple" ).first
+        << " " << readonly_map->at( "apple" ).second
         << ::std::endl;
 }
 
@@ -46,11 +46,11 @@ void func ( _MapType * map_strings_ptr )
  * и в это время исполнялся другой поток.
  */
 template < typename _MapType >
-void example ( _MapType * map_strings_ptr )
+void example ()
 {
     ::std::vector< ::std::thread > threads( 10 );
     for ( auto & thread : threads )
-        thread = ::std::thread( func< _MapType >, map_strings_ptr );
+        thread = ::std::thread( func< _MapType > );
     for ( auto & thread : threads )
         thread.join();
 
@@ -61,16 +61,11 @@ void example ( _MapType * map_strings_ptr )
 int main ( int, char ** )
 {
     // Паралельно, но не атомарно.
-    DefaultMap default_map;
-    example( &default_map );
-
+    example< DefaultMap >();
     // Паралельно, но не атомарно.
-    ImplicitMap implicit_map;
-    example( &implicit_map );
-
+    example< ImplicitMap >();
     // Псевдопаралельно с блокировками, атомарно.
-    AtomicMap atomic_map;
-    example( &atomic_map );
+    example< AtomicMap >();
 
     return 0;
 }

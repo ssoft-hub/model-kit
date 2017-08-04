@@ -1,3 +1,4 @@
+#include "Common/Cnst.h"
 #include "Common/FeatureGuard.h"
 #include "Common/HolderGuard.h"
 #include "Common/InitializeFlag.h"
