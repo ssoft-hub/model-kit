@@ -11,7 +11,6 @@ template < typename _ReferType >
 class ReferPointer
 {
     using ThisType = ReferPointer< _ReferType >;
-    struct Dummy {};
 
 public:
     using ReferType = _ReferType;
@@ -23,8 +22,9 @@ private:
 private:
     //! Формирует указатель для любого типа ValueType, независимо от того
     /// переопределён оператор & или нет.
-    static constexpr ValueType * makePointer ( ValueType & refer )
+    static constexpr ValueType * addressOf ( ValueType & refer )
     {
+        struct Dummy {};
         using DummyType = typename ::std::conditional<
             ::std::is_const< ValueType >::value, const Dummy, Dummy >::type;
         return reinterpret_cast< ValueType * >( &reinterpret_cast< DummyType & >( refer ) );
@@ -37,7 +37,7 @@ public:
     }
 
     ReferPointer ( ReferType refer )
-    : m_pointer( makePointer( refer ) )
+    : m_pointer( addressOf( refer ) )
     {
     }
 

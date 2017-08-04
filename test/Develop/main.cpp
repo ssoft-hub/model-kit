@@ -203,10 +203,10 @@ int main ( int /*argc*/, char ** /*argv*/ )
     item->m_string = "Item";
 
     ::std::cout
-        << *&cnst(int_value) << ::std::endl
-        << *&cnst(name) << ::std::endl
-        << *&cnst(item)->m_int << ::std::endl
-        << *&cnst(item)->m_string << ::std::endl
+        << cnst(int_value) << ::std::endl
+        << cnst(name) << ::std::endl
+        << cnst(item)->m_int << ::std::endl
+        << cnst(item)->m_string << ::std::endl
     ;
 
     Variable< Instance< Item, ValueTool >, ImplicitTool > other_item;// = item;
@@ -216,9 +216,9 @@ int main ( int /*argc*/, char ** /*argv*/ )
     other_item->m_string = "Word";
 
     ::std::cout
-        << *&cnst(other_item)->m_int << ::std::endl
-        << *&cnst(other_item)->m_string << ::std::endl
-//        << *&cnst(other_item)->m_string_refer << ::std::endl
+        << cnst(other_item)->m_int << ::std::endl
+        << cnst(other_item)->m_string << ::std::endl
+//        << cnst(other_item)->m_string_refer << ::std::endl
     ;
 
     return 0;
@@ -277,10 +277,136 @@ void syntaxExample ()
     (&cnst(value)).access().m_member;
     (&cnst(value))->m_member;
     (*&cnst(value)).m_member;
+}
 
+void operatorExample ()
+{
+    Variable< int > test_value;
+    Variable< int > left_value;
+    Variable< int > right_value;
+    int cpp_value = 1;
 
-    if ( Variable< int >( 10 ) > 20 )
-    {
+    left_value + right_value;
+    cpp_value + right_value;
+    left_value + cpp_value;
 
-    }
+    left_value - right_value;
+    cpp_value - right_value;
+    left_value - cpp_value;
+
+    +test_value;
+    -test_value;
+
+    left_value * right_value;
+    cpp_value * right_value;
+    left_value * cpp_value;
+
+    left_value / right_value;
+    cpp_value / right_value;
+    left_value / cpp_value;
+
+    left_value % right_value;
+    cpp_value % right_value;
+    left_value % cpp_value;
+
+    ++test_value;
+    --test_value;
+    test_value++;
+    test_value--;
+
+    left_value == right_value;
+    cpp_value == right_value;
+    left_value == cpp_value;
+
+    left_value != right_value;
+    cpp_value != right_value;
+    left_value != cpp_value;
+
+    left_value > right_value;
+    cpp_value > right_value;
+    left_value > cpp_value;
+
+    left_value < right_value;
+    cpp_value < right_value;
+    left_value < cpp_value;
+
+    left_value >= right_value;
+    cpp_value >= right_value;
+    left_value >= cpp_value;
+
+    left_value <= right_value;
+    cpp_value <= right_value;
+    left_value <= cpp_value;
+
+    !test_value;
+
+    left_value && right_value;
+    cpp_value && right_value;
+    left_value && cpp_value;
+
+    left_value || right_value;
+    cpp_value || right_value;
+    left_value || cpp_value;
+
+    ~test_value;
+
+    left_value & right_value;
+    cpp_value & right_value;
+    left_value & cpp_value;
+
+    left_value | right_value;
+    cpp_value | right_value;
+    left_value | cpp_value;
+
+    left_value ^ right_value;
+    cpp_value ^ right_value;
+    left_value ^ cpp_value;
+
+    left_value << right_value;
+    cpp_value << right_value;
+    left_value << cpp_value;
+
+    left_value >> right_value;
+    cpp_value >> right_value;
+    left_value >> cpp_value;
+
+    left_value += right_value;
+    cpp_value += right_value;
+    left_value += cpp_value;
+
+    left_value -= right_value;
+    cpp_value -= right_value;
+    left_value -= cpp_value;
+
+    left_value *= right_value;
+    cpp_value *= right_value;
+    left_value *= cpp_value;
+
+    left_value /= right_value;
+    cpp_value /= right_value;
+    left_value /= cpp_value;
+
+    left_value %= right_value;
+    cpp_value %= right_value;
+    left_value %= cpp_value;
+
+    left_value &= right_value;
+    cpp_value &= right_value;
+    left_value &= cpp_value;
+
+    left_value |= right_value;
+    cpp_value |= right_value;
+    left_value |= cpp_value;
+
+    left_value ^= right_value;
+    cpp_value ^= right_value;
+    left_value ^= cpp_value;
+
+    left_value <<= right_value;
+    cpp_value <<= right_value;
+    left_value <<= cpp_value;
+
+    left_value >>= right_value;
+    cpp_value >>= right_value;
+    left_value >>= cpp_value;
 }

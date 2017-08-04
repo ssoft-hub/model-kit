@@ -10,6 +10,7 @@ void testTool ()
 
     other = _TestType();
     value = ::std::move( other ); // other not valid!!!
+    other = Variable< _TestType >();
     other = value;
 
     value->m_first_name = "first name";
@@ -38,10 +39,10 @@ void testTool ()
     // value
     ::std::cout
         << "Test tool:" << ::std::endl
-        << *&(cvalue_ptr->m_first_name) << ::std::endl
-        << *&(cvalue_ptr->m_last_name) << ::std::endl
-        << *&(cvalue_ptr->m_age) << ::std::endl
-        << *&(cvalue_ptr->m_stature) << ::std::endl;
+        << cvalue_ptr->m_first_name << ::std::endl
+        << cvalue_ptr->m_last_name << ::std::endl
+        << cvalue_ptr->m_age << ::std::endl
+        << cvalue_ptr->m_stature << ::std::endl;
 }
 
 template < typename _Type >
