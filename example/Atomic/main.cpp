@@ -21,16 +21,16 @@ void func ()
 
     for ( size_t i = 0; i < 100000; ++i )
     {
-        test_map->at( "apple" ).second++;
-        test_map->find( "potato" )->second.second++;
+        (&test_map)->at( "apple" ).second++;
+        (&test_map)->find( "potato" )->second.second++;
     }
 
-    auto const & readonly_map = test_map;
+    auto read_ptr = &test_map;
     ::std::cout
-        << "potato is " << readonly_map->at( "potato" ).first
-        << " " << readonly_map->at( "potato" ).second
-        << ", apple is " << readonly_map->at( "apple" ).first
-        << " " << readonly_map->at( "apple" ).second
+        << "potato is " << read_ptr->at( "potato" ).first
+        << " " << read_ptr->at( "potato" ).second
+        << ", apple is " << read_ptr->at( "apple" ).first
+        << " " << read_ptr->at( "apple" ).second
         << ::std::endl;
 }
 
@@ -60,6 +60,8 @@ void example ()
 
 int main ( int, char ** )
 {
+    // Паралельно, но не атомарно.
+    example< Map >();
     // Паралельно, но не атомарно.
     example< DefaultMap >();
     // Паралельно, но не атомарно.
