@@ -3,9 +3,10 @@
 #include <ModelKit/Common/FeatureGuard.h>
 
 /*!
- * Класс - защитник всех свойств текущего значения. Предоставляет доступ к
- * занчению посредством последовательного раскрытия метода access().
- * Специализация данного шаблона определеяет каким образом защищается значение.
+ * Класс - защитник всех свойств для экземпляра значения.
+ * Семантика защитника соответствует семантике работы с указателем.
+ * Предоставляет доступ к экземпляру значения посредством унарного оператора "*",
+ * а доступ к членам класса - посредством оператора "->".
  */
 template < typename _ReferType >
 class DefaultValueGuard
@@ -52,14 +53,9 @@ public:
         return !m_feature_guard;
     }
 
-    constexpr AccessType access () const
-    {
-        return ::std::forward< AccessType >( m_feature_guard.access() );
-    }
-
     constexpr AccessType operator * () const
     {
-        return ::std::forward< AccessType >( access() );
+        return ::std::forward< AccessType >( *m_feature_guard );
     }
 
     constexpr const GuardType & operator -> () const
@@ -84,31 +80,3 @@ struct ValueGuardHelper
  */
 template < typename _ReferType >
 using ValueGuard = typename ValueGuardHelper< _ReferType >::type;
-
-/*!
- * Методы формирования ValueGuard для применения заданного набора свойств
- * при осущесвлении доступа к внутреннему экземпляру значения.
- */
-template < typename _WrapperType >
-inline constexpr ValueGuard< _WrapperType & > guard ( _WrapperType & wrapper ) noexcept
-{
-    return wrapper;
-}
-
-template < typename _WrapperType >
-inline constexpr ValueGuard< const _WrapperType & > guard ( const _WrapperType & wrapper ) noexcept
-{
-    return wrapper;
-}
-
-template < typename _WrapperType >
-inline constexpr ValueGuard< _WrapperType && > guard ( _WrapperType && wrapper ) noexcept
-{
-    return ::std::forward< _WrapperType >( wrapper );
-}
-
-template < typename _WrapperType >
-inline constexpr ValueGuard< const _WrapperType & > cguard ( const _WrapperType & wrapper ) noexcept
-{
-    return wrapper;
-}

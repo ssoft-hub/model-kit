@@ -6,7 +6,11 @@ template < typename _ValueType, typename _ValueTool >
 class Instance;
 
 /*!
- *
+ * Класс - защитник свойства верхнего уровня для экземпляра значения.
+ * Реализует специализацию для значений обернутых в Instance.
+ * Семантика защитника соответствует семантике работы с указателем.
+ * Предоставляет доступ к экземпляру значения посредством унарного оператора "*",
+ * а доступ к членам класса - посредством оператора "->".
  */
 template < typename _ReferType >
 struct InstanceFeatureGuard
@@ -69,14 +73,9 @@ public:
         return !m_pointer;
     }
 
-    constexpr AccessType access () const
-    {
-        return ::std::forward< ReferType >( *m_pointer );
-    }
-
     constexpr ReferType operator * () const
     {
-        return access();
+        return ::std::forward< ReferType >( *m_pointer );
     }
 
     constexpr const InstancePointer & operator -> () const

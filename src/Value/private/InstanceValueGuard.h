@@ -6,7 +6,11 @@ template < typename _ValueType, typename _ValueTool >
 class Instance;
 
 /*!
- *
+ * Класс - защитник всех свойств для экземпляра значения.
+ * Реализует специализацию для значений обернутых в Instance.
+ * Семантика защитника соответствует семантике работы с указателем.
+ * Предоставляет доступ к экземпляру значения посредством унарного оператора "*",
+ * а доступ к членам класса - посредством оператора "->".
  */
 template < typename _ReferType >
 struct InstanceValueGuard
@@ -59,8 +63,8 @@ public:
 
     InstanceValueGuard ( ReferType refer )
     : m_feature_guard( ::std::forward< ReferType >( refer ) )
-    , m_internal_guard( featureGuard( ValueTool::value(
-        ::std::forward< HolderReferType >( m_feature_guard.access().m_holder ) ) ) )
+    , m_internal_guard( ValueTool::value(
+        ::std::forward< HolderReferType >( (*m_feature_guard).m_holder ) ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
@@ -68,8 +72,8 @@ public:
 
     InstanceValueGuard ( FeatureGuardType && other )
     : m_feature_guard( ::std::forward< FeatureGuardType >( other ) )
-    , m_internal_guard( featureGuard( ValueTool::value(
-        ::std::forward< HolderReferType >( m_feature_guard.access().m_holder ) ) ) )
+    , m_internal_guard( ValueTool::value(
+        ::std::forward< HolderReferType >( (*m_feature_guard).m_holder ) ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
@@ -88,14 +92,9 @@ public:
         return !m_feature_guard;
     }
 
-    constexpr AccessType access () const
-    {
-        return ::std::forward< AccessType >( m_internal_guard.access() );
-    }
-
     constexpr AccessType operator * () const
     {
-        return ::std::forward< AccessType >( access() );
+        return ::std::forward< AccessType >( *m_internal_guard );
     }
 
     constexpr const ValueGuardType & operator -> () const

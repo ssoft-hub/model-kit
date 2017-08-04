@@ -4,7 +4,10 @@
 #include <utility>
 
 /*!
- *
+ * Класс - защитник свойства верхнего уровня для экземпляра значения.
+ * Семантика защитника соответствует семантике работы с указателем.
+ * Предоставляет доступ к экземпляру значения посредством унарного оператора "*",
+ * а доступ к членам класса - посредством оператора "->".
  */
 template < typename _ReferType >
 class DefaultFeatureGuard
@@ -46,14 +49,9 @@ public:
         return !m_pointer;
     }
 
-    constexpr AccessType access () const
-    {
-        return ::std::forward< AccessType >( *m_pointer );
-    }
-
     constexpr AccessType operator * () const
     {
-        return ::std::forward< AccessType >( access() );
+        return ::std::forward< AccessType >( *m_pointer );
     }
 
     constexpr const ValuePointer & operator -> () const
@@ -78,34 +76,3 @@ struct FeatureGuardHelper
  */
 template < typename _ReferType >
 using FeatureGuard = typename FeatureGuardHelper< _ReferType >::type;
-
-/*!
- * Методы для формирования защитников текущего свойства значения.
- */
-template < typename _WrapperType >
-inline constexpr FeatureGuard< _WrapperType & >
-    featureGuard ( _WrapperType & wrapper ) noexcept
-{
-    return wrapper;
-}
-
-template < typename _WrapperType >
-inline constexpr FeatureGuard< const _WrapperType & >
-    featureGuard ( const _WrapperType & wrapper ) noexcept
-{
-    return wrapper;
-}
-
-template < typename _WrapperType >
-inline constexpr FeatureGuard< _WrapperType && >
-    featureGuard ( _WrapperType && wrapper ) noexcept
-{
-    return ::std::forward< _WrapperType >( wrapper );
-}
-
-template < typename _WrapperType >
-inline constexpr FeatureGuard< const _WrapperType & >
-    cfeatureGuard ( const _WrapperType & wrapper ) noexcept
-{
-    return wrapper;
-}

@@ -90,17 +90,19 @@ struct InstanceBuildSwither
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
     static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( const Instance< _OtherType, _OtherTool > & other )
     {
+        using OtherInstanceReferType = const Instance< _OtherType, _OtherTool > &;
         return  InstanceBuilder< _ThisType, _ThisTool, _OtherType >::construct(
-            _OtherTool:: template value< _OtherType >( featureGuard( other ).access().m_holder ) );
+            _OtherTool:: template value< _OtherType >( (*FeatureGuard< OtherInstanceReferType >( other )).m_holder ) );
     }
 
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
     static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( Instance< _OtherType, _OtherTool > && other )
     {
+        using OtherInstanceReferType = Instance< _OtherType, _OtherTool > &&;
         using OtherInstanceType = Instance< _OtherType, _OtherTool >;
         return  InstanceBuilder< _ThisType, _ThisTool, _OtherType >::construct(
-            _OtherTool:: template value< _OtherType >( featureGuard(
-                    ::std::forward< OtherInstanceType >( other ) ).access().m_holder ) );
+            _OtherTool:: template value< _OtherType >( (*FeatureGuard< OtherInstanceReferType >(
+                    ::std::forward< OtherInstanceType >( other ) )).m_holder ) );
     }
 };
 
@@ -118,14 +120,17 @@ struct InstanceBuildSwither< CompatibleInstanceBuild >
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
     static constexpr const typename Instance< _OtherType, _OtherTool >::HolderType & construct ( const Instance< _OtherType, _OtherTool > & other )
     {
-        return featureGuard( other ).access().m_holder;
+        using OtherInstanceReferType = const Instance< _OtherType, _OtherTool > &;
+        return (*FeatureGuard< OtherInstanceReferType >( other )).m_holder;
     }
 
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
     static constexpr typename Instance< _OtherType, _OtherTool >::HolderType && construct ( Instance< _OtherType, _OtherTool > && other )
     {
+        using OtherInstanceReferType = Instance< _OtherType, _OtherTool > &&;
         using OtherInstanceType = Instance< _OtherType, _OtherTool >;
-        return featureGuard( ::std::forward< OtherInstanceType >( other ) ).access().m_holder;
+        return (*FeatureGuard< OtherInstanceReferType >(
+            ::std::forward< OtherInstanceType >( other ) )).m_holder;
     }
 };
 

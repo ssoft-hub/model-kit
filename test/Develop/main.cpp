@@ -198,7 +198,6 @@ int main ( int /*argc*/, char ** /*argv*/ )
     name = "Hello";
 
     Variable< Instance< Item, ValueTool >, ImplicitTool > item;
-    guard( item ); // ОК
     item->m_int = 67890;
     item->m_string = "Item";
 
@@ -236,47 +235,24 @@ void syntaxExample ()
     Variable< ExampleType > value;
 
     // Синтаксис подобный значению:
-    // распределяет значение в соответсвии с типом value.
+    // распределяет значение в соответствии с типом value.
     value = ExampleType();
 
     // Доступ к неконстантному внутреннему значению
-    guard(value).access();      // совместим с любым типом (*)
-    *guard(value);              // совместим с любым типом
-    (*&value);
+    (*&value);  // совместим с типом отличным от Instance
 
-    // Доступ к константному вутреннему значению
-    cguard(value).access();     // совместим с любым типом (*)
-    *cguard(value);             // совместим с любым типом
-
-    guard(cnst(value)).access();    // совместим с любым типом
-    *guard(cnst(value));            // совместим с любым типом
-    (*&cnst(value));
+    // Доступ к константному внутреннему значению
+    (*&cnst(value)); // совместим с типом отличным от Instance
 
     // Доступ к неконстантному члену класса
-    value->m_member;
-
-    guard(value).access().m_member; // совместим с любым типом (*)
-    guard(value)->m_member;         // совместим с любым типом
-    (*guard(value)).m_member;       // совместим с любым типом
-
-    (&value).access().m_member;
-    (&value)->m_member;
-    (*&value).m_member;
+    value->m_member;    // не совместим с типом отличным от Instance
+    (&value)->m_member; // совместим с типом отличным от Instance
+    (*&value).m_member; // совместим с типом отличным от Instance
 
     // Доступ к константному члену класса
-    cnst(value)->m_member;
-
-    cguard(value).access().m_member;    // совместим с любым типом (*)
-    cguard(value)->m_member;            // совместим с любым типом
-    (*cguard(value)).m_member;          // совместим с любым типом
-
-    guard(cnst(value)).access().m_member;   // совместим с любым типом
-    guard(cnst(value))->m_member;           // совместим с любым типом
-    (*guard(cnst(value))).m_member;         // совместим с любым типом
-
-    (&cnst(value)).access().m_member;
-    (&cnst(value))->m_member;
-    (*&cnst(value)).m_member;
+    cnst(value)->m_member;      // не совместим с типом отличным от Instance
+    (&cnst(value))->m_member;   // совместим с типом отличным от Instance
+    (*&cnst(value)).m_member;   // совместим с типом отличным от Instance
 }
 
 void operatorExample ()

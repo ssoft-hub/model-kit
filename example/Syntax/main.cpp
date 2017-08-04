@@ -48,6 +48,7 @@ void appendZeroVariant ()
 
 // Вариант с вызовом глобальных методов guard/cguard с прямым вызовом метода
 // члена класса access. Cовместим со значениями отличными от Instance.
+#ifdef _GUARD_AS_GLOBAL_
 void appendFirstVariant ()
 {
     Variable< Key > key = "first";
@@ -55,9 +56,11 @@ void appendFirstVariant ()
     guard( guard( guard( global_map ).access()[ key ] ).access().m_card ).access().m_id = 1L;
     guard( guard( guard( global_map ).access()[ key ] ).access().m_card ).access().m_limit = 1;
 }
+#endif
 
 // Вариант с вызовом глобальных методов guard/cguard и разыменованием.
 // Cовместим со значениями отличными от Instance.
+#ifdef _GUARD_AS_GLOBAL_
 void appendSecondVariant ()
 {
     Variable< Key > key = "second";
@@ -65,9 +68,10 @@ void appendSecondVariant ()
     (*guard( (*guard( (*guard( global_map ))[ key ] )).m_card )).m_id = 2L;
     (*guard( (*guard( (*guard( global_map ))[ key ] )).m_card )).m_limit = 22;
 }
+#endif
 
 // Вариант с двойным разыменованием.
-// Не совместим со значениями отличными от Instance.
+// Cовместим со значениями отличными от Instance.
 void appendThirdVariant ()
 {
     Variable< Key > key = "third";
@@ -88,7 +92,7 @@ void appendFourthVariant ()
 
 // Вариант со смешанным использованием двойного разыменования для доступа
 // к значению и оператора -> для доступа к членам класса.
-// Не совместим со значениями отличными от Instance.
+// Не cовместим со значениями отличными от Instance.
 void appendFifthVariant ()
 {
     Variable< Key > key = "fifth";
@@ -111,8 +115,6 @@ void appendSixthVariant ()
 
 int main ( int, char ** )
 {
-    appendFirstVariant();
-    appendSecondVariant();
     appendThirdVariant();
     appendFourthVariant();
     appendFifthVariant();
