@@ -5,7 +5,7 @@ class Instance;
 
 #define UPDATE_INSTANCE_UNARY_OPERATOR( sym ) \
     template < typename _LeftType, typename _LeftTool > \
-    inline constexpr Instance< _LeftType, _LeftTool > & operator sym ( \
+    inline Instance< _LeftType, _LeftTool > & operator sym ( \
         Instance< _LeftType, _LeftTool > & value ) \
     { \
         sym(*&value); \
@@ -14,7 +14,7 @@ class Instance;
 
 #define CONST_INSTANCE_UNARY_OPERATOR( sym ) \
     template < typename _LeftType, typename _LeftTool > \
-    inline constexpr decltype(auto) operator sym ( \
+    inline decltype(auto) operator sym ( \
         const Instance< _LeftType, _LeftTool > & value ) \
     { \
         return sym(*&value); \
@@ -22,7 +22,7 @@ class Instance;
 
 #define UPDATE_INSTANCE_BINARY_OPERATOR( sym ) \
     template < typename _LeftType, typename _LeftTool, typename _RightType > \
-    inline constexpr Instance< _LeftType, _LeftTool > & operator sym ( \
+    inline Instance< _LeftType, _LeftTool > & operator sym ( \
         Instance< _LeftType, _LeftTool > & left, \
         const _RightType & right ) \
     { \
@@ -31,7 +31,7 @@ class Instance;
     } \
  \
     template < typename _LeftType, typename _RightType, typename _RightTool > \
-    inline constexpr _LeftType & operator sym ( \
+    inline _LeftType & operator sym ( \
         _LeftType & left, \
         const Instance< _RightType, _RightTool > & right ) \
     { \
@@ -40,7 +40,7 @@ class Instance;
     } \
  \
     template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool > \
-    inline constexpr Instance< _LeftType, _LeftTool > &  operator sym ( \
+    inline Instance< _LeftType, _LeftTool > &  operator sym ( \
         Instance< _LeftType, _LeftTool > & left, \
         const Instance< _RightType, _RightTool > & right ) \
     { \
@@ -50,7 +50,7 @@ class Instance;
 
 #define STREAM_INSTANCE_OPERATOR( sym ) \
     template < typename _LeftType, typename _RightType, typename _RightTool > \
-    inline constexpr decltype(auto) operator sym ( \
+    inline decltype(auto) operator sym ( \
         _LeftType & left, \
         const Instance< _RightType, _RightTool > & right ) \
     { \
@@ -59,7 +59,7 @@ class Instance;
 
 #define CONST_INSTANCE_BINARY_OPERATOR( sym ) \
     template < typename _LeftType, typename _LeftTool, typename _RightType > \
-    inline constexpr decltype(auto) operator sym ( \
+    inline decltype(auto) operator sym ( \
         const Instance< _LeftType, _LeftTool > & left, \
         const _RightType & right ) \
     { \
@@ -67,7 +67,7 @@ class Instance;
     } \
  \
     template < typename _LeftType, typename _RightType, typename _RightTool > \
-    inline constexpr decltype(auto) operator sym ( \
+    inline decltype(auto) operator sym ( \
         const _LeftType & left, \
         const Instance< _RightType, _RightTool > & right ) \
     { \
@@ -75,7 +75,7 @@ class Instance;
     } \
  \
     template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool > \
-    inline constexpr decltype(auto) operator sym ( \
+    inline decltype(auto) operator sym ( \
         const Instance< _LeftType, _LeftTool > & left, \
         const Instance< _RightType, _RightTool > & right ) \
     { \
@@ -111,7 +111,7 @@ UPDATE_INSTANCE_UNARY_OPERATOR( -- )
 
 // Суффиксный инкремент
 template < typename _LeftType, typename _LeftTool >
-inline constexpr decltype(auto) operator ++ (
+inline decltype(auto) operator ++ (
     Instance< _LeftType, _LeftTool > & value, int )
 {
     return (*&value)++;
@@ -119,7 +119,7 @@ inline constexpr decltype(auto) operator ++ (
 
 // Суффиксный декремент
 template < typename _LeftType, typename _LeftTool >
-inline constexpr decltype(auto) operator -- (
+inline decltype(auto) operator -- (
     Instance< _LeftType, _LeftTool > & value, int )
 {
     return (*&value)--;
