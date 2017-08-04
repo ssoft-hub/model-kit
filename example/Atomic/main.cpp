@@ -25,7 +25,7 @@ void func ()
         (&test_map)->find( "potato" )->second.second++;
     }
 
-    auto read_ptr = &test_map;
+    auto read_ptr = &cnst(test_map);
     ::std::cout
         << "potato is " << read_ptr->at( "potato" ).first
         << " " << read_ptr->at( "potato" ).second
