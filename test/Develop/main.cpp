@@ -1,3 +1,7 @@
+#ifdef _MSC_VER
+#pragma warning( disable : 4552 4553 )
+#endif
+
 #include <ModelKit.h>
 #include <iostream>
 #include <string>

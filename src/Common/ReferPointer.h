@@ -22,9 +22,9 @@ private:
 private:
     //! Формирует указатель для любого типа ValueType, независимо от того
     /// переопределён оператор & или нет.
+    struct Dummy {};
     static constexpr ValueType * addressOf ( ValueType & refer )
     {
-        struct Dummy {};
         using DummyType = typename ::std::conditional<
             ::std::is_const< ValueType >::value, const Dummy, Dummy >::type;
         return reinterpret_cast< ValueType * >( &reinterpret_cast< DummyType & >( refer ) );
