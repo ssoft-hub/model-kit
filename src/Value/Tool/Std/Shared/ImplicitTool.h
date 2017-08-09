@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <ModelKit/Common/HolderGuard.h>
-#include <ModelKit/Common/InitializeFlag.h>
+#include <ModelKit/Common/InitializeType.h>
 #include <ModelKit/Common/InstanceTrait.h>
 
 namespace Std
@@ -27,7 +27,7 @@ namespace Std
 
                 PointerType m_pointer;
 
-                constexpr HolderType ( InitializeFlag )
+                constexpr HolderType ( InitializeType )
                 {
                 }
 

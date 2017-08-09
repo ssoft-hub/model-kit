@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ModelKit/Common/HolderGuard.h>
-#include <ModelKit/Common/InitializeFlag.h>
+#include <ModelKit/Common/InitializeType.h>
 #include <ModelKit/Common/InstanceTrait.h>
 #include <mutex>
 
@@ -30,7 +30,7 @@ namespace Std
                 mutable LockType m_lock;
                 ValueType m_value;
 
-                constexpr HolderType ( InitializeFlag )
+                constexpr HolderType ( InitializeType )
                 {
                 }
 

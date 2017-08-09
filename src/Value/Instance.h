@@ -5,7 +5,7 @@
 #endif
 
 #include <ModelKit/Common/Cnst.h>
-#include <ModelKit/Common/InitializeFlag.h>
+#include <ModelKit/Common/InitializeType.h>
 #include "private/InstanceBuilder.h"
 #include "private/InstanceFeatureGuard.h"
 #include "private/InstanceOperation.h"
@@ -44,7 +44,7 @@ private:
 public:
     //! Конструктор без специальной инициализации значения.
     /// В зависимости от инструмента, значение может не существовать.
-    constexpr Instance ( InitializeFlag flag )
+    constexpr Instance ( InitializeType flag )
     : m_holder( flag )
     {
     }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ModelKit/Common/InitializeFlag.h>
+#include <ModelKit/Common/InitializeType.h>
 #include <Relation/AggregationEnd.h>
 #include <Relation/AssociationEnd.h>
 
@@ -32,7 +32,7 @@ private:
 public:
     //! Конструктор без специальной инициализации значения.
     /// В зависимости от инструмента, значение может не существовать.
-    constexpr SharedEnd ( InitializeFlag )
+    constexpr SharedEnd ( InitializeType )
     {
     }
 

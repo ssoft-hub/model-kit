@@ -104,7 +104,7 @@ void testConstructor ()
 
     // Конструктор без инициализации
     {
-        TestVariable value( NotInitialized );
+        TestVariable value( InitializeType::NotInitialized );
         foo( value );
     }
 

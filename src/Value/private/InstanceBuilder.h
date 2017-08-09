@@ -3,31 +3,28 @@
 #include <ModelKit/Common/ValueGuard.h>
 #include <ModelKit/Common/InstanceTrait.h>
 
-enum InstanceBuildSwitchType
+enum class InstanceBuildSwitchType
 {
-    DefaultInstanceBuild,
-    CompatibleInstanceBuild,
-    OtherPartOfThisInstanceBuild
+    Default,
+    Compatible,
+    OtherPartOfThis
 };
 
 template < bool _compatible, bool _other_part_of_this >
-struct InstanceBuildTypeValue {};
-
-template <>
-struct InstanceBuildTypeValue< false, false >
-: public ::std::integral_constant< InstanceBuildSwitchType, DefaultInstanceBuild >
+struct InstanceBuildTypeValue
+    : public ::std::integral_constant< InstanceBuildSwitchType, InstanceBuildSwitchType::Default >
 {
 };
 
 template <>
 struct InstanceBuildTypeValue< true, false >
-    : public ::std::integral_constant< InstanceBuildSwitchType, CompatibleInstanceBuild >
+    : public ::std::integral_constant< InstanceBuildSwitchType, InstanceBuildSwitchType::Compatible >
 {
 };
 
 template <>
 struct InstanceBuildTypeValue< false, true >
-    : public ::std::integral_constant< InstanceBuildSwitchType, OtherPartOfThisInstanceBuild >
+    : public ::std::integral_constant< InstanceBuildSwitchType, InstanceBuildSwitchType::OtherPartOfThis >
 {
 };
 
@@ -112,7 +109,7 @@ struct InstanceBuildSwither
  * holder с помощью методов, предоставляемых инструментарием _ThisTool.
  */
 template <>
-struct InstanceBuildSwither< CompatibleInstanceBuild >
+struct InstanceBuildSwither< InstanceBuildSwitchType::Compatible >
 {
 //    можно использовать в определениях методов
 //    static constexpr decltype(auto) construct (...)
@@ -141,7 +138,7 @@ struct InstanceBuildSwither< CompatibleInstanceBuild >
  * инструментарием _ThisTool.
  */
 template <>
-struct InstanceBuildSwither< OtherPartOfThisInstanceBuild >
+struct InstanceBuildSwither< InstanceBuildSwitchType::OtherPartOfThis >
 {
 //    можно использовать в определениях методов
 //    static constexpr decltype(auto) construct (...)

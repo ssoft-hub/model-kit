@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ModelKit/Common/InitializeFlag.h>
+#include <ModelKit/Common/InitializeType.h>
 #include <utility>
 
 namespace Cpp
@@ -22,7 +22,7 @@ namespace Cpp
 
                 ValueType m_value;
 
-                constexpr HolderType ( InitializeFlag )
+                constexpr HolderType ( InitializeType )
                 {
                 }
 
@@ -51,10 +51,6 @@ namespace Cpp
                 template < typename _OtherType >
                 HolderType ( const HolderType< _OtherType > & other )
                 : HolderType( other.m_value )
-                {
-                }
-
-                ~HolderType ()
                 {
                 }
 

@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <atomic>
 #include <ModelKit/Common/HolderGuard.h>
-#include <ModelKit/Common/InitializeFlag.h>
+#include <ModelKit/Common/InitializeType.h>
 #include <ModelKit/Common/InstanceTrait.h>
 
 namespace Cpp
@@ -48,7 +48,7 @@ namespace Cpp
 
                 PointerType m_pointer;
 
-                constexpr HolderType ( InitializeFlag )
+                constexpr HolderType ( InitializeType )
                 : m_pointer()
                 {
                 }
