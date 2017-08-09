@@ -7,7 +7,7 @@ class AssociationEnd;
 
 #define UPDATE_ASSOCIATION_UNARY_OPERATOR( sym ) \
     template < typename _LeftType, AggregationKind _LeftKind, typename _LeftTool > \
-    inline constexpr AssociationEnd< _LeftType, _LeftKind, _LeftTool > & operator sym ( \
+    inline AssociationEnd< _LeftType, _LeftKind, _LeftTool > & operator sym ( \
         AssociationEnd< _LeftType, _LeftKind, _LeftTool > & value ) \
     { \
         sym(*&value); \
@@ -16,7 +16,7 @@ class AssociationEnd;
 
 #define CONST_ASSOCIATION_UNARY_OPERATOR( sym ) \
     template < typename _LeftType, AggregationKind _LeftKind, typename _LeftTool > \
-    inline constexpr decltype(auto) operator sym ( \
+    inline decltype(auto) operator sym ( \
         const AssociationEnd< _LeftType, _LeftKind, _LeftTool > & value ) \
     { \
         return sym(*&value); \
@@ -25,7 +25,7 @@ class AssociationEnd;
 #define UPDATE_ASSOCIATION_BINARY_OPERATOR( sym ) \
     template < typename _LeftType, AggregationKind _LeftKind, typename _LeftTool, \
         typename _RightType > \
-    inline constexpr AssociationEnd< _LeftType, _LeftKind, _LeftTool > & operator sym ( \
+    inline AssociationEnd< _LeftType, _LeftKind, _LeftTool > & operator sym ( \
         AssociationEnd< _LeftType, _LeftKind, _LeftTool > & left, \
         const _RightType & right ) \
     { \
@@ -35,7 +35,7 @@ class AssociationEnd;
  \
     template < typename _LeftType, \
         typename _RightType, AggregationKind _RightKind, typename _RightTool > \
-    inline constexpr _LeftType & operator sym ( \
+    inline _LeftType & operator sym ( \
         _LeftType & left, \
         const AssociationEnd< _RightType, _RightKind, _RightTool > & right ) \
     { \
@@ -45,7 +45,7 @@ class AssociationEnd;
  \
     template < typename _LeftType, AggregationKind _LeftKind, typename _LeftTool, \
         typename _RightType, AggregationKind _RightKind, typename _RightTool > \
-    inline constexpr AssociationEnd< _LeftType, _LeftKind, _LeftTool > &  operator sym ( \
+    inline AssociationEnd< _LeftType, _LeftKind, _LeftTool > &  operator sym ( \
         AssociationEnd< _LeftType, _LeftKind, _LeftTool > & left, \
         const AssociationEnd< _RightType, _RightKind, _RightTool > & right ) \
     { \
@@ -55,7 +55,7 @@ class AssociationEnd;
 
 #define STREAM_ASSOCIATION_OPERATOR( sym ) \
     template < typename _LeftType, typename _RightType, AggregationKind _RightKind, typename _RightTool > \
-    inline constexpr decltype(auto) operator sym ( \
+    inline decltype(auto) operator sym ( \
         _LeftType & left, \
         const AssociationEnd< _RightType, _RightKind, _RightTool > & right ) \
     { \
@@ -64,7 +64,7 @@ class AssociationEnd;
 
 #define CONST_ASSOCIATION_BINARY_OPERATOR( sym ) \
     template < typename _LeftType, AggregationKind _LeftKind, typename _LeftTool, typename _RightType > \
-    inline constexpr decltype(auto) operator sym ( \
+    inline decltype(auto) operator sym ( \
         const AssociationEnd< _LeftType, _LeftKind, _LeftTool > & left, \
         const _RightType & right ) \
     { \
@@ -72,7 +72,7 @@ class AssociationEnd;
     } \
  \
     template < typename _LeftType, typename _RightType, AggregationKind _RightKind, typename _RightTool > \
-    inline constexpr decltype(auto) operator sym ( \
+    inline decltype(auto) operator sym ( \
         const _LeftType & left, \
         const AssociationEnd< _RightType, _RightKind, _RightTool > & right ) \
     { \
@@ -80,7 +80,7 @@ class AssociationEnd;
     } \
  \
     template < typename _LeftType, AggregationKind _LeftKind, typename _LeftTool, typename _RightType, AggregationKind _RightKind, typename _RightTool > \
-    inline constexpr decltype(auto) operator sym ( \
+    inline decltype(auto) operator sym ( \
         const AssociationEnd< _LeftType, _LeftKind, _LeftTool > & left, \
         const AssociationEnd< _RightType, _RightKind, _RightTool > & right ) \
     { \
@@ -116,7 +116,7 @@ UPDATE_ASSOCIATION_UNARY_OPERATOR( -- )
 
 // Суффиксный инкремент
 template < typename _LeftType, AggregationKind _LeftKind, typename _LeftTool >
-inline constexpr decltype(auto) operator ++ (
+inline decltype(auto) operator ++ (
     AssociationEnd< _LeftType, _LeftKind, _LeftTool > & value, int )
 {
     return (*&value)++;
@@ -124,7 +124,7 @@ inline constexpr decltype(auto) operator ++ (
 
 // Суффиксный декремент
 template < typename _LeftType, AggregationKind _LeftKind, typename _LeftTool >
-inline constexpr decltype(auto) operator -- (
+inline decltype(auto) operator -- (
     AssociationEnd< _LeftType, _LeftKind, _LeftTool > & value, int )
 {
     return (*&value)--;
