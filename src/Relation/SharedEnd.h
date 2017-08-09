@@ -45,13 +45,13 @@ public:
 
 public:
     template < typename ... _Arguments >
-    ThisType make ( _Arguments && ... /*arguments*/ )
+    static constexpr ThisType make ( _Arguments && ... /*arguments*/ )
     {
         return ThisType();
     }
 
     template < typename _OtherType, typename _OtherTool >
-    ThisType share ( const AssociationEnd< _OtherType, AggregationKind::Shared, _OtherTool > & /*other*/ )
+    static ThisType share ( const AssociationEnd< _OtherType, AggregationKind::Shared, _OtherTool > & /*other*/ )
     {
         return ThisType();
     }

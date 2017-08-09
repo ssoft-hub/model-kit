@@ -45,7 +45,7 @@ public:
 
 public:
     template < typename ... _Arguments >
-    ThisType make ( _Arguments && ... /*arguments*/ )
+    static constexpr ThisType make ( _Arguments && ... /*arguments*/ )
     {
         return ThisType();
     }

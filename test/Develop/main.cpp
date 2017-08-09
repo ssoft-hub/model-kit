@@ -11,27 +11,35 @@ struct Item
     using Int = int;
     using String = ::std::string;
 //    using StringRef = ::std::reference_wrapper< String >;
-//    using Int = SharedEnd< int, RelationTool >;
-//    using String = UniqueEnd< ::std::string, RelationTool  >;
-//    using StringRef = ReferEnd< ::std::string, RelationTool  >;
+    using UniqueString = CompositeEnd< String >;
+    using SharedString = SharedEnd< String >;
+    using ReferString = NoneEnd< String >;
 
     Property< Int > m_int;
     Property< String > m_string;
-//    Property< StringRef > m_string_refer;
+    Property< UniqueString > m_unique_string;
+    Property< SharedString > m_shared_string;
+    Property< ReferString > m_refer_string;
 
-//    Item ()
-//    : m_int() // создано значение
-//    , m_string() // создано значение
-//    , m_string_refer() // ничего не создано
-//    {
-//    }
+    Item ()
+    : m_int()
+    , m_string()
+    , m_unique_string( UniqueString::make( "Unique string" ) )
+    , m_shared_string( SharedString::make( "Shared string" ) )
+    , m_refer_string( m_unique_string )
+    {
+    }
 
-//    Item ( const Item & other )
-//    : m_int( other.m_int ) // копирование
-//    , m_string( other.m_string ) // копирование
-//    , m_string_refer() // копирование
-//    {
-//    }
+    Item ( const Item & other )
+    : m_int( other.m_int )
+    , m_string( other.m_string )
+    , m_unique_string( UniqueString::make( *&other.m_unique_string ) )
+    , m_shared_string( SharedString::share( *&other.m_shared_string ) )
+    , m_refer_string( other.m_refer_string )
+    {
+    }
+
+    Item ( Item && other ) = default;
 
 //    ReturnUpdate< StringRef > stringRefer ();
 //    ReturnRead< StringRef > stringRefer () const;

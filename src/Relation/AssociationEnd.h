@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ModelKit/Relation/Tool/Cpp/Inplace/DefaultTool.h>
 
 enum class AggregationKind
 {
@@ -25,11 +26,11 @@ enum class AggregationKind
 template < typename _Type, AggregationKind _kind, typename _RelationTool >
 class AssociationEnd;
 
-template < typename _Type, typename _RelationTool >
+template < typename _Type, typename _RelationTool = ::Relation::Cpp::Inplace::DefaultTool >
 using NoneEnd = AssociationEnd< _Type, AggregationKind::None, _RelationTool >;
 
-template < typename _Type, typename _RelationTool >
+template < typename _Type, typename _RelationTool = ::Relation::Cpp::Inplace::DefaultTool >
 using SharedEnd = AssociationEnd< _Type, AggregationKind::Shared, _RelationTool >;
 
-template < typename _Type, typename _RelationTool >
+template < typename _Type, typename _RelationTool = ::Relation::Cpp::Inplace::DefaultTool >
 using CompositeEnd = AssociationEnd< _Type, AggregationKind::Composite, _RelationTool >;
