@@ -6,7 +6,7 @@
  * Полюс ассоциативной связи композитной (уникальной) агрегации.
  */
 template < typename _ValueType, typename _RelationTool >
-class AssociationEnd< _ValueType, AggregationKind::Shared, _RelationTool >
+class AssociationEnd< _ValueType, AggregationKind::Composite, _RelationTool >
 {
     using ThisType = AssociationEnd< _ValueType, AggregationKind::Composite, _RelationTool >;
 
@@ -28,12 +28,12 @@ public:
     }
 
     template < typename _OtherType, typename _OtherTool >
-    AssociationEnd ( AssociationEnd< _OtherType, AggregationKind::Shared, _OtherTool > && /*other*/ )
+    AssociationEnd ( AssociationEnd< _OtherType, AggregationKind::Composite, _OtherTool > && /*other*/ )
     {
     }
 
     template < typename _OtherType, typename _OtherTool >
-    ThisType & operator = ( AssociationEnd< _OtherType, AggregationKind::Shared, _OtherTool > && /*other*/ )
+    ThisType & operator = ( AssociationEnd< _OtherType, AggregationKind::Composite, _OtherTool > && /*other*/ )
     {
         return *this;
     }
@@ -46,12 +46,6 @@ public:
 public:
     template < typename ... _Arguments >
     ThisType make ( _Arguments && ... /*arguments*/ )
-    {
-        return ThisType();
-    }
-
-    template < typename _OtherType, typename _OtherTool >
-    ThisType share ( const AssociationEnd< _OtherType, AggregationKind::Shared, _OtherTool > & /*other*/ )
     {
         return ThisType();
     }
