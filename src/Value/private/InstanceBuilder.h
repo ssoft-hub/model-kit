@@ -135,7 +135,7 @@ struct InstanceBuildSwither< CompatibleInstanceBuild >
 };
 
 /*!
- * Если внутренняя часть необходимого экземпляра Instance< _ThisType, _ThisTool > совметима
+ * Если внутренняя часть необходимого экземпляра Instance< _ThisType, _ThisTool > совместима
  * с исходным экземпляром Instance< _OtherType, _OtherTool >, то необходимо выполнить
  * формирование holder на осове значения other с помощью методов, предоставляемых
  * инструментарием _ThisTool.
