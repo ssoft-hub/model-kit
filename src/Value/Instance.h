@@ -28,8 +28,8 @@ class Instance
     template < InstanceBuildSwitchType >
     friend struct InstanceBuildSwither;
 
-    template < typename, typename >
-    friend class Instance;
+//    template < typename, typename >
+//    friend class Instance;
 
     using ThisType = Instance< _ValueType, _ValueTool >;
 

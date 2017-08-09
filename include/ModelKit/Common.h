@@ -1,3 +1,4 @@
+#include "Common/AggregationKind.h"
 #include "Common/Cnst.h"
 #include "Common/FeatureGuard.h"
 #include "Common/HolderGuard.h"

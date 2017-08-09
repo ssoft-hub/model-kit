@@ -26,16 +26,16 @@ struct Item
     , m_string()
     , m_unique_string( UniqueString::make( "Unique string" ) )
     , m_shared_string( SharedString::make( "Shared string" ) )
-    , m_refer_string( m_unique_string )
+    , m_refer_string( ReferString::refer( m_unique_string ) )
     {
     }
 
     Item ( const Item & other )
     : m_int( other.m_int )
     , m_string( other.m_string )
-    , m_unique_string( UniqueString::make( *&other.m_unique_string ) )
-    , m_shared_string( SharedString::share( *&other.m_shared_string ) )
-    , m_refer_string( other.m_refer_string )
+    , m_unique_string( UniqueString::copy( other.m_unique_string ) )
+    , m_shared_string( SharedString::share( other.m_shared_string ) )
+    , m_refer_string( ReferString::refer( other.m_refer_string ) )
     {
     }
 
@@ -208,12 +208,18 @@ int main ( int /*argc*/, char ** /*argv*/ )
     Variable< Instance< Item, ValueTool >, ImplicitTool > item;
     item->m_int = 67890;
     item->m_string = "Item";
+    item->m_unique_string = "Changed unique string";
+    item->m_shared_string = "Change shared string";
+    item->m_refer_string = "Change refer string";
 
     ::std::cout
         << cnst(int_value) << ::std::endl
         << cnst(name) << ::std::endl
         << cnst(item)->m_int << ::std::endl
         << cnst(item)->m_string << ::std::endl
+        << cnst(item)->m_unique_string << ::std::endl
+        << cnst(item)->m_shared_string << ::std::endl
+        << cnst(item)->m_refer_string << ::std::endl
     ;
 
     Variable< Instance< Item, ValueTool >, ImplicitTool > other_item;// = item;
