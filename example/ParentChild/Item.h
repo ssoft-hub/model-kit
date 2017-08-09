@@ -5,10 +5,6 @@
 
 using _Key = int;
 
-template < typename _Type > class SharedEnd {};
-template < typename _Type > class UniqueEnd {};
-template < typename _Type > class NoneEnd {};
-
 template < typename _Type > using ReturnCreate = _Type;
 template < typename _Type > using ReturnRead = const _Type &;
 template < typename _Type > using ReturnUpdate = _Type &;
@@ -24,8 +20,8 @@ private:
     using ThisType = Item;
 
 public:
-    using UniqueItemEnd = UniqueEnd< Item >;
-    using NoneItemEnd = NoneEnd< Item >;
+    using UniqueItemEnd = Item *;//CompositeEnd< Item >;
+    using NoneItemEnd = Item *;//NoneEnd< Item >;
     typedef ::std::list< UniqueItemEnd > UniqueItemEnds;
     typedef ::std::list< NoneItemEnd > NoneItemEnds;
 

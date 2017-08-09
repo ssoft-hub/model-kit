@@ -1,27 +1,31 @@
-//#include <iostream>
-//#include <list>
-
+#include <iostream>
 #include "Item.h"
+
+//#include <list>
 
 
 //template < typename _Item, typename _SubItem >
-//void parentChildTest ()
-//{
+void parentChildTest ()
+{
 //    typedef _Item TestItem;
 //    typedef _SubItem TestSubItem;
 //    typedef typename TestItem::Key Key;
 //    typedef typename TestItem::Value Value;
 
-//    constexpr int child_count = 10;
+//    using TestItem = Item;
+//    using NoneItemEnd = Item::NoneItemEnd;
+//    using UniqueItemEnd = Item::UniqueItemEnd;
 
-//    std::cout
-//        << std::endl << Q_FUNC_INFO << std::endl << std::endl;
 
-//    Value parent = TestItem::template make< TestItem >( "Parent" );
+    constexpr Variable< int > child_count = 10;
+    ::std::cout
+        << ::std::endl << "Begin test" << child_count << ::std::endl;
 
-//    std::cout
-//        << "Put children into parent" << std::endl
-//        << "Children count before: " << readable( parent ).children().size()  << std::endl;
+//    Variable< UniqueItemEnd > parent = UniqueItemEnd::make();
+
+//    ::std::cout
+//        << "Put children into parent" << ::std::endl
+//        << "Children count before: " << (*&parent).children().size()  << ::std::endl;
 
 //    // помещаем элементы в родителя
 //    for ( int i = 0; i < child_count; ++i )
@@ -69,7 +73,7 @@
 //            << static_cast< const char * >( readable( item ).key() )
 //            << std::endl;
 //    }
-//}
+}
 
 //struct Value
 //{
