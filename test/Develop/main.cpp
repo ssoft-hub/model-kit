@@ -14,7 +14,6 @@ struct Item
 {
     using Int = int;
     using String = ::std::string;
-//    using StringRef = ::std::reference_wrapper< String >;
     using UniqueString = CompositeEnd< String >;
     using SharedString = SharedEnd< String >;
     using ReferString = NoneEnd< String >;
@@ -37,13 +36,23 @@ struct Item
     Item ( const Item & other )
     : m_int( other.m_int )
     , m_string( other.m_string )
-    , m_unique_string( UniqueString::make( other.m_unique_string ) )
+    , m_unique_string( UniqueString::copy( other.m_unique_string ) )
     , m_shared_string( SharedString::share( other.m_shared_string ) )
     , m_refer_string( ReferString::refer( other.m_refer_string ) )
     {
     }
 
     Item ( Item && other ) = default;
+
+    Item & operator = ( const Item & other )
+    {
+        m_int = other.m_int;
+        m_string = other.m_string;
+        m_unique_string = other.m_unique_string;
+        m_shared_string = other.m_shared_string;
+        m_refer_string = other.m_refer_string;
+        return *this;
+    }
 
 //    ReturnUpdate< StringRef > stringRefer ();
 //    ReturnRead< StringRef > stringRefer () const;
@@ -228,6 +237,7 @@ int main ( int /*argc*/, char ** /*argv*/ )
 
     Variable< Instance< Item, ValueTool >, ImplicitTool > other_item;// = item;
 //    (*&other_item ).m_refer = (*&cnst(item ).m_string;
+    other_item = item;
 
     other_item->m_int = 1;
     other_item->m_string = "Word";

@@ -1,3 +1,7 @@
 #pragma once
 
-enum class InitializeType { NotInitialized };
+enum class InitializeType
+{
+    NotInitialized,
+    PrivateInitialization
+};

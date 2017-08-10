@@ -73,7 +73,7 @@ public:
         return !m_pointer;
     }
 
-    constexpr ReferType operator * () const
+    constexpr AccessType operator * () const
     {
         return ::std::forward< ReferType >( *m_pointer );
     }
