@@ -83,9 +83,10 @@ public:
         return m_pointer;
     }
 
-    constexpr AccessType value () const
+    constexpr decltype(auto) value () const
     {
-        return ::std::forward< ReferType >( *m_pointer );
+        assert( m_pointer );
+        return InstanceTool::value( ::std::forward< HolderReferType >( m_pointer->m_holder ) );;
     }
 };
 

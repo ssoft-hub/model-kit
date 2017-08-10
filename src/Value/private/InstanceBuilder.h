@@ -40,31 +40,18 @@ struct InstanceBuildTypeDefiner< Instance< _ThisType, _ThisTool >, Instance< _Ot
 };
 
 /*!
- * Класс формирования экземпляра значения Instance с помощью конструктора
- * с переменным количеством аргументов.
+ * Класс предоставления доступа к необходимому внутреннему представлению
+ * при формировании экземпляра значения Instance.
  */
-template < typename _ThisType, typename _ThisTool, typename ... _Arguments >
+template < typename _ThisType, typename _ThisTool, typename _Type >
 struct InstanceBuilder
 {
-//    можно использовать в определениях методов
-//    static constexpr decltype(auto) construct (...)
-    static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( _Arguments && ... arguments )
-    {
-        return typename Instance< _ThisType, _ThisTool >::HolderType( ::std::forward< _Arguments >( arguments ) ... );
-    }
-};
-
-template < typename _ThisType, typename _ThisTool, typename _Type >
-struct InstanceBuilder< _ThisType, _ThisTool, _Type >
-{
-//    можно использовать в определениях методов
-//    static constexpr decltype(auto) construct (...)
-    static constexpr _Type && construct ( _Type && other )
+    static constexpr _Type && resolve ( _Type && other )
     {
         return ::std::forward< _Type >( other );
     }
 
-    static constexpr const _Type & construct ( const _Type & other )
+    static constexpr const _Type & resolve ( const _Type & other )
     {
         return other;
     }
@@ -78,28 +65,25 @@ struct InstanceBuilder< _ThisType, _ThisTool, _Type >
 template < InstanceBuildSwitchType >
 struct InstanceBuildSwither
 {
-//    можно использовать в определениях методов
-//    static constexpr decltype(auto) construct (...)
-
     // DefaultInstanceBuild
     // ThisPartOfOtherInstanceBuild
 
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
-    static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( const Instance< _OtherType, _OtherTool > & other )
+    static constexpr decltype(auto)
+        resolve ( const Instance< _OtherType, _OtherTool > & other )
     {
         using OtherInstanceReferType = const Instance< _OtherType, _OtherTool > &;
-        return  InstanceBuilder< _ThisType, _ThisTool, _OtherType >::construct(
-            _OtherTool:: template value< _OtherType >( (*FeatureGuard< OtherInstanceReferType >( other )).m_holder ) );
+        return  InstanceBuilder< _ThisType, _ThisTool, _OtherType >::resolve(
+            FeatureGuard< OtherInstanceReferType >( other ).value() );
     }
 
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
-    static constexpr typename Instance< _ThisType, _ThisTool >::HolderType construct ( Instance< _OtherType, _OtherTool > && other )
+    static constexpr decltype(auto)
+        resolve ( Instance< _OtherType, _OtherTool > && other )
     {
         using OtherInstanceReferType = Instance< _OtherType, _OtherTool > &&;
-        using OtherInstanceType = Instance< _OtherType, _OtherTool >;
-        return  InstanceBuilder< _ThisType, _ThisTool, _OtherType >::construct(
-            _OtherTool:: template value< _OtherType >( (*FeatureGuard< OtherInstanceReferType >(
-                    ::std::forward< OtherInstanceType >( other ) )).m_holder ) );
+        return  InstanceBuilder< _ThisType, _ThisTool, _OtherType >::resolve(
+            FeatureGuard< OtherInstanceReferType >( ::std::forward< OtherInstanceReferType >( other ) ).value() );
     }
 };
 
@@ -111,23 +95,20 @@ struct InstanceBuildSwither
 template <>
 struct InstanceBuildSwither< InstanceBuildSwitchType::Compatible >
 {
-//    можно использовать в определениях методов
-//    static constexpr decltype(auto) construct (...)
-
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
-    static constexpr const typename Instance< _OtherType, _OtherTool >::HolderType & construct ( const Instance< _OtherType, _OtherTool > & other )
+    static constexpr const typename Instance< _OtherType, _OtherTool >::HolderType &
+        resolve ( const Instance< _OtherType, _OtherTool > & other )
     {
-        using OtherInstanceReferType = const Instance< _OtherType, _OtherTool > &;
-        return (*FeatureGuard< OtherInstanceReferType >( other )).m_holder;
+        return other.m_holder;
     }
 
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
-    static constexpr typename Instance< _OtherType, _OtherTool >::HolderType && construct ( Instance< _OtherType, _OtherTool > && other )
+    static constexpr typename Instance< _OtherType, _OtherTool >::HolderType &&
+        resolve ( Instance< _OtherType, _OtherTool > && other )
     {
-        using OtherInstanceReferType = Instance< _OtherType, _OtherTool > &&;
         using OtherInstanceType = Instance< _OtherType, _OtherTool >;
-        return (*FeatureGuard< OtherInstanceReferType >(
-            ::std::forward< OtherInstanceType >( other ) )).m_holder;
+        using OtherHolderType = typename OtherInstanceType::HolderType;
+        return ::std::forward< OtherHolderType >( other.m_holder );
     }
 };
 
@@ -141,16 +122,18 @@ template <>
 struct InstanceBuildSwither< InstanceBuildSwitchType::OtherPartOfThis >
 {
 //    можно использовать в определениях методов
-//    static constexpr decltype(auto) construct (...)
+//    static constexpr decltype(auto) resolve (...)
 
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
-    static constexpr const Instance< _OtherType, _OtherTool > & construct ( const Instance< _OtherType, _OtherTool > & other )
+    static constexpr const Instance< _OtherType, _OtherTool > &
+        resolve ( const Instance< _OtherType, _OtherTool > & other )
     {
         return other;
     }
 
     template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
-    static constexpr Instance< _OtherType, _OtherTool > && construct ( Instance< _OtherType, _OtherTool > && other )
+    static constexpr Instance< _OtherType, _OtherTool > &&
+        resolve ( Instance< _OtherType, _OtherTool > && other )
     {
         return ::std::forward< Instance< _OtherType, _OtherTool > >( other );
     }
@@ -169,39 +152,17 @@ struct InstanceBuilder< _ThisType, _ThisTool, Instance< _OtherType, _OtherTool >
     //! Тип возвращаемого значения зависит от вычисленного варианта операции,
     /// поэтому в определении используется decltype(auto).
 
-    static constexpr decltype(auto) construct ( const Instance< _OtherType, _OtherTool > & other )
+    static constexpr decltype(auto)
+        resolve ( const Instance< _OtherType, _OtherTool > & other )
     {
         return InstanceBuildSwither< InstanceBuildTypeDefiner< Instance< _ThisType, _ThisTool >, Instance< _OtherType, _OtherTool > >::value >
-            :: template construct< _ThisType, _ThisTool, _OtherType, _OtherTool >( other );
+            :: template resolve< _ThisType, _ThisTool, _OtherType, _OtherTool >( other );
     }
 
-    static constexpr decltype(auto) construct ( Instance< _OtherType, _OtherTool > && other )
+    static constexpr decltype(auto)
+        resolve ( Instance< _OtherType, _OtherTool > && other )
     {
         return InstanceBuildSwither< InstanceBuildTypeDefiner< Instance< _ThisType, _ThisTool >, Instance< _OtherType, _OtherTool > >::value >
-            :: template construct< _ThisType, _ThisTool, _OtherType, _OtherTool >( ::std::forward< Instance< _OtherType, _OtherTool > >( other ) );
+            :: template resolve< _ThisType, _ThisTool, _OtherType, _OtherTool >( ::std::forward< Instance< _OtherType, _OtherTool > >( other ) );
     }
-};
-
-template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
-struct InstanceBuilder< _ThisType, _ThisTool, Instance< _OtherType, _OtherTool > & >
-    : public InstanceBuilder< _ThisType, _ThisTool, Instance< _OtherType, _OtherTool > >
-{
-};
-
-template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
-struct InstanceBuilder< _ThisType, _ThisTool, Instance< _OtherType, _OtherTool > && >
-    : public InstanceBuilder< _ThisType, _ThisTool, Instance< _OtherType, _OtherTool > >
-{
-};
-
-template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
-struct InstanceBuilder< _ThisType, _ThisTool, const Instance< _OtherType, _OtherTool > & >
-    : public InstanceBuilder< _ThisType, _ThisTool, Instance< _OtherType, _OtherTool > >
-{
-};
-
-template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
-struct InstanceBuilder< _ThisType, _ThisTool, const Instance< _OtherType, _OtherTool > && >
-    : public InstanceBuilder< _ThisType, _ThisTool, Instance< _OtherType, _OtherTool > >
-{
 };

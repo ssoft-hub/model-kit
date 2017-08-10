@@ -64,8 +64,8 @@ public:
 
     template < typename _OtherType, typename _OtherTool >
     Instance ( Instance< _OtherType, _OtherTool > && other )
-    : m_holder( InstanceBuilder< _ValueType, _ValueTool, Instance< _OtherType, _OtherTool > && >
-        ::construct( ::std::forward< Instance< _OtherType, _OtherTool > >( other ) ) )
+    : m_holder( InstanceBuilder< _ValueType, _ValueTool, Instance< _OtherType, _OtherTool > >
+        ::resolve( ::std::forward< Instance< _OtherType, _OtherTool > >( other ) ) )
     {
     }
 
@@ -77,16 +77,16 @@ public:
 
     template < typename _OtherType, typename _OtherTool >
     Instance ( const Instance< _OtherType, _OtherTool > & other )
-    : m_holder( InstanceBuilder< _ValueType, _ValueTool,
-        const Instance< _OtherType, _OtherTool > & >::construct( other ) )
+    : m_holder( InstanceBuilder< _ValueType, _ValueTool, Instance< _OtherType, _OtherTool > >
+        ::resolve( other ) )
     {
     }
 
-    // NOTE: Определен из-за наличия Instance ( _Arguments && ... ).
+    // NOTE: Определен из-за неоднозначного разрешения
     Instance ( ThisType & other )
     : Instance( const_cast< const ThisType & >( other ) ) {}
 
-    // NOTE: Определен из-за наличия Instance ( _Arguments && ... ).
+    // NOTE: Определен из-за неоднозначного разрешения
     template < typename _OtherType, typename _OtherTool >
     Instance ( Instance< _OtherType, _OtherTool > & other )
     : Instance( const_cast< const Instance< _OtherType, _OtherTool > & >( other ) )
@@ -97,7 +97,8 @@ public:
     template < typename _Type >
     ThisType & operator = ( _Type && other )
     {
-        m_holder = ::std::forward< _Type >( other );
+        m_holder = InstanceBuilder< _ValueType, _ValueTool, _Type >
+            ::resolve( ::std::forward< _Type >( other ) );
         return *this;
     }
 
@@ -107,20 +108,12 @@ public:
         return *this;
     }
 
-    template < typename _OtherType, typename _OtherTool >
-    ThisType & operator = ( Instance< _OtherType, _OtherTool > && other )
-    {
-        using OtherType = Instance< _OtherType, _OtherTool >;
-        m_holder = InstanceBuilder< _ValueType, _ValueTool, OtherType && >
-            ::construct( ::std::forward< OtherType >( other ) );
-        return *this;
-    }
-
     /// Операторы присвоения lvalue значения
     template < typename _Type >
     ThisType & operator = ( const _Type & other )
     {
-        m_holder = other;
+        m_holder = InstanceBuilder< _ValueType, _ValueTool, _Type >
+            ::resolve( other  ) ;
         return *this;
     }
 
@@ -130,27 +123,17 @@ public:
         return *this;
     }
 
-    template < typename _OtherType, typename _OtherTool >
-    ThisType & operator = ( const Instance< _OtherType, _OtherTool > & other )
+    // NOTE: Определен из-за неоднозначного разрешения
+    template < typename _Type >
+    ThisType & operator = ( _Type & other )
     {
-        using OtherType = Instance< _OtherType, _OtherTool >;
-        m_holder = InstanceBuilder< _ValueType, _ValueTool, const OtherType & >
-            ::construct( other ) ;
-        return *this;
+        return *this = const_cast< const _Type & >( other );
     }
 
-    // NOTE: Определен из-за наличия operator = ( _Type && ).
+    // NOTE: Определен из-за неоднозначного разрешения
     ThisType & operator = ( ThisType & other )
     {
         return *this = const_cast< const ThisType & >( other );
-    }
-
-    // NOTE: Определен из-за наличия operator = ( _Type && ).
-    template < typename _OtherType, typename _OtherTool >
-    ThisType & operator = ( Instance< _OtherType, _OtherTool > & other )
-    {
-        using OtherType = Instance< _OtherType, _OtherTool >;
-        return *this = const_cast< const OtherType & >( other );
     }
 
     /// Операторы преобразования к типу
