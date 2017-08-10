@@ -2,7 +2,7 @@
 
 #include <ModelKit/Common/ValueGuard.h>
 
-template < typename _Type, AggregationKind _Kind, typename _RelationTool >
+template < typename _ValueType, AggregationKind _kind, typename _RelationTool >
 class AssociationEnd;
 
 /*!
@@ -104,20 +104,32 @@ public:
 };
 
 
-template < typename _Type, AggregationKind _Kind, typename _RelationTool >
-struct ValueGuardHelper< AssociationEnd< _Type, _Kind, _RelationTool > & >
+template < typename _ValueType, AggregationKind _kind, typename _RelationTool >
+struct ValueGuardHelper< AssociationEnd< _ValueType, _kind, _RelationTool > & >
 {
-    using type = AssociationValueGuard< AssociationEnd< _Type, _Kind, _RelationTool > & >;
+    using type = AssociationValueGuard< AssociationEnd< _ValueType, _kind, _RelationTool > & >;
 };
 
-template < typename _Type, AggregationKind _Kind, typename _RelationTool >
-struct ValueGuardHelper< AssociationEnd< _Type, _Kind, _RelationTool > && >
+template < typename _ValueType, AggregationKind _kind, typename _RelationTool >
+struct ValueGuardHelper< AssociationEnd< _ValueType, _kind, _RelationTool > && >
 {
-    using type = AssociationValueGuard< AssociationEnd< _Type, _Kind, _RelationTool > && >;
+    using type = AssociationValueGuard< AssociationEnd< _ValueType, _kind, _RelationTool > && >;
 };
 
-template < typename _Type, AggregationKind _Kind, typename _RelationTool >
-struct ValueGuardHelper< const AssociationEnd< _Type, _Kind, _RelationTool > & >
+template < typename _ValueType, AggregationKind _kind, typename _RelationTool >
+struct ValueGuardHelper< const AssociationEnd< _ValueType, _kind, _RelationTool > & >
 {
-    using type = AssociationValueGuard< const AssociationEnd< _Type, _Kind, _RelationTool > & >;
+    using type = AssociationValueGuard< const AssociationEnd< _ValueType, _kind, _RelationTool > & >;
 };
+
+template < typename _ValueType, AggregationKind _kind, typename _RelationTool >
+struct ValueGuardHelper< const AssociationEnd< _ValueType, _kind, _RelationTool > && >
+{
+    using type = AssociationValueGuard< const AssociationEnd< _ValueType, _kind, _RelationTool > && >;
+};
+
+// disabled
+template < typename _ValueType, AggregationKind _kind, typename _RelationTool >
+struct ValueGuardHelper< AssociationEnd< _ValueType, _kind, _RelationTool > > {};
+template < typename _ValueType, AggregationKind _kind, typename _RelationTool >
+struct ValueGuardHelper< const AssociationEnd< _ValueType, _kind, _RelationTool > > {};

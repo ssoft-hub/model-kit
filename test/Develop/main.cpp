@@ -37,7 +37,7 @@ struct Item
     Item ( const Item & other )
     : m_int( other.m_int )
     , m_string( other.m_string )
-    , m_unique_string( UniqueString::copy( other.m_unique_string ) )
+    , m_unique_string( UniqueString::make( other.m_unique_string ) )
     , m_shared_string( SharedString::share( other.m_shared_string ) )
     , m_refer_string( ReferString::refer( other.m_refer_string ) )
     {

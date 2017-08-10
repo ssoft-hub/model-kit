@@ -2,70 +2,70 @@
 
 #include <ModelKit/Common/FeatureGuard.h>
 
-template < typename _ValueType, typename _ValueTool >
-class Instance;
+template < typename _ValueType, AggregationKind _kind, typename _RelationTool >
+class AssociationEnd;
 
 /*!
  * Класс - защитник свойства верхнего уровня для экземпляра значения.
- * Реализует специализацию для значений обернутых в Instance.
+ * Реализует специализацию для значений обернутых в Association.
  * Семантика защитника соответствует семантике работы с указателем.
  * Предоставляет доступ к экземпляру значения посредством унарного оператора "*",
  * а доступ к членам класса - посредством оператора "->".
  */
 template < typename _ReferType >
-struct InstanceFeatureGuard
+struct AssociationFeatureGuard
 {
-    using ThisType = InstanceFeatureGuard< _ReferType >;
+    using ThisType = AssociationFeatureGuard< _ReferType >;
 
 public:
     using ReferType = _ReferType;
     using AccessType = ReferType;
 
-    using InstancePointer = ReferPointer< ReferType >;
-    using InstanceType = typename ::std::remove_reference< ReferType >::type;
-    using InstanceTool = typename InstanceType::ValueTool;
+    using AssociationPointer = ReferPointer< ReferType >;
+    using AssociationType = typename ::std::remove_reference< ReferType >::type;
+    using AssociationTool = typename AssociationType::RelationTool;
 
     using HolderReferType = typename ::std::conditional<
-        ::std::is_const< InstanceType >::value,
+        ::std::is_const< AssociationType >::value,
         typename ::std::conditional<
             ::std::is_rvalue_reference< ReferType >::value,
-            const typename InstanceType::HolderType &&,
-            const typename InstanceType::HolderType & >::type,
+            const typename AssociationType::HolderType &&,
+            const typename AssociationType::HolderType & >::type,
         typename ::std::conditional<
             ::std::is_rvalue_reference< ReferType >::value,
-            typename InstanceType::HolderType &&,
-            typename InstanceType::HolderType & >::type >::type;
+            typename AssociationType::HolderType &&,
+            typename AssociationType::HolderType & >::type >::type;
 
 private:
-    InstancePointer m_pointer;
+    AssociationPointer m_pointer;
 
 public:
-    constexpr InstanceFeatureGuard ()
+    constexpr AssociationFeatureGuard ()
     : m_pointer()
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
     }
 
-    InstanceFeatureGuard ( ReferType refer )
+    AssociationFeatureGuard ( ReferType refer )
     : m_pointer( ::std::forward< ReferType >( refer ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
-        InstanceTool::guardHolder( ::std::forward< HolderReferType >( m_pointer->m_holder ) );
+        AssociationTool::guardHolder( ::std::forward< HolderReferType >( m_pointer->m_holder ) );
     }
 
-    InstanceFeatureGuard ( ThisType && other )
-    : m_pointer( ::std::forward< InstancePointer >( other.m_pointer ) )
+    AssociationFeatureGuard ( ThisType && other )
+    : m_pointer( ::std::forward< AssociationPointer >( other.m_pointer ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
     }
 
-    ~InstanceFeatureGuard ()
+    ~AssociationFeatureGuard ()
     {
         if ( !!m_pointer )
-            InstanceTool::unguardHolder( ::std::forward< HolderReferType >( m_pointer->m_holder ) );
+            AssociationTool::unguardHolder( ::std::forward< HolderReferType >( m_pointer->m_holder ) );
     }
 
     constexpr bool operator ! () const
@@ -78,27 +78,38 @@ public:
         return ::std::forward< ReferType >( *m_pointer );
     }
 
-    constexpr const InstancePointer & operator -> () const
+    constexpr const AssociationPointer & operator -> () const
     {
         return m_pointer;
     }
 };
 
-
-template < typename _ValueType, typename _ValueTool >
-struct FeatureGuardHelper< Instance< _ValueType, _ValueTool > & >
+template < typename _ValueType, AggregationKind _kind, typename _RelationTool >
+struct FeatureGuardHelper< AssociationEnd< _ValueType, _kind, _RelationTool > & >
 {
-    using type = InstanceFeatureGuard< Instance< _ValueType, _ValueTool > & >;
+    using type = AssociationFeatureGuard< AssociationEnd< _ValueType, _kind, _RelationTool > & >;
 };
 
-template < typename _ValueType, typename _ValueTool >
-struct FeatureGuardHelper< Instance< _ValueType, _ValueTool > && >
+template < typename _ValueType, AggregationKind _kind, typename _RelationTool >
+struct FeatureGuardHelper< AssociationEnd< _ValueType, _kind, _RelationTool > && >
 {
-    using type = InstanceFeatureGuard< Instance< _ValueType, _ValueTool > && >;
+    using type = AssociationFeatureGuard< AssociationEnd< _ValueType, _kind, _RelationTool > && >;
 };
 
-template < typename _ValueType, typename _ValueTool >
-struct FeatureGuardHelper< const Instance< _ValueType, _ValueTool > & >
+template < typename _ValueType, AggregationKind _kind, typename _RelationTool >
+struct FeatureGuardHelper< const AssociationEnd< _ValueType, _kind, _RelationTool > & >
 {
-    using type = InstanceFeatureGuard< const Instance< _ValueType, _ValueTool > & >;
+    using type = AssociationFeatureGuard< const AssociationEnd< _ValueType, _kind, _RelationTool > & >;
 };
+
+template < typename _ValueType, AggregationKind _kind, typename _RelationTool >
+struct FeatureGuardHelper< const AssociationEnd< _ValueType, _kind, _RelationTool > && >
+{
+    using type = AssociationFeatureGuard< const AssociationEnd< _ValueType, _kind, _RelationTool > && >;
+};
+
+// disabled
+template < typename _ValueType, AggregationKind _kind, typename _RelationTool >
+struct FeatureGuardHelper< AssociationEnd< _ValueType, _kind, _RelationTool > > {};
+template < typename _ValueType, AggregationKind _kind, typename _RelationTool >
+struct FeatureGuardHelper< const AssociationEnd< _ValueType, _kind, _RelationTool > > {};

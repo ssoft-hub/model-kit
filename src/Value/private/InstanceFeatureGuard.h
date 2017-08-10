@@ -73,7 +73,7 @@ public:
         return !m_pointer;
     }
 
-    constexpr ReferType operator * () const
+    constexpr AccessType operator * () const
     {
         return ::std::forward< ReferType >( *m_pointer );
     }
@@ -82,8 +82,12 @@ public:
     {
         return m_pointer;
     }
-};
 
+    constexpr AccessType value () const
+    {
+        return ::std::forward< ReferType >( *m_pointer );
+    }
+};
 
 template < typename _ValueType, typename _ValueTool >
 struct FeatureGuardHelper< Instance< _ValueType, _ValueTool > & >
@@ -102,3 +106,15 @@ struct FeatureGuardHelper< const Instance< _ValueType, _ValueTool > & >
 {
     using type = InstanceFeatureGuard< const Instance< _ValueType, _ValueTool > & >;
 };
+
+template < typename _ValueType, typename _ValueTool >
+struct FeatureGuardHelper< const Instance< _ValueType, _ValueTool > && >
+{
+    using type = InstanceFeatureGuard< const Instance< _ValueType, _ValueTool > && >;
+};
+
+// disabled
+template < typename _ValueType, typename _ValueTool >
+struct FeatureGuardHelper< Instance< _ValueType, _ValueTool > > {};
+template < typename _ValueType, typename _ValueTool >
+struct FeatureGuardHelper< const Instance< _ValueType, _ValueTool > > {};

@@ -17,7 +17,7 @@
  * являются совместимыми. Однако в некоторых случаях можно реализовать
  * преобразование из одной реализации в другую.
  */
-template < typename _ValueType, AggregationKind _Kind, typename _RelationTool >
+template < typename _ValueType, AggregationKind _kind, typename _RelationTool >
 class AssociationEnd
 {
     template < typename >
@@ -26,7 +26,7 @@ class AssociationEnd
     template < typename >
     friend struct AssociationFeatureGuard;
 
-    using ThisType = AssociationEnd< _ValueType, _Kind, _RelationTool >;
+    using ThisType = AssociationEnd< _ValueType, _kind, _RelationTool >;
 
 public:
     using ValueType = _ValueType;
@@ -77,15 +77,15 @@ public:
 
     // NOTE: Используется доступ через оператор "->", но семантически необходим ".".
     // TODO: Заменить на оператор "." с внедрением N4477 или P0352 в стандарт C++.
-//    ValueGuard< ThisType & > operator -> ()
-//    {
-//        return *this;
-//    }
+    ValueGuard< ThisType & > operator -> ()
+    {
+        return *this;
+    }
 
-//    ValueGuard< const ThisType & > operator -> () const
-//    {
-//        return *this;
-//    }
+    ValueGuard< const ThisType & > operator -> () const
+    {
+        return *this;
+    }
 
     ValueGuard< ThisType & > operator & ()
     {
@@ -101,47 +101,47 @@ public:
     template < typename ... _Arguments >
     static constexpr ThisType make ( _Arguments && ... /*arguments*/ )
     {
-        static_assert( _Kind != AggregationKind::None, "Make not supported for none aggregation type." );
+        static_assert( _kind != AggregationKind::None, "Make not supported for none aggregation type." );
         return ThisType();
     }
 
     template < typename _OtherType, typename _OtherTool >
     static ThisType share ( const AssociationEnd< _OtherType, AggregationKind::Shared, _OtherTool > & /*other*/ )
     {
-        static_assert( _Kind == AggregationKind::Shared, "Share not supported for not shared aggregation type." );
+        static_assert( _kind == AggregationKind::Shared, "Share not supported for not shared aggregation type." );
         return ThisType();
     }
 
-    template < typename _OtherType, AggregationKind _OtherKind, typename _OtherTool >
-    static ThisType make ( const AssociationEnd< _OtherType, _OtherKind, _OtherTool > & /*other*/ )
-    {
-        static_assert( _Kind != AggregationKind::None, "Make not supported for none aggregation type." );
-        return ThisType();
-    }
+//    template < typename _OtherType, AggregationKind _other_kind, typename _OtherTool >
+//    static ThisType copy ( const AssociationEnd< _OtherType, _other_kind, _OtherTool > & /*other*/ )
+//    {
+//        static_assert( _kind != AggregationKind::None, "Make operatior not supported for none aggregation type." );
+//        return ThisType();
+//    }
 
-    template < typename _OtherType, AggregationKind _OtherKind, typename _OtherTool >
-    static ThisType refer ( const AssociationEnd< _OtherType, _OtherKind, _OtherTool > & /*other*/ )
+    template < typename _OtherType, AggregationKind _other_kind, typename _OtherTool >
+    static ThisType refer ( const AssociationEnd< _OtherType, _other_kind, _OtherTool > & /*other*/ )
     {
-        static_assert( _Kind == AggregationKind::None, "Refer supported for none aggregation type only." );
-        return ThisType();
-    }
-
-    template < typename _OtherType >
-    static ThisType share ( const _OtherType & /*other*/ )
-    {
+        static_assert( _kind == AggregationKind::None, "Refer operation is supported for none aggregation type only." );
         return ThisType();
     }
 
     template < typename _OtherType >
-    static ThisType copy ( const _OtherType & /*other*/ )
+    static ThisType share ( const _OtherType & other )
     {
-        return ThisType();
+        return share( FeatureGuard< const _OtherType & >( other ).value() );
     }
 
+//    template < typename _OtherType >
+//    static ThisType copy ( const _OtherType & other )
+//    {
+//        return copy( FeatureGuard< const _OtherType & >( other ).value() );
+//    }
+
     template < typename _OtherType >
-    static ThisType refer ( const _OtherType & /*other*/ )
+    static ThisType refer ( const _OtherType & other )
     {
-        return ThisType();
+        return share( FeatureGuard< const _OtherType & >( other ).value() );
     }
 
 };

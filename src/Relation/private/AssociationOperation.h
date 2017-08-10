@@ -2,7 +2,7 @@
 
 #include <ModelKit/Common/AggregationKind.h>
 
-template < typename _Type, AggregationKind _Kind, typename _RelationTool >
+template < typename _ValueType, AggregationKind _kind, typename _RelationTool >
 class AssociationEnd;
 
 #define UPDATE_ASSOCIATION_UNARY_OPERATOR( sym ) \

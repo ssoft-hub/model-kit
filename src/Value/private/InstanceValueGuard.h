@@ -103,7 +103,6 @@ public:
     }
 };
 
-
 template < typename _ValueType, typename _ValueTool >
 struct ValueGuardHelper< Instance< _ValueType, _ValueTool > & >
 {
@@ -121,3 +120,15 @@ struct ValueGuardHelper< const Instance< _ValueType, _ValueTool > & >
 {
     using type = InstanceValueGuard< const Instance< _ValueType, _ValueTool > & >;
 };
+
+template < typename _ValueType, typename _ValueTool >
+struct ValueGuardHelper< const Instance< _ValueType, _ValueTool > && >
+{
+    using type = InstanceValueGuard< const Instance< _ValueType, _ValueTool > && >;
+};
+
+// disabled
+template < typename _ValueType, typename _ValueTool >
+struct ValueGuardHelper< Instance< _ValueType, _ValueTool > > {};
+template < typename _ValueType, typename _ValueTool >
+struct ValueGuardHelper< const Instance< _ValueType, _ValueTool > > {};
