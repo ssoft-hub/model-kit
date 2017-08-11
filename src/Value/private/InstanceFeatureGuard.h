@@ -13,7 +13,7 @@ class Instance;
  * а доступ к членам класса - посредством оператора "->".
  */
 template < typename _ReferType >
-struct InstanceFeatureGuard
+class InstanceFeatureGuard
 {
     using ThisType = InstanceFeatureGuard< _ReferType >;
 
@@ -22,19 +22,19 @@ public:
     using AccessType = ReferType;
 
     using InstancePointer = ReferPointer< ReferType >;
-    using InstanceType = typename ::std::remove_reference< ReferType >::type;
+    using InstanceType = ::std::remove_reference_t< ReferType >;
     using InstanceTool = typename InstanceType::ValueTool;
 
-    using HolderReferType = typename ::std::conditional<
+    using HolderReferType = ::std::conditional_t<
         ::std::is_const< InstanceType >::value,
-        typename ::std::conditional<
+        ::std::conditional_t<
             ::std::is_rvalue_reference< ReferType >::value,
             const typename InstanceType::HolderType &&,
-            const typename InstanceType::HolderType & >::type,
-        typename ::std::conditional<
+            const typename InstanceType::HolderType & >,
+        ::std::conditional_t<
             ::std::is_rvalue_reference< ReferType >::value,
             typename InstanceType::HolderType &&,
-            typename InstanceType::HolderType & >::type >::type;
+            typename InstanceType::HolderType & > >;
 
 private:
     InstancePointer m_pointer;

@@ -14,7 +14,7 @@ class ReferPointer
 
 public:
     using ReferType = _ReferType;
-    using ValueType = typename ::std::remove_reference< ReferType >::type;
+    using ValueType = ::std::remove_reference_t< ReferType >;
 
 private:
     ValueType * m_pointer;
@@ -25,8 +25,8 @@ private:
     struct Dummy {};
     static constexpr ValueType * addressOf ( ValueType & refer )
     {
-        using DummyType = typename ::std::conditional<
-            ::std::is_const< ValueType >::value, const Dummy, Dummy >::type;
+        using DummyType = std::conditional_t<
+            ::std::is_const< ValueType >::value, const Dummy, Dummy >;
         return reinterpret_cast< ValueType * >( &reinterpret_cast< DummyType & >( refer ) );
     }
 

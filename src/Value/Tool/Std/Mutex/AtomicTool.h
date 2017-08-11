@@ -2,7 +2,7 @@
 
 #include <ModelKit/Common/HolderGuard.h>
 #include <ModelKit/Common/InitializeType.h>
-#include <ModelKit/Common/InstanceTrait.h>
+#include <ModelKit/Value/InstanceTrait.h>
 #include <mutex>
 
 namespace Std

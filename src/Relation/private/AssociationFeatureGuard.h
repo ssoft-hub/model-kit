@@ -22,19 +22,19 @@ public:
     using AccessType = ReferType;
 
     using AssociationPointer = ReferPointer< ReferType >;
-    using AssociationType = typename ::std::remove_reference< ReferType >::type;
+    using AssociationType = ::std::remove_reference_t< ReferType >;
     using AssociationTool = typename AssociationType::RelationTool;
 
-    using HolderReferType = typename ::std::conditional<
+    using HolderReferType = ::std::conditional_t<
         ::std::is_const< AssociationType >::value,
-        typename ::std::conditional<
+        ::std::conditional_t<
             ::std::is_rvalue_reference< ReferType >::value,
             const typename AssociationType::HolderType &&,
-            const typename AssociationType::HolderType & >::type,
-        typename ::std::conditional<
+            const typename AssociationType::HolderType & >,
+        ::std::conditional_t<
             ::std::is_rvalue_reference< ReferType >::value,
             typename AssociationType::HolderType &&,
-            typename AssociationType::HolderType & >::type >::type;
+            typename AssociationType::HolderType & > >;
 
 private:
     AssociationPointer m_pointer;

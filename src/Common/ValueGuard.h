@@ -73,10 +73,12 @@ struct ValueGuardHelper
 {
     using type = DefaultValueGuard< _ReferType >;
 };
+template < typename _ReferType >
+using ValueGuardHelper_t = typename ValueGuardHelper< _ReferType >::type;
 
 /*!
  * Класс - защитник свойства значения. Введен для удобства использования,
- * переопределяет typename ValueGuardHelper< _ReferType >::type.
+ * переопределяет typename ValueGuardHelper_t< _ReferType >.
  */
 template < typename _ReferType >
-using ValueGuard = typename ValueGuardHelper< _ReferType >::type;
+using ValueGuard = ValueGuardHelper_t< _ReferType >;

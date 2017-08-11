@@ -4,8 +4,7 @@
 #include <atomic>
 #include <ModelKit/Common/HolderGuard.h>
 #include <ModelKit/Common/InitializeType.h>
-#include <ModelKit/Common/InstanceTrait.h>
-
+#include <ModelKit/Value/InstanceTrait.h>
 namespace Cpp
 {
     namespace Raw
@@ -149,6 +148,7 @@ namespace Cpp
                         "_Type must be base of _OtherType" );
 
                     decrement();
+                    // TODO: проверить вариант с множественным наследованием
                     m_pointer = reinterpret_cast< PointerType >( other.m_pointer );
                     other.m_pointer = nullptr;
                     return *this;
@@ -163,6 +163,7 @@ namespace Cpp
                     if ( m_pointer != reinterpret_cast< PointerType >( other.m_pointer ) )
                     {
                         decrement();
+                        // TODO: проверить вариант с множественным наследованием
                         m_pointer = reinterpret_cast< PointerType >( other.m_pointer );
                         increment();
                     }
