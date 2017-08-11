@@ -120,8 +120,8 @@ struct TestType
 
 void testConstructor ()
 {
-    using TestVariable = Variable< TestType >;
-//    using TestVariable = Variable< typename OptimalHelper< TestType >::type >;
+//    using TestVariable = Variable< TestType >;
+    using TestVariable = Variable< OptimalType< TestType > >;
 
     // Конструктор без инициализации
     {

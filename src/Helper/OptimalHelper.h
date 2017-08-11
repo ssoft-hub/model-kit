@@ -23,13 +23,15 @@ struct OptimalHelper
     using DefaultTool = ::Cpp::Inplace::DefaultTool;
     using ImplicitTool = ::Cpp::Raw::ImplicitTool;
 
-    using type = typename ::std::conditional<
+    using type = ::std::conditional_t<
         ::std::is_trivially_copyable< _ValueType >::value
             || !::std::is_copy_constructible< _ValueType >::value
             || !::std::is_move_constructible< _ValueType >::value,
         Instance< _ValueType, DefaultTool >,
-        Instance< _ValueType, ImplicitTool > >::type;
+        Instance< _ValueType, ImplicitTool > >;
 };
+template < typename _ValueType >
+using OptimalHelper_t = typename OptimalHelper< _ValueType >::type;
 
 template < typename _ValueType, typename _ValueTool >
 struct OptimalHelper< Instance< _ValueType, _ValueTool > >
@@ -63,13 +65,15 @@ struct OptimalHelper< Instance< Instance< _ValueType, _ValueTool >, _RequaredToo
     using ShortType = Instance< _ValueType, _RequaredTool >;
     using InnerType = Instance< _ValueType, _ValueTool >;
 
-    using type = typename ::std::conditional<
+    using type = ::std::conditional_t<
         OptimalTraitChecker< ShortType, InnerType >::value,
-        typename OptimalHelper< ShortType >::type,
-            typename ::std::conditional<
+        OptimalHelper_t< ShortType >,
+            ::std::conditional_t<
                 OptimalTraitChecker< InnerType, ShortType >::value,
-                typename OptimalHelper< InnerType >::type,
-                FullType
-            >::type
-        >::type;
+                OptimalHelper_t< InnerType >,
+                FullType > >;
 };
+
+
+template < typename _ValueType >
+using OptimalType = OptimalHelper_t< _ValueType >;

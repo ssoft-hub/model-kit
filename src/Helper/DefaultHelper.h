@@ -18,6 +18,8 @@ struct DefaultHelper
 {
     using type = Instance< _ValueType, ::Cpp::Inplace::DefaultTool >;
 };
+template < typename _ValueType >
+using DefaultHelper_t = typename DefaultHelper< _ValueType >::type;
 
 template < typename _ValueType, typename _ValueTool >
 struct DefaultHelper< Instance< _ValueType, _ValueTool > >
@@ -31,8 +33,8 @@ struct DefaultHelper< Instance< _ValueType, _ValueTool > >
 template < typename _ValueType, typename _ValueTool, typename _RequaredTool >
 struct DefaultHelper< Instance< Instance< _ValueType, _ValueTool >, _RequaredTool > >
 {
-    using type = typename ::std::conditional<
+    using type = ::std::conditional_t<
         ::std::is_same< _ValueTool, _RequaredTool >::value,
-        typename DefaultHelper< Instance< _ValueType, _ValueTool > >::type,
-        Instance< Instance< _ValueType, _ValueTool >, _RequaredTool > >::type;
+        DefaultHelper_t< Instance< _ValueType, _ValueTool > >,
+        Instance< Instance< _ValueType, _ValueTool >, _RequaredTool > >;
 };

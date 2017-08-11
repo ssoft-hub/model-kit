@@ -6,9 +6,9 @@
 
 #include <ModelKit/Common/Cnst.h>
 #include <ModelKit/Common/InitializeType.h>
-#include "private/InstanceBuilder.h"
 #include "private/InstanceFeatureGuard.h"
 #include "private/InstanceOperation.h"
+#include "private/InstanceResolver.h"
 #include "private/InstanceValueGuard.h"
 
 /*!
@@ -25,11 +25,8 @@ class Instance
     template < typename >
     friend struct InstanceFeatureGuard;
 
-    template < InstanceBuildSwitchType >
-    friend struct InstanceBuildSwither;
-
-//    template < typename, typename >
-//    friend class Instance;
+    template < typename, typename >
+    friend class InstanceCompatibleResolver;
 
     using ThisType = Instance< _ValueType, _ValueTool >;
 
@@ -39,6 +36,10 @@ public:
     using HolderType = typename ValueTool:: template HolderType< _ValueType >;
 
 private:
+    /*
+     * NOTE: В операциях присвоения (конструкторы и операторы) гарантия свойств
+     * хранимого значения должна осуществляться посредством реализации HolderType.
+     */
     HolderType m_holder;
 
 public:
@@ -58,27 +59,29 @@ public:
 
     //! Конструкторы перемещения
     Instance ( ThisType && other )
-    : m_holder( ::std::forward< HolderType >( other.m_holder ) )
+    : m_holder( InstanceResolver< ThisType, ThisType && >(
+        ::std::forward< ThisType >( other ) ).resolve() )
     {
     }
 
     template < typename _OtherType, typename _OtherTool >
     Instance ( Instance< _OtherType, _OtherTool > && other )
-    : m_holder( InstanceBuilder< _ValueType, _ValueTool, Instance< _OtherType, _OtherTool > >
-        ::resolve( ::std::forward< Instance< _OtherType, _OtherTool > >( other ) ) )
+    : m_holder( InstanceResolver< ThisType, Instance< _OtherType, _OtherTool > && >(
+        ::std::forward< Instance< _OtherType, _OtherTool > >( other ) ).resolve() )
     {
     }
 
     //! Конструкторы копирования
     Instance ( const ThisType & other )
-    : m_holder( other.m_holder )
+    : m_holder( InstanceResolver< ThisType, const ThisType & >(
+        other ).resolve() )
     {
     }
 
     template < typename _OtherType, typename _OtherTool >
     Instance ( const Instance< _OtherType, _OtherTool > & other )
-    : m_holder( InstanceBuilder< _ValueType, _ValueTool, Instance< _OtherType, _OtherTool > >
-        ::resolve( other ) )
+    : m_holder( InstanceResolver< ThisType, const Instance< _OtherType, _OtherTool > & >(
+        other ).resolve() )
     {
     }
 
@@ -94,40 +97,40 @@ public:
     }
 
     //! Оператор присвоения rvalue значений
-    template < typename _Type >
-    ThisType & operator = ( _Type && other )
+    template < typename _OtherType >
+    ThisType & operator = ( _OtherType && other )
     {
-        m_holder = InstanceBuilder< _ValueType, _ValueTool, _Type >
-            ::resolve( ::std::forward< _Type >( other ) );
+        m_holder = InstanceResolver< ThisType, _OtherType && >(
+            ::std::forward< _OtherType >( other ) ).resolve();
         return *this;
     }
 
     ThisType & operator = ( ThisType && other )
     {
-        m_holder = ::std::forward< HolderType >( other.m_holder );
+        m_holder = InstanceResolver< ThisType, ThisType && >(
+            ::std::forward< ThisType >( other ) ).resolve();
         return *this;
     }
 
     /// Операторы присвоения lvalue значения
-    template < typename _Type >
-    ThisType & operator = ( const _Type & other )
+    template < typename _OtherType >
+    ThisType & operator = ( const _OtherType & other )
     {
-        m_holder = InstanceBuilder< _ValueType, _ValueTool, _Type >
-            ::resolve( other  ) ;
+        m_holder = InstanceResolver< ThisType, const _OtherType & >( other ).resolve();
         return *this;
     }
 
     ThisType & operator = ( const ThisType & other )
     {
-        m_holder = other.m_holder;
+        m_holder = InstanceResolver< ThisType, const ThisType & >( other ).resolve();
         return *this;
     }
 
     // NOTE: Определен из-за неоднозначного разрешения
-    template < typename _Type >
-    ThisType & operator = ( _Type & other )
+    template < typename _OtherType >
+    ThisType & operator = ( _OtherType & other )
     {
-        return *this = const_cast< const _Type & >( other );
+        return *this = const_cast< const _OtherType & >( other );
     }
 
     // NOTE: Определен из-за неоднозначного разрешения

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <ModelKit/Common/InitializeType.h>
-#include <ModelKit/Common/InstanceTrait.h>
 #include <memory>
+#include <ModelKit/Common/InitializeType.h>
+#include <ModelKit/Value/InstanceTrait.h>
 
 namespace Std
 {

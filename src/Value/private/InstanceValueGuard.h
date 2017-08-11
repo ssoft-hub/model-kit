@@ -13,36 +13,36 @@ class Instance;
  * а доступ к членам класса - посредством оператора "->".
  */
 template < typename _ReferType >
-struct InstanceValueGuard
+class InstanceValueGuard
 {
     using ThisType = InstanceValueGuard< _ReferType >;
 
 public:
     using ReferType = _ReferType;
-    using InstanceType = typename ::std::remove_reference< ReferType >::type;
+    using InstanceType = ::std::remove_reference_t< ReferType >;
     using ValueTool = typename InstanceType::ValueTool;
 
-    using ValueReferType = typename ::std::conditional<
+    using ValueReferType = ::std::conditional_t<
         ::std::is_const< InstanceType >::value,
-        typename ::std::conditional<
+        ::std::conditional_t<
             ::std::is_rvalue_reference< ReferType >::value,
             const typename InstanceType::ValueType &&,
-            const typename InstanceType::ValueType & >::type,
-        typename ::std::conditional<
+            const typename InstanceType::ValueType & >,
+        ::std::conditional_t<
             ::std::is_rvalue_reference< ReferType >::value,
             typename InstanceType::ValueType &&,
-            typename InstanceType::ValueType & >::type >::type;
+            typename InstanceType::ValueType & > >;
 
-    using HolderReferType = typename ::std::conditional<
+    using HolderReferType = ::std::conditional_t<
         ::std::is_const< InstanceType >::value,
-        typename ::std::conditional<
+        ::std::conditional_t<
             ::std::is_rvalue_reference< ReferType >::value,
             const typename InstanceType::HolderType &&,
-            const typename InstanceType::HolderType & >::type,
-        typename ::std::conditional<
+            const typename InstanceType::HolderType & >,
+        ::std::conditional_t<
             ::std::is_rvalue_reference< ReferType >::value,
             typename InstanceType::HolderType &&,
-            typename InstanceType::HolderType & >::type >::type;
+            typename InstanceType::HolderType & > >;
 
     using FeatureGuardType = FeatureGuard< ReferType >;
     using ValueGuardType = ValueGuard< ValueReferType >;
