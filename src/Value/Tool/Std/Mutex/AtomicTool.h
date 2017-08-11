@@ -21,11 +21,12 @@ namespace Std
             struct HolderType
             {
                 using ThisType = HolderType< _Type >;
+                using ValueTool = ::Std::Mutex::AtomicTool;
 
                 using LockType = _LockType;
                 using ValueType = _Type;
                 using LockGuardType = ::std::lock_guard< LockType >;
-                using WritableHolderGuard = ::HolderGuard< ThisType &, ::Std::Mutex::AtomicTool >;
+                using WritableHolderGuard = ::HolderGuard< ThisType &, ValueTool >;
 
                 mutable LockType m_lock;
                 ValueType m_value;
@@ -42,25 +43,37 @@ namespace Std
                 }
 
                 HolderType ( ThisType && other )
-                : HolderType( ::std::forward< ValueType >( other.m_value ) )
+                : m_lock()
                 {
+                    using OtherMovableHolderGuard = ::HolderGuard< ThisType &&, ValueTool >;
+                    OtherMovableHolderGuard guard( other );
+                    m_value = ::std::forward< ValueType >( other.m_value );
                 }
 
                 HolderType ( const ThisType & other )
-                : HolderType( other.m_value )
+                : m_lock()
                 {
+                    using OtherReadableHolderGuard = ::HolderGuard< const ThisType &, ValueTool >;
+                    OtherReadableHolderGuard guard( other );
+                    m_value =  other.m_value;
                 }
 
                 template < typename _OtherType >
                 HolderType ( HolderType< _OtherType > && other )
-                : HolderType( ::std::forward< typename HolderType< _OtherType >::ValueType >( other.m_value ) )
+                : m_lock()
                 {
+                    using OtherMovableHolderGuard = ::HolderGuard< HolderType< _OtherType > &&, ValueTool >;
+                    OtherMovableHolderGuard guard( other );
+                    m_value = ::std::forward< ValueType >( other.m_value );
                 }
 
                 template < typename _OtherType >
                 HolderType ( const HolderType< _OtherType > & other )
-                : HolderType( other.m_value )
+                : m_lock()
                 {
+                    using OtherReadableHolderGuard = ::HolderGuard< const HolderType< _OtherType > &, ValueTool >;
+                    OtherReadableHolderGuard guard( other );
+                    m_value =  other.m_value;
                 }
 
                 ~HolderType ()
@@ -86,6 +99,8 @@ namespace Std
 
                 ThisType & operator = ( ThisType && other )
                 {
+                    using OtherMovableHolderGuard = ::HolderGuard< ThisType &&, ValueTool >;
+                    OtherMovableHolderGuard other_guard( ::std::forward< ThisType >( other ) );
                     WritableHolderGuard guard( *this );
                     m_value = ::std::forward< ValueType >( other.m_value );
                     return *this;
@@ -93,6 +108,8 @@ namespace Std
 
                 ThisType & operator = ( const ThisType & other )
                 {
+                    using OtherReadableHolderGuard = ::HolderGuard< const ThisType &, ValueTool >;
+                    OtherReadableHolderGuard other_guard( other );
                     WritableHolderGuard guard( *this );
                     m_value = other.m_value;
                     return *this;
@@ -101,14 +118,20 @@ namespace Std
                 template < typename _OtherType >
                 ThisType & operator = ( HolderType< _OtherType > && other )
                 {
+                    using OtherType = HolderType< _OtherType >;
+                    using OtherMovableHolderGuard = ::HolderGuard< OtherType &&, ValueTool >;
+                    OtherMovableHolderGuard other_guard( ::std::forward< OtherType >( other ) );
                     WritableHolderGuard guard( *this );
-                    m_value = ::std::forward< typename HolderType< _OtherType >::ValueType >( other.m_value );
+                    m_value = ::std::forward< typename OtherType::ValueType >( other.m_value );
                     return *this;
                 }
 
                 template < typename _OtherType >
                 ThisType & operator = ( const HolderType< _OtherType > & other )
                 {
+                    using OtherType = HolderType< _OtherType >;
+                    using OtherReadableHolderGuard = ::HolderGuard< const OtherType &, ValueTool >;
+                    OtherReadableHolderGuard other_guard( other );
                     WritableHolderGuard guard( *this );
                     m_value = other.m_value;
                     return *this;
