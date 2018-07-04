@@ -1,10 +1,10 @@
 #LIBS *= -lModelKit
 
 INCLUDEPATH *= \
-    $${PWD}/../../../include \
+    $${PWD}/../../include \
 
 DEPENDPATH *= \
-    $${PWD}/../../../include \
+    $${PWD}/../../include \
 
 DEFINES *= SDK_IMPORT_LIBS
 

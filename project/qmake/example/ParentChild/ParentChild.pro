@@ -7,9 +7,6 @@ CONFIG *= console
 DEPENDS *= \
     ModelKit \
 
-# Поиск общей конфигурации комплекса
-include( $${PWD}/config_finder.prf )
-
 # Включение исходных файлов
-include( $${PWD}/files.prf )
+!load( include_files ) : error( Can not find feature \"include_files\" )
 includeFiles( $${PWD}/../../../../example/ParentChild )
