@@ -11,8 +11,7 @@ template < typename _ValueType, typename _ValueTool > class Instance;
 template < typename _ValueType, typename _ValueTool >
 struct IsInstance< Instance< _ValueType, _ValueTool > >
     : public ::std::true_type
-{
-};
+{};
 
 /*!
  * Специализация класса для проверки совместимости между Instance.
@@ -21,9 +20,8 @@ struct IsInstance< Instance< _ValueType, _ValueTool > >
  */
 template < typename _ThisType, typename _OtherType, typename _ValueTool >
 struct IsCompatible< Instance< _ThisType, _ValueTool >, Instance< _OtherType, _ValueTool > >
-    : public ::std::integral_constant< bool, IsCompatible< _ThisType, _OtherType >::value >
-{
-};
+    : public ::std::integral_constant< bool, is_compatible_v< _ThisType, _OtherType > >
+{};
 
 /*!
  * Специализация проверки вложенности одного Instance в другой.
@@ -31,7 +29,6 @@ struct IsCompatible< Instance< _ThisType, _ValueTool >, Instance< _OtherType, _V
 template < typename _ValueType, typename _ValueTool, typename _ContainerType, typename _ContainerTool >
 struct IsPartOf< Instance< _ValueType, _ValueTool >, Instance< _ContainerType, _ContainerTool > >
     : public ::std::integral_constant< bool,
-        IsCompatible< Instance< _ValueType, _ValueTool >, _ContainerType >::value
-        || IsPartOf< Instance< _ValueType, _ValueTool >, _ContainerType >::value >
-{
-};
+        is_compatible_v< Instance< _ValueType, _ValueTool >, _ContainerType >
+        || is_part_of_v< Instance< _ValueType, _ValueTool >, _ContainerType > >
+{};

@@ -29,11 +29,11 @@ struct InstanceResolverHelper
     using OtherInstanceType = ::std::decay_t< OtherReferType >;
 
     using type = ::std::conditional_t<
-        IsCompatible< InstanceType, OtherInstanceType >::value
-            || IsPartOf< OtherInstanceType, InstanceType >::value,
+        is_compatible_v< InstanceType, OtherInstanceType >
+            || is_part_of_v< OtherInstanceType, InstanceType >,
         InstanceCompatibleResolver< _InstanceType, _OtherReferType >,
         ::std::conditional_t<
-            IsPartOf< InstanceType, OtherInstanceType >::value,
+            is_part_of_v< InstanceType, OtherInstanceType >,
             InstanceFeatureResolver< _InstanceType, _OtherReferType >,
             InstanceValueResolver< _InstanceType, _OtherReferType > > >;
 };

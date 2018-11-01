@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ModelKit/Common/ValueGuard.h>
-#include <ModelKit/Common/InstanceTrait.h>
+#include <ModelKit/Value/InstanceTrait.h>
 
 enum class InstanceBuildSwitchType
 {
@@ -34,10 +34,13 @@ struct InstanceBuildTypeDefiner {};
 template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
 struct InstanceBuildTypeDefiner< Instance< _ThisType, _ThisTool >, Instance< _OtherType, _OtherTool > >
     : public ::std::integral_constant< InstanceBuildSwitchType, InstanceBuildTypeValue<
-        IsCompatible< Instance< _ThisType, _ThisTool >, Instance< _OtherType, _OtherTool > >::value,
-        IsPartOf< Instance< _OtherType, _OtherTool >, Instance< _ThisType, _ThisTool > >::value >::value >
+        is_compatible_v< Instance< _ThisType, _ThisTool >, Instance< _OtherType, _OtherTool > >,
+        is_part_of_v< Instance< _OtherType, _OtherTool >, Instance< _ThisType, _ThisTool > > >::value >
 {
 };
+
+template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
+constexpr InstanceBuildSwitchType instance_build_type_v = InstanceBuildTypeDefiner< Instance< _ThisType, _ThisTool >, Instance< _OtherType, _OtherTool > >::value;
 
 /*!
  * Класс формирования экземпляра значения Instance с помощью конструктора
@@ -171,13 +174,13 @@ struct InstanceBuilder< _ThisType, _ThisTool, Instance< _OtherType, _OtherTool >
 
     static constexpr decltype(auto) resolve ( const Instance< _OtherType, _OtherTool > & other )
     {
-        return InstanceBuildSwither< InstanceBuildTypeDefiner< Instance< _ThisType, _ThisTool >, Instance< _OtherType, _OtherTool > >::value >
+        return InstanceBuildSwither< instance_build_type_v< Instance< _ThisType, _ThisTool >, Instance< _OtherType, _OtherTool > > >
             :: template resolve< _ThisType, _ThisTool, _OtherType, _OtherTool >( other );
     }
 
     static constexpr decltype(auto) resolve ( Instance< _OtherType, _OtherTool > && other )
     {
-        return InstanceBuildSwither< InstanceBuildTypeDefiner< Instance< _ThisType, _ThisTool >, Instance< _OtherType, _OtherTool > >::value >
+        return InstanceBuildSwither< instance_build_type_v< Instance< _ThisType, _ThisTool >, Instance< _OtherType, _OtherTool > > >
             :: template resolve< _ThisType, _ThisTool, _OtherType, _OtherTool >( ::std::forward< Instance< _OtherType, _OtherTool > >( other ) );
     }
 };

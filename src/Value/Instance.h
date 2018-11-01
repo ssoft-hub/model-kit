@@ -20,10 +20,10 @@ template < typename _ValueType, typename _ValueTool >
 class Instance
 {
     template < typename >
-    friend struct InstanceValueGuard;
+    friend class InstanceValueGuard;
 
     template < typename >
-    friend struct InstanceFeatureGuard;
+    friend class InstanceFeatureGuard;
 
     template < typename, typename >
     friend class InstanceCompatibleResolver;

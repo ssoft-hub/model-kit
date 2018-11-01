@@ -179,7 +179,7 @@ namespace Std
  * Специализация проверки свойства размещения значения в куче.
  */
 template < typename _Value >
-struct IsAtomic< Instance< _Value, ::Std::Mutex::AtomicTool > >
+struct IsThreadSafe< Instance< _Value, ::Std::Mutex::AtomicTool > >
     : public ::std::true_type
 {
 };

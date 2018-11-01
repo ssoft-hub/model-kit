@@ -43,14 +43,16 @@ struct OptimalHelper< Instance< _ValueType, _ValueTool > >
 template < typename _TestType, typename _OtherType >
 struct OptimalTraitChecker
     : ::std::integral_constant< bool,
-        ( !IsInstance< _OtherType >::value || ( IsInstance< _OtherType >::value && IsInstance< _TestType >::value ) )
-        && ( !IsHeap< _OtherType >::value || ( IsHeap< _OtherType >::value && IsHeap< _TestType >::value ) )
-        && ( !IsOptional< _OtherType >::value || ( IsOptional< _OtherType >::value && IsOptional< _TestType >::value ) )
-        && ( !IsImplicit< _OtherType >::value || ( IsImplicit< _OtherType >::value && IsImplicit< _TestType >::value ) )
-        && ( !IsAtomic< _OtherType >::value || ( IsAtomic< _OtherType >::value && IsAtomic< _TestType >::value ) ) >
+           ( !is_instance_v< _OtherType > || ( is_instance_v< _OtherType > && is_instance_v< _TestType > ) )
+        && ( !is_heap_v< _OtherType > || ( is_heap_v< _OtherType > && is_heap_v< _TestType > ) )
+        && ( !is_optional_v< _OtherType > || ( is_optional_v< _OtherType > && is_optional_v< _TestType > ) )
+        && ( !is_implicit_v< _OtherType > || ( is_implicit_v< _OtherType > && is_implicit_v< _TestType > ) )
+        && ( !is_thread_safe_v< _OtherType > || ( is_thread_safe_v< _OtherType > && is_thread_safe_v< _TestType > ) ) >
 
-{
-};
+{};
+
+template < typename _TestType, typename _OtherType >
+constexpr bool is_optimal_v = OptimalTraitChecker<_TestType, _OtherType >::value;
 
 /*!
  * Класс выбирает тип Instance на основе сравнения свойств исходного и вложенного
@@ -66,10 +68,10 @@ struct OptimalHelper< Instance< Instance< _ValueType, _ValueTool >, _RequaredToo
     using InnerType = Instance< _ValueType, _ValueTool >;
 
     using type = ::std::conditional_t<
-        OptimalTraitChecker< ShortType, InnerType >::value,
+        is_optimal_v< ShortType, InnerType >,
         OptimalHelper_t< ShortType >,
             ::std::conditional_t<
-                OptimalTraitChecker< InnerType, ShortType >::value,
+                is_optimal_v< InnerType, ShortType >,
                 OptimalHelper_t< InnerType >,
                 FullType > >;
 };
