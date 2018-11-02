@@ -23,7 +23,7 @@ void testTool ()
     // (например, системные блокировки и т.п.)
 
     // Гарант свойств для применения константного значения value
-    auto cvalue_ptr = &cnst( value );
+    auto cvalue_ptr = &asConst( value );
 
     // value
     ::std::cout

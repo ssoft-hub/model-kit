@@ -213,7 +213,7 @@ int main ( int /*argc*/, char ** /*argv*/ )
 //    Variable< SharedEnd< const int, ToolType > > int_value; // ERROR
 
     (*&int_value) += 12345;
-    *&cnst(int_value);
+    *&asConst(int_value);
 
     Variable< ::std::string > name;
     name = "Hello";
@@ -226,26 +226,26 @@ int main ( int /*argc*/, char ** /*argv*/ )
     item->m_refer_string = "Change refer string";
 
     ::std::cout
-        << cnst(int_value) << ::std::endl
-        << cnst(name) << ::std::endl
-        << cnst(item)->m_int << ::std::endl
-        << cnst(item)->m_string << ::std::endl
-        << cnst(item)->m_unique_string << ::std::endl
-        << cnst(item)->m_shared_string << ::std::endl
-        << cnst(item)->m_refer_string << ::std::endl
+        << asConst(int_value) << ::std::endl
+        << asConst(name) << ::std::endl
+        << asConst(item)->m_int << ::std::endl
+        << asConst(item)->m_string << ::std::endl
+        << asConst(item)->m_unique_string << ::std::endl
+        << asConst(item)->m_shared_string << ::std::endl
+        << asConst(item)->m_refer_string << ::std::endl
     ;
 
     Variable< Instance< Item, ValueTool >, ImplicitTool > other_item;// = item;
-//    (*&other_item ).m_refer = (*&cnst(item ).m_string;
+//    (*&other_item ).m_refer = (*&asConst(item ).m_string;
     other_item = item;
 
     other_item->m_int = 1;
     other_item->m_string = "Word";
 
     ::std::cout
-        << cnst(other_item)->m_int << ::std::endl
-        << cnst(other_item)->m_string << ::std::endl
-//        << cnst(other_item)->m_string_refer << ::std::endl
+        << asConst(other_item)->m_int << ::std::endl
+        << asConst(other_item)->m_string << ::std::endl
+//        << asConst(other_item)->m_string_refer << ::std::endl
     ;
 
     return 0;
@@ -270,7 +270,7 @@ void syntaxExample ()
     (*&value);  // совместим с типом отличным от Instance
 
     // Доступ к константному внутреннему значению
-    (*&cnst(value)); // совместим с типом отличным от Instance
+    (*&asConst(value)); // совместим с типом отличным от Instance
 
     // Доступ к неконстантному члену класса
     value->m_member;    // не совместим с типом отличным от Instance
@@ -278,9 +278,9 @@ void syntaxExample ()
     (*&value).m_member; // совместим с типом отличным от Instance
 
     // Доступ к константному члену класса
-    cnst(value)->m_member;      // не совместим с типом отличным от Instance
-    (&cnst(value))->m_member;   // совместим с типом отличным от Instance
-    (*&cnst(value)).m_member;   // совместим с типом отличным от Instance
+    asConst(value)->m_member;      // не совместим с типом отличным от Instance
+    (&asConst(value))->m_member;   // совместим с типом отличным от Instance
+    (*&asConst(value)).m_member;   // совместим с типом отличным от Instance
 }
 
 void operatorExample ()

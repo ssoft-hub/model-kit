@@ -54,43 +54,41 @@ private:
 
 public:
     constexpr InstanceValueGuard ()
-    : m_feature_guard()
-    , m_internal_guard()
+        : m_feature_guard()
+        , m_internal_guard()
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
     }
 
     InstanceValueGuard ( ReferType refer )
-    : m_feature_guard( ::std::forward< ReferType >( refer ) )
-    , m_internal_guard( ValueTool::value(
-        ::std::forward< HolderReferType >( (*m_feature_guard).m_holder ) ) )
+        : m_feature_guard( ::std::forward< ReferType >( refer ) )
+        , m_internal_guard( ValueTool::value( ::std::forward< HolderReferType >( (*m_feature_guard).m_holder ) ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
     }
 
     InstanceValueGuard ( FeatureGuardType && other )
-    : m_feature_guard( ::std::forward< FeatureGuardType >( other ) )
-    , m_internal_guard( ValueTool::value(
-        ::std::forward< HolderReferType >( (*m_feature_guard).m_holder ) ) )
+        : m_feature_guard( ::std::forward< FeatureGuardType >( other ) )
+        , m_internal_guard( ValueTool::value( ::std::forward< HolderReferType >( (*m_feature_guard).m_holder ) ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
     }
 
     InstanceValueGuard ( ThisType && other )
-    : m_feature_guard( ::std::forward< FeatureGuardType >( other.m_feature_guard ) )
-    , m_internal_guard( ::std::forward< ValueGuardType >( other.m_internal_guard ) )
+        : m_feature_guard( ::std::forward< FeatureGuardType >( other.m_feature_guard ) )
+        , m_internal_guard( ::std::forward< ValueGuardType >( other.m_internal_guard ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
     }
 
-    constexpr bool operator ! () const
-    {
-        return !m_feature_guard;
-    }
+    //constexpr bool operator ! () const
+    //{
+    //    return !m_feature_guard;
+    //}
 
     constexpr AccessType operator * () const
     {

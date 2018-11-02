@@ -1,26 +1,143 @@
 #pragma once
+#ifndef INSTANCE_OPERATION_H
+
+#include <memory>
+
+/*! TODO:
+ * Может быть определен любой результат действия унарного оператора над операндом.
+ *
+ * Если оператор приводит к изменению внутреннего содержимого операнда,
+ * то должен быть возвращен входящий параметр Instance. Иначе должен быть
+ * возвращен результат воздействия на внутреннее содержимое операнда.
+ */
 
 template < typename _ValueType, typename _ValueTool >
 class Instance;
 
-#define UPDATE_INSTANCE_UNARY_OPERATOR( sym ) \
+#define RVALUE_PREFIX_UNARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _LeftTool > \
+    inline Instance< _LeftType, _LeftTool > && operator sym ( \
+        Instance< _LeftType, _LeftTool > && value ) \
+    { \
+        /*возвращается Instance*/ \
+        sym(*&value); \
+        return ::std::forward< Instance< _LeftType, _LeftTool > && >( value ); \
+    } \
+
+#define LVALUE_PREFIX_UNARY_OPERATOR( sym ) \
     template < typename _LeftType, typename _LeftTool > \
     inline Instance< _LeftType, _LeftTool > & operator sym ( \
         Instance< _LeftType, _LeftTool > & value ) \
     { \
+        /*возвращается Instance*/ \
         sym(*&value); \
         return value; \
     } \
 
-#define CONST_INSTANCE_UNARY_OPERATOR( sym ) \
+#define CRVALUE_PREFIX_UNARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _LeftTool > \
+    inline decltype(auto) operator sym ( \
+        const Instance< _LeftType, _LeftTool > && value ) \
+    { \
+        /*возвращается результат воздействия на содержимое Instance*/ \
+        return sym(*&value); \
+    } \
+
+#define CLVALUE_PREFIX_UNARY_OPERATOR( sym ) \
     template < typename _LeftType, typename _LeftTool > \
     inline decltype(auto) operator sym ( \
         const Instance< _LeftType, _LeftTool > & value ) \
     { \
+        /*возвращается результат воздействия на содержимое Instance*/ \
         return sym(*&value); \
     } \
 
-#define UPDATE_INSTANCE_BINARY_OPERATOR( sym ) \
+#define INSTANCE_PREFIX_UNARY_OPERATOR( sym ) \
+    RVALUE_PREFIX_UNARY_OPERATOR( sym ) \
+    CRVALUE_PREFIX_UNARY_OPERATOR( sym ) \
+    LVALUE_PREFIX_UNARY_OPERATOR( sym ) \
+    CLVALUE_PREFIX_UNARY_OPERATOR( sym ) \
+
+#define RVALUE_LEFT_INSTANCE_BINARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _LeftTool, typename _RightType > \
+    inline Instance< _LeftType, _LeftTool > && operator sym ( \
+        Instance< _LeftType, _LeftTool > && left, \
+        _RightType & right ) \
+    { \
+        (*&left) sym (*&right); \
+        return ::std::forward< Instance< _LeftType, _LeftTool > && >( left ); \
+    } \
+ \
+    template < typename _LeftType, typename _LeftTool, typename _RightType > \
+    inline Instance< _LeftType, _LeftTool > && operator sym ( \
+        Instance< _LeftType, _LeftTool > && left, \
+        const _RightType & right ) \
+    { \
+        (*&left) sym (*&right); \
+        return left; \
+    } \
+ \
+    template < typename _LeftType, typename _LeftTool, typename _RightType > \
+    inline Instance< _LeftType, _LeftTool > && operator sym ( \
+        Instance< _LeftType, _LeftTool > && left, \
+        _RightType && right ) \
+    { \
+        (*&left) sym (*&right); \
+        return left; \
+    } \
+ \
+    template < typename _LeftType, typename _LeftTool, typename _RightType > \
+    inline Instance< _LeftType, _LeftTool > && operator sym ( \
+        Instance< _LeftType, _LeftTool > && left, \
+        const _RightType && right ) \
+    { \
+        (*&left) sym (*&right); \
+        return left; \
+    } \
+
+#define CRVALUE_LEFT_INSTANCE_BINARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _LeftTool, typename _RightType > \
+    inline decltype(auto) operator sym ( \
+        const Instance< _LeftType, _LeftTool > && left, \
+        _RightType & right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+ \
+    template < typename _LeftType, typename _LeftTool, typename _RightType > \
+    inline decltype(auto) operator sym ( \
+        const Instance< _LeftType, _LeftTool > && left, \
+        const _RightType & right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+ \
+    template < typename _LeftType, typename _LeftTool, typename _RightType > \
+    inline decltype(auto) operator sym ( \
+        const Instance< _LeftType, _LeftTool > && left, \
+        _RightType && right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+ \
+    template < typename _LeftType, typename _LeftTool, typename _RightType > \
+    inline decltype(auto) operator sym ( \
+        const Instance< _LeftType, _LeftTool > && left, \
+        const _RightType && right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+
+#define LVALUE_LEFT_INSTANCE_BINARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _LeftTool, typename _RightType > \
+    inline Instance< _LeftType, _LeftTool > & operator sym ( \
+        Instance< _LeftType, _LeftTool > & left, \
+        _RightType & right ) \
+    { \
+        (*&left) sym (*&right); \
+        return left; \
+    } \
+ \
     template < typename _LeftType, typename _LeftTool, typename _RightType > \
     inline Instance< _LeftType, _LeftTool > & operator sym ( \
         Instance< _LeftType, _LeftTool > & left, \
@@ -30,38 +147,161 @@ class Instance;
         return left; \
     } \
  \
-    template < typename _LeftType, typename _RightType, typename _RightTool > \
-    inline _LeftType & operator sym ( \
-        _LeftType & left, \
-        const Instance< _RightType, _RightTool > & right ) \
+    template < typename _LeftType, typename _LeftTool, typename _RightType > \
+    inline Instance< _LeftType, _LeftTool > & operator sym ( \
+        Instance< _LeftType, _LeftTool > & left, \
+        _RightType && right ) \
     { \
         (*&left) sym (*&right); \
         return left; \
     } \
  \
-    template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool > \
-    inline Instance< _LeftType, _LeftTool > &  operator sym ( \
+    template < typename _LeftType, typename _LeftTool, typename _RightType > \
+    inline Instance< _LeftType, _LeftTool > & operator sym ( \
         Instance< _LeftType, _LeftTool > & left, \
-        const Instance< _RightType, _RightTool > & right ) \
+        const _RightType && right ) \
     { \
         (*&left) sym (*&right); \
         return left; \
     } \
 
-#define STREAM_INSTANCE_OPERATOR( sym ) \
-    template < typename _LeftType, typename _RightType, typename _RightTool > \
+#define CLVALUE_LEFT_INSTANCE_BINARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _LeftTool, typename _RightType > \
     inline decltype(auto) operator sym ( \
-        _LeftType & left, \
-        const Instance< _RightType, _RightTool > & right ) \
+        const Instance< _LeftType, _LeftTool > & left, \
+        _RightType & right ) \
     { \
         return (*&left) sym (*&right); \
     } \
-
-#define CONST_INSTANCE_BINARY_OPERATOR( sym ) \
+ \
     template < typename _LeftType, typename _LeftTool, typename _RightType > \
     inline decltype(auto) operator sym ( \
         const Instance< _LeftType, _LeftTool > & left, \
         const _RightType & right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+ \
+    template < typename _LeftType, typename _LeftTool, typename _RightType > \
+    inline decltype(auto) operator sym ( \
+        const Instance< _LeftType, _LeftTool > & left, \
+        _RightType && right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+ \
+    template < typename _LeftType, typename _LeftTool, typename _RightType > \
+    inline decltype(auto) operator sym ( \
+        const Instance< _LeftType, _LeftTool > & left, \
+        const _RightType && right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+
+#define RVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _RightType, typename _RightTool > \
+    inline decltype(auto) operator sym ( \
+        _LeftType & left, \
+        Instance< _RightType, _RightTool > && right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+ \
+    template < typename _LeftType, typename _RightType, typename _RightTool > \
+    inline decltype(auto) operator sym ( \
+        const _LeftType & left, \
+        Instance< _RightType, _RightTool > && right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+ \
+    template < typename _LeftType, typename _RightType, typename _RightTool > \
+    inline decltype(auto) operator sym ( \
+        _LeftType && left, \
+        Instance< _RightType, _RightTool > && right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+ \
+    template < typename _LeftType, typename _RightType, typename _RightTool > \
+    inline decltype(auto) operator sym ( \
+        const _LeftType && left, \
+        Instance< _RightType, _RightTool > && right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+
+#define CRVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _RightType, typename _RightTool > \
+    inline decltype(auto) operator sym ( \
+        _LeftType & left, \
+        const Instance< _RightType, _RightTool > && right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+ \
+    template < typename _LeftType, typename _RightType, typename _RightTool > \
+    inline decltype(auto) operator sym ( \
+        const _LeftType & left, \
+        const Instance< _RightType, _RightTool > && right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+ \
+    template < typename _LeftType, typename _RightType, typename _RightTool > \
+    inline decltype(auto) operator sym ( \
+        _LeftType && left, \
+        const Instance< _RightType, _RightTool > && right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+ \
+    template < typename _LeftType, typename _RightType, typename _RightTool > \
+    inline decltype(auto) operator sym ( \
+        const _LeftType && left, \
+        const Instance< _RightType, _RightTool > && right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+
+#define LVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _RightType, typename _RightTool > \
+    inline decltype(auto) operator sym ( \
+        _LeftType & left, \
+        Instance< _RightType, _RightTool > & right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+ \
+    template < typename _LeftType, typename _RightType, typename _RightTool > \
+    inline decltype(auto) operator sym ( \
+        const _LeftType & left, \
+        Instance< _RightType, _RightTool > & right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+ \
+    template < typename _LeftType, typename _RightType, typename _RightTool > \
+    inline decltype(auto) operator sym ( \
+        _LeftType && left, \
+        Instance< _RightType, _RightTool > & right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+ \
+    template < typename _LeftType, typename _RightType, typename _RightTool > \
+    inline decltype(auto) operator sym ( \
+        const _LeftType && left, \
+        Instance< _RightType, _RightTool > & right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+
+#define CLVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _RightType, typename _RightTool > \
+    inline decltype(auto) operator sym ( \
+        _LeftType & left, \
+        const Instance< _RightType, _RightTool > & right ) \
     { \
         return (*&left) sym (*&right); \
     } \
@@ -74,6 +314,166 @@ class Instance;
         return (*&left) sym (*&right); \
     } \
  \
+    template < typename _LeftType, typename _RightType, typename _RightTool > \
+    inline decltype(auto) operator sym ( \
+        _LeftType && left, \
+        const Instance< _RightType, _RightTool > & right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+ \
+    template < typename _LeftType, typename _RightType, typename _RightTool > \
+    inline decltype(auto) operator sym ( \
+        const _LeftType && left, \
+        const Instance< _RightType, _RightTool > & right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+
+#define RVALUE_LEFT_RVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool > \
+    inline Instance< _LeftType, _LeftTool > && operator sym ( \
+        Instance< _LeftType, _LeftTool > && left, \
+        Instance< _RightType, _RightTool > && right ) \
+    { \
+        (*&left) sym (*&right); \
+        return ::std::forward< Instance< _LeftType, _LeftTool > && >( left ); \
+    } \
+
+#define CRVALUE_LEFT_RVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool > \
+    inline decltype(auto) operator sym ( \
+        const Instance< _LeftType, _LeftTool > && left, \
+        Instance< _RightType, _RightTool > && right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+
+#define LVALUE_LEFT_RVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool > \
+    inline Instance< _LeftType, _LeftTool > & operator sym ( \
+        Instance< _LeftType, _LeftTool > & left, \
+        Instance< _RightType, _RightTool > && right ) \
+    { \
+        (*&left) sym (*&right); \
+        return left; \
+    } \
+
+#define CLVALUE_LEFT_RVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool > \
+    inline decltype(auto) operator sym ( \
+        const Instance< _LeftType, _LeftTool > & left, \
+        Instance< _RightType, _RightTool > && right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+
+#define RVALUE_LEFT_CRVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool > \
+    inline Instance< _LeftType, _LeftTool > && operator sym ( \
+        Instance< _LeftType, _LeftTool > && left, \
+        const Instance< _RightType, _RightTool > && right ) \
+    { \
+        (*&left) sym (*&right); \
+        return ::std::forward< Instance< _LeftType, _LeftTool > && >( left ); \
+    } \
+
+#define CRVALUE_LEFT_CRVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool > \
+    inline decltype(auto) operator sym ( \
+        const Instance< _LeftType, _LeftTool > && left, \
+        const Instance< _RightType, _RightTool > && right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+
+#define LVALUE_LEFT_CRVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool > \
+    inline Instance< _LeftType, _LeftTool > & operator sym ( \
+        Instance< _LeftType, _LeftTool > & left, \
+        const Instance< _RightType, _RightTool > && right ) \
+    { \
+        (*&left) sym (*&right); \
+        return left; \
+    } \
+
+#define CLVALUE_LEFT_CRVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool > \
+    inline decltype(auto) operator sym ( \
+        const Instance< _LeftType, _LeftTool > & left, \
+        const Instance< _RightType, _RightTool > && right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+
+#define RVALUE_LEFT_LVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool > \
+    inline Instance< _LeftType, _LeftTool > && operator sym ( \
+        Instance< _LeftType, _LeftTool > && left, \
+        Instance< _RightType, _RightTool > & right ) \
+    { \
+        (*&left) sym (*&right); \
+        return ::std::forward< Instance< _LeftType, _LeftTool > && >( left ); \
+    } \
+
+#define CRVALUE_LEFT_LVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool > \
+    inline decltype(auto) operator sym ( \
+        const Instance< _LeftType, _LeftTool > && left, \
+        Instance< _RightType, _RightTool > & right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+
+#define LVALUE_LEFT_LVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool > \
+    inline Instance< _LeftType, _LeftTool > & operator sym ( \
+        Instance< _LeftType, _LeftTool > & left, \
+        Instance< _RightType, _RightTool > & right ) \
+    { \
+        (*&left) sym (*&right); \
+        return left; \
+    } \
+
+#define CLVALUE_LEFT_LVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool > \
+    inline decltype(auto) operator sym ( \
+        const Instance< _LeftType, _LeftTool > & left, \
+        Instance< _RightType, _RightTool > & right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+
+#define RVALUE_LEFT_CLVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool > \
+    inline Instance< _LeftType, _LeftTool > && operator sym ( \
+        Instance< _LeftType, _LeftTool > && left, \
+        const Instance< _RightType, _RightTool > & right ) \
+    { \
+        (*&left) sym (*&right); \
+        return ::std::forward< Instance< _LeftType, _LeftTool > && >( left ); \
+    } \
+
+#define CRVALUE_LEFT_CLVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool > \
+    inline decltype(auto) operator sym ( \
+        const Instance< _LeftType, _LeftTool > && left, \
+        const Instance< _RightType, _RightTool > & right ) \
+    { \
+        return (*&left) sym (*&right); \
+    } \
+
+#define LVALUE_LEFT_CLVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool > \
+    inline Instance< _LeftType, _LeftTool > & operator sym ( \
+        Instance< _LeftType, _LeftTool > & left, \
+        const Instance< _RightType, _RightTool > & right ) \
+    { \
+        (*&left) sym (*&right); \
+        return left; \
+    } \
+
+#define CLVALUE_LEFT_CLVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
     template < typename _LeftType, typename _LeftTool, typename _RightType, typename _RightTool > \
     inline decltype(auto) operator sym ( \
         const Instance< _LeftType, _LeftTool > & left, \
@@ -82,32 +482,59 @@ class Instance;
         return (*&left) sym (*&right); \
     } \
 
+
+#define INSTANCE_BINARY_OPERATOR( sym ) \
+    RVALUE_LEFT_INSTANCE_BINARY_OPERATOR( sym ) \
+    CRVALUE_LEFT_INSTANCE_BINARY_OPERATOR( sym ) \
+    LVALUE_LEFT_INSTANCE_BINARY_OPERATOR( sym ) \
+    CLVALUE_LEFT_INSTANCE_BINARY_OPERATOR( sym ) \
+    RVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    CRVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    LVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    CLVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    RVALUE_LEFT_RVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    CRVALUE_LEFT_RVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    LVALUE_LEFT_RVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    CLVALUE_LEFT_RVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    RVALUE_LEFT_CRVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    CRVALUE_LEFT_CRVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    LVALUE_LEFT_CRVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    CLVALUE_LEFT_CRVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    RVALUE_LEFT_LVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    CRVALUE_LEFT_LVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    LVALUE_LEFT_LVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    CLVALUE_LEFT_LVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    RVALUE_LEFT_CLVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    CRVALUE_LEFT_CLVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    LVALUE_LEFT_CLVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+    CLVALUE_LEFT_CLVALUE_RIGHT_INSTANCE_BINARY_OPERATOR( sym ) \
+
 // Сложение
-CONST_INSTANCE_BINARY_OPERATOR( + )
+INSTANCE_BINARY_OPERATOR( + )
 
 // Вычитание
-CONST_INSTANCE_BINARY_OPERATOR( - )
+INSTANCE_BINARY_OPERATOR( - )
 
 // Унарный плюс
-CONST_INSTANCE_UNARY_OPERATOR( + )
+INSTANCE_PREFIX_UNARY_OPERATOR( + )
 
 // Унарный минус
-CONST_INSTANCE_UNARY_OPERATOR( - )
+INSTANCE_PREFIX_UNARY_OPERATOR( - )
 
 // Умножение
-CONST_INSTANCE_BINARY_OPERATOR( * )
+INSTANCE_BINARY_OPERATOR( * )
 
 // Деление
-CONST_INSTANCE_BINARY_OPERATOR( / )
+INSTANCE_BINARY_OPERATOR( / )
 
 // Операция модуль (остаток от деления целых чисел)
-CONST_INSTANCE_BINARY_OPERATOR( % )
+INSTANCE_BINARY_OPERATOR( % )
 
 // Префиксный инкремент
-UPDATE_INSTANCE_UNARY_OPERATOR( ++ )
+INSTANCE_PREFIX_UNARY_OPERATOR( ++ )
 
 // Префиксный декремент
-UPDATE_INSTANCE_UNARY_OPERATOR( -- )
+INSTANCE_PREFIX_UNARY_OPERATOR( -- )
 
 // Суффиксный инкремент
 template < typename _LeftType, typename _LeftTool >
@@ -126,88 +553,89 @@ inline decltype(auto) operator -- (
 }
 
 // Равенство
-CONST_INSTANCE_BINARY_OPERATOR( == )
+INSTANCE_BINARY_OPERATOR( == )
 
 // Неравенство
-CONST_INSTANCE_BINARY_OPERATOR( != )
+INSTANCE_BINARY_OPERATOR( != )
 
 // Больше
-CONST_INSTANCE_BINARY_OPERATOR( > )
+INSTANCE_BINARY_OPERATOR( > )
 
 // Меньше
-CONST_INSTANCE_BINARY_OPERATOR( < )
+INSTANCE_BINARY_OPERATOR( < )
 
 // Больше или равно
-CONST_INSTANCE_BINARY_OPERATOR( >= )
+INSTANCE_BINARY_OPERATOR( >= )
 
 // Меньше или равно
-CONST_INSTANCE_BINARY_OPERATOR( <= )
+INSTANCE_BINARY_OPERATOR( <= )
 
 // Логическое отрицание, НЕ
-CONST_INSTANCE_UNARY_OPERATOR( ! )
+INSTANCE_PREFIX_UNARY_OPERATOR( ! )
 
 // Логическое умножение, И
-CONST_INSTANCE_BINARY_OPERATOR( && )
+INSTANCE_BINARY_OPERATOR( && )
 
 // Логическое сложение, ИЛИ
-CONST_INSTANCE_BINARY_OPERATOR( || )
+INSTANCE_BINARY_OPERATOR( || )
 
 // Побитовая инверсия
-CONST_INSTANCE_UNARY_OPERATOR( ~ )
+INSTANCE_PREFIX_UNARY_OPERATOR( ~ )
 
 // Побитовое И
-CONST_INSTANCE_BINARY_OPERATOR( & )
+INSTANCE_BINARY_OPERATOR( & )
 
 // Побитовое ИЛИ (or)
-CONST_INSTANCE_BINARY_OPERATOR( | )
+INSTANCE_BINARY_OPERATOR( | )
 
 // Побитовое исключающее ИЛИ (xor)
-CONST_INSTANCE_BINARY_OPERATOR( ^ )
+INSTANCE_BINARY_OPERATOR( ^ )
 
 // Побитовый сдвиг влево
-CONST_INSTANCE_BINARY_OPERATOR( << )
+INSTANCE_BINARY_OPERATOR( << )
 
 // Побитовый сдвиг вправо
-CONST_INSTANCE_BINARY_OPERATOR( >> )
+INSTANCE_BINARY_OPERATOR( >> )
 
-// Потоковый вывод
-STREAM_INSTANCE_OPERATOR( << )
+//// Потоковый вывод
+//STREAM_INSTANCE_OPERATOR( << )
 
-// Потоковый ввод
-STREAM_INSTANCE_OPERATOR( >> )
+//// Потоковый ввод
+//STREAM_INSTANCE_OPERATOR( >> )
 
 // Сложение, совмещённое с присваиванием
-UPDATE_INSTANCE_BINARY_OPERATOR( += )
+INSTANCE_BINARY_OPERATOR( += )
 
 // Вычитание, совмещённое с присваиванием
-UPDATE_INSTANCE_BINARY_OPERATOR( -= )
+INSTANCE_BINARY_OPERATOR( -= )
 
 // Умножение, совмещённое с присваиванием
-UPDATE_INSTANCE_BINARY_OPERATOR( *= )
+INSTANCE_BINARY_OPERATOR( *= )
 
 // Деление, совмещённое с присваиванием
-UPDATE_INSTANCE_BINARY_OPERATOR( /= )
+INSTANCE_BINARY_OPERATOR( /= )
 
 // Вычисление остатка от деления, совмещённое с присваиванием
-UPDATE_INSTANCE_BINARY_OPERATOR( %= )
+INSTANCE_BINARY_OPERATOR( %= )
 
 // Побитовое «И» (AND), совмещённое с присваиванием
-UPDATE_INSTANCE_BINARY_OPERATOR( &= )
+INSTANCE_BINARY_OPERATOR( &= )
 
 // Побитовое «ИЛИ» (or), совмещённое с присваиванием
-UPDATE_INSTANCE_BINARY_OPERATOR( |= )
+INSTANCE_BINARY_OPERATOR( |= )
 
 // Побитовое «исключающее ИЛИ» (xor), совмещённое с присваиванием
-UPDATE_INSTANCE_BINARY_OPERATOR( ^= )
+INSTANCE_BINARY_OPERATOR( ^= )
 
 // Побитовый сдвиг влево, совмещённый с присваиванием
-UPDATE_INSTANCE_BINARY_OPERATOR( <<= )
+INSTANCE_BINARY_OPERATOR( <<= )
 
 // Побитовый сдвиг вправо, совмещённый с присваиванием
-UPDATE_INSTANCE_BINARY_OPERATOR( >>= )
+INSTANCE_BINARY_OPERATOR( >>= )
 
-#undef UPDATE_INSTANCE_UNARY_OPERATOR
-#undef UPDATE_INSTANCE_BINARY_OPERATOR
-#undef CONST_INSTANCE_UNARY_OPERATOR
-#undef CONST_INSTANCE_BINARY_OPERATOR
+#undef INSTANCE_PREFIX_UNARY_OPERATOR
+#undef INSTANCE_BINARY_OPERATOR
+#undef INSTANCE_BINARY_OPERATOR
 #undef STREAM_INSTANCE_OPERATOR
+
+#endif

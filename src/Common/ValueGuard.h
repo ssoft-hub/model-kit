@@ -23,35 +23,35 @@ private:
 
 public:
     constexpr DefaultValueGuard ()
-    : m_feature_guard()
+        : m_feature_guard()
     {
     }
 
     DefaultValueGuard ( ReferType refer )
-    : m_feature_guard( ::std::forward< ReferType >( refer ) )
+        : m_feature_guard( ::std::forward< ReferType >( refer ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
     }
 
     DefaultValueGuard ( GuardType && other )
-    : m_feature_guard( ::std::forward< GuardType >( other ) )
+        : m_feature_guard( ::std::forward< GuardType >( other ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
     }
 
     DefaultValueGuard ( ThisType && other )
-    : m_feature_guard( ::std::forward< GuardType >( other.m_feature_guard ) )
+        : m_feature_guard( ::std::forward< GuardType >( other.m_feature_guard ) )
     {
         static_assert( ::std::is_reference< ReferType >::value
             , "The template parameter must be a reference." );
     }
 
-    constexpr bool operator ! () const
-    {
-        return !m_feature_guard;
-    }
+    //constexpr bool operator ! () const
+    //{
+    //    return !m_feature_guard;
+    //}
 
     constexpr AccessType operator * () const
     {

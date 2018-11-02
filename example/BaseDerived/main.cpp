@@ -31,9 +31,9 @@ void testBase ()
 
     default_base_value = contruct_base_value;
 
-    printBase( *&cnst(default_base_value) );
-    printBase( *&cnst(contruct_base_value) );
-    printBase( *&cnst(move_base_value) );
+    printBase( *&asConst(default_base_value) );
+    printBase( *&asConst(contruct_base_value) );
+    printBase( *&asConst(move_base_value) );
 }
 
 void testBaseSetting ()
@@ -42,19 +42,19 @@ void testBaseSetting ()
 
     base_value->m_int = 1;
     base_value->m_string = "one";
-    printBase( *&cnst(base_value) );
+    printBase( *&asConst(base_value) );
 
     base_value->m_int = BaseInt( 2 );
     base_value->m_string = BaseString( "two" );
-    printBase( *&cnst(base_value) );
+    printBase( *&asConst(base_value) );
 
     base_value->m_int = DerivedInt( 3 );
     base_value->m_string = DerivedString( "three" );
-    printBase( *&cnst(base_value) );
+    printBase( *&asConst(base_value) );
 
     base_value->m_int = HeapInt( 4 );
     base_value->m_string = HeapString( "four" );
-    printBase( *&cnst(base_value) );
+    printBase( *&asConst(base_value) );
 }
 
 void printDerived ( const DerivedType & derived_value )
@@ -74,9 +74,9 @@ void testDerived ()
 
     default_derived_value = contruct_derived_value; //
 
-    printDerived( *&cnst(default_derived_value) );
-    printDerived( *&cnst(contruct_derived_value) );
-    printDerived( *&cnst(move_derived_value) );
+    printDerived( *&asConst(default_derived_value) );
+    printDerived( *&asConst(contruct_derived_value) );
+    printDerived( *&asConst(move_derived_value) );
 }
 
 void testBaseDerivedSetting ()
@@ -90,29 +90,29 @@ void testBaseDerivedSetting ()
     derived_value->BaseType::m_string = "one";
     derived_value->m_int = -1;
     derived_value->m_string = "negative one";
-    printDerived( *&cnst(derived_value) );
+    printDerived( *&asConst(derived_value) );
 
     derived_value->BaseType::m_int = BaseInt( 2 );
     derived_value->BaseType::m_string = BaseString( "two" );
     derived_value->m_int = BaseInt( -2 );
     derived_value->m_string = BaseString( "negative two" );
-    printDerived( *&cnst(derived_value) );
+    printDerived( *&asConst(derived_value) );
 
     derived_value->BaseType::m_int = DerivedInt( 3 );
     derived_value->BaseType::m_string = DerivedString( "three" );
     derived_value->m_int = DerivedInt( -3 );
     derived_value->m_string = DerivedString( "negative three" );
-    printDerived( *&cnst(derived_value) );
+    printDerived( *&asConst(derived_value) );
 
     derived_value->BaseType::m_int = HeapInt( 4 );
     derived_value->BaseType::m_string = HeapString( "four" );
     derived_value->m_int = HeapInt( -4 );
     derived_value->m_string = HeapString( "negative four" );
-    printDerived( *&cnst(derived_value) );
+    printDerived( *&asConst(derived_value) );
 
     Variable< BaseTestType > base_value;
     base_value = derived_value; // OK
-    printBase( *&cnst(base_value) );
+    printBase( *&asConst(base_value) );
 
     //Variable< DerivedType > other_derived_value = base_value; //ERROR
 }
