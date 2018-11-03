@@ -9,7 +9,7 @@ template < typename _ValueType, typename _ValueTool > class Instance;
  * Специализация кдасса для проверки того, что значение является Instance.
  */
 template < typename _ValueType, typename _ValueTool >
-struct IsInstance< Instance< _ValueType, _ValueTool > >
+struct IsInstanceHelper< Instance< _ValueType, _ValueTool > >
     : public ::std::true_type
 {};
 
@@ -19,16 +19,16 @@ struct IsInstance< Instance< _ValueType, _ValueTool > >
  * значением Instance и вложенные типы также являются совместимыми.
  */
 template < typename _ThisType, typename _OtherType, typename _ValueTool >
-struct IsCompatible< Instance< _ThisType, _ValueTool >, Instance< _OtherType, _ValueTool > >
-    : public ::std::integral_constant< bool, is_compatible_v< _ThisType, _OtherType > >
+struct IsCompatibleHelper< Instance< _ThisType, _ValueTool >, Instance< _OtherType, _ValueTool > >
+    : public ::std::integral_constant< bool, is_compatible< _ThisType, _OtherType > >
 {};
 
 /*!
  * Специализация проверки вложенности одного Instance в другой.
  */
 template < typename _ValueType, typename _ValueTool, typename _ContainerType, typename _ContainerTool >
-struct IsPartOf< Instance< _ValueType, _ValueTool >, Instance< _ContainerType, _ContainerTool > >
+struct IsThisPartOfOtherHelper< Instance< _ValueType, _ValueTool >, Instance< _ContainerType, _ContainerTool > >
     : public ::std::integral_constant< bool,
-        is_compatible_v< Instance< _ValueType, _ValueTool >, _ContainerType >
-        || is_part_of_v< Instance< _ValueType, _ValueTool >, _ContainerType > >
+        is_compatible< Instance< _ValueType, _ValueTool >, _ContainerType >
+        || is_this_part_of_other< Instance< _ValueType, _ValueTool >, _ContainerType > >
 {};

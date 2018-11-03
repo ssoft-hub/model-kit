@@ -139,21 +139,3 @@ namespace Std
         };
     }
 }
-
-/*!
- * Специализация проверки свойства размещения значения в куче.
- */
-template < typename _Value >
-struct IsHeap< Instance< _Value, ::Std::Unique::HeapTool > >
-    : public ::std::true_type
-{
-};
-
-/*!
- * Специализация проверки свойства опциональности.
- */
-template < typename _Value >
-struct IsOptional< Instance< _Value, ::Std::Unique::HeapTool > >
-    : public ::std::true_type
-{
-};

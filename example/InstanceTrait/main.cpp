@@ -14,21 +14,21 @@ struct DerivedType
 int main ( int /*argc*/, char ** /*argv*/ )
 {
     ::std::cout
-        << "IsCompatible< Variable< int >, Variable< int > >::value" << ::std::endl
+        << "IsCompatibleHelper< Variable< int >, Variable< int > >::value" << ::std::endl
         << true << " = "
-        << IsCompatible< Variable< int >, Variable< int > >::value << ::std::endl;
+        << IsCompatibleHelper< Variable< int >, Variable< int > >::value << ::std::endl;
     ::std::cout
-        << "IsCompatible< Variable< int >, Variable< double > >::value" << ::std::endl
+        << "IsCompatibleHelper< Variable< int >, Variable< double > >::value" << ::std::endl
         << false << " = "
-        << IsCompatible< Variable< int >, Variable< double > >::value << ::std::endl;
+        << IsCompatibleHelper< Variable< int >, Variable< double > >::value << ::std::endl;
     ::std::cout
-        << "IsCompatible< Variable< BaseType >, Variable< DerivedType > >::value" << ::std::endl
+        << "IsCompatibleHelper< Variable< BaseType >, Variable< DerivedType > >::value" << ::std::endl
         << true << " = "
-        << IsCompatible< Variable< BaseType >, Variable< DerivedType > >::value << ::std::endl;
+        << IsCompatibleHelper< Variable< BaseType >, Variable< DerivedType > >::value << ::std::endl;
     ::std::cout
-        << "IsCompatible< Variable< DerivedType >, Variable< BaseType > >::value" << ::std::endl
+        << "IsCompatibleHelper< Variable< DerivedType >, Variable< BaseType > >::value" << ::std::endl
         << false << " = "
-        << IsCompatible< Variable< DerivedType >, Variable< BaseType > >::value << ::std::endl;
+        << IsCompatibleHelper< Variable< DerivedType >, Variable< BaseType > >::value << ::std::endl;
 
     using FirstType = Instance< Instance< Instance< BaseType
         , ::Std::Shared::ImplicitTool >
@@ -41,49 +41,49 @@ int main ( int /*argc*/, char ** /*argv*/ )
         , ::Std::Mutex::AtomicTool >;
 
     ::std::cout
-        << "IsCompatible< FirstType, SecondType >::value" << ::std::endl
+        << "IsCompatibleHelper< FirstType, SecondType >::value" << ::std::endl
         << true << " = "
-        << IsCompatible< FirstType, SecondType >::value << ::std::endl;
+        << IsCompatibleHelper< FirstType, SecondType >::value << ::std::endl;
     ::std::cout
-        << "IsCompatible< SecondType, FirstType >::value" << ::std::endl
+        << "IsCompatibleHelper< SecondType, FirstType >::value" << ::std::endl
         << false << " = "
-        << IsCompatible< SecondType, FirstType >::value << ::std::endl;
+        << IsCompatibleHelper< SecondType, FirstType >::value << ::std::endl;
 
     using FirstPartType = Instance< BaseType, ::Std::Shared::ImplicitTool >;
     using SecondPartType = Instance< DerivedType, ::Std::Shared::ImplicitTool >;
 
     ::std::cout
-        << "IsPartOf< FirstPartType, FirstType >::value" << ::std::endl
+        << "IsThisPartOfOtherHelper< FirstPartType, FirstType >::value" << ::std::endl
         << true << " = "
-        << IsPartOf< FirstPartType, FirstType >::value << ::std::endl;
+        << IsThisPartOfOtherHelper< FirstPartType, FirstType >::value << ::std::endl;
     ::std::cout
-        << "IsPartOf< SecondPartType, FirstType >::value" << ::std::endl
+        << "IsThisPartOfOtherHelper< SecondPartType, FirstType >::value" << ::std::endl
         << false << " = "
-        << IsPartOf< SecondPartType, FirstType >::value << ::std::endl;
+        << IsThisPartOfOtherHelper< SecondPartType, FirstType >::value << ::std::endl;
     ::std::cout
-        << "IsPartOf< FirstPartType, SecondType >::value" << ::std::endl
+        << "IsThisPartOfOtherHelper< FirstPartType, SecondType >::value" << ::std::endl
         << true << " = "
-        << IsPartOf< FirstPartType, SecondType >::value << ::std::endl;
+        << IsThisPartOfOtherHelper< FirstPartType, SecondType >::value << ::std::endl;
     ::std::cout
-        << "IsPartOf< SecondPartType, SecondType >::value" << ::std::endl
+        << "IsThisPartOfOtherHelper< SecondPartType, SecondType >::value" << ::std::endl
         << true << " = "
-        << IsPartOf< SecondPartType, SecondType >::value << ::std::endl;
+        << IsThisPartOfOtherHelper< SecondPartType, SecondType >::value << ::std::endl;
     ::std::cout
-        << "IsPartOf< FirstType, FirstType >::value" << ::std::endl
+        << "IsThisPartOfOtherHelper< FirstType, FirstType >::value" << ::std::endl
         << false << " = "
-        << IsPartOf< FirstType, FirstType >::value << ::std::endl;
+        << IsThisPartOfOtherHelper< FirstType, FirstType >::value << ::std::endl;
     ::std::cout
-        << "IsPartOf< FirstType, SecondType >::value" << ::std::endl
+        << "IsThisPartOfOtherHelper< FirstType, SecondType >::value" << ::std::endl
         << false << " = "
-        << IsPartOf< FirstType, SecondType >::value << ::std::endl;
+        << IsThisPartOfOtherHelper< FirstType, SecondType >::value << ::std::endl;
     ::std::cout
-        << "IsPartOf< SecondType, FirstType >::value" << ::std::endl
+        << "IsThisPartOfOtherHelper< SecondType, FirstType >::value" << ::std::endl
         << false << " = "
-        << IsPartOf< SecondType, FirstType >::value << ::std::endl;
+        << IsThisPartOfOtherHelper< SecondType, FirstType >::value << ::std::endl;
     ::std::cout
-        << "IsPartOf< FirstPartType, SecondPartType >::value" << ::std::endl
+        << "IsThisPartOfOtherHelper< FirstPartType, SecondPartType >::value" << ::std::endl
         << false << " = "
-        << IsPartOf< FirstPartType, SecondPartType >::value << ::std::endl;
+        << IsThisPartOfOtherHelper< FirstPartType, SecondPartType >::value << ::std::endl;
 
     FirstType first_value;
     FirstPartType first_part_value;

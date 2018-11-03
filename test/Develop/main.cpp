@@ -183,8 +183,11 @@ void testRelation ()
     shared_int = unique_int; // равенство на уровне внутренних значений.
 }
 
+extern void testMemberOperators ();
+
 int main ( int /*argc*/, char ** /*argv*/ )
 {
+    testMemberOperators();
     testConstructor();
     testAllTool();
     testRelation();

@@ -152,30 +152,3 @@ namespace Std
         };
     }
 }
-
-/*!
- * Специализация проверки свойства размещения значения в куче.
- */
-template < typename _Value >
-struct IsHeap< Instance< _Value, ::Std::Shared::ImplicitTool > >
-    : public ::std::true_type
-{
-};
-
-/*!
- * Специализация проверки свойства неявного обобщения значения.
- */
-template < typename _Value >
-struct IsImplicit< Instance< _Value, ::Std::Shared::ImplicitTool > >
-: public ::std::true_type
-{
-};
-
-/*!
- * Специализация проверки свойства опциональности.
- */
-template < typename _Value >
-struct IsOptional< Instance< _Value, ::Std::Shared::ImplicitTool > >
-    : public ::std::true_type
-{
-};

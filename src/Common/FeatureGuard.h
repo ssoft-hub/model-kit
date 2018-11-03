@@ -69,12 +69,10 @@ struct FeatureGuardHelper
 {
     using type = DefaultFeatureGuard< _ReferType >;
 };
-template < typename _ReferType >
-using FeatureGuardHelper_t = typename FeatureGuardHelper< _ReferType >::type;
 
 /*!
  * Класс - защитник свойства значения. Введен для удобства использования,
- * переопределяет typename FeatureGuardHelper_t< _ReferType >.
+ * переопределяет typename FeatureGuardHelper< _ReferType >::type.
  */
 template < typename _ReferType >
-using FeatureGuard = FeatureGuardHelper_t< _ReferType >;
+using FeatureGuard = typename FeatureGuardHelper< _ReferType >::type;

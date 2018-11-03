@@ -13,15 +13,6 @@
 
 #include <ModelKit/Value/Tool/Cpp/Inplace/DefaultTool.h>
 
-//template< typename _ValueType, typename _Index >
-//using SquareBracketsReturnType = ::std::result_of_t< decltype( &_ValueType::operator [] )( const _Index & ) >;
-
-//template< typename _ValueType, typename _Index >
-//using SquareBracketsView = Instance< SquareBracketsReturnType< _ValueType, _Index >, ::Cpp::Inplace::DefaultTool >;
-
-//template< typename _ValueType, typename _Index >
-//using SquareBracketsView = Instance< _ValueType, ::Cpp::Inplace::DefaultTool >;
-
 /*!
  * Класс для формирования экземпляра значения, наделенными дополнительными
  * свойствами. Дополнительные свойства реализуются посредством заданного
@@ -183,9 +174,31 @@ public:
         return *this;
     }
 
-//    template< typename _Index >
-//    SquareBracketsView< ValueType, _Index > operator [] ( const _Index & /*index*/ )
-//    {
-//       return SquareBracketsView< ValueType, _Index >();
-//    }
+    template< typename _Index >
+    constexpr decltype(auto) operator [] ( const _Index & index ) &
+    {
+        using RetunType = decltype( ValueTool::value( m_holder )[ index ] );
+        return Instance< RetunType, ::Operator::SquareBacketsTool >( ValueTool::value( m_holder ), index );
+    }
+
+    template< typename _Index >
+    constexpr decltype(auto) operator [] ( const _Index & index ) const &
+    {
+        using RetunType = decltype( ValueTool::value( m_holder )[ index ] );
+        return Instance< RetunType, ::Operator::SquareBacketsTool >( ValueTool::value( m_holder ), index );
+    }
+
+    template< typename _Index >
+    constexpr decltype(auto) operator [] ( const _Index & index ) &&
+    {
+        using RetunType = decltype( ValueTool::value( ::std::forward< HolderType && >( m_holder ) )[ index ] );
+        return Instance< RetunType, ::Operator::SquareBacketsTool >( ValueTool::value( ::std::forward< HolderType && >( m_holder ) ), index );
+    }
+
+    template< typename _Index >
+    constexpr decltype(auto) operator [] ( const _Index & index ) const &&
+    {
+        using RetunType = decltype( ValueTool::value( ::std::forward< const HolderType && >( m_holder ) )[ index ] );
+        return Instance< RetunType, ::Operator::SquareBacketsTool >( ValueTool::value( ::std::forward< const HolderType && >( m_holder ) ), index );
+    }
 };

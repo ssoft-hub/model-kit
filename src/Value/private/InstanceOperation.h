@@ -1,6 +1,8 @@
 #pragma once
 #ifndef INSTANCE_OPERATION_H
 
+#include "OperatorRoundBrackets.h"
+
 #include <memory>
 
 /*! TODO:

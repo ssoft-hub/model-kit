@@ -34,8 +34,8 @@ struct InstanceBuildTypeDefiner {};
 template < typename _ThisType, typename _ThisTool, typename _OtherType, typename _OtherTool >
 struct InstanceBuildTypeDefiner< Instance< _ThisType, _ThisTool >, Instance< _OtherType, _OtherTool > >
     : public ::std::integral_constant< InstanceBuildSwitchType, InstanceBuildTypeValue<
-        is_compatible_v< Instance< _ThisType, _ThisTool >, Instance< _OtherType, _OtherTool > >,
-        is_part_of_v< Instance< _OtherType, _OtherTool >, Instance< _ThisType, _ThisTool > > >::value >
+        is_compatible< Instance< _ThisType, _ThisTool >, Instance< _OtherType, _OtherTool > >,
+        is_this_part_of_other< Instance< _OtherType, _OtherTool >, Instance< _ThisType, _ThisTool > > >::value >
 {
 };
 

@@ -31,7 +31,7 @@ struct OptimalHelper
         Instance< _ValueType, ImplicitTool > >;
 };
 template < typename _ValueType >
-using OptimalHelper_t = typename OptimalHelper< _ValueType >::type;
+using Optimal = typename OptimalHelper< _ValueType >::type;
 
 template < typename _ValueType, typename _ValueTool >
 struct OptimalHelper< Instance< _ValueType, _ValueTool > >
@@ -42,17 +42,11 @@ struct OptimalHelper< Instance< _ValueType, _ValueTool > >
 // true, если _TestType полностью покрывает свойства _OtherType
 template < typename _TestType, typename _OtherType >
 struct OptimalTraitChecker
-    : ::std::integral_constant< bool,
-           ( !is_instance_v< _OtherType > || ( is_instance_v< _OtherType > && is_instance_v< _TestType > ) )
-        && ( !is_heap_v< _OtherType > || ( is_heap_v< _OtherType > && is_heap_v< _TestType > ) )
-        && ( !is_optional_v< _OtherType > || ( is_optional_v< _OtherType > && is_optional_v< _TestType > ) )
-        && ( !is_implicit_v< _OtherType > || ( is_implicit_v< _OtherType > && is_implicit_v< _TestType > ) )
-        && ( !is_thread_safe_v< _OtherType > || ( is_thread_safe_v< _OtherType > && is_thread_safe_v< _TestType > ) ) >
-
+    : ::std::integral_constant< bool, ( !is_instance< _OtherType > || ( is_instance< _OtherType > && is_instance< _TestType > ) ) >
 {};
 
 template < typename _TestType, typename _OtherType >
-constexpr bool is_optimal_v = OptimalTraitChecker<_TestType, _OtherType >::value;
+constexpr bool is_optimal = OptimalTraitChecker<_TestType, _OtherType >::value;
 
 /*!
  * Класс выбирает тип Instance на основе сравнения свойств исходного и вложенного
@@ -68,14 +62,14 @@ struct OptimalHelper< Instance< Instance< _ValueType, _ValueTool >, _RequaredToo
     using InnerType = Instance< _ValueType, _ValueTool >;
 
     using type = ::std::conditional_t<
-        is_optimal_v< ShortType, InnerType >,
-        OptimalHelper_t< ShortType >,
+        is_optimal< ShortType, InnerType >,
+        Optimal< ShortType >,
             ::std::conditional_t<
-                is_optimal_v< InnerType, ShortType >,
-                OptimalHelper_t< InnerType >,
+                is_optimal< InnerType, ShortType >,
+                Optimal< InnerType >,
                 FullType > >;
 };
 
 
 template < typename _ValueType >
-using OptimalType = OptimalHelper_t< _ValueType >;
+using OptimalType = Optimal< _ValueType >;

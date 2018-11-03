@@ -213,12 +213,3 @@ namespace Cpp
         };
     }
 }
-
-/*!
- * Специализация проверки свойства размещения значения в куче.
- */
-template < typename _Value >
-struct IsHeap< Instance< _Value, ::Cpp::Raw::ImplicitTool > >
-    : public ::std::true_type
-{
-};

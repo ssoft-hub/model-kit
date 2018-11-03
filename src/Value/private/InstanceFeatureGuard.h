@@ -86,7 +86,7 @@ public:
     constexpr decltype(auto) value () const
     {
         assert( m_pointer );
-        return InstanceTool::value( ::std::forward< HolderReferType >( m_pointer->m_holder ) );;
+        return InstanceTool::value( ::std::forward< HolderReferType >( m_pointer->m_holder ) );
     }
 };
 
