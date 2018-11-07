@@ -7,9 +7,9 @@
 
 using Map = ::std::map< ::std::string, ::std::pair< ::std::string, int > >;
 
-using AtomicMap = Instance< Map, ::Std::Mutex::AtomicTool >;
-using DefaultMap = Instance< Map, ::Cpp::Inplace::DefaultTool >;
-using ImplicitMap = Instance< Map, ::Cpp::Raw::ImplicitTool >;
+using AtomicMap = Featured< Map, ::Std::Mutex::AtomicTool >;
+using DefaultMap = Featured< Map, ::Cpp::Inplace::DefaultTool >;
+using ImplicitMap = Featured< Map, ::Cpp::Raw::ImplicitTool >;
 
 template < typename _MapType >
 void func ()

@@ -1,0 +1,21 @@
+#include "ModelKit/Common.h"
+#include "ModelKit/Element.h"
+#include "ModelKit/Helper.h"
+#include "ModelKit/Relation.h"
+#include "ModelKit/Value.h"
+
+
+//#include "Collection/OrderedSequence.h"
+//#include "Collection/OrderedSet.h"
+//#include "Collection/UnorderedBag.h"
+//#include "Collection/UnorderedSet.h"
+
+//#include "Relation/AggregationEnd.h"
+//#include "Relation/AssociationEnd.h"
+//#include "Relation/ReferEnd.h"
+//#include "Relation/SharedEnd.h"
+//#include "Relation/UniqueEnd.h"
+//#include "Relation/Tool/Cpp/Raw/ReferEnd.h"
+//#include "Relation/Tool/Std/Shared/ReferEnd.h"
+//#include "Relation/Tool/Std/Shared/SharedEnd.h"
+//#include "Relation/Tool/Std/Shared/UniqueEnd.h"

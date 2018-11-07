@@ -26,12 +26,12 @@ public:
     typedef ::std::list< NoneItemEnd > NoneItemEnds;
 
 private:
-    Property< NoneItemEnd > m_parent_end;
-    Property< UniqueItemEnds > m_child_ends;
+    Featured< NoneItemEnd > m_parent_end;
+    Featured< UniqueItemEnds > m_child_ends;
 
 public:
     Item ()
-    : m_parent_end()
+        : m_parent_end()
     , m_child_ends()
     {
     }
@@ -42,7 +42,7 @@ public:
 
     // Перемещение объектов разрешено
     Item ( InOutMove< Item > other )
-    : m_parent_end( ::std::move( other.m_parent_end ) )
+        : m_parent_end( ::std::move( other.m_parent_end ) )
     , m_child_ends( ::std::move( other.m_child_ends ) )
     {
         // TODO: заменить this у m_parent_end.

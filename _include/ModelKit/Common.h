@@ -1,0 +1,8 @@
+#include "Common/AggregationKind.h"
+#include "Common/AsConst.h"
+#include "Common/FeaturePointer.h"
+#include "Common/HolderPointer.h"
+#include "Common/InitializeType.h"
+#include "Common/ReferPointer.h"
+#include "Common/ValuePointer.h"
+#include "Common/ValueTrait.h"

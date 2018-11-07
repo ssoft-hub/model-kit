@@ -1,4 +1,4 @@
-#include <ModelKit/Value/Tool.h>
+#include <ModelKit/Featured/Tool.h>
 #include "BaseType.h"
 #include "DerivedType.h"
 
@@ -11,9 +11,9 @@ using BaseString = BaseType::String;
 using DerivedInt = DerivedType::Int;
 using DerivedString = DerivedType::String;
 
-using ValueTool = ::Std::Unique::HeapTool;
-using HeapInt = Instance< int, ValueTool >;
-using HeapString = Instance< ::std::string, ValueTool >;
+using Tool = ::Std::Unique::HeapTool;
+using HeapInt = Featured< int, Tool >;
+using HeapString = Featured< ::std::string, Tool >;
 
 void printBase ( const BaseType & base_value )
 {
@@ -25,9 +25,9 @@ void printBase ( const BaseType & base_value )
 
 void testBase ()
 {
-    Variable< BaseType > default_base_value;
-    Variable< BaseType > contruct_base_value( 10, "Constructed base type" );
-    Variable< BaseType > move_base_value = Variable< BaseType >( 20, "Moved base type" );
+    Featured< BaseType > default_base_value;
+    Featured< BaseType > contruct_base_value( 10, "Constructed base type" );
+    Featured< BaseType > move_base_value = Featured< BaseType >( 20, "Moved base type" );
 
     default_base_value = contruct_base_value;
 
@@ -38,7 +38,7 @@ void testBase ()
 
 void testBaseSetting ()
 {
-    Variable< BaseType > base_value;
+    Featured< BaseType > base_value;
 
     base_value->m_int = 1;
     base_value->m_string = "one";
@@ -68,9 +68,9 @@ void printDerived ( const DerivedType & derived_value )
 
 void testDerived ()
 {
-    Variable< DerivedType > default_derived_value; //
-    Variable< DerivedType > contruct_derived_value( 10, "Constructed derived type" ); //
-    Variable< DerivedType > move_derived_value = Variable< DerivedType >( 20, "Moved derived type" ); //
+    Featured< DerivedType > default_derived_value; //
+    Featured< DerivedType > contruct_derived_value( 10, "Constructed derived type" ); //
+    Featured< DerivedType > move_derived_value = Featured< DerivedType >( 20, "Moved derived type" ); //
 
     default_derived_value = contruct_derived_value; //
 
@@ -81,10 +81,10 @@ void testDerived ()
 
 void testBaseDerivedSetting ()
 {
-    using BaseTestType = Instance< BaseType, ::Cpp::Raw::ImplicitTool >;
-    using DerivedTestType = Instance< DerivedType, ::Cpp::Raw::ImplicitTool >;
+    using BaseTestType = Featured< BaseType, ::Cpp::Raw::ImplicitTool >;
+    using DerivedTestType = Featured< DerivedType, ::Cpp::Raw::ImplicitTool >;
 
-    Variable< DerivedTestType > derived_value;
+    Featured< DerivedTestType > derived_value;
 
     derived_value->BaseType::m_int = 1;
     derived_value->BaseType::m_string = "one";
@@ -110,11 +110,11 @@ void testBaseDerivedSetting ()
     derived_value->m_string = HeapString( "negative four" );
     printDerived( *&asConst(derived_value) );
 
-    Variable< BaseTestType > base_value;
+    Featured< BaseTestType > base_value;
     base_value = derived_value; // OK
     printBase( *&asConst(base_value) );
 
-    //Variable< DerivedType > other_derived_value = base_value; //ERROR
+    //Featured< DerivedType > other_derived_value = base_value; //ERROR
 }
 
 int main ( int, char ** )

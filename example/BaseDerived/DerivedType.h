@@ -1,15 +1,15 @@
-#include <ModelKit/Value/Tool/Std/Shared/ImplicitTool.h>
+#include <ModelKit/Featured/Tool/Std/Shared/ImplicitTool.h>
 #include "BaseType.h"
 
 struct DerivedType
     : public BaseType
 {
-    using ValueTool = ::Std::Shared::ImplicitTool;
-    using Int = Instance< int, ValueTool >;
-    using String = Instance< ::std::string, ValueTool >;
+    using Tool = ::Std::Shared::ImplicitTool;
+    using Int = Featured< int, Tool >;
+    using String = Featured< ::std::string, Tool >;
 
-    Property< Int > m_int;
-    Property< String > m_string;
+    Featured< Int > m_int;
+    Featured< String > m_string;
 
     DerivedType (
         Int int_value = Int(),

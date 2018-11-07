@@ -17,11 +17,11 @@ void parentChildTest ()
 //    using UniqueItemEnd = Item::UniqueItemEnd;
 
 
-    constexpr Variable< int > child_count = 10;
+    constexpr Featured< int > child_count = 10;
     ::std::cout
         << ::std::endl << "Begin test" << child_count << ::std::endl;
 
-//    Variable< UniqueItemEnd > parent = UniqueItemEnd::make();
+//    Featured< UniqueItemEnd > parent = UniqueItemEnd::make();
 
 //    ::std::cout
 //        << "Put children into parent" << ::std::endl
@@ -279,29 +279,29 @@ int main ( int /*narg*/, char ** /*varg*/ )
 //#define WRIPERS
 
 //#ifdef SIMPLEST
-//    typedef Type * TypeInstance;
-//    typedef ConstType * ConstTypeInstance;
-//    typedef const TypeInstance TypeConstInstance;
-//    typedef const ConstTypeInstance ConstTypeConstInstance;
+//    typedef Type * TypeFeatured;
+//    typedef ConstType * ConstTypeFeatured;
+//    typedef const TypeFeatured TypeConstFeatured;
+//    typedef const ConstTypeFeatured ConstTypeConstFeatured;
 
 //    typedef Type * TypeReference;
 //    typedef ConstType * ConstTypeReference;
 //    typedef const TypeReference TypeConstReference;
 //    typedef const ConstTypeReference ConstTypeConstReference;
 
-//    typedef ConstTypeConstInstance InRead;
-//    typedef TypeConstInstance InUpdate;
-//    typedef TypeConstInstance InDelete;
-//    typedef TypeInstance InOutCreate;
-//    typedef ConstTypeInstance InOutRead;
-//    typedef TypeInstance InOutUpdate;
-//    typedef TypeInstance InOutDelete;
-//    typedef TypeInstance OutCreate;
-//    typedef ConstTypeInstance OutRead;
-//    typedef TypeInstance OutUpdate;
-//    typedef TypeInstance ReturnCreate;
-//    typedef ConstTypeInstance ReturnRead;
-//    typedef TypeInstance ReturnUpdate;
+//    typedef ConstTypeConstFeatured InRead;
+//    typedef TypeConstFeatured InUpdate;
+//    typedef TypeConstFeatured InDelete;
+//    typedef TypeFeatured InOutCreate;
+//    typedef ConstTypeFeatured InOutRead;
+//    typedef TypeFeatured InOutUpdate;
+//    typedef TypeFeatured InOutDelete;
+//    typedef TypeFeatured OutCreate;
+//    typedef ConstTypeFeatured OutRead;
+//    typedef TypeFeatured OutUpdate;
+//    typedef TypeFeatured ReturnCreate;
+//    typedef ConstTypeFeatured ReturnRead;
+//    typedef TypeFeatured ReturnUpdate;
 
 //    template < typename _Type >
 //    struct Wtbl< _Type * > { static _Type & wtbl ( _Type * value ) { return *value; } };
@@ -324,10 +324,10 @@ int main ( int /*narg*/, char ** /*varg*/ )
 
 //#ifdef WRIPERS
 
-//    typedef ::Memory::Wrapper< Type, ::Memory::StdUnique::Composition > TypeInstance;
-//    typedef ::Memory::Wrapper< const Type, ::Memory::StdUnique::Composition > ConstTypeInstance;
-//    typedef const TypeInstance TypeConstInstance;
-//    typedef const ConstTypeInstance ConstTypeConstInstance;
+//    typedef ::Memory::Wrapper< Type, ::Memory::StdUnique::Composition > TypeFeatured;
+//    typedef ::Memory::Wrapper< const Type, ::Memory::StdUnique::Composition > ConstTypeFeatured;
+//    typedef const TypeFeatured TypeConstFeatured;
+//    typedef const ConstTypeFeatured ConstTypeConstFeatured;
 
 //    typedef ::Memory::Wrapper< Type, ::Memory::StdUnique::Composition > TypeReference;
 //    typedef ::Memory::Wrapper< const Type, ::Memory::StdUnique::Composition > ConstTypeReference;
@@ -364,10 +364,10 @@ int main ( int /*narg*/, char ** /*varg*/ )
 ////        typedef ::Memory::Wrapper< const _Type, _AggregationKids > ConstTypeWrapper;
 
 //        InReadT ( const TypeWrapper & value )
-//        : m_reference( value )
+//            : m_reference( value )
 //        {}
 ////        InReadT ( const ConstTypeWrapper & value )
-////        : m_reference( value )
+////            : m_reference( value )
 ////        {}
 //        const TypeWrapper & m_reference;
 //    };
@@ -499,11 +499,11 @@ int main ( int /*narg*/, char ** /*varg*/ )
 //void foo ()
 //{
 //    Test test;
-//    TypeInstance type_instance;
-//    InRead in_read( const_type_instance );
-////    ConstTypeInstance const_type_instance;
+//    TypeFeatured type_featured;
+//    InRead in_read( const_type_featured );
+////    ConstTypeFeatured const_type_featured;
 
-//    test.setReadableValue( type_instance );
+//    test.setReadableValue( type_featured );
 //    test.setReadableValue( in_read );
 ////    test.setReadableValue( in_read );
 //}

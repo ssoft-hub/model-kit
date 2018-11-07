@@ -1,5 +1,5 @@
-#include <ModelKit/Element.h>
-#include <ModelKit/Value/Tool.h>
+#include <ModelKit/Featured.h>
+#include <ModelKit/Featured/Tool.h>
 #include <iostream>
 
 struct BaseType
@@ -14,28 +14,28 @@ struct DerivedType
 int main ( int /*argc*/, char ** /*argv*/ )
 {
     ::std::cout
-        << "IsCompatibleHelper< Variable< int >, Variable< int > >::value" << ::std::endl
+        << "IsCompatibleHelper< Featured< int >, Featured< int > >::value" << ::std::endl
         << true << " = "
-        << IsCompatibleHelper< Variable< int >, Variable< int > >::value << ::std::endl;
+        << IsCompatibleHelper< Featured< int >, Featured< int > >::value << ::std::endl;
     ::std::cout
-        << "IsCompatibleHelper< Variable< int >, Variable< double > >::value" << ::std::endl
+        << "IsCompatibleHelper< Featured< int >, Featured< double > >::value" << ::std::endl
         << false << " = "
-        << IsCompatibleHelper< Variable< int >, Variable< double > >::value << ::std::endl;
+        << IsCompatibleHelper< Featured< int >, Featured< double > >::value << ::std::endl;
     ::std::cout
-        << "IsCompatibleHelper< Variable< BaseType >, Variable< DerivedType > >::value" << ::std::endl
+        << "IsCompatibleHelper< Featured< BaseType >, Featured< DerivedType > >::value" << ::std::endl
         << true << " = "
-        << IsCompatibleHelper< Variable< BaseType >, Variable< DerivedType > >::value << ::std::endl;
+        << IsCompatibleHelper< Featured< BaseType >, Featured< DerivedType > >::value << ::std::endl;
     ::std::cout
-        << "IsCompatibleHelper< Variable< DerivedType >, Variable< BaseType > >::value" << ::std::endl
+        << "IsCompatibleHelper< Featured< DerivedType >, Featured< BaseType > >::value" << ::std::endl
         << false << " = "
-        << IsCompatibleHelper< Variable< DerivedType >, Variable< BaseType > >::value << ::std::endl;
+        << IsCompatibleHelper< Featured< DerivedType >, Featured< BaseType > >::value << ::std::endl;
 
-    using FirstType = Instance< Instance< Instance< BaseType
+    using FirstType = Featured< Featured< Featured< BaseType
         , ::Std::Shared::ImplicitTool >
         , ::Std::Unique::HeapTool >
         , ::Std::Mutex::AtomicTool >;
 
-    using SecondType = Instance< Instance< Instance< DerivedType
+    using SecondType = Featured< Featured< Featured< DerivedType
         , ::Std::Shared::ImplicitTool >
         , ::Std::Unique::HeapTool >
         , ::Std::Mutex::AtomicTool >;
@@ -49,8 +49,8 @@ int main ( int /*argc*/, char ** /*argv*/ )
         << false << " = "
         << IsCompatibleHelper< SecondType, FirstType >::value << ::std::endl;
 
-    using FirstPartType = Instance< BaseType, ::Std::Shared::ImplicitTool >;
-    using SecondPartType = Instance< DerivedType, ::Std::Shared::ImplicitTool >;
+    using FirstPartType = Featured< BaseType, ::Std::Shared::ImplicitTool >;
+    using SecondPartType = Featured< DerivedType, ::Std::Shared::ImplicitTool >;
 
     ::std::cout
         << "IsThisPartOfOtherHelper< FirstPartType, FirstType >::value" << ::std::endl
