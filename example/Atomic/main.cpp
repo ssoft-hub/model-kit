@@ -7,22 +7,22 @@
 
 using Map = ::std::map< ::std::string, ::std::pair< ::std::string, int > >;
 
-using AtomicMap = Featured< Map, ::Std::Mutex::AtomicTool >;
-using DefaultMap = Featured< Map, ::Cpp::Inplace::DefaultTool >;
-using ImplicitMap = Featured< Map, ::Cpp::Raw::ImplicitTool >;
+using AtomicMap = Featured< Map, Mutex::AtomicTool >;
+using DefaultMap = Featured< Map, Inplace::DefaultTool >;
+using ImplicitMap = Featured< Map, Raw::ImplicitTool >;
 
 template < typename _MapType >
 void func ()
 {
     static _MapType test_map;
 
-    (*&test_map)[ "apple" ].first = "fruit";
-    (*&test_map)[ "potato" ].first = "vegetable";
+    test_map[ "apple" ]->first = "fruit";
+    test_map[ "potato" ]->first = "vegetable";
 
     for ( size_t i = 0; i < 100000; ++i )
     {
-        (&test_map)->at( "apple" ).second++;
-        (&test_map)->find( "potato" )->second.second++;
+        test_map->at( "apple" ).second++;
+        test_map->find( "potato" )->second.second++;
     }
 
 //    auto read_ptr = &asConst(test_map);
@@ -61,7 +61,7 @@ void example ()
 int main ( int, char ** )
 {
     // Паралельно, но не атомарно.
-    example< Map >();
+    // example< Map >();
     // Паралельно, но не атомарно.
     example< DefaultMap >();
     // Паралельно, но не атомарно.

@@ -7,7 +7,7 @@
 #endif
 
 #include <ModelKit/Instance/Resolver.h>
-#include <ModelKit/Instance/Tool/Cpp/Inplace/DefaultTool.h>
+#include <ModelKit/Instance/Tool/Inplace/DefaultTool.h>
 #include <ModelKit/Instance/Tool/Operator/RoundBrackets.h>
 #include <ModelKit/Instance/Tool/Operator/SquareBrackets.h>
 #include <ModelKit/Utility/AsConst.h>
@@ -16,7 +16,7 @@
  * Класс для формирования экземпляра значения _Value, наделенными дополнительными
  * свойствами. Дополнительные свойства реализуются посредством функциональности _Tool.
  */
-template < typename _Value, typename _Tool = Cpp::Inplace::DefaultTool >
+template < typename _Value, typename _Tool = Inplace::DefaultTool >
 class Featured
 {
     template < typename >

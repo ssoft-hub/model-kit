@@ -2,7 +2,7 @@
 #ifndef GUARD_VALUE_POINTER_H
 #define GUARD_VALUE_POINTER_H
 
-#include "FeaturedPointer.h"
+#include <ModelKit/Instance/Access/FeaturedPointer.h>
 
 // Предопределение
 template < typename _Value, typename _Tool >

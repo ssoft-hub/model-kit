@@ -274,8 +274,8 @@ void testFeaturedContainer ()
 //#include <iostream>
 //#include <string>
 
-//using ImplicitTool = ::Std::Shared::ImplicitTool;
-////using RelationTool = ::Std::Shared::RelationTool;
+//using ImplicitTool = Shared::ImplicitTool;
+////using RelationTool = Shared::RelationTool;
 //using Tool = ::Cpp::Inplace::DefaultTool;
 
 //struct Item
