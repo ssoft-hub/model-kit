@@ -173,7 +173,7 @@ namespace Private
 
         constexpr bool operator ! () const
         {
-            return !m_featured_pointer;
+            return !m_internal_pointer;
         }
 
         constexpr Access operator * () const

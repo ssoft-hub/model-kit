@@ -22,7 +22,7 @@ namespace Inplace
             Value m_value;
 
             template < typename ... _Arguments >
-            constexpr Holder ( _Arguments && ... arguments )
+            Holder ( _Arguments && ... arguments )
                 : m_value( ::std::forward< _Arguments >( arguments ) ... )
             {
             }

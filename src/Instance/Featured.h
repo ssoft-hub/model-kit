@@ -6,17 +6,17 @@
 #pragma warning( disable : 4521 4522 )
 #endif
 
+#include <ModelKit/Instance/Operator.h>
 #include <ModelKit/Instance/Resolver.h>
-#include <ModelKit/Instance/Tool/Inplace/DefaultTool.h>
-#include <ModelKit/Instance/Tool/Operator/RoundBrackets.h>
-#include <ModelKit/Instance/Tool/Operator/SquareBrackets.h>
 #include <ModelKit/Utility/AsConst.h>
+
+namespace Inplace { struct DefaultTool; }
 
 /*!
  * Класс для формирования экземпляра значения _Value, наделенными дополнительными
  * свойствами. Дополнительные свойства реализуются посредством функциональности _Tool.
  */
-template < typename _Value, typename _Tool = Inplace::DefaultTool >
+template < typename _Value, typename _Tool = ::Inplace::DefaultTool >
 class Featured
 {
     template < typename >
@@ -171,59 +171,59 @@ public:
     template< typename _Argument >
     constexpr decltype(auto) operator [] ( _Argument && argument ) &
     {
-        using RetunType = decltype( Tool::value( m_holder )[ std::forward< _Argument >( argument ) ] );
-        return Featured< RetunType, ::Operator::SquareBacketsTool >( Tool::value( m_holder ), argument );
+        auto invokable = ::Operator::Private::SquareBrackets< Value &, _Argument && >();
+        return Operator::invoke< ThisType &, Value & >( *this, invokable, ::std::forward< _Argument >( argument ) );
     }
 
     template< typename _Argument >
     constexpr decltype(auto) operator [] ( _Argument && argument ) const &
     {
-        using RetunType = decltype( Tool::value( m_holder )[ std::forward< _Argument >( argument ) ] );
-        return Featured< RetunType, ::Operator::SquareBacketsTool >( Tool::value( m_holder ), argument );
+        auto invokable = ::Operator::Private::SquareBrackets< const Value &, _Argument && >();
+        return Operator::invoke< const ThisType &, const Value & >( *this, invokable, ::std::forward< _Argument >( argument ) );
     }
 
     template< typename _Argument >
     constexpr decltype(auto) operator [] ( _Argument && argument ) &&
     {
-        using RetunType = decltype( Tool::value( ::std::forward< Holder && >( std::forward< _Argument >( argument ) ) )[ argument ] );
-        return Featured< RetunType, ::Operator::SquareBacketsTool >( Tool::value( ::std::forward< Holder && >( m_holder ) ), argument );
+        auto invokable = ::Operator::Private::SquareBrackets< Value &&, _Argument && >();
+        return Operator::invoke< ThisType &&, Value && >( ::std::forward< ThisType >( *this ), invokable, ::std::forward< _Argument >( argument ) );
     }
 
     template< typename _Argument >
     constexpr decltype(auto) operator [] ( _Argument && argument ) const &&
     {
-        using RetunType = decltype( Tool::value( ::std::forward< const Holder && >( std::forward< _Argument >( argument ) ) )[ argument ] );
-        return Featured< RetunType, ::Operator::SquareBacketsTool >( Tool::value( ::std::forward< const Holder && >( m_holder ) ), argument );
+        auto invokable = ::Operator::Private::SquareBrackets< const Value &&, _Argument && >();
+        return Operator::invoke< const ThisType &&, const Value && >( ::std::forward< const ThisType >( *this ), invokable, ::std::forward< _Argument >( argument ) );
     }
 
-    /// Проксирование оператора ()
-    template < typename ... _Arguments >
-    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) &
-    {
-        using RetunType = decltype( Tool::value( m_holder )( std::forward< _Arguments >( arguments ) ... ) );
-        return Featured< RetunType, ::Operator::SquareBacketsTool >( Tool::value( m_holder ), arguments ... );
-    }
+//    /// Проксирование оператора ()
+//    template < typename ... _Arguments >
+//    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) &
+//    {
+//        using RetunType = decltype( Tool::value( m_holder )( std::forward< _Arguments >( arguments ) ... ) );
+//        return Featured< RetunType, ::Inplace::DefaultTool >( Tool::value( m_holder ), arguments ... );
+//    }
 
-    template < typename ... _Arguments >
-    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) const &
-    {
-        using RetunType = decltype( Tool::value( m_holder )( std::forward< _Arguments >( arguments ) ... ) );
-        return Featured< RetunType, ::Operator::SquareBacketsTool >( Tool::value( m_holder ), arguments ... );
-    }
+//    template < typename ... _Arguments >
+//    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) const &
+//    {
+//        using RetunType = decltype( Tool::value( m_holder )( std::forward< _Arguments >( arguments ) ... ) );
+//        return Featured< RetunType, ::Inplace::DefaultTool >( Tool::value( m_holder ), arguments ... );
+//    }
 
-    template < typename ... _Arguments >
-    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) &&
-    {
-        using RetunType = decltype( Tool::value( m_holder )( std::forward< _Arguments >( arguments ) ... ) );
-        return Featured< RetunType, ::Operator::SquareBacketsTool >( Tool::value( ::std::forward< Holder && >( m_holder ) ), arguments ... );
-    }
+//    template < typename ... _Arguments >
+//    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) &&
+//    {
+//        using RetunType = decltype( Tool::value( m_holder )( std::forward< _Arguments >( arguments ) ... ) );
+//        return Featured< RetunType, ::Inplace::DefaultTool >( Tool::value( ::std::forward< Holder && >( m_holder ) ), arguments ... );
+//    }
 
-    template < typename ... _Arguments >
-    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) const &&
-    {
-        using RetunType = decltype( Tool::value( m_holder )( std::forward< _Arguments >( arguments ) ... ) );
-        return Featured< RetunType, ::Operator::SquareBacketsTool >( Tool::value( ::std::forward< Holder && >( m_holder ) ), arguments ... );
-    }
+//    template < typename ... _Arguments >
+//    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) const &&
+//    {
+//        using RetunType = decltype( Tool::value( m_holder )( std::forward< _Arguments >( arguments ) ... ) );
+//        return Featured< RetunType, ::Inplace::DefaultTool >( Tool::value( ::std::forward< Holder && >( m_holder ) ), arguments ... );
+//    }
 };
 
 #endif

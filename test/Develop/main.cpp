@@ -4,12 +4,51 @@
 
 #include <ModelKit.h>
 #include <vector>
+#include <iostream>
+#include <cxxabi.h>
 
+template < typename _Type >
+void printTypeOf ()
+{
+    int status = 0;
+    char * realname = 0;
+    realname = abi::__cxa_demangle( typeid( _Type ).name(), 0, 0, &status );
+
+    std::cout
+        << realname;
+
+    if ( ::std::is_const< _Type >::value )
+        std::cout
+            << " const";
+
+    if ( ::std::is_lvalue_reference< _Type >::value )
+        std::cout
+            << " &";
+
+    if ( ::std::is_rvalue_reference< _Type >::value )
+        std::cout
+            << " &&";
+
+    std::cout
+        << std::endl << std::flush;
+
+    free( realname );
+}
+
+template < typename _Type >
+void printTypeOf ( _Type )
+{
+    printTypeOf< _Type >();
+}
+
+
+extern void testResultOf();
 extern void testFeaturedValue ();
 extern void testFeaturedContainer ();
 
 int main ( int /*argc*/, char ** /*argv*/ )
 {
+    //testResultOf();
     testFeaturedContainer();
 
 //    testMemberOperators();
@@ -243,6 +282,79 @@ int main ( int /*argc*/, char ** /*argv*/ )
 //    left_value >>= cpp_value;
 //}
 
+struct Foo {
+    void Bar() { // do something
+    }
+};
+
+//template <typename TOwner, void(TOwner::*func)()>
+template <typename _Refer, typename _Function >
+void Call( _Refer p, _Function func ) {
+    (p.*func)();
+}
+int testFoo() {
+    Foo a;
+    Call<Foo &>(a, &Foo::Bar);
+    return 0;
+}
+
+//using Res = std::result_of_t< double & (std::vector<double>&, int&)>;
+
+template < typename _Refer, typename ... _Arguments >
+decltype(auto) squareBrackets ( _Refer refer, _Arguments && ... arguments )
+{
+    return refer.operator[] ( ::std::forward< _Arguments >( arguments ) ... );
+}
+
+//template < typename _Refer, typename ... _Arguments >
+//int squareBrackets1 ( _Refer refer, _Arguments && ... arguments )
+//{
+//    return 1;
+//}
+
+//using Container = ::std::vector< double >;
+
+//template < typename _Refer, typename _Function, typename ... _Arguments >
+//decltype(auto) execute ( _Refer refer, _Function function, _Arguments && ... arguments )
+//{
+//    printTypeOf< _Refer >();
+//    printTypeOf< Container & >();
+//    printTypeOf< _Function >();
+//    printTypeOf( function );
+//    using R = ::std::result_of_t< decltype( function )( _Refer, _Arguments && ... ) >;
+//    using F = ::std::remove_reference_t< R >;
+//    printTypeOf< R >();
+//    printTypeOf< F >();
+
+//    //using F = ::std::remove_reference_t< R >;
+//    auto f = function( refer, ::std::forward< _Arguments >( arguments ) ... );
+//    return f;
+//}
+
+//void testResultOf ()
+//{
+//    using R = ::std::result_of_t< decltype( squareBrackets< Container &, size_t > )&( Container &, size_t ) >;
+//    using F = ::std::remove_reference_t< R >;
+//    auto func = &squareBrackets< Container &, size_t >;
+
+//    using R1 = ::std::result_of_t< decltype( func )( Container &, size_t ) >;
+//    using F1 = ::std::remove_reference_t< R1 >;
+
+//    printTypeOf< const double & >();
+//    printTypeOf< R >();
+//    printTypeOf< F >();
+//    printTypeOf< R1 >();
+//    printTypeOf< F1 >();
+//    printTypeOf< decltype( func ) >();
+
+//    Container container = { 1, 2, 3 };
+//    F f = squareBrackets< Container &, size_t >( container, size_t() );
+//    F1 f1 = execute< Container & >( container, func, size_t() );
+
+
+//    //using R1 = ::std::result_of_t< decltype( squareBrackets1< Container &, int > )&( Container &, int ) >;
+//}
+
 void testFeaturedValue ()
 {
     { Featured< double > value; }
@@ -256,7 +368,8 @@ void testFeaturedValue ()
 
 void testFeaturedContainer ()
 {
-    using Container = ::std::vector< double >;
+    //using Container = ::std::vector< double >;
+    using Container = Featured< ::std::vector< double >, Implicit::SharedTool >;
 
     { Featured< Container > value; }
     { Featured< Container > value( Container() ); }
@@ -267,7 +380,10 @@ void testFeaturedContainer ()
             value->push_back( i );
 
         for ( int i = 0; i < 10; ++i )
-            value[ i ] = i;
+            value[ i ] = asConst( value )[ 9 - i ];
+
+        //Featured< Container >()[0];
+        //asConst( Featured< Container >() )[0];
     }
 }
 
