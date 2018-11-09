@@ -380,7 +380,7 @@ void testFeaturedContainer ()
             value->push_back( i );
 
         for ( int i = 0; i < 10; ++i )
-            value[ i ] = asConst( value )[ 9 - i ];
+            value[ i ] = i;//asConst( value )[ 9 - i ];
 
         Featured< Container >()[0];
         asConst( Featured< Container >() )[0];

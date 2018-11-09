@@ -95,8 +95,7 @@ public:
     template < typename _OtherType >
     ThisType & operator = ( _OtherType && other )
     {
-        m_holder = FeaturedResolver< ThisType, _OtherType && >(
-            ::std::forward< _OtherType >( other ) ).resolve();
+        m_holder = FeaturedResolver< ThisType, _OtherType && >( ::std::forward< _OtherType >( other ) ).resolve();
         return *this;
     }
 

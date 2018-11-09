@@ -4,8 +4,9 @@
 
 #include <type_traits>
 
-// Предварительная декларация Featured
-template < typename _Test, typename _Tool > class Featured;
+// Предопределение
+template < typename _Value, typename _Tool >
+class Featured;
 
 namespace Private
 {

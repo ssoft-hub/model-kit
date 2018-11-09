@@ -19,7 +19,7 @@ namespace Private
  * Указатель на значение, к которому применено дополнительное свойство.
  */
 template < typename _Refer >
-using FeaturedPointer = typename Private::FeaturedPointerHelper< _Refer >::type;
+using FeaturedPointer = typename Private::FeaturedPointerHelper< _Refer >::Type;
 
 namespace Private
 {
@@ -157,31 +157,31 @@ namespace Private
     template < typename _Refer >
     struct FeaturedPointerHelper
     {
-        using type = Private::DefaultFeaturedPointer< _Refer >;
+        using Type = Private::DefaultFeaturedPointer< _Refer >;
     };
 
     template < typename _Value, typename _Tool >
     struct FeaturedPointerHelper< Featured< _Value, _Tool > & >
     {
-        using type = Private::SpecialFeaturedPointer< Featured< _Value, _Tool > & >;
+        using Type = Private::SpecialFeaturedPointer< Featured< _Value, _Tool > & >;
     };
 
     template < typename _Value, typename _Tool >
     struct FeaturedPointerHelper< Featured< _Value, _Tool > && >
     {
-        using type = Private::SpecialFeaturedPointer< Featured< _Value, _Tool > && >;
+        using Type = Private::SpecialFeaturedPointer< Featured< _Value, _Tool > && >;
     };
 
     template < typename _Value, typename _Tool >
     struct FeaturedPointerHelper< const Featured< _Value, _Tool > & >
     {
-        using type = Private::SpecialFeaturedPointer< const Featured< _Value, _Tool > & >;
+        using Type = Private::SpecialFeaturedPointer< const Featured< _Value, _Tool > & >;
     };
 
     template < typename _Value, typename _Tool >
     struct FeaturedPointerHelper< const Featured< _Value, _Tool > && >
     {
-        using type = Private::SpecialFeaturedPointer< const Featured< _Value, _Tool > && >;
+        using Type = Private::SpecialFeaturedPointer< const Featured< _Value, _Tool > && >;
     };
 
     // disabled

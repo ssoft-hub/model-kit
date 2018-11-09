@@ -43,6 +43,20 @@ namespace Member
             }
 
             template < typename _OtherType >
+            ThisType & operator = ( const _OtherType && other )
+            {
+                m_result_refer = ::std::forward< const _OtherType >( other );
+                return *this;
+            }
+
+            template < typename _OtherType >
+            ThisType & operator = ( _OtherType & other )
+            {
+                m_result_refer = other;
+                return *this;
+            }
+
+            template < typename _OtherType >
             ThisType & operator = ( const _OtherType & other )
             {
                 m_result_refer = other;

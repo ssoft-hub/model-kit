@@ -25,7 +25,7 @@ namespace Private
  * другой "разрешается" до базового внутреннего значения.
  */
 template < typename _Featured, typename _OtherRefer >
-using FeaturedResolver = typename Private::FeaturedResolverHelper< _Featured, _OtherRefer >::type;
+using FeaturedResolver = typename Private::FeaturedResolverHelper< _Featured, _OtherRefer >::Type;
 
 namespace Private
 {
@@ -48,7 +48,7 @@ namespace Private
         using OtherRefer = _OtherRefer;
         using OtherFeatured = ::std::decay_t< _OtherRefer >;
 
-        using type = ::std::conditional_t<
+        using Type = ::std::conditional_t<
             is_compatible< Featured, OtherFeatured >
                 || is_this_part_of_other< OtherFeatured, Featured >,
             FeaturedCompatibleResolver< Featured, OtherRefer >,
@@ -72,16 +72,8 @@ namespace Private
         using Featured = _Featured;
         using OtherRefer = _OtherRefer;
         using OtherFeatured = ::std::remove_reference_t< OtherRefer >;
-        using OtherHolderRefer = ::std::conditional_t<
-            ::std::is_const< OtherFeatured >::value,
-            ::std::conditional_t<
-                ::std::is_rvalue_reference< OtherRefer >::value,
-                const typename OtherFeatured::Holder &&,
-                const typename OtherFeatured::Holder & >,
-            ::std::conditional_t<
-                ::std::is_rvalue_reference< OtherRefer >::value,
-                typename OtherFeatured::Holder &&,
-                typename OtherFeatured::Holder & > >;
+        using OtherHolder = typename OtherFeatured::Holder;
+        using OtherHolderRefer = ::Similar< OtherHolder, OtherRefer >;
 
     private:
         OtherRefer m_other_refer;
@@ -113,17 +105,8 @@ namespace Private
         using OtherRefer = _OtherRefer;
         using OtherFeaturedPointer = FeaturedPointer< OtherRefer >;
         using OtherFeatured = ::std::remove_reference_t< OtherRefer >;
-        using OtherValueRefer = ::std::conditional_t<
-            ::std::is_const< OtherFeatured >::value,
-            ::std::conditional_t<
-                ::std::is_rvalue_reference< OtherRefer >::value,
-                const typename OtherFeatured::Value &&,
-                const typename OtherFeatured::Value & >,
-            ::std::conditional_t<
-                ::std::is_rvalue_reference< OtherRefer >::value,
-                typename OtherFeatured::Value &&,
-                typename OtherFeatured::Value & > >;
-
+        using OtherValue = typename OtherFeatured::Value;
+        using OtherValueRefer = ::Similar< OtherValue, OtherRefer >;
         using NextResolver = FeaturedResolver< _Featured, OtherValueRefer >;
 
     private:
