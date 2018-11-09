@@ -1,4 +1,4 @@
-#include <ModelKit/Featured/Tool.h>
+#include <ModelKit.h>
 #include "BaseType.h"
 #include "DerivedType.h"
 
@@ -11,7 +11,7 @@ using BaseString = BaseType::String;
 using DerivedInt = DerivedType::Int;
 using DerivedString = DerivedType::String;
 
-using Tool = ::Std::Unique::HeapTool;
+using Tool = ::Heap::UniqueTool;
 using HeapInt = Featured< int, Tool >;
 using HeapString = Featured< ::std::string, Tool >;
 
@@ -19,8 +19,8 @@ void printBase ( const BaseType & base_value )
 {
     ::std::cout
         << "Base: "
-        << base_value.m_int << " "
-        << base_value.m_string << ::std::endl;
+        << *&base_value.m_int << " "
+        << *&base_value.m_string << ::std::endl;
 }
 
 void testBase ()
@@ -62,8 +62,8 @@ void printDerived ( const DerivedType & derived_value )
     printBase( derived_value );
     ::std::cout
         << "Derived: "
-        << derived_value.m_int << " "
-        << derived_value.m_string << ::std::endl;
+        << *&derived_value.m_int << " "
+        << *&derived_value.m_string << ::std::endl;
 }
 
 void testDerived ()
@@ -81,8 +81,8 @@ void testDerived ()
 
 void testBaseDerivedSetting ()
 {
-    using BaseTestType = Featured< BaseType, ::Cpp::Raw::ImplicitTool >;
-    using DerivedTestType = Featured< DerivedType, ::Cpp::Raw::ImplicitTool >;
+    using BaseTestType = Featured< BaseType, ::Implicit::RawTool >;
+    using DerivedTestType = Featured< DerivedType, ::Implicit::RawTool >;
 
     Featured< DerivedTestType > derived_value;
 

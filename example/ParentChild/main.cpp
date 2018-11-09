@@ -33,45 +33,45 @@ void parentChildTest ()
 //        Key key = Key( "Child " ) + Key::number( i );
 //        writable( parent ).appendChild( TestItem::template make< TestSubItem >( key ) );
 //    }
-//    std::cout
-//        << "Children count after: " << readable( parent ).children().size()  << std::endl;
+//    ::std::cout
+//        << "Children count after: " << readable( parent ).children().size()  << ::std::endl;
 
-//    std::cout
-//        << "Access children from parent" << std::endl;
+//    ::std::cout
+//        << "Access children from parent" << ::std::endl;
 
 //    // проверяем доступ
 //    for ( int i = 0; i < child_count; ++i )
 //    {
 //        Key key = Key( "Child " ) + Key::number( i );
-//        std::cout
+//        ::std::cout
 //            << "Parent access "
 //            << static_cast< const char * >( readable( parent ).child( key ).key() )
-//            << std::endl;
+//            << ::std::endl;
 //    }
 
-//    std::cout
-//        << "Move children from parent to std::list" << std::endl
-//        << "Children count before: " << readable( parent ).children().size()  << std::endl;
+//    ::std::cout
+//        << "Move children from parent to ::std::list" << ::std::endl
+//        << "Children count before: " << readable( parent ).children().size()  << ::std::endl;
 
-//    std::list< Value > item_list;
+//    ::std::list< Value > item_list;
 //    // перемещаем элементы в item_list
 //    for ( int i = 0; i < child_count; ++i )
 //    {
 //        Key key = Key( "Child " ) + Key::number( i );
 //        item_list.push_back( writable( parent ).removeChild( key ) );
 //    }
-//    std::cout
-//        << "Children count after: " << readable( parent ).children().size()  << std::endl;
+//    ::std::cout
+//        << "Children count after: " << readable( parent ).children().size()  << ::std::endl;
 
-//    std::cout
-//        << "Access items from std::list" << std::endl;
+//    ::std::cout
+//        << "Access items from ::std::list" << ::std::endl;
 
 //    for ( auto & item : item_list )
 //    {
-//        std::cout
+//        ::std::cout
 //            << "List access "
 //            << static_cast< const char * >( readable( item ).key() )
-//            << std::endl;
+//            << ::std::endl;
 //    }
 }
 
@@ -83,7 +83,7 @@ void parentChildTest ()
 //typedef const Value ConstValue;
 
 //template < typename  _Value >
-//using Collection = std::unique_ptr< _Value >;
+//using Collection = ::std::unique_ptr< _Value >;
 
 //void fooInOutUpdate ( Collection< Value > & value ) // InOutUpdate || InOutDelete
 //{
@@ -104,12 +104,12 @@ void parentChildTest ()
 //void foo ( Collection< Value > & value ) // InOutUpdate || InOutDelete
 //{
 //    fooInOutUpdate( value );
-//    fooInOutUpdateR( std::forward< Collection< Value > >( value ) );
+//    fooInOutUpdateR( ::std::forward< Collection< Value > >( value ) );
 //}
 
 ////void foo ( Collection< Value > && value ) // InOutUpdate || InOutDelete
 ////{
-////    fooInOutUpdateR( std::forward< Collection< Value > >( value ) );
+////    fooInOutUpdateR( ::std::forward< Collection< Value > >( value ) );
 ////}
 
 //void foo ( const Collection< Value > & value ) // InOutUpdate || InOutDelete
@@ -140,9 +140,9 @@ int main ( int /*narg*/, char ** /*varg*/ )
 ////    fooInOutRead( value );
 ////    fooInRead( value );
 
-//    fooInOutUpdateR( std::move( value ) ); // static_cast
-//    fooInOutUpdateR( std::forward< Collection< Value > >( value ) ); //  static_cast
-//    fooInOutUpdateR( std::forward< Collection< Value > >( lvalue ) ); // static_cast
+//    fooInOutUpdateR( ::std::move( value ) ); // static_cast
+//    fooInOutUpdateR( ::std::forward< Collection< Value > >( value ) ); //  static_cast
+//    fooInOutUpdateR( ::std::forward< Collection< Value > >( lvalue ) ); // static_cast
 
 ////    fooInOutUpdate( Collection< Value >() ); // ERROR
 //    fooInOutUpdateR( Collection< Value >() ); // OK

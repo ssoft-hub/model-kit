@@ -41,7 +41,7 @@
 //    testTool< _Type >();
 //    testTool< Featured< _Type, ::Cpp::Inplace::DefaultTool > >();
 //    testTool< Featured< _Type, ::Cpp::Raw::HeapTool > >();
-//    testTool< Featured< _Type, ::Cpp::Raw::ImplicitTool > >();
+//    testTool< Featured< _Type, ::Implicit::RawTool > >();
 //    testTool< Featured< _Type, ::Std::Mutex::AtomicTool > >();
 //    testTool< Featured< _Type, ::Std::Shared::ImplicitTool > >();
 //    testTool< Featured< _Type, ::Std::Shared::HeapTool > >();
@@ -53,7 +53,7 @@
 //    testToolByTool< MyType >();
 //    testToolByTool< Featured< MyType, ::Cpp::Inplace::DefaultTool > >();
 //    testToolByTool< Featured< MyType, ::Cpp::Raw::HeapTool > >();
-//    testToolByTool< Featured< MyType, ::Cpp::Raw::ImplicitTool > >();
+//    testToolByTool< Featured< MyType, ::Implicit::RawTool > >();
 //    testToolByTool< Featured< MyType, ::Std::Mutex::AtomicTool > >();
 //    testToolByTool< Featured< MyType, ::Std::Shared::ImplicitTool > >();
 //    testToolByTool< Featured< MyType, ::Std::Shared::HeapTool > >();

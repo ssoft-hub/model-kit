@@ -119,6 +119,12 @@ namespace Inplace
         {
             return ::std::forward< _Type >( holder.m_value );
         }
+
+        template < typename _Type >
+        static constexpr const _Type && value ( const Holder< _Type > && holder )
+        {
+            return ::std::forward< const _Type >( holder.m_value );
+        }
     };
 }
 

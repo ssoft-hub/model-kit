@@ -79,17 +79,17 @@ public:
 //            return;
 //        ::Memory::wtbl( child ).m_parent = m_self;
 //        Key child_key = ::Memory::rdbl( child ).key();
-//        m_children[ child_key ] = std::forward< Value >( child );
+//        m_children[ child_key ] = ::std::forward< Value >( child );
         return false;
     }
 
     bool removeChild ( InOutUpdate< NoneItemEnd > /*child*/ )
     {
 //        auto iter = m_children.find( key );
-//        if ( iter == std::end( m_children ) )
+//        if ( iter == ::std::end( m_children ) )
 //            return Value();
 
-//        Value child = std::move( (*iter).second );
+//        Value child = ::std::move( (*iter).second );
 //            ::Memory::wtbl( child ).m_parent = Reference();
 //        m_children.erase( iter );
 //        return child;

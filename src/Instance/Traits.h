@@ -12,6 +12,7 @@ namespace Private
     template < typename _Test > struct IsFeaturedHelper;
     template < typename _Test, typename _Other > struct IsCompatibleHelper;
     template < typename _Test, typename _Other > struct IsThisPartOfOtherHelper;
+    template < typename _Type, typename _Etalon > struct SimilarHelper;
 }
 
 /*!
@@ -31,6 +32,12 @@ constexpr bool is_compatible = Private::IsCompatibleHelper< _Test, _Other >::val
  */
 template < typename _Test, typename _Other >
 constexpr bool is_this_part_of_other = Private::IsThisPartOfOtherHelper< _Test, _Other >::value;
+
+/*!
+ * Наделение типа свойствами друго
+ */
+template < typename _Type, typename _Ehalon >
+using Similar = typename Private::SimilarHelper< _Type, _Ehalon >::Type;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -96,6 +103,33 @@ namespace Private
                is_compatible< Featured< _Test, _Tool >, _Other >
             || is_this_part_of_other< Featured< _Test, _Tool >, _Other > >
     {};
+}
+
+namespace Private
+{
+    template < typename _Type, typename _Etalon >
+    struct SimilarHelper
+    {
+        using Pure = ::std::decay_t< _Type >;
+        using Etalon = ::std::decay_t< _Etalon >;
+        using EtalonValue = ::std::remove_reference_t< _Etalon >;
+        static constexpr bool is_lvalue = ::std::is_lvalue_reference< _Etalon >::value;
+        static constexpr bool is_rvalue = ::std::is_rvalue_reference< _Etalon >::value;
+        static constexpr bool is_const = ::std::is_const< EtalonValue >::value;
+
+        using Type = ::std::conditional_t< is_const,
+            ::std::conditional_t< is_rvalue,
+                const Pure &&,
+                ::std::conditional_t < is_lvalue,
+                    const Pure &,
+                    const Pure > >,
+            ::std::conditional_t< is_rvalue,
+               Pure &&,
+                ::std::conditional_t< is_lvalue,
+                    Pure &,
+                    Pure > > >;
+
+    };
 }
 
 #endif

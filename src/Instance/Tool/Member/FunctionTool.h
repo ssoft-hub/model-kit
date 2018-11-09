@@ -3,10 +3,11 @@
 #define INSTANCE_TOOL_MEMBER_FUNCTION_H
 
 #include <ModelKit/Instance/Access/FeaturedPointer.h>
+#include <ModelKit/Instance/Traits.h>
 
 namespace Member
 {
-    template < typename _FeaturedRefer, typename _ValueRefer, typename _Invokable, typename ... _Arguments >
+    template < typename _FeaturedRefer, typename _Invokable, typename ... _Arguments >
     struct FunctionTool
     {
         template < typename _Type >
@@ -14,20 +15,21 @@ namespace Member
         {
             using ThisType = Holder;
             using FeaturedGuard = ::FeaturedPointer< _FeaturedRefer >;
-            using Returned = ::std::result_of_t< _Invokable( _ValueRefer, _Arguments && ... ) >;
+            using ValueRefer = Similar< typename ::std::decay_t< _FeaturedRefer >::Value, _FeaturedRefer >;
+            using ResultRefer = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
 
             FeaturedGuard m_feature_guard;
-            Returned m_result_refer;
+            ResultRefer m_result_refer;
 
             Holder ( _FeaturedRefer featured, _Invokable invokable, _Arguments && ... arguments )
-                : m_feature_guard( featured )
-                , m_result_refer( std::forward< Returned >( invokable( std::forward< _ValueRefer >( m_feature_guard.value() ), ::std::forward< _Arguments >( arguments ) ...  ) ) )
+                : m_feature_guard( ::std::forward< _FeaturedRefer >( featured ) )
+                , m_result_refer( ::std::forward< ResultRefer >( invokable( ::std::forward< ValueRefer >( m_feature_guard.value() ), ::std::forward< _Arguments >( arguments ) ...  ) ) )
             {
             }
 
             Holder ( ThisType && other )
                 : m_feature_guard( ::std::forward< FeaturedGuard >( other.m_feature_guard ) )
-                , m_result_refer( other.m_result_refer )
+                , m_result_refer( ::std::forward< ResultRefer >( other.m_result_refer ) )
             {
             }
 
@@ -80,6 +82,12 @@ namespace Member
         static constexpr _Type && value ( Holder< _Type > && holder )
         {
             return ::std::forward< _Type >( holder.m_result_refer );
+        }
+
+        template < typename _Type >
+        static constexpr const _Type && value ( const Holder< _Type > && holder )
+        {
+            return ::std::forward< const _Type >( holder.m_result_refer );
         }
     };
 }

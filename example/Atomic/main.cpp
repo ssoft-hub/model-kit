@@ -7,9 +7,9 @@
 
 using Map = ::std::map< ::std::string, ::std::pair< ::std::string, int > >;
 
-using AtomicMap = Featured< Map, Mutex::AtomicTool >;
+using AtomicMap = Featured< Map, ThreadSafe::MutexTool >;
 using DefaultMap = Featured< Map, Inplace::DefaultTool >;
-using ImplicitMap = Featured< Map, Raw::ImplicitTool >;
+using ImplicitMap = Featured< Map, Implicit::RawTool >;
 
 template < typename _MapType >
 void func ()
@@ -25,13 +25,13 @@ void func ()
         test_map->find( "potato" )->second.second++;
     }
 
-//    auto read_ptr = &asConst(test_map);
-//    ::std::cout
-//        << "potato is " << read_ptr->at( "potato" ).first
-//        << " " << read_ptr->at( "potato" ).second
-//        << ", apple is " << read_ptr->at( "apple" ).first
-//        << " " << read_ptr->at( "apple" ).second
-//        << ::std::endl;
+    auto read_ptr = &asConst(test_map);
+    ::std::cout
+        << "potato is " << read_ptr->at( "potato" ).first
+        << " " << read_ptr->at( "potato" ).second
+        << ", apple is " << read_ptr->at( "apple" ).first
+        << " " << read_ptr->at( "apple" ).second
+        << ::std::endl;
 }
 
 /*
@@ -54,7 +54,7 @@ void example ()
     for ( auto & thread : threads )
         thread.join();
 
-    std::cout << "end" << ::std::endl;
+    ::std::cout << "end" << ::std::endl;
 }
 
 

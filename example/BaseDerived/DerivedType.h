@@ -1,10 +1,10 @@
-#include <ModelKit/Featured/Tool/Std/Shared/ImplicitTool.h>
+#include <ModelKit.h>
 #include "BaseType.h"
 
 struct DerivedType
     : public BaseType
 {
-    using Tool = ::Std::Shared::ImplicitTool;
+    using Tool = ::Implicit::SharedTool;
     using Int = Featured< int, Tool >;
     using String = Featured< ::std::string, Tool >;
 

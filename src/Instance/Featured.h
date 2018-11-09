@@ -172,56 +172,56 @@ public:
     constexpr decltype(auto) operator [] ( _Argument && argument ) &
     {
         auto invokable = ::Operator::Private::SquareBrackets< Value &, _Argument && >();
-        return Operator::invoke< ThisType &, Value & >( *this, invokable, ::std::forward< _Argument >( argument ) );
+        return Operator::invoke< ThisType & >( *this, invokable, ::std::forward< _Argument >( argument ) );
     }
 
     template< typename _Argument >
     constexpr decltype(auto) operator [] ( _Argument && argument ) const &
     {
         auto invokable = ::Operator::Private::SquareBrackets< const Value &, _Argument && >();
-        return Operator::invoke< const ThisType &, const Value & >( *this, invokable, ::std::forward< _Argument >( argument ) );
+        return Operator::invoke< const ThisType & >( *this, invokable, ::std::forward< _Argument >( argument ) );
     }
 
     template< typename _Argument >
     constexpr decltype(auto) operator [] ( _Argument && argument ) &&
     {
         auto invokable = ::Operator::Private::SquareBrackets< Value &&, _Argument && >();
-        return Operator::invoke< ThisType &&, Value && >( ::std::forward< ThisType >( *this ), invokable, ::std::forward< _Argument >( argument ) );
+        return Operator::invoke< ThisType && >( ::std::forward< ThisType >( *this ), invokable, ::std::forward< _Argument >( argument ) );
     }
 
     template< typename _Argument >
     constexpr decltype(auto) operator [] ( _Argument && argument ) const &&
     {
         auto invokable = ::Operator::Private::SquareBrackets< const Value &&, _Argument && >();
-        return Operator::invoke< const ThisType &&, const Value && >( ::std::forward< const ThisType >( *this ), invokable, ::std::forward< _Argument >( argument ) );
+        return Operator::invoke< const ThisType && >( ::std::forward< const ThisType >( *this ), invokable, ::std::forward< _Argument >( argument ) );
     }
 
 //    /// Проксирование оператора ()
 //    template < typename ... _Arguments >
 //    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) &
 //    {
-//        using RetunType = decltype( Tool::value( m_holder )( std::forward< _Arguments >( arguments ) ... ) );
+//        using RetunType = decltype( Tool::value( m_holder )( ::std::forward< _Arguments >( arguments ) ... ) );
 //        return Featured< RetunType, ::Inplace::DefaultTool >( Tool::value( m_holder ), arguments ... );
 //    }
 
 //    template < typename ... _Arguments >
 //    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) const &
 //    {
-//        using RetunType = decltype( Tool::value( m_holder )( std::forward< _Arguments >( arguments ) ... ) );
+//        using RetunType = decltype( Tool::value( m_holder )( ::std::forward< _Arguments >( arguments ) ... ) );
 //        return Featured< RetunType, ::Inplace::DefaultTool >( Tool::value( m_holder ), arguments ... );
 //    }
 
 //    template < typename ... _Arguments >
 //    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) &&
 //    {
-//        using RetunType = decltype( Tool::value( m_holder )( std::forward< _Arguments >( arguments ) ... ) );
+//        using RetunType = decltype( Tool::value( m_holder )( ::std::forward< _Arguments >( arguments ) ... ) );
 //        return Featured< RetunType, ::Inplace::DefaultTool >( Tool::value( ::std::forward< Holder && >( m_holder ) ), arguments ... );
 //    }
 
 //    template < typename ... _Arguments >
 //    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) const &&
 //    {
-//        using RetunType = decltype( Tool::value( m_holder )( std::forward< _Arguments >( arguments ) ... ) );
+//        using RetunType = decltype( Tool::value( m_holder )( ::std::forward< _Arguments >( arguments ) ... ) );
 //        return Featured< RetunType, ::Inplace::DefaultTool >( Tool::value( ::std::forward< Holder && >( m_holder ) ), arguments ... );
 //    }
 };

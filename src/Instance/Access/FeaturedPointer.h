@@ -2,6 +2,7 @@
 #ifndef GUARD_FEATURE_POINTER_H
 #define GUARD_FEATURE_POINTER_H
 
+#include <ModelKit/Instance/Traits.h>
 #include "ReferPointer.h"
 
 // Предопределение
@@ -95,19 +96,12 @@ namespace Private
     public:
         using Refer = _Refer;
         using Pointer = ReferPointer< Refer >;
-        using Featured = ::std::remove_reference_t< Refer >;
-        using FeaturedTool = typename Featured::Tool;
-
-        using HolderRefer = ::std::conditional_t<
-            ::std::is_const< Featured >::value,
-            ::std::conditional_t<
-                ::std::is_rvalue_reference< Refer >::value,
-                const typename Featured::Holder &&,
-                const typename Featured::Holder & >,
-            ::std::conditional_t<
-                ::std::is_rvalue_reference< Refer >::value,
-                typename Featured::Holder &&,
-                typename Featured::Holder & > >;
+        using Featured = ::std::decay_t< Refer >;
+        using Tool = typename Featured::Tool;
+        using Holder = typename Featured::Holder;
+        using HolderRefer = ::Similar< Holder, _Refer >;
+        using Value = typename Featured::Value;
+        using ValueRefer = ::Similar< Value, _Refer >;
 
     private:
         Pointer m_pointer;
@@ -121,7 +115,7 @@ namespace Private
         SpecialFeaturedPointer ( Refer refer )
             : m_pointer( ::std::forward< Refer >( refer ) )
         {
-            FeaturedTool::guardHolder( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
+            Tool::guardHolder( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
         }
 
         SpecialFeaturedPointer ( ThisType && other )
@@ -132,7 +126,7 @@ namespace Private
         ~SpecialFeaturedPointer ()
         {
             if ( !!m_pointer )
-                FeaturedTool::unguardHolder( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
+                Tool::unguardHolder( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
         }
 
         constexpr bool operator ! () const
@@ -150,10 +144,10 @@ namespace Private
             return m_pointer;
         }
 
-        constexpr decltype(auto) value () const
+        constexpr ValueRefer value () const
         {
             assert( m_pointer );
-            return FeaturedTool::value( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
+            return ::std::forward< ValueRefer >( Tool::value( ::std::forward< HolderRefer >( m_pointer->m_holder ) ) );
         }
     };
 }

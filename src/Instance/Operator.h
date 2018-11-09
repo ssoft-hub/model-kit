@@ -4,6 +4,7 @@
 
 #include <ModelKit/Instance/Tool/Inplace/DefaultTool.h>
 #include <ModelKit/Instance/Tool/Member/FunctionTool.h>
+#include <ModelKit/Instance/Traits.h>
 
 #include <functional>
 #include <type_traits>
@@ -37,12 +38,14 @@ namespace Operator
         template <>
         struct InvokeHelper< true >
         {
-            template < typename _FeaturedRefer, typename _ValueRefer, typename _Invokable, typename ... _Arguments >
+            template < typename _FeaturedRefer, typename _Invokable, typename ... _Arguments >
             static decltype(auto) invoke ( _FeaturedRefer featured, _Invokable invokable, _Arguments && ... arguments )
             {
-                using Tool = ::Member::FunctionTool< _FeaturedRefer, _ValueRefer, _Invokable, _Arguments ... >;
-                using Returned = ::std::result_of_t< _Invokable( _ValueRefer, _Arguments && ... ) >;
+                using ValueRefer = Similar< typename ::std::decay_t< _FeaturedRefer >::Value, _FeaturedRefer >;
+                using Returned = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
                 using Result = ::std::remove_reference_t< Returned >;
+                using Tool = ::Member::FunctionTool< _FeaturedRefer, _Invokable, _Arguments ... >;
+
                 return Featured< Result, Tool >( ::std::forward< _FeaturedRefer >( featured ), invokable, ::std::forward< _Arguments >( arguments ) ...  );
             }
         };
@@ -50,14 +53,15 @@ namespace Operator
         template <>
         struct InvokeHelper< false >
         {
-            template < typename _FeaturedRefer, typename _ValueRefer, typename _Invokable, typename ... _Arguments >
+            template < typename _FeaturedRefer, typename _Invokable, typename ... _Arguments >
             static decltype(auto) invoke ( _FeaturedRefer featured, _Invokable invokable, _Arguments && ... arguments )
             {
-                using Returned = ::std::result_of_t< _Invokable( _ValueRefer, _Arguments && ... ) >;
+                using ValueRefer = Similar< typename ::std::decay_t< _FeaturedRefer >::Value, _FeaturedRefer >;
+                using Returned = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
                 using Result = ::std::remove_reference_t< Returned >;
                 using Tool = ::Inplace::DefaultTool;
-                FeaturedPointer< _FeaturedRefer > guard = featured;
-                return Featured< Result, Tool >( invokable( ::std::forward< _ValueRefer >( guard.value() ), ::std::forward< _Arguments >( arguments ) ... ) );
+
+                return Featured< Result, Tool >( invokable( ::std::forward< ValueRefer >( FeaturedPointer< _FeaturedRefer >( featured ).value() ), ::std::forward< _Arguments >( arguments ) ... ) );
             }
         };
     }
@@ -65,14 +69,15 @@ namespace Operator
     //Featured< Result, FunctionTool >( featured, invokable, ::std::forward< _Arguments >( arguments ) ... );
     //Featured< Result, DefaultTool >( function( *&featured, ::std::forward< _Arguments >( arguments ) ... ) );
 
-    template < typename _FeaturedRefer, typename _ValueRefer, typename _Invokable, typename ... _Arguments >
+    template < typename _FeaturedRefer, typename _Invokable, typename ... _Arguments >
     static decltype(auto) invoke ( _FeaturedRefer featured, _Invokable invokable, _Arguments && ... arguments )
     {
+        using ValueRefer = Similar< typename ::std::decay_t< _FeaturedRefer >::Value, _FeaturedRefer >;
+        using Returned = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
+
         // Возвращаем результат в виде Fetured< Result, Inplace::DefaultTool >, если оператор возвращает значение.
         // Возвращаем результат в виде Fetured< Result, Member::FunctionTool >, если оператор возвращает ссылку.
-
-        using Returned = ::std::result_of_t< _Invokable( _ValueRefer, _Arguments && ... ) >;
-        return Private::InvokeHelper< ::std::is_reference< Returned >::value >:: template invoke< _FeaturedRefer,_ValueRefer >(
+        return Private::InvokeHelper< ::std::is_reference< Returned >::value >:: template invoke< _FeaturedRefer >(
             ::std::forward< _FeaturedRefer >( featured ), invokable, ::std::forward< _Arguments >( arguments ) ... );
     }
 };

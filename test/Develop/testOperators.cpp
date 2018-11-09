@@ -8,7 +8,7 @@
 //    Featured< TenMyTypes > m_my_datas;
 //};
 
-//using OtherTypes = std::vector< OtherType >;
+//using OtherTypes = ::std::vector< OtherType >;
 
 //void testMemberOperators ()
 //{

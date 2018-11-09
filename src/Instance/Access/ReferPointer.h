@@ -28,7 +28,7 @@ private:
     struct Dummy {};
     static constexpr RawPointer addressOf ( Value & refer )
     {
-        using DummyType = std::conditional_t<
+        using DummyType = ::std::conditional_t<
             ::std::is_const< Value >::value, const Dummy, Dummy >;
         return reinterpret_cast< RawPointer >( &reinterpret_cast< DummyType & >( refer ) );
     }

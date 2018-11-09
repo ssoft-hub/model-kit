@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ModelKit/Featured.h>
+#include <ModelKit.h>
 #include <iostream>
 #include <string>
 

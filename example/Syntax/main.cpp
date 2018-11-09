@@ -16,10 +16,9 @@ struct UserCard
     Featured< CreditCard > m_card;
 };
 
-using Key = Featured< ::std::string, ::Cpp::Raw::ImplicitTool >;
-using Value = Featured< UserCard, ::Cpp::Raw::ImplicitTool >;
+using Key = Featured< ::std::string, ::Implicit::RawTool >;
+using Value = Featured< UserCard, ::Implicit::RawTool >;
 using Map = ::std::map< Key, Value >;
-
 
 Featured< Map > global_map;
 
@@ -75,9 +74,9 @@ void appendSecondVariant ()
 void appendThirdVariant ()
 {
     Featured< Key > key = "third";
-    (*&(*&global_map)[ key ]).m_name = "Third user";
-    (*&(*&(*&global_map)[ key ]).m_card).m_id = 3L;
-    (*&(*&(*&global_map)[ key ]).m_card).m_limit = 333;
+    (*&(*&global_map)[ *&key ]).m_name = "Third user";
+    (*&(*&(*&global_map)[ *&key ]).m_card).m_id = 3L;
+    (*&(*&(*&global_map)[ *&key ]).m_card).m_limit = 333;
 }
 
 // Вариант с использованием оператора ->.
@@ -112,6 +111,14 @@ void appendSixthVariant ()
     vGet( vGet( vGet( global_map )[ key ] ).m_card ).m_limit = 55555;
 }
 #endif
+
+void appendSeventhVariant ()
+{
+    Featured< Key > key = "fifth";
+    global_map[ key ]->m_name = "Fifth user";
+    global_map[ key ]->m_card->m_id = 5L;
+    global_map[ key ]->m_card->m_limit = 55555;
+}
 
 int main ( int, char ** )
 {

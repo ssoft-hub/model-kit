@@ -14,23 +14,23 @@ void printTypeOf ()
     char * realname = 0;
     realname = abi::__cxa_demangle( typeid( _Type ).name(), 0, 0, &status );
 
-    std::cout
+    ::std::cout
         << realname;
 
     if ( ::std::is_const< _Type >::value )
-        std::cout
+        ::std::cout
             << " const";
 
     if ( ::std::is_lvalue_reference< _Type >::value )
-        std::cout
+        ::std::cout
             << " &";
 
     if ( ::std::is_rvalue_reference< _Type >::value )
-        std::cout
+        ::std::cout
             << " &&";
 
-    std::cout
-        << std::endl << std::flush;
+    ::std::cout
+        << ::std::endl << ::std::flush;
 
     free( realname );
 }
@@ -298,7 +298,7 @@ int testFoo() {
     return 0;
 }
 
-//using Res = std::result_of_t< double & (std::vector<double>&, int&)>;
+//using Res = ::std::result_of_t< double & (std::vector<double>&, int&)>;
 
 template < typename _Refer, typename ... _Arguments >
 decltype(auto) squareBrackets ( _Refer refer, _Arguments && ... arguments )
@@ -368,8 +368,8 @@ void testFeaturedValue ()
 
 void testFeaturedContainer ()
 {
-    //using Container = ::std::vector< double >;
-    using Container = Featured< ::std::vector< double >, Implicit::SharedTool >;
+    using Container = ::std::vector< double >;
+    //using Container = Featured< ::std::vector< double >, Implicit::SharedTool >;
 
     { Featured< Container > value; }
     { Featured< Container > value( Container() ); }
@@ -382,8 +382,8 @@ void testFeaturedContainer ()
         for ( int i = 0; i < 10; ++i )
             value[ i ] = asConst( value )[ 9 - i ];
 
-        //Featured< Container >()[0];
-        //asConst( Featured< Container >() )[0];
+        Featured< Container >()[0];
+        asConst( Featured< Container >() )[0];
     }
 }
 
@@ -475,13 +475,13 @@ void testFeaturedContainer ()
 //extern void testRelation ();
 
 //template < typename _Type >
-//void foo ( const _Type & ) { ::std::cout << std::endl; }
+//void foo ( const _Type & ) { ::std::cout << ::std::endl; }
 
 //template < typename _Type >
-//void overloaded( _Type const & ) { ::std::cout << "by lvalue" << std::endl; }
+//void overloaded( _Type const & ) { ::std::cout << "by lvalue" << ::std::endl; }
 
 //template < typename _Type >
-//void overloaded( _Type && ) { ::std::cout << "by rvalue" << std::endl; }
+//void overloaded( _Type && ) { ::std::cout << "by rvalue" << ::std::endl; }
 
 //struct TestType
 //{
