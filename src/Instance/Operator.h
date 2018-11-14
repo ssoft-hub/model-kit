@@ -61,7 +61,7 @@ namespace Operator
                 using Result = ::std::remove_reference_t< Returned >;
                 using Tool = ::Inplace::DefaultTool;
 
-                return Featured< Result, Tool >( invokable( ::std::forward< ValueRefer >( FeaturedPointer< _FeaturedRefer >( featured ).value() ), ::std::forward< _Arguments >( arguments ) ... ) );
+                return Featured< Result, Tool >( invokable( ::std::forward< ValueRefer >( FeaturedGuard< _FeaturedRefer >( featured ).value() ), ::std::forward< _Arguments >( arguments ) ... ) );
             }
         };
     }

@@ -2,7 +2,7 @@
 #ifndef GUARD_VALUE_POINTER_H
 #define GUARD_VALUE_POINTER_H
 
-#include <ModelKit/Instance/Access/FeaturedPointer.h>
+#include <ModelKit/Instance/Access/FeaturedGuard.h>
 #include <ModelKit/Instance/Traits.h>
 
 // Предопределение
@@ -12,7 +12,7 @@ class Featured;
 namespace Private
 {
     template < typename _Refer >
-    struct ValuePointerHelper;
+    struct ValueGuardHelper;
 }
 
 /*!
@@ -20,7 +20,7 @@ namespace Private
  * все особенности, реализуемые посредством используемых Featured.
  */
 template < typename _Refer >
-using ValuePointer = typename Private::ValuePointerHelper< _Refer >::Type;
+using ValueGuard = typename Private::ValueGuardHelper< _Refer >::Type;
 
 namespace Private
 {
@@ -30,41 +30,41 @@ namespace Private
      * тип вложенного экземпляра значения сам не является Featured.
      */
     template < typename _Refer >
-    class DefaultValuePointer
+    class DefaultValueGuard
     {
-        using ThisType = DefaultValuePointer< _Refer >;
+        using ThisType = DefaultValueGuard< _Refer >;
 
     public:
         using Refer = _Refer;
-        using Pointer = FeaturedPointer< _Refer >;
+        using Pointer = FeaturedGuard< _Refer >;
         using Access = Refer;
 
     private:
         Pointer m_featured_pointer;
 
     public:
-        constexpr DefaultValuePointer ()
+        constexpr DefaultValueGuard ()
             : m_featured_pointer()
         {
             static_assert( ::std::is_reference< Refer >::value
                 , "The template parameter must be a reference." );
         }
 
-        DefaultValuePointer ( Refer refer )
+        DefaultValueGuard ( Refer refer )
             : m_featured_pointer( ::std::forward< Refer >( refer ) )
         {
             static_assert( ::std::is_reference< Refer >::value
                 , "The template parameter must be a reference." );
         }
 
-        DefaultValuePointer ( Pointer && other )
+        DefaultValueGuard ( Pointer && other )
             : m_featured_pointer( ::std::forward< Pointer >( other ) )
         {
             static_assert( ::std::is_reference< Refer >::value
                 , "The template parameter must be a reference." );
         }
 
-        DefaultValuePointer ( ThisType && other )
+        DefaultValueGuard ( ThisType && other )
             : m_featured_pointer( ::std::forward< Pointer >( other.m_featured_pointer ) )
         {
             static_assert( ::std::is_reference< Refer >::value
@@ -91,9 +91,9 @@ namespace Private
 namespace Private
 {
     template < typename _Refer >
-    struct ValuePointerHelper
+    struct ValueGuardHelper
     {
-        using Type = DefaultValuePointer< _Refer >;
+        using Type = DefaultValueGuard< _Refer >;
     };
 }
 
@@ -107,10 +107,10 @@ namespace Private
     template < typename _Refer,
         // The template parameter must be a reference!
         typename = ::std::enable_if_t< ::std::is_reference< _Refer >::value > >
-    class SpecialValuePointer
+    class SpecialValueGuard
 
     {
-        using ThisType = SpecialValuePointer< _Refer >;
+        using ThisType = SpecialValueGuard< _Refer >;
 
     public:
         using Refer = _Refer;
@@ -121,36 +121,36 @@ namespace Private
         using ValueRefer = ::Similar< Value, Refer >;
         using Holder = typename Featured::Holder;
         using HolderRefer = ::Similar< Holder, Refer >;
-        using FeaturedPointer = ::FeaturedPointer< Refer >;
-        using ValuePointer = ::ValuePointer< ValueRefer >;
-        using Access = typename ValuePointer::Access;
+        using FeaturedGuard = ::FeaturedGuard< Refer >;
+        using ValueGuard = ::ValueGuard< ValueRefer >;
+        using Access = typename ValueGuard::Access;
 
     private:
-        FeaturedPointer m_featured_pointer;
-        ValuePointer m_value_pointer;
+        FeaturedGuard m_featured_pointer;
+        ValueGuard m_value_pointer;
 
     public:
-        constexpr SpecialValuePointer ()
+        constexpr SpecialValueGuard ()
             : m_featured_pointer()
             , m_value_pointer()
         {
         }
 
-        SpecialValuePointer ( Refer refer )
+        SpecialValueGuard ( Refer refer )
             : m_featured_pointer( ::std::forward< Refer >( refer ) )
             , m_value_pointer( ::std::forward< ValueRefer >( Tool::value( ::std::forward< HolderRefer >( (*m_featured_pointer).m_holder ) ) ) )
         {
         }
 
-        SpecialValuePointer ( FeaturedPointer && other )
-            : m_featured_pointer( ::std::forward< FeaturedPointer >( other ) )
+        SpecialValueGuard ( FeaturedGuard && other )
+            : m_featured_pointer( ::std::forward< FeaturedGuard >( other ) )
             , m_value_pointer( ::std::forward< ValueRefer >( Tool::value( ::std::forward< HolderRefer >( (*m_featured_pointer).m_holder ) ) ) )
         {
         }
 
-        SpecialValuePointer ( ThisType && other )
-            : m_featured_pointer( ::std::forward< FeaturedPointer >( other.m_featured_pointer ) )
-            , m_value_pointer( ::std::forward< ValuePointer >( other.m_value_pointer ) )
+        SpecialValueGuard ( ThisType && other )
+            : m_featured_pointer( ::std::forward< FeaturedGuard >( other.m_featured_pointer ) )
+            , m_value_pointer( ::std::forward< ValueGuard >( other.m_value_pointer ) )
         {
         }
 
@@ -164,7 +164,7 @@ namespace Private
             return ::std::forward< Access >( *m_value_pointer );
         }
 
-        constexpr const ValuePointer & operator -> () const
+        constexpr const ValueGuard & operator -> () const
         {
             return m_value_pointer;
         }
@@ -174,34 +174,34 @@ namespace Private
 namespace Private
 {
     template < typename _Value, typename _Tool >
-    struct ValuePointerHelper< Featured< _Value, _Tool > & >
+    struct ValueGuardHelper< Featured< _Value, _Tool > & >
     {
-        using Type = Private::SpecialValuePointer< Featured< _Value, _Tool > & >;
+        using Type = Private::SpecialValueGuard< Featured< _Value, _Tool > & >;
     };
 
     template < typename _Value, typename _Tool >
-    struct ValuePointerHelper< Featured< _Value, _Tool > && >
+    struct ValueGuardHelper< Featured< _Value, _Tool > && >
     {
-        using Type = Private::SpecialValuePointer< Featured< _Value, _Tool > && >;
+        using Type = Private::SpecialValueGuard< Featured< _Value, _Tool > && >;
     };
 
     template < typename _Value, typename _Tool >
-    struct ValuePointerHelper< const Featured< _Value, _Tool > & >
+    struct ValueGuardHelper< const Featured< _Value, _Tool > & >
     {
-        using Type = Private::SpecialValuePointer< const Featured< _Value, _Tool > & >;
+        using Type = Private::SpecialValueGuard< const Featured< _Value, _Tool > & >;
     };
 
     template < typename _Value, typename _Tool >
-    struct ValuePointerHelper< const Featured< _Value, _Tool > && >
+    struct ValueGuardHelper< const Featured< _Value, _Tool > && >
     {
-        using Type = Private::SpecialValuePointer< const Featured< _Value, _Tool > && >;
+        using Type = Private::SpecialValueGuard< const Featured< _Value, _Tool > && >;
     };
 
     // disabled
     template < typename _Value, typename _Tool >
-    struct ValuePointerHelper< Featured< _Value, _Tool > > {};
+    struct ValueGuardHelper< Featured< _Value, _Tool > > {};
     template < typename _Value, typename _Tool >
-    struct ValuePointerHelper< const Featured< _Value, _Tool > > {};
+    struct ValueGuardHelper< const Featured< _Value, _Tool > > {};
 }
 
 #endif

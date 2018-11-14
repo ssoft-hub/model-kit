@@ -20,10 +20,10 @@ template < typename _Value, typename _Tool = ::Inplace::DefaultTool >
 class Featured
 {
     template < typename >
-    friend class Private::SpecialValuePointer;
+    friend class Private::SpecialValueGuard;
 
     template < typename >
-    friend class Private::SpecialFeaturedPointer;
+    friend class Private::SpecialFeaturedGuard;
 
     template < typename, typename >
     friend class Private::FeaturedCompatibleResolver;
@@ -146,22 +146,22 @@ public:
 
     // NOTE: Используется доступ через оператор "->", но семантически необходим ".".
     // TODO: Заменить на оператор "." с внедрением N4477 или P0352 в стандарт C++.
-    ValuePointer< ThisType & > operator -> ()
+    ValueGuard< ThisType & > operator -> ()
     {
         return *this;
     }
 
-    ValuePointer< const ThisType & > operator -> () const
+    ValueGuard< const ThisType & > operator -> () const
     {
         return *this;
     }
 
-    ValuePointer< ThisType & > operator & ()
+    ValueGuard< ThisType & > operator & ()
     {
         return *this;
     }
 
-    ValuePointer< const ThisType & > operator & () const
+    ValueGuard< const ThisType & > operator & () const
     {
         return *this;
     }

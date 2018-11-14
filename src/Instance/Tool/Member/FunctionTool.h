@@ -2,7 +2,7 @@
 #ifndef INSTANCE_TOOL_MEMBER_FUNCTION_H
 #define INSTANCE_TOOL_MEMBER_FUNCTION_H
 
-#include <ModelKit/Instance/Access/FeaturedPointer.h>
+#include <ModelKit/Instance/Access/FeaturedGuard.h>
 #include <ModelKit/Instance/Traits.h>
 
 namespace Member
@@ -14,7 +14,7 @@ namespace Member
         struct Holder
         {
             using ThisType = Holder;
-            using FeaturedGuard = ::FeaturedPointer< _FeaturedRefer >;
+            using FeaturedGuard = ::FeaturedGuard< _FeaturedRefer >;
             using ValueRefer = Similar< typename ::std::decay_t< _FeaturedRefer >::Value, _FeaturedRefer >;
             using ResultRefer = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
 

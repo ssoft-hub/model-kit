@@ -1,4 +1,4 @@
-#include "Access/FeaturedPointer.h"
-#include "Access/HolderPointer.h"
+#include "Access/FeaturedGuard.h"
+#include "Access/HolderGuard.h"
 #include "Access/ReferPointer.h"
-#include "Access/ValuePointer.h"
+#include "Access/ValueGuard.h"

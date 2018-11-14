@@ -12,14 +12,14 @@ class Featured;
 namespace Private
 {
     template < typename _Refer >
-    struct FeaturedPointerHelper;
+    struct FeaturedGuardHelper;
 }
 
 /*!
  * Указатель на значение, к которому применено дополнительное свойство.
  */
 template < typename _Refer >
-using FeaturedPointer = typename Private::FeaturedPointerHelper< _Refer >::Type;
+using FeaturedGuard = typename Private::FeaturedGuardHelper< _Refer >::Type;
 
 namespace Private
 {
@@ -29,9 +29,9 @@ namespace Private
      * тип вложенного экземпляра значения сам не является Featured.
      */
     template < typename _Refer >
-    class DefaultFeaturedPointer
+    class DefaultFeaturedGuard
     {
-        using ThisType = DefaultFeaturedPointer< _Refer >;
+        using ThisType = DefaultFeaturedGuard< _Refer >;
 
     public:
         using Refer = _Refer;
@@ -41,21 +41,21 @@ namespace Private
         Pointer m_pointer;
 
     public:
-        constexpr DefaultFeaturedPointer ()
+        constexpr DefaultFeaturedGuard ()
             : m_pointer()
         {
             static_assert( ::std::is_reference< Refer >::value
                 , "The template parameter must be a reference." );
         }
 
-        DefaultFeaturedPointer ( Refer refer )
+        DefaultFeaturedGuard ( Refer refer )
             : m_pointer( ::std::forward< Refer >( refer ) )
         {
             static_assert( ::std::is_reference< Refer >::value
                 , "The template parameter must be a reference." );
         }
 
-        DefaultFeaturedPointer ( ThisType && other )
+        DefaultFeaturedGuard ( ThisType && other )
             : m_pointer( ::std::forward< Pointer >( other.m_pointer ) )
         {
             static_assert( ::std::is_reference< Refer >::value
@@ -89,9 +89,9 @@ namespace Private
     template < typename _Refer,
         // The template parameter must be a reference!
         typename = ::std::enable_if_t< ::std::is_reference< _Refer >::value > >
-    class SpecialFeaturedPointer
+    class SpecialFeaturedGuard
     {
-        using ThisType = SpecialFeaturedPointer< _Refer >;
+        using ThisType = SpecialFeaturedGuard< _Refer >;
 
     public:
         using Refer = _Refer;
@@ -107,23 +107,23 @@ namespace Private
         Pointer m_pointer;
 
     public:
-        constexpr SpecialFeaturedPointer ()
+        constexpr SpecialFeaturedGuard ()
             : m_pointer()
         {
         }
 
-        SpecialFeaturedPointer ( Refer refer )
+        SpecialFeaturedGuard ( Refer refer )
             : m_pointer( ::std::forward< Refer >( refer ) )
         {
             Tool::guardHolder( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
         }
 
-        SpecialFeaturedPointer ( ThisType && other )
+        SpecialFeaturedGuard ( ThisType && other )
             : m_pointer( ::std::forward< Pointer >( other.m_pointer ) )
         {
         }
 
-        ~SpecialFeaturedPointer ()
+        ~SpecialFeaturedGuard ()
         {
             if ( !!m_pointer )
                 Tool::unguardHolder( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
@@ -155,41 +155,41 @@ namespace Private
 namespace Private
 {
     template < typename _Refer >
-    struct FeaturedPointerHelper
+    struct FeaturedGuardHelper
     {
-        using Type = Private::DefaultFeaturedPointer< _Refer >;
+        using Type = Private::DefaultFeaturedGuard< _Refer >;
     };
 
     template < typename _Value, typename _Tool >
-    struct FeaturedPointerHelper< Featured< _Value, _Tool > & >
+    struct FeaturedGuardHelper< Featured< _Value, _Tool > & >
     {
-        using Type = Private::SpecialFeaturedPointer< Featured< _Value, _Tool > & >;
+        using Type = Private::SpecialFeaturedGuard< Featured< _Value, _Tool > & >;
     };
 
     template < typename _Value, typename _Tool >
-    struct FeaturedPointerHelper< Featured< _Value, _Tool > && >
+    struct FeaturedGuardHelper< Featured< _Value, _Tool > && >
     {
-        using Type = Private::SpecialFeaturedPointer< Featured< _Value, _Tool > && >;
+        using Type = Private::SpecialFeaturedGuard< Featured< _Value, _Tool > && >;
     };
 
     template < typename _Value, typename _Tool >
-    struct FeaturedPointerHelper< const Featured< _Value, _Tool > & >
+    struct FeaturedGuardHelper< const Featured< _Value, _Tool > & >
     {
-        using Type = Private::SpecialFeaturedPointer< const Featured< _Value, _Tool > & >;
+        using Type = Private::SpecialFeaturedGuard< const Featured< _Value, _Tool > & >;
     };
 
     template < typename _Value, typename _Tool >
-    struct FeaturedPointerHelper< const Featured< _Value, _Tool > && >
+    struct FeaturedGuardHelper< const Featured< _Value, _Tool > && >
     {
-        using Type = Private::SpecialFeaturedPointer< const Featured< _Value, _Tool > && >;
+        using Type = Private::SpecialFeaturedGuard< const Featured< _Value, _Tool > && >;
     };
 
     // disabled
     template < typename _Value, typename _Tool >
-    struct FeaturedPointerHelper< Featured< _Value, _Tool > > {};
+    struct FeaturedGuardHelper< Featured< _Value, _Tool > > {};
 
     template < typename _Value, typename _Tool >
-    struct FeaturedPointerHelper< const Featured< _Value, _Tool > > {};
+    struct FeaturedGuardHelper< const Featured< _Value, _Tool > > {};
 }
 
 #endif

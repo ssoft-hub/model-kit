@@ -4,7 +4,7 @@
 
 #include <cassert>
 #include <memory>
-#include <ModelKit/Instance/Access/HolderPointer.h>
+#include <ModelKit/Instance/Access/HolderGuard.h>
 #include <utility>
 
 namespace Implicit
@@ -23,7 +23,7 @@ namespace Implicit
         {
             using ThisType = Holder< _Type >;
             using PointerType = ::std::shared_ptr< _Type >;
-            using WritableGuard = ::HolderPointer< ThisType &, ::Implicit::SharedTool >;
+            using WritableGuard = ::HolderGuard< ThisType &, ::Implicit::SharedTool >;
 
             PointerType m_pointer;
 

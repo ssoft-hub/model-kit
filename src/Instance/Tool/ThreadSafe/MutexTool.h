@@ -2,7 +2,7 @@
 #ifndef INSTANCE_TOOL_THREAD_SAFE_MUTEX_H
 #define INSTANCE_TOOL_THREAD_SAFE_MUTEX_H
 
-#include <ModelKit/Instance/Access/HolderPointer.h>
+#include <ModelKit/Instance/Access/HolderGuard.h>
 #include <ModelKit/Instance/Traits.h>
 #include <mutex>
 
@@ -25,7 +25,7 @@ namespace ThreadSafe
             using Lock = _Lock;
             using Value = _Type;
             using LockGuard = ::std::lock_guard< Lock >;
-            using WritableGuard = ::HolderPointer< ThisType &, Tool >;
+            using WritableGuard = ::HolderGuard< ThisType &, Tool >;
 
             mutable Lock m_lock;
             Value m_value;
@@ -40,7 +40,7 @@ namespace ThreadSafe
             Holder ( ThisType && other )
                 : m_lock()
             {
-                using OtherMovableGuard = ::HolderPointer< ThisType &&, Tool >;
+                using OtherMovableGuard = ::HolderGuard< ThisType &&, Tool >;
                 OtherMovableGuard guard( other );
                 m_value = ::std::forward< Value >( other.m_value );
             }
@@ -48,7 +48,7 @@ namespace ThreadSafe
             Holder ( const ThisType & other )
                 : m_lock()
             {
-                using OtherReadableGuard = ::HolderPointer< const ThisType &, Tool >;
+                using OtherReadableGuard = ::HolderGuard< const ThisType &, Tool >;
                 OtherReadableGuard guard( other );
                 m_value =  other.m_value;
             }
@@ -57,7 +57,7 @@ namespace ThreadSafe
             Holder ( Holder< _OtherType > && other )
                 : m_lock()
             {
-                using OtherMovableGuard = ::HolderPointer< Holder< _OtherType > &&, Tool >;
+                using OtherMovableGuard = ::HolderGuard< Holder< _OtherType > &&, Tool >;
                 OtherMovableGuard guard( other );
                 m_value = ::std::forward< Value >( other.m_value );
             }
@@ -66,7 +66,7 @@ namespace ThreadSafe
             Holder ( const Holder< _OtherType > & other )
                 : m_lock()
             {
-                using OtherReadableGuard = ::HolderPointer< const Holder< _OtherType > &, Tool >;
+                using OtherReadableGuard = ::HolderGuard< const Holder< _OtherType > &, Tool >;
                 OtherReadableGuard guard( other );
                 m_value =  other.m_value;
             }
@@ -94,7 +94,7 @@ namespace ThreadSafe
 
             ThisType & operator = ( ThisType && other )
             {
-                using OtherMovableGuard = ::HolderPointer< ThisType &&, Tool >;
+                using OtherMovableGuard = ::HolderGuard< ThisType &&, Tool >;
                 OtherMovableGuard other_guard( ::std::forward< ThisType >( other ) );
                 WritableGuard guard( *this );
                 m_value = ::std::forward< Value >( other.m_value );
@@ -103,7 +103,7 @@ namespace ThreadSafe
 
             ThisType & operator = ( const ThisType & other )
             {
-                using OtherReadableGuard = ::HolderPointer< const ThisType &, Tool >;
+                using OtherReadableGuard = ::HolderGuard< const ThisType &, Tool >;
                 OtherReadableGuard other_guard( other );
                 WritableGuard guard( *this );
                 m_value = other.m_value;
@@ -114,7 +114,7 @@ namespace ThreadSafe
             ThisType & operator = ( Holder< _OtherType > && other )
             {
                 using OtherType = Holder< _OtherType >;
-                using OtherMovableGuard = ::HolderPointer< OtherType &&, Tool >;
+                using OtherMovableGuard = ::HolderGuard< OtherType &&, Tool >;
                 OtherMovableGuard other_guard( ::std::forward< OtherType >( other ) );
                 WritableGuard guard( *this );
                 m_value = ::std::forward< typename OtherType::Value >( other.m_value );
@@ -125,7 +125,7 @@ namespace ThreadSafe
             ThisType & operator = ( const Holder< _OtherType > & other )
             {
                 using OtherType = Holder< _OtherType >;
-                using OtherReadableGuard = ::HolderPointer< const OtherType &, Tool >;
+                using OtherReadableGuard = ::HolderGuard< const OtherType &, Tool >;
                 OtherReadableGuard other_guard( other );
                 WritableGuard guard( *this );
                 m_value = other.m_value;

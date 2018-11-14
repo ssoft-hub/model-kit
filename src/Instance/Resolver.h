@@ -2,8 +2,8 @@
 #ifndef INSTANCE_RESOLVER_H
 #define INSTANCE_RESOLVER_H
 
-#include "Access/FeaturedPointer.h"
-#include "Access/ValuePointer.h"
+#include "Access/FeaturedGuard.h"
+#include "Access/ValueGuard.h"
 #include "Traits.h"
 
 namespace Private
@@ -103,14 +103,14 @@ namespace Private
     public:
         using Featured = _Featured;
         using OtherRefer = _OtherRefer;
-        using OtherFeaturedPointer = FeaturedPointer< OtherRefer >;
+        using OtherFeaturedGuard = FeaturedGuard< OtherRefer >;
         using OtherFeatured = ::std::remove_reference_t< OtherRefer >;
         using OtherValue = typename OtherFeatured::Value;
         using OtherValueRefer = ::Similar< OtherValue, OtherRefer >;
         using NextResolver = FeaturedResolver< _Featured, OtherValueRefer >;
 
     private:
-        OtherFeaturedPointer m_featured_pointer;
+        OtherFeaturedGuard m_featured_pointer;
         NextResolver m_next_resolver;
 
     public:
@@ -138,10 +138,10 @@ namespace Private
     public:
         using Featured = _Featured;
         using OtherRefer = _OtherRefer;
-        using OtherValuePointer = ValuePointer< OtherRefer >;
+        using OtherValueGuard = ValueGuard< OtherRefer >;
 
     private:
-        OtherValuePointer m_value_guard;
+        OtherValueGuard m_value_guard;
 
     public:
         FeaturedValueResolver ( OtherRefer other )

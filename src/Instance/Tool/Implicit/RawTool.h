@@ -4,7 +4,7 @@
 
 #include <atomic>
 #include <cassert>
-#include <ModelKit/Instance/Access/HolderPointer.h>
+#include <ModelKit/Instance/Access/HolderGuard.h>
 #include <utility>
 
 namespace Implicit
@@ -43,7 +43,7 @@ namespace Implicit
 
             using Value = CountedType< _Type >;
             using PointerType = Value *;
-            using WritableGuard = ::HolderPointer< ThisType &, Implicit::RawTool >;
+            using WritableGuard = ::HolderGuard< ThisType &, Implicit::RawTool >;
 
             PointerType m_pointer;
 
