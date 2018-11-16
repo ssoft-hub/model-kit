@@ -74,6 +74,7 @@ namespace Private
         using OtherFeatured = ::std::remove_reference_t< OtherRefer >;
         using OtherHolder = typename OtherFeatured::Holder;
         using OtherHolderRefer = ::Similar< OtherHolder, OtherRefer >;
+        using Access = OtherHolderRefer;
 
     private:
         OtherRefer m_other_refer;
@@ -84,9 +85,9 @@ namespace Private
         {
         }
 
-        OtherHolderRefer resolve () const
+        Access resolve () const
         {
-            return ::std::forward< OtherHolderRefer >( m_other_refer.m_holder );
+            return ::std::forward< Access >( m_other_refer.m_holder );
         }
     };
 
@@ -108,6 +109,7 @@ namespace Private
         using OtherValue = typename OtherFeatured::Value;
         using OtherValueRefer = ::Similar< OtherValue, OtherRefer >;
         using NextResolver = FeaturedResolver< _Featured, OtherValueRefer >;
+        using Access = typename NextResolver::Access;
 
     private:
         OtherFeaturedGuard m_featured_pointer;
@@ -120,9 +122,9 @@ namespace Private
         {
         }
 
-        decltype(auto) resolve () const
+        Access resolve () const
         {
-            return m_next_resolver.resolve();
+            return ::std::forward< Access >( m_next_resolver.resolve() );
         }
     };
 }
@@ -139,6 +141,7 @@ namespace Private
         using Featured = _Featured;
         using OtherRefer = _OtherRefer;
         using OtherValueGuard = ValueGuard< OtherRefer >;
+        using Access = typename OtherValueGuard::Access;
 
     private:
         OtherValueGuard m_value_guard;
@@ -149,9 +152,9 @@ namespace Private
         {
         }
 
-        decltype(auto) resolve () const
+        Access resolve () const
         {
-            return *m_value_guard;
+            return ::std::forward< Access >( *m_value_guard );
         }
     };
 }

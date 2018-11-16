@@ -146,24 +146,44 @@ public:
 
     // NOTE: Используется доступ через оператор "->", но семантически необходим ".".
     // TODO: Заменить на оператор "." с внедрением N4477 или P0352 в стандарт C++.
-    ValueGuard< ThisType & > operator -> ()
+    ValueGuard< ThisType & > operator -> () &
     {
         return *this;
     }
 
-    ValueGuard< const ThisType & > operator -> () const
+    ValueGuard< ThisType && > operator -> () &&
+    {
+        return ::std::forward< ThisType >( *this );
+    }
+
+    ValueGuard< const ThisType & > operator -> () const &
     {
         return *this;
     }
 
-    ValueGuard< ThisType & > operator & ()
+    ValueGuard< const ThisType && > operator -> () const &&
+    {
+        return ::std::forward< const ThisType >( *this );
+    }
+
+    ValueGuard< ThisType & > operator & () &
     {
         return *this;
     }
 
-    ValueGuard< const ThisType & > operator & () const
+    ValueGuard< ThisType && > operator & () &&
+    {
+        return ::std::forward< ThisType >( *this );
+    }
+
+    ValueGuard< const ThisType & > operator & () const &
     {
         return *this;
+    }
+
+    ValueGuard< const ThisType && > operator & () const &&
+    {
+        return ::std::forward< const ThisType >( *this );
     }
 
     /// Проксирование оператора []
