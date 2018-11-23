@@ -3,9 +3,11 @@
 //#endif
 
 #include <ModelKit.h>
+#include <type_traits>
 #include <vector>
 #include <iostream>
 #include <cxxabi.h>
+#include <memory>
 
 template < typename _Type >
 void printTypeOf ()
@@ -36,11 +38,77 @@ void printTypeOf ()
 }
 
 template < typename _Type >
-void printTypeOf ( _Type )
+void printTypeOf ( const _Type & )
 {
     printTypeOf< _Type >();
 }
 
+
+template < typename _Type, typename _Other >
+void ckeckSimilarity ( _Type &&, _Other && )
+{
+    static_assert( ::std::is_rvalue_reference< _Type >::value
+        == ::std::is_rvalue_reference< _Other >::value );
+    static_assert( ::std::is_lvalue_reference< _Type >::value
+        == ::std::is_lvalue_reference< _Other >::value );
+}
+
+
+struct My
+{
+    void rvalueMethod () && {}
+    void rvalueConstMethod () const && {}
+    void lvalueMethod () & {}
+    void lvalueConstMethod () const & {}
+};
+
+void compileTestFeaturedTrancpatancy ()
+{
+    Featured< My > featured;
+    My value;
+
+    My().rvalueMethod();
+    My().rvalueConstMethod();
+    asConst( My() ).rvalueConstMethod();
+
+    ::std::make_shared< My >()->lvalueMethod();
+
+    // не работает (taking address of temporary)
+    // так как значение не обязательно должно быть размещено в памяти
+    // оно может быть размещено в регистрах ЦП, и как следствие,
+    // не иметь адреса.
+    //(*&My()).rvalueMethod();
+    //(*&My()).rvalueConstMethod();
+    //(*&asConst( My() ) ).rvalueConstMethod();
+
+    // по похожим причинам нельзя через operator -> вызвать rvalue методы
+    //ReferPointer< My && >( My() )->rvalueMethod();
+    //ReferPointer< My && >( My() )->rvalueConstMethod();
+    //asConst( ReferPointer< My && >( My() ) )->rvalueConstMethod();
+
+    // как следствие, не работает
+    //Featured< My >()->rvalueMethod();
+    //Featured< My >()->rvalueConstMethod();
+    //asConst( Featured< My >() )->rvalueConstMethod();
+
+    //My().lvalueMethod(); // почему-то T&& не преобразуется к T&
+    My().lvalueConstMethod();
+    asConst( My() ).lvalueConstMethod();
+
+    Featured< My >()->lvalueMethod();
+    Featured< My >()->lvalueConstMethod();
+    asConst( Featured< My >() )->lvalueConstMethod();
+
+    featured->lvalueMethod();
+    featured->lvalueConstMethod();
+    value.lvalueMethod();
+    value.lvalueConstMethod();
+
+    ckeckSimilarity( Featured< My >(), My() );
+    ckeckSimilarity( Featured< My >(), *&Featured< My >() );
+    ckeckSimilarity( featured, value );
+    ckeckSimilarity( featured, *&featured );
+}
 
 extern void testResultOf();
 extern void testFeaturedValue ();
@@ -48,6 +116,7 @@ extern void testFeaturedContainer ();
 
 int main ( int /*argc*/, char ** /*argv*/ )
 {
+    compileTestFeaturedTrancpatancy();
     //testResultOf();
     testFeaturedContainer();
 
@@ -375,12 +444,22 @@ void testFeaturedContainer ()
     { Featured< Container > value( Container() ); }
     { Featured< Container > value = Container(); (void)value; }
     {
-        Featured< Container > value;
+        Featured< Container > container;
         for ( int i = 0; i < 10; ++i )
-            value->push_back( i );
+            container->push_back( i );
+
+        auto v0 = container[5];
+        auto v1 = asConst( container )[5];
+        auto v2 = &(asConst( container )[5]);
+        auto v3 = *v2;
+
+        printTypeOf( v0 );
+        printTypeOf( v1 );
+        printTypeOf( v2 );
+        printTypeOf( v3 );
 
         for ( int i = 0; i < 10; ++i )
-            value[ i ] = i;//asConst( value )[ 9 - i ];
+            container[ i ] = asConst( container )[ 9 - i ];
 
         Featured< Container >()[0];
         asConst( Featured< Container >() )[0];

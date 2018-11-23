@@ -29,9 +29,7 @@ namespace Private
      * все особенности, реализуемые посредством используемых Featured. Данный указатель применяется, если
      * тип вложенного экземпляра значения сам не является Featured.
      */
-    template < typename _Refer,
-        // The template parameter must be a reference!
-        typename = ::std::enable_if_t< ::std::is_reference< _Refer >::value > >
+    template < typename _Refer >
     class DefaultValueGuard
     {
         using ThisType = DefaultValueGuard< _Refer >;
@@ -39,7 +37,10 @@ namespace Private
     public:
         using Refer = _Refer;
         using Guard = FeaturedGuard< _Refer >;
-        using Access = Refer;
+        using AccessRefer = Refer;
+
+        static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must be a reference!" );
+        static_assert( !::is_featured< ::std::decay_t< Refer > >, "The template parameter _Refer must be a not featured type reference!" );
 
     private:
         Guard m_featured_guard;
@@ -48,29 +49,21 @@ namespace Private
         constexpr DefaultValueGuard ()
             : m_featured_guard()
         {
-            static_assert( ::std::is_reference< Refer >::value
-                , "The template parameter must be a reference." );
         }
 
         DefaultValueGuard ( Refer refer )
             : m_featured_guard( ::std::forward< Refer >( refer ) )
         {
-            static_assert( ::std::is_reference< Refer >::value
-                , "The template parameter must be a reference." );
         }
 
         DefaultValueGuard ( Guard && other )
             : m_featured_guard( ::std::forward< Guard >( other ) )
         {
-            static_assert( ::std::is_reference< Refer >::value
-                , "The template parameter must be a reference." );
         }
 
         DefaultValueGuard ( ThisType && other )
             : m_featured_guard( ::std::forward< Guard >( other.m_featured_guard ) )
         {
-            static_assert( ::std::is_reference< Refer >::value
-                , "The template parameter must be a reference." );
         }
 
         constexpr bool operator ! () const
@@ -78,9 +71,9 @@ namespace Private
             return !m_featured_guard;
         }
 
-        constexpr Access operator * () const
+        constexpr AccessRefer operator * () const
         {
-            return ::std::forward< Access >( *m_featured_guard );
+            return ::std::forward< AccessRefer >( *m_featured_guard );
         }
 
         constexpr const Guard & operator -> () const &
@@ -109,11 +102,9 @@ namespace Private
     /*
      * Указатель на экземпляр вложенного в Featured базового значения, к которому применены
      * все особенности, реализуемые посредством используемых Featured. Данный указатель применяется, если
-     * тип вложенного экземпляра значения сам не является Featured.
+     * тип вложенного экземпляра значения сам является Featured.
      */
-    template < typename _Refer,
-        // The template parameter must be a reference!
-        typename = ::std::enable_if_t< ::std::is_reference< _Refer >::value > >
+    template < typename _Refer >
     class SpecialValueGuard
 
     {
@@ -125,12 +116,17 @@ namespace Private
         using Tool = typename Featured::Tool;
 
         using Value = typename Featured::Value;
-        using ValueRefer = ::Similar< Value, Refer >;
+        using ValueRefer = ::SimilarRefer< Value, Refer >;
         using Holder = typename Featured::Holder;
-        using HolderRefer = ::Similar< Holder, Refer >;
+        using HolderRefer = ::SimilarRefer< Holder, Refer >;
         using FeaturedGuard = ::FeaturedGuard< Refer >;
         using ValueGuard = ::ValueGuard< ValueRefer >;
-        using Access = typename ValueGuard::Access;
+        using AccessRefer = typename ValueGuard::AccessRefer;
+
+        static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must be a reference!" );
+        static_assert( ::is_featured< Featured >, "The template parameter _Refer must be a featured type reference!" );
+        static_assert( ::is_similar< Refer, ValueRefer >, "The Refer and ValueRefer must be similar types!" );
+        static_assert( ::is_similar< Refer, HolderRefer >, "The Refer and HolderRefer must be similar types!" );
 
     private:
         FeaturedGuard m_featured_guard;
@@ -143,8 +139,8 @@ namespace Private
         {
         }
 
-        SpecialValueGuard ( Refer refer )
-            : m_featured_guard( ::std::forward< Refer >( refer ) )
+        SpecialValueGuard ( _Refer refer )
+            : m_featured_guard( ::std::forward< _Refer >( refer ) )
             , m_value_guard( ::std::forward< ValueRefer >( Tool::value( ::std::forward< HolderRefer >( (*m_featured_guard).m_holder ) ) ) )
         {
         }
@@ -166,9 +162,9 @@ namespace Private
             return !m_value_guard;
         }
 
-        constexpr Access operator * () const
+        constexpr AccessRefer operator * () const
         {
-            return ::std::forward< Access >( *m_value_guard );
+            return ::std::forward< AccessRefer >( *m_value_guard );
         }
 
         constexpr const ValueGuard & operator -> () const &

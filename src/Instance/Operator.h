@@ -41,7 +41,7 @@ namespace Operator
             template < typename _FeaturedRefer, typename _Invokable, typename ... _Arguments >
             static decltype(auto) invoke ( _FeaturedRefer featured, _Invokable invokable, _Arguments && ... arguments )
             {
-                using ValueRefer = Similar< typename ::std::decay_t< _FeaturedRefer >::Value, _FeaturedRefer >;
+                using ValueRefer = SimilarRefer< typename ::std::decay_t< _FeaturedRefer >::Value, _FeaturedRefer >;
                 using Returned = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
                 using Result = ::std::remove_reference_t< Returned >;
                 using Tool = ::Member::FunctionTool< _FeaturedRefer, _Invokable, _Arguments ... >;
@@ -56,7 +56,7 @@ namespace Operator
             template < typename _FeaturedRefer, typename _Invokable, typename ... _Arguments >
             static decltype(auto) invoke ( _FeaturedRefer featured, _Invokable invokable, _Arguments && ... arguments )
             {
-                using ValueRefer = Similar< typename ::std::decay_t< _FeaturedRefer >::Value, _FeaturedRefer >;
+                using ValueRefer = SimilarRefer< typename ::std::decay_t< _FeaturedRefer >::Value, _FeaturedRefer >;
                 using Returned = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
                 using Result = ::std::remove_reference_t< Returned >;
                 using Tool = ::Inplace::DefaultTool;
@@ -72,7 +72,7 @@ namespace Operator
     template < typename _FeaturedRefer, typename _Invokable, typename ... _Arguments >
     static decltype(auto) invoke ( _FeaturedRefer featured, _Invokable invokable, _Arguments && ... arguments )
     {
-        using ValueRefer = Similar< typename ::std::decay_t< _FeaturedRefer >::Value, _FeaturedRefer >;
+        using ValueRefer = SimilarRefer< typename ::std::remove_reference_t< _FeaturedRefer >::Value, _FeaturedRefer >;
         using Returned = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
 
         // Возвращаем результат в виде Fetured< Result, Inplace::DefaultTool >, если оператор возвращает значение.

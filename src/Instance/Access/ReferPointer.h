@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <utility>
+#include <ModelKit/Instance/Traits.h>
 
 /*!
  * Указатель на ссылку экземпляра значения, который ведет себя как "сырой" указатель
@@ -9,18 +10,20 @@
  * По умолчанию значение указателя нулевое. В случае перемещения указателя,
  * производится операция swap.
  */
-template < typename _ReferType >
+template < typename _Refer >
 class ReferPointer
 {
-    using ThisType = ReferPointer< _ReferType >;
+    using ThisType = ReferPointer< _Refer >;
 
 public:
-    using ReferType = _ReferType;
-    using Value = ::std::remove_reference_t< ReferType >;
+    using Refer = _Refer;
+    using Value = ::std::remove_reference_t< Refer >;
     using RawPointer = Value *;
 
+    static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must be a reference!" );
+
 private:
-    RawPointer m_pointer;
+    Refer m_refer;
 
 private:
     //! Формирует указатель для любого типа Value, независимо от того
@@ -35,42 +38,32 @@ private:
 
 public:
     constexpr ReferPointer ()
-        : m_pointer()
+        : m_refer()
     {
     }
 
-    ReferPointer ( ReferType refer )
-        : m_pointer( addressOf( refer ) )
+    ReferPointer ( Refer refer )
+        : m_refer( ::std::forward< Refer >( refer ) )
     {
     }
 
     ReferPointer ( ThisType && other )
-        : m_pointer( other.m_pointer )
+        : m_refer( ::std::forward< Refer >( other.m_refer ) )
     {
-        other.m_pointer = RawPointer();
-    }
-
-    ThisType & operator = ( ThisType && other )
-    {
-        m_pointer = other.m_pointer;
-        other.m_pointer = RawPointer();
-        return *this;
     }
 
     constexpr bool operator ! () const
     {
-        return !m_pointer;
+        return !addressOf( m_refer );
     }
 
-    constexpr ReferType operator * () const
+    constexpr Refer operator * () const
     {
-        assert( m_pointer );
-        return ::std::forward< ReferType >( *m_pointer );
+        return ::std::forward< Refer >( m_refer );
     }
 
     constexpr RawPointer operator -> () const
     {
-        assert( m_pointer );
-        return m_pointer;
+        return addressOf( m_refer );
     }
 };

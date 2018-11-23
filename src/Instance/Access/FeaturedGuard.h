@@ -37,6 +37,9 @@ namespace Private
         using Refer = _Refer;
         using Pointer = ReferPointer< Refer >;
 
+        static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must be a reference!" );
+        static_assert( !::is_featured< ::std::decay_t< Refer > >, "The template parameter _Refer must be a not featured type reference!" );
+
     private:
         Pointer m_pointer;
 
@@ -44,22 +47,16 @@ namespace Private
         constexpr DefaultFeaturedGuard ()
             : m_pointer()
         {
-            static_assert( ::std::is_reference< Refer >::value
-                , "The template parameter must be a reference." );
         }
 
         DefaultFeaturedGuard ( Refer refer )
             : m_pointer( ::std::forward< Refer >( refer ) )
         {
-            static_assert( ::std::is_reference< Refer >::value
-                , "The template parameter must be a reference." );
         }
 
         DefaultFeaturedGuard ( ThisType && other )
             : m_pointer( ::std::forward< Pointer >( other.m_pointer ) )
         {
-            static_assert( ::std::is_reference< Refer >::value
-                , "The template parameter must be a reference." );
         }
 
         constexpr bool operator ! () const
@@ -86,9 +83,7 @@ namespace Private
      * особенность, реализуемая данным Featured. Данный указатель применяется, если
      * тип вложенного экземпляра значения сам является Featured.
      */
-    template < typename _Refer,
-        // The template parameter must be a reference!
-        typename = ::std::enable_if_t< ::std::is_reference< _Refer >::value > >
+    template < typename _Refer >
     class SpecialFeaturedGuard
     {
         using ThisType = SpecialFeaturedGuard< _Refer >;
@@ -99,9 +94,14 @@ namespace Private
         using Featured = ::std::decay_t< Refer >;
         using Tool = typename Featured::Tool;
         using Holder = typename Featured::Holder;
-        using HolderRefer = ::Similar< Holder, _Refer >;
+        using HolderRefer = ::SimilarRefer< Holder, Refer >;
         using Value = typename Featured::Value;
-        using ValueRefer = ::Similar< Value, _Refer >;
+        using ValueRefer = ::SimilarRefer< Value, Refer >;
+
+        static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must be a reference!" );
+        static_assert( ::is_featured< Featured >, "The template parameter _Refer must be a featured type reference!" );
+        static_assert( ::is_similar< Refer, ValueRefer >, "The Refer and ValueRefer must be similar types!" );
+        static_assert( ::is_similar< Refer, HolderRefer >, "The Refer and HolderRefer must be similar types!" );
 
     private:
         Pointer m_pointer;

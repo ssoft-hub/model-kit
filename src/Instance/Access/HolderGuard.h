@@ -10,13 +10,13 @@ struct HolderGuard
     using Refer = _Refer;
     using Tool = _Tool;
 
+    static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must be a reference!" );
+
     Refer m_holder;
 
     HolderGuard ( Refer holder )
         : m_holder( ::std::forward< Refer >( holder ) )
     {
-        static_assert( ::std::is_reference< Refer >::value
-            , "The template parameter must be a reference." );
         Tool::guardHolder( ::std::forward< Refer >( m_holder ) );
     }
 

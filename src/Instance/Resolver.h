@@ -73,8 +73,8 @@ namespace Private
         using OtherRefer = _OtherRefer;
         using OtherFeatured = ::std::remove_reference_t< OtherRefer >;
         using OtherHolder = typename OtherFeatured::Holder;
-        using OtherHolderRefer = ::Similar< OtherHolder, OtherRefer >;
-        using Access = OtherHolderRefer;
+        using OtherHolderRefer = ::SimilarRefer< OtherHolder, OtherRefer >;
+        using AccessRefer = OtherHolderRefer;
 
     private:
         OtherRefer m_other_refer;
@@ -85,9 +85,9 @@ namespace Private
         {
         }
 
-        Access resolve () const
+        AccessRefer resolve () const
         {
-            return ::std::forward< Access >( m_other_refer.m_holder );
+            return ::std::forward< AccessRefer >( m_other_refer.m_holder );
         }
     };
 
@@ -105,11 +105,16 @@ namespace Private
         using Featured = _Featured;
         using OtherRefer = _OtherRefer;
         using OtherFeaturedGuard = FeaturedGuard< OtherRefer >;
-        using OtherFeatured = ::std::remove_reference_t< OtherRefer >;
+        using OtherFeatured = ::std::decay_t< OtherRefer >;
         using OtherValue = typename OtherFeatured::Value;
-        using OtherValueRefer = ::Similar< OtherValue, OtherRefer >;
-        using NextResolver = FeaturedResolver< _Featured, OtherValueRefer >;
-        using Access = typename NextResolver::Access;
+        using OtherValueRefer = ::SimilarRefer< OtherValue, OtherRefer >;
+        using NextResolver = FeaturedResolver< Featured, OtherValueRefer >;
+        using AccessRefer = typename NextResolver::AccessRefer;
+
+        static_assert( ::is_featured< Featured >, "The template parameter _Featured must be a featured!" );
+        static_assert( ::std::is_reference< OtherRefer >::value, "The template parameter _OtherRefer must be a reference!" );
+        static_assert( ::is_featured< OtherFeatured >, "The template parameter _OtherRefer must be a featured type reference!" );
+        static_assert( ::is_similar< OtherRefer, OtherValueRefer >, "The OtherRefer and OtherValueRefer must be similar types!" );
 
     private:
         OtherFeaturedGuard m_featured_pointer;
@@ -122,9 +127,9 @@ namespace Private
         {
         }
 
-        Access resolve () const
+        AccessRefer resolve () const
         {
-            return ::std::forward< Access >( m_next_resolver.resolve() );
+            return ::std::forward< AccessRefer >( m_next_resolver.resolve() );
         }
     };
 }
@@ -141,7 +146,10 @@ namespace Private
         using Featured = _Featured;
         using OtherRefer = _OtherRefer;
         using OtherValueGuard = ValueGuard< OtherRefer >;
-        using Access = typename OtherValueGuard::Access;
+        using AccessRefer = typename OtherValueGuard::AccessRefer;
+
+        static_assert( ::is_featured< Featured >, "The template parameter _Featured must be a featured!" );
+        static_assert( ::std::is_reference< OtherRefer >::value, "The template parameter _OtherRefer must be a reference!" );
 
     private:
         OtherValueGuard m_value_guard;
@@ -152,9 +160,9 @@ namespace Private
         {
         }
 
-        Access resolve () const
+        AccessRefer resolve () const
         {
-            return ::std::forward< Access >( *m_value_guard );
+            return ::std::forward< AccessRefer >( *m_value_guard );
         }
     };
 }

@@ -15,7 +15,7 @@ namespace Member
         {
             using ThisType = Holder;
             using FeaturedGuard = ::FeaturedGuard< _FeaturedRefer >;
-            using ValueRefer = Similar< typename ::std::decay_t< _FeaturedRefer >::Value, _FeaturedRefer >;
+            using ValueRefer = SimilarRefer< typename ::std::decay_t< _FeaturedRefer >::Value, _FeaturedRefer >;
             using ResultRefer = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
 
             FeaturedGuard m_feature_guard;
@@ -61,6 +61,28 @@ namespace Member
             {
                 m_result_refer = other;
                 return *this;
+            }
+
+            ThisType & operator = ( ThisType && other )
+            {
+                return *this = ::std::forward< ResultRefer >( other.m_result_refer );
+            }
+
+            ThisType & operator = ( const ThisType & other )
+            {
+                return *this = other.m_result_refer;
+            }
+
+            template < typename _OtherType >
+            ThisType & operator = ( Holder< _OtherType > && other )
+            {
+                return *this = ::std::forward< typename Holder< _OtherType >::ResultRefer >( other.m_result_refer );
+            }
+
+            template < typename _OtherType >
+            ThisType & operator = ( const Holder< _OtherType > & other )
+            {
+                return *this = other.m_result_refer;
             }
         };
 
