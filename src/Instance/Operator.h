@@ -26,6 +26,18 @@ namespace Operator
             }
         };
     }
+
+    namespace Private
+    {
+        template < typename _Refer, typename ... _Arguments >
+        struct RoundBrackets
+        {
+            decltype(auto) operator () ( _Refer refer, _Arguments && ... arguments )
+            {
+                return refer.operator() ( ::std::forward< _Arguments >( arguments ) ... );
+            }
+        };
+    }
 }
 
 namespace Operator
@@ -65,9 +77,6 @@ namespace Operator
             }
         };
     }
-
-    //Featured< Result, FunctionTool >( featured, invokable, ::std::forward< _Arguments >( arguments ) ... );
-    //Featured< Result, DefaultTool >( function( *&featured, ::std::forward< _Arguments >( arguments ) ... ) );
 
     template < typename _FeaturedRefer, typename _Invokable, typename ... _Arguments >
     static decltype(auto) invoke ( _FeaturedRefer featured, _Invokable invokable, _Arguments && ... arguments )

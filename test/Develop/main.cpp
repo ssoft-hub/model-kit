@@ -45,12 +45,10 @@ void printTypeOf ( const _Type & )
 
 
 template < typename _Type, typename _Other >
-void ckeckSimilarity ( _Type &&, _Other && )
+constexpr bool isSimilar ( _Type &&, _Other && )
 {
-    static_assert( ::std::is_rvalue_reference< _Type >::value
-        == ::std::is_rvalue_reference< _Other >::value );
-    static_assert( ::std::is_lvalue_reference< _Type >::value
-        == ::std::is_lvalue_reference< _Other >::value );
+    static_assert( is_similar< _Type, _Other >, "Error" );
+    return is_similar< _Type, _Other >;
 }
 
 
@@ -104,18 +102,26 @@ void compileTestFeaturedTrancpatancy ()
     value.lvalueMethod();
     value.lvalueConstMethod();
 
-    ckeckSimilarity( Featured< My >(), My() );
-    ckeckSimilarity( Featured< My >(), *&Featured< My >() );
-    ckeckSimilarity( featured, value );
-    ckeckSimilarity( featured, *&featured );
+    isSimilar( Featured< My >(), My() );
+    isSimilar( Featured< My >(), *&Featured< My >() );
+    isSimilar( featured, value );
+    isSimilar( featured, *&featured );
 }
 
 extern void testResultOf();
 extern void testFeaturedValue ();
 extern void testFeaturedContainer ();
 
+extern void testConstructors ();
+extern void testSameToolConstructors ();
+extern void testDiffToolConstructors ();
+
 int main ( int /*argc*/, char ** /*argv*/ )
 {
+    testConstructors ();
+    testSameToolConstructors ();
+    testDiffToolConstructors ();
+
     compileTestFeaturedTrancpatancy();
     //testResultOf();
     testFeaturedContainer();

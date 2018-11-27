@@ -32,6 +32,16 @@ namespace Inplace
             {
             }
 
+            Holder ( const ThisType && other )
+                : Holder( ::std::forward< const Value >( other.m_value ) )
+            {
+            }
+
+            Holder ( ThisType & other )
+                : Holder( other.m_value )
+            {
+            }
+
             Holder ( const ThisType & other )
                 : Holder( other.m_value )
             {
@@ -44,9 +54,41 @@ namespace Inplace
             }
 
             template < typename _OtherType >
+            Holder ( const Holder< _OtherType > && other )
+                : Holder( ::std::forward< typename Holder< const _OtherType >::Value >( other.m_value ) )
+            {
+            }
+
+            template < typename _OtherType >
+            Holder ( Holder< _OtherType > & other )
+                : Holder( other.m_value )
+            {
+            }
+
+            template < typename _OtherType >
             Holder ( const Holder< _OtherType > & other )
                 : Holder( other.m_value )
             {
+            }
+
+            ThisType & operator = ( ThisType && other )
+            {
+                return *this = ::std::forward< Value >( other.m_value );
+            }
+
+            ThisType & operator = ( const ThisType && other )
+            {
+                return *this = ::std::forward< const Value >( other.m_value );
+            }
+
+            ThisType & operator = ( ThisType & other )
+            {
+                return *this = other.m_value;
+            }
+
+            ThisType & operator = ( const ThisType & other )
+            {
+                return *this = other.m_value;
             }
 
             template < typename _OtherType >
@@ -57,26 +99,42 @@ namespace Inplace
             }
 
             template < typename _OtherType >
+            ThisType & operator = ( const _OtherType && other )
+            {
+                m_value = ::std::forward< const _OtherType >( other );
+                return *this;
+            }
+
+            template < typename _OtherType >
+            ThisType & operator = ( _OtherType & other )
+            {
+                m_value = other;
+                return *this;
+            }
+
+            template < typename _OtherType >
             ThisType & operator = ( const _OtherType & other )
             {
                 m_value = other;
                 return *this;
             }
 
-            ThisType & operator = ( ThisType && other )
-            {
-                return *this = ::std::forward< Value >( other.m_value );
-            }
-
-            ThisType & operator = ( const ThisType & other )
-            {
-                return *this = other.m_value;
-            }
-
             template < typename _OtherType >
             ThisType & operator = ( Holder< _OtherType > && other )
             {
                 return *this = ::std::forward< typename Holder< _OtherType >::Value >( other.m_value );
+            }
+
+            template < typename _OtherType >
+            ThisType & operator = ( const Holder< _OtherType > && other )
+            {
+                return *this = ::std::forward< typename Holder< const _OtherType >::Value >( other.m_value );
+            }
+
+            template < typename _OtherType >
+            ThisType & operator = ( Holder< _OtherType > & other )
+            {
+                return *this = other.m_value;
             }
 
             template < typename _OtherType >

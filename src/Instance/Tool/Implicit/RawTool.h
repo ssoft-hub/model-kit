@@ -42,10 +42,11 @@ namespace Implicit
             using ThisType = Holder< _Type, _CounterType >;
 
             using Value = CountedType< _Type >;
-            using PointerType = Value *;
+            using RawPointer = Value *;
+            using ConstRawPointer = const Value *;
             using WritableGuard = ::HolderGuard< ThisType &, Implicit::RawTool >;
 
-            PointerType m_pointer;
+            RawPointer m_pointer;
 
             template < typename ... _Arguments >
             Holder ( _Arguments && ... arguments )
@@ -54,9 +55,21 @@ namespace Implicit
             }
 
             Holder ( ThisType && other )
-                : m_pointer( ::std::forward< PointerType >( other.m_pointer ) )
+                : m_pointer( ::std::forward< RawPointer >( other.m_pointer ) )
             {
                 other.m_pointer = nullptr;
+            }
+
+            Holder ( const ThisType && other )
+                : m_pointer( ::std::forward< ConstRawPointer >( other.m_pointer ) )
+            {
+                other.m_pointer = nullptr;
+            }
+
+            Holder ( ThisType & other )
+                : m_pointer( other.m_pointer )
+            {
+                increment();
             }
 
             Holder ( const ThisType & other )
@@ -67,14 +80,28 @@ namespace Implicit
 
             template < typename _OtherType >
             Holder ( Holder< _OtherType > && other )
-                : m_pointer( ::std::forward< typename Holder< _OtherType >::PointerType >( other.m_pointer ) )
+                : m_pointer( ::std::forward< typename Holder< _OtherType >::RawPointer >( other.m_pointer ) )
             {
                 other.m_pointer = nullptr;
             }
 
             template < typename _OtherType >
+            Holder ( const Holder< _OtherType > && other )
+                : m_pointer( ::std::forward< typename Holder< _OtherType >::ConstRawPointer >( other.m_pointer ) )
+            {
+                other.m_pointer = nullptr;
+            }
+
+            template < typename _OtherType >
+            Holder (  Holder< _OtherType > & other )
+                : m_pointer( other.m_pointer )
+            {
+                increment();
+            }
+
+            template < typename _OtherType >
             Holder ( const Holder< _OtherType > & other )
-                : Holder( static_cast< const ThisType & >( other.m_pointer ) )
+                : m_pointer( other.m_pointer )
             {
                 increment();
             }
@@ -144,7 +171,7 @@ namespace Implicit
 
                 decrement();
                 // TODO: проверить вариант с множественным наследованием
-                m_pointer = reinterpret_cast< PointerType >( other.m_pointer );
+                m_pointer = reinterpret_cast< RawPointer >( other.m_pointer );
                 other.m_pointer = nullptr;
                 return *this;
             }
@@ -155,11 +182,11 @@ namespace Implicit
                 static_assert( ::std::is_base_of< _Type, _OtherType >::value,
                     "_Type must be base of _OtherType" );
 
-                if ( m_pointer != reinterpret_cast< PointerType >( other.m_pointer ) )
+                if ( m_pointer != reinterpret_cast< RawPointer >( other.m_pointer ) )
                 {
                     decrement();
                     // TODO: проверить вариант с множественным наследованием
-                    m_pointer = reinterpret_cast< PointerType >( other.m_pointer );
+                    m_pointer = reinterpret_cast< RawPointer >( other.m_pointer );
                     increment();
                 }
                 return *this;

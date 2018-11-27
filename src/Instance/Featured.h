@@ -43,20 +43,37 @@ private:
     Holder m_holder;
 
 public:
-    //! Конструктор инициализации значения по заданным параметрам.
+    //! Конструктор инициализации значения по заданным параметрам
     template < typename ... _Arguments >
     constexpr Featured ( _Arguments && ... arguments )
         : m_holder( ::std::forward< _Arguments >( arguments ) ... )
     {
     }
 
-    //! Конструкторы перемещения
+    //! Конструкторы ThisType
     Featured ( ThisType && other )
         : m_holder( FeaturedResolver< ThisType, ThisType && >(
             ::std::forward< ThisType >( other ) ).resolve() )
     {
     }
 
+    Featured ( const ThisType && other )
+        : m_holder( FeaturedResolver< ThisType, const ThisType && >(
+            ::std::forward< const ThisType >( other ) ).resolve() )
+    {
+    }
+
+    Featured ( ThisType & other )
+        : m_holder( FeaturedResolver< ThisType, ThisType & >( other ).resolve() )
+    {
+    }
+
+    Featured ( const ThisType & other )
+        : m_holder( FeaturedResolver< ThisType, const ThisType & >( other ).resolve() )
+    {
+    }
+
+    //! Конструкторы Featured< _OtherType, _OtherTool >
     template < typename _OtherType, typename _OtherTool >
     Featured ( Featured< _OtherType, _OtherTool > && other )
         : m_holder( FeaturedResolver< ThisType, Featured< _OtherType, _OtherTool > && >(
@@ -64,30 +81,22 @@ public:
     {
     }
 
-    //! Конструкторы копирования
-    Featured ( const ThisType & other )
-        : m_holder( FeaturedResolver< ThisType, const ThisType & >(
-            other ).resolve() )
+    template < typename _OtherType, typename _OtherTool >
+    Featured ( const Featured< _OtherType, _OtherTool > && other )
+        : m_holder( FeaturedResolver< ThisType, const Featured< _OtherType, _OtherTool > && >(
+            ::std::forward< const Featured< _OtherType, _OtherTool > >( other ) ).resolve() )
     {
     }
 
     template < typename _OtherType, typename _OtherTool >
     Featured ( const Featured< _OtherType, _OtherTool > & other )
-        : m_holder( FeaturedResolver< ThisType, const Featured< _OtherType, _OtherTool > & >(
-            other ).resolve() )
+        : m_holder( FeaturedResolver< ThisType, const Featured< _OtherType, _OtherTool > & >( other ).resolve() )
     {
     }
 
-    // NOTE: Определен из-за неоднозначного разрешения
-    constexpr Featured ( ThisType & other )
-        : Featured( asConst( other ) )
-    {
-    }
-
-    // NOTE: Определен из-за неоднозначного разрешения
     template < typename _OtherType, typename _OtherTool >
     constexpr Featured ( Featured< _OtherType, _OtherTool > & other )
-        : Featured( asConst( other ) )
+        : m_holder( FeaturedResolver< ThisType, Featured< _OtherType, _OtherTool > & >( other ).resolve() )
     {
     }
 
@@ -101,8 +110,7 @@ public:
 
     ThisType & operator = ( ThisType && other )
     {
-        m_holder = FeaturedResolver< ThisType, ThisType && >(
-            ::std::forward< ThisType >( other ) ).resolve();
+        m_holder = FeaturedResolver< ThisType, ThisType && >( ::std::forward< ThisType >( other ) ).resolve();
         return *this;
     }
 
@@ -120,17 +128,17 @@ public:
         return *this;
     }
 
-    // NOTE: Определен из-за неоднозначного разрешения
     template < typename _OtherType >
     constexpr ThisType & operator = ( _OtherType & other )
     {
-        return *this = asConst( other );
+        m_holder = FeaturedResolver< ThisType, _OtherType & >( other ).resolve();
+        return *this;
     }
 
-    // NOTE: Определен из-за неоднозначного разрешения
     constexpr ThisType & operator = ( ThisType & other )
     {
-        return *this = asConst( other );
+        m_holder = FeaturedResolver< ThisType, ThisType & >( other ).resolve();
+        return *this;
     }
 
     /// Операторы преобразования к типу
@@ -139,9 +147,19 @@ public:
         return reinterpret_cast< Featured< const _Value, _Tool > & >( *this );
     }
 
+    operator Featured< const _Value, _Tool > && () &&
+    {
+        return reinterpret_cast< Featured< const _Value, _Tool > && >( *this );
+    }
+
     operator const Featured< const _Value, _Tool > & () const
     {
         return reinterpret_cast< const Featured< const _Value, _Tool > & >( *this );
+    }
+
+    operator const Featured< const _Value, _Tool > && () const &&
+    {
+        return reinterpret_cast< const Featured< const _Value, _Tool > && >( *this );
     }
 
     // NOTE: Используется доступ через оператор "->", но семантически необходим ".".
@@ -215,34 +233,34 @@ public:
         return Operator::invoke< const ThisType && >( ::std::forward< const ThisType >( *this ), invokable, ::std::forward< _Argument >( argument ) );
     }
 
-//    /// Проксирование оператора ()
-//    template < typename ... _Arguments >
-//    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) &
-//    {
-//        using RetunType = decltype( Tool::value( m_holder )( ::std::forward< _Arguments >( arguments ) ... ) );
-//        return Featured< RetunType, ::Inplace::DefaultTool >( Tool::value( m_holder ), arguments ... );
-//    }
+    /// Проксирование оператора ()
+    template < typename ... _Arguments >
+    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) &
+    {
+        auto invokable = ::Operator::Private::RoundBrackets< Value &, _Arguments && ... >();
+        return Operator::invoke< ThisType & >( *this, invokable, ::std::forward< _Arguments >( arguments ) ... );
+    }
 
-//    template < typename ... _Arguments >
-//    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) const &
-//    {
-//        using RetunType = decltype( Tool::value( m_holder )( ::std::forward< _Arguments >( arguments ) ... ) );
-//        return Featured< RetunType, ::Inplace::DefaultTool >( Tool::value( m_holder ), arguments ... );
-//    }
+    template < typename ... _Arguments >
+    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) const &
+    {
+        auto invokable = ::Operator::Private::RoundBrackets< const Value &, _Arguments && ... >();
+        return Operator::invoke< const ThisType & >( *this, invokable, ::std::forward< _Arguments >( arguments ) ... );
+    }
 
-//    template < typename ... _Arguments >
-//    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) &&
-//    {
-//        using RetunType = decltype( Tool::value( m_holder )( ::std::forward< _Arguments >( arguments ) ... ) );
-//        return Featured< RetunType, ::Inplace::DefaultTool >( Tool::value( ::std::forward< Holder && >( m_holder ) ), arguments ... );
-//    }
+    template < typename ... _Arguments >
+    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) &&
+    {
+        auto invokable = ::Operator::Private::RoundBrackets< Value &&, _Arguments && ... >();
+        return Operator::invoke< ThisType && >( ::std::forward< ThisType >( *this ), invokable, ::std::forward< _Arguments >( arguments ) ... );
+    }
 
-//    template < typename ... _Arguments >
-//    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) const &&
-//    {
-//        using RetunType = decltype( Tool::value( m_holder )( ::std::forward< _Arguments >( arguments ) ... ) );
-//        return Featured< RetunType, ::Inplace::DefaultTool >( Tool::value( ::std::forward< Holder && >( m_holder ) ), arguments ... );
-//    }
+    template < typename ... _Arguments >
+    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) const &&
+    {
+        auto invokable = ::Operator::Private::RoundBrackets< const Value &&, _Arguments && ... >();
+        return Operator::invoke< const ThisType && >( ::std::forward< const ThisType >( *this ), invokable, ::std::forward< _Arguments >( arguments ) ... );
+    }
 };
 
 #endif
