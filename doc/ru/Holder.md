@@ -19,8 +19,6 @@ struct Holder
     using ThisType = Holder< _Value >;
     using Value = _Value;
 
-    Value m_value;
-
     template < typename ... _Arguments >
     Holder ( _Arguments && ... arguments );
 
