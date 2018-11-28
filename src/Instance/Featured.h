@@ -8,7 +8,6 @@
 
 #include <ModelKit/Instance/Operator.h>
 #include <ModelKit/Instance/Resolver.h>
-#include <ModelKit/Utility/AsConst.h>
 
 namespace Inplace { struct DefaultTool; }
 
@@ -45,14 +44,14 @@ private:
     Holder m_holder;
 
 public:
-    //! Конструктор инициализации значения по заданным параметрам
+    /// Конструктор инициализации значения по заданным параметрам
     template < typename ... _Arguments >
     constexpr Featured ( _Arguments && ... arguments )
         : m_holder( ::std::forward< _Arguments >( arguments ) ... )
     {
     }
 
-    //! Конструкторы ThisType
+    /// Конструкторы ThisType
     Featured ( ThisType && other )
         : m_holder( FeaturedResolver< ThisType, ThisType && >(
             ::std::forward< ThisType >( other ) ).resolve() )
@@ -75,92 +74,49 @@ public:
     {
     }
 
-    //! Конструкторы Featured< _OtherType, _OtherTool >
-    template < typename _OtherType, typename _OtherTool >
-    Featured ( Featured< _OtherType, _OtherTool > && other )
-        : m_holder( FeaturedResolver< ThisType, Featured< _OtherType, _OtherTool > && >(
-            ::std::forward< Featured< _OtherType, _OtherTool > >( other ) ).resolve() )
+    /// Конструкторы Featured< _OtherValue, _OtherTool >
+    template < typename _OtherValue, typename _OtherTool >
+    Featured ( Featured< _OtherValue, _OtherTool > && other )
+        : m_holder( FeaturedResolver< ThisType, Featured< _OtherValue, _OtherTool > && >(
+            ::std::forward< Featured< _OtherValue, _OtherTool > >( other ) ).resolve() )
     {
     }
 
-    template < typename _OtherType, typename _OtherTool >
-    Featured ( const Featured< _OtherType, _OtherTool > && other )
-        : m_holder( FeaturedResolver< ThisType, const Featured< _OtherType, _OtherTool > && >(
-            ::std::forward< const Featured< _OtherType, _OtherTool > >( other ) ).resolve() )
+    template < typename _OtherValue, typename _OtherTool >
+    Featured ( const Featured< _OtherValue, _OtherTool > && other )
+        : m_holder( FeaturedResolver< ThisType, const Featured< _OtherValue, _OtherTool > && >(
+            ::std::forward< const Featured< _OtherValue, _OtherTool > >( other ) ).resolve() )
     {
     }
 
-    template < typename _OtherType, typename _OtherTool >
-    Featured ( const Featured< _OtherType, _OtherTool > & other )
-        : m_holder( FeaturedResolver< ThisType, const Featured< _OtherType, _OtherTool > & >( other ).resolve() )
+    template < typename _OtherValue, typename _OtherTool >
+    Featured ( const Featured< _OtherValue, _OtherTool > & other )
+        : m_holder( FeaturedResolver< ThisType, const Featured< _OtherValue, _OtherTool > & >( other ).resolve() )
     {
     }
 
-    template < typename _OtherType, typename _OtherTool >
-    constexpr Featured ( Featured< _OtherType, _OtherTool > & other )
-        : m_holder( FeaturedResolver< ThisType, Featured< _OtherType, _OtherTool > & >( other ).resolve() )
+    template < typename _OtherValue, typename _OtherTool >
+    constexpr Featured ( Featured< _OtherValue, _OtherTool > & other )
+        : m_holder( FeaturedResolver< ThisType, Featured< _OtherValue, _OtherTool > & >( other ).resolve() )
     {
     }
 
-//    //! Конструкторы
-//    template < typename _OtherType >
-//    Featured ( AnyFeatured< _OtherType > && other )
-//        : m_holder( FeaturedResolver< ThisType, AnyFeatured< _OtherType > && >(
-//            ::std::forward< AnyFeatured< _OtherType > && >( other ) ).resolve() )
-//    {
-//    }
-
-//    template < typename _OtherType >
-//    Featured ( AnyFeatured< _OtherType > & other )
-//        : m_holder( FeaturedResolver< ThisType, AnyFeatured< _OtherType > & >(
-//            ::std::forward< AnyFeatured< _OtherType > & >( other ) ).resolve() )
-//    {
-//    }
-
-//    template < typename _OtherType >
-//    Featured ( const AnyFeatured< _OtherType > && other )
-//        : m_holder( FeaturedResolver< ThisType, const AnyFeatured< _OtherType > && >(
-//            ::std::forward< const AnyFeatured< _OtherType > && >( other ) ).resolve() )
-//    {
-//    }
-
-//    template < typename _OtherType >
-//    Featured ( const AnyFeatured< _OtherType > & other )
-//        : m_holder( FeaturedResolver< ThisType, const AnyFeatured< _OtherType > & >(
-//            ::std::forward< const AnyFeatured< _OtherType > & >( other ) ).resolve() )
-//    {
-//    }
-
-//    //! Оператор присвоения
-//    template < typename _OtherType >
-//    ThisType & operator = ( _OtherType && other ) &
-//    {
-//        m_holder = FeaturedResolver< ThisType, _OtherType && >( ::std::forward< _OtherType && >( other ) ).resolve();
-//        return *this;
-//    }
-
-//    template < typename _OtherType >
-//    ThisType && operator = ( _OtherType && other ) &&
-//    {
-//        m_holder = FeaturedResolver< ThisType, _OtherType && >( ::std::forward< _OtherType && >( other ) ).resolve();
-//        return ::std::forward< ThisType && >( *this );
-//    }
-
-    //! Оператор присвоения rvalue значений
-    template < typename _OtherType >
-    ThisType & operator = ( _OtherType && other ) &
+    /// Операторы присвоения (в т.ч. Featured< _OtherValue, _OtherTool >)
+    template < typename _OtherValue >
+    ThisType & operator = ( _OtherValue && other ) &
     {
-        m_holder = FeaturedResolver< ThisType, _OtherType && >( ::std::forward< _OtherType >( other ) ).resolve();
+        m_holder = FeaturedResolver< ThisType, _OtherValue && >( ::std::forward< _OtherValue >( other ) ).resolve();
         return *this;
     }
 
-    template < typename _OtherType >
-    ThisType && operator = ( _OtherType && other ) &&
+    template < typename _OtherValue >
+    ThisType && operator = ( _OtherValue && other ) &&
     {
-        m_holder = FeaturedResolver< ThisType, _OtherType && >( ::std::forward< _OtherType >( other ) ).resolve();
+        m_holder = FeaturedResolver< ThisType, _OtherValue && >( ::std::forward< _OtherValue >( other ) ).resolve();
         return ::std::forward< ThisType >( *this );
     }
 
+    /// Операторы присвоения ThisType
     ThisType & operator = ( ThisType && other ) &
     {
         m_holder = FeaturedResolver< ThisType, ThisType && >( ::std::forward< ThisType >( other ) ).resolve();
@@ -209,7 +165,6 @@ public:
         return *this;
     }
 
-
     /// Операторы преобразования к типу
     operator Featured< const _Value, _Tool > & ()
     {
@@ -231,16 +186,22 @@ public:
         return reinterpret_cast< const Featured< const _Value, _Tool > && >( *this );
     }
 
+    /// Операторы доступа к членам
     // NOTE: Используется доступ через оператор "->", но семантически необходим ".".
     // TODO: Заменить на оператор "." с внедрением N4477 или P0352 в стандарт C++.
-    ValueGuard< ThisType & > operator -> () &
-    {
-        return *this;
-    }
-
     ValueGuard< ThisType && > operator -> () &&
     {
         return ::std::forward< ThisType >( *this );
+    }
+
+    ValueGuard< const ThisType && > operator -> () const &&
+    {
+        return ::std::forward< const ThisType >( *this );
+    }
+
+    ValueGuard< ThisType & > operator -> () &
+    {
+        return *this;
     }
 
     ValueGuard< const ThisType & > operator -> () const &
@@ -248,7 +209,13 @@ public:
         return *this;
     }
 
-    ValueGuard< const ThisType && > operator -> () const &&
+    /// Операторы извлечения адреса
+    ValueGuard< ThisType && > operator & () &&
+    {
+        return ::std::forward< ThisType >( *this );
+    }
+
+    ValueGuard< const ThisType && > operator & () const &&
     {
         return ::std::forward< const ThisType >( *this );
     }
@@ -258,19 +225,9 @@ public:
         return *this;
     }
 
-    ValueGuard< ThisType && > operator & () &&
-    {
-        return ::std::forward< ThisType >( *this );
-    }
-
     ValueGuard< const ThisType & > operator & () const &
     {
         return *this;
-    }
-
-    ValueGuard< const ThisType && > operator & () const &&
-    {
-        return ::std::forward< const ThisType >( *this );
     }
 
     /// Проксирование оператора []
