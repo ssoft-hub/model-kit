@@ -19,8 +19,6 @@ struct Holder
     using ThisType = Holder< _Value >;
     using Value = _Value;
 
-    Value m_value;
-
     template < typename ... _Arguments >
     Holder ( _Arguments && ... arguments );
 
@@ -65,10 +63,10 @@ struct Holder
     static void unguard ( ThisType & );
     static void unguard ( const ThisType & );
 
-    static  _Value & value ( ThisType & holder );
-    static const _Value & value ( const ThisType & holder );
-    static _Value && value ( ThisType && holder );
-    static const _Value && value ( const Holder< _Value > && holder );
+    static Value & value ( ThisType & holder );
+    static const Value & value ( const ThisType & holder );
+    static Value && value ( ThisType && holder );
+    static const Value && value ( const ThisType && holder );
 };
 ```
 
@@ -150,10 +148,10 @@ static void unguard ( const ThisType & );
 Доступ к экземпляру агрегированного значения осуществляются с помощью методов **value()**.
 
 ```cpp
-static  _Value & value ( ThisType & holder );
-static const _Value & value ( const ThisType & holder );
-static _Value && value ( ThisType && holder );
-static const _Value && value ( const Holder< _Value > && holder );
+static Value & value ( ThisType & holder );
+static const Value & value ( const ThisType & holder );
+static Value && value ( ThisType && holder );
+static const Value && value ( const ThisType && holder );
 ```
 
 Для пользовательских типов **Holder** должна быть обязательно обеспечена реализация всех этих методов, иначе это приведет к ошибке компиляции.
