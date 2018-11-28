@@ -33,7 +33,10 @@ namespace Private
     class FeaturedCompatibleResolver;
 
     template < typename _Featured, typename _OtherRefer >
-    class FeaturedFeatureResolver;
+    class FeaturedOtherPathOfThisResolver;
+
+    template < typename _Featured, typename _OtherRefer >
+    class FeaturedThisPathOfOtherResolver;
 
     template < typename _Featured, typename _OtherRefer >
     class FeaturedValueResolver;
@@ -49,21 +52,22 @@ namespace Private
         using OtherFeatured = ::std::decay_t< _OtherRefer >;
 
         using Type = ::std::conditional_t<
-            is_compatible< Featured, OtherFeatured >
-                || is_this_part_of_other< OtherFeatured, Featured >,
+            is_compatible< Featured, OtherFeatured >,
             FeaturedCompatibleResolver< Featured, OtherRefer >,
             ::std::conditional_t<
-                is_this_part_of_other< Featured, OtherFeatured >,
-                FeaturedFeatureResolver< Featured, OtherRefer >,
-                FeaturedValueResolver< Featured, OtherRefer > > >;
+                is_this_part_of_other< OtherFeatured, Featured >,
+                FeaturedOtherPathOfThisResolver< Featured, OtherRefer >,
+                ::std::conditional_t<
+                    is_this_part_of_other< Featured, OtherFeatured >,
+                    FeaturedThisPathOfOtherResolver< Featured, OtherRefer >,
+                    FeaturedValueResolver< Featured, OtherRefer > > > >;
     };
 }
-
 
 namespace Private
 {
     /*!
-     * Используется, если _Other совместим с _Featured или вложенной частью _Featured.
+     * Используется, если _Other совместим с _Featured.
      */
     template < typename _Featured, typename _OtherRefer >
     class FeaturedCompatibleResolver
@@ -71,7 +75,7 @@ namespace Private
     public:
         using Featured = _Featured;
         using OtherRefer = _OtherRefer;
-        using OtherFeatured = ::std::remove_reference_t< OtherRefer >;
+        using OtherFeatured = ::std::decay_t< OtherRefer >;
         using OtherHolder = typename OtherFeatured::Holder;
         using OtherHolderRefer = ::SimilarRefer< OtherHolder, OtherRefer >;
         using AccessRefer = OtherHolderRefer;
@@ -90,7 +94,35 @@ namespace Private
             return ::std::forward< AccessRefer >( m_other_refer.m_holder );
         }
     };
+}
 
+namespace Private
+{
+    /*!
+     * Используется, если _Other совместим c вложенной частью _Featured.
+     */
+    template < typename _Featured, typename _OtherRefer >
+    class FeaturedOtherPathOfThisResolver
+    {
+    public:
+        using Featured = _Featured;
+        using OtherRefer = _OtherRefer;
+        using AccessRefer = OtherRefer;
+
+    private:
+        OtherRefer m_other_refer;
+
+    public:
+        FeaturedOtherPathOfThisResolver ( OtherRefer other )
+            : m_other_refer( ::std::forward< OtherRefer >( other ) )
+        {
+        }
+
+        AccessRefer resolve () const
+        {
+            return ::std::forward< AccessRefer >( m_other_refer );
+        }
+    };
 }
 
 namespace Private
@@ -99,7 +131,7 @@ namespace Private
      * Используется, если _Featured совместим с вложенной частью _Other.
      */
     template < typename _Featured, typename _OtherRefer >
-    class FeaturedFeatureResolver
+    class FeaturedThisPathOfOtherResolver
     {
     public:
         using Featured = _Featured;
@@ -121,7 +153,7 @@ namespace Private
         NextResolver m_next_resolver;
 
     public:
-        FeaturedFeatureResolver ( OtherRefer other )
+        FeaturedThisPathOfOtherResolver ( OtherRefer other )
             : m_featured_pointer( ::std::forward< OtherRefer >( other ) )
             , m_next_resolver( ::std::forward< OtherValueRefer >( m_featured_pointer.value() ) )
         {
