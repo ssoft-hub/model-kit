@@ -44,7 +44,7 @@ namespace Implicit
             using Value = CountedType< _Type >;
             using RawPointer = Value *;
             using ConstRawPointer = const Value *;
-            using WritableGuard = ::HolderGuard< ThisType &, Implicit::RawTool >;
+            using WritableGuard = ::HolderGuard< ThisType & >;
 
             RawPointer m_pointer;
 
@@ -191,47 +191,48 @@ namespace Implicit
                 }
                 return *this;
             }
+
+            static constexpr void guard ( ThisType & holder )
+            {
+                if ( !!holder.m_pointer && !!holder.m_pointer->m_counter )
+                    holder = Holder< _Type >( holder.m_pointer->m_value );
+            }
+
+            //static constexpr void guard ( ThisType && )
+            //static constexpr void guard ( const ThisType && )
+            static constexpr void guard ( const ThisType & )
+            {
+                // nothing to do
+            }
+
+            //static constexpr void unguard ( ThisType && )
+            //static constexpr void unguard ( const ThisType && )
+            //static constexpr void unguard ( ThisType & )
+            static constexpr void unguard ( const ThisType & )
+            {
+                // nothing to do
+            }
+
+            static constexpr _Type && value ( ThisType && holder )
+            {
+                return ::std::forward< _Type && >( holder.m_pointer->m_value );
+            }
+
+            static constexpr const _Type && value ( const ThisType && holder )
+            {
+                return ::std::forward< const _Type && >( holder.m_pointer->m_value );
+            }
+
+            static constexpr _Type & value ( ThisType & holder )
+            {
+                return ::std::forward< _Type & >( holder.m_pointer->m_value );
+            }
+
+            static constexpr const _Type & value ( const ThisType & holder )
+            {
+                return ::std::forward< const _Type & >( holder.m_pointer->m_value );
+            }
         };
-
-        template < typename _Type >
-        static constexpr void guardHolder ( Holder< _Type > & holder )
-        {
-            if ( !!holder.m_pointer && !!holder.m_pointer->m_counter )
-                holder = Holder< _Type >( holder.m_pointer->m_value );
-        }
-
-        template < typename _Type >
-        //static constexpr void guardHolder ( Holder< _Type > && )
-        static constexpr void guardHolder ( const Holder< _Type > & )
-        {
-            // nothing to do
-        }
-
-        template < typename _Type >
-        //static constexpr void unguardHolder ( Holder< _Type > & )
-        //static constexpr void unguardHolder ( Holder< _Type > && )
-        static constexpr void unguardHolder ( const Holder< _Type > & )
-        {
-            // nothing to do
-        }
-
-        template < typename _Type >
-        static constexpr _Type & value ( Holder< _Type > & holder )
-        {
-            return holder.m_pointer->m_value;
-        }
-
-        template < typename _Type >
-        static constexpr const _Type & value ( const Holder< _Type > & holder )
-        {
-            return holder.m_pointer->m_value;
-        }
-
-        template < typename _Type >
-        static constexpr _Type && value ( Holder< _Type > && holder )
-        {
-            return ::std::forward< _Type >( holder.m_pointer->m_value );
-        }
     };
 }
 

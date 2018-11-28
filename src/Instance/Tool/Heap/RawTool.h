@@ -34,6 +34,8 @@ namespace Heap
                 other.m_pointer = nullptr;
             }
 
+            //Holder ( const ThisType && other );
+            //Holder ( ThisType & other );
             Holder ( const ThisType & other )
                 : Holder( *other.m_pointer )
             {
@@ -46,6 +48,10 @@ namespace Heap
                 other.m_pointer = nullptr;
             }
 
+            //template < typename _OtherType >
+            //Holder ( const Holder< _OtherType > && other )
+            //template < typename _OtherType >
+            //Holder ( Holder< _OtherType > & other )
             template < typename _OtherType >
             Holder ( const Holder< _OtherType > & other )
                 : Holder( *other.m_pointer )
@@ -57,19 +63,11 @@ namespace Heap
                 delete m_pointer;
             }
 
-            template < typename _OtherType >
-            ThisType & operator = ( _OtherType && other )
+            template < typename _Argument >
+            ThisType & operator = ( _Argument && argument )
             {
                 assert( m_pointer );
-                *m_pointer = ::std::forward< _OtherType >( other );
-                return *this;
-            }
-
-            template < typename _OtherType >
-            ThisType & operator = ( const _OtherType & other )
-            {
-                assert( m_pointer );
-                *m_pointer = other;
+                *m_pointer = ::std::forward< _Argument >( argument );
                 return *this;
             }
 
@@ -79,6 +77,8 @@ namespace Heap
                 return *this;
             }
 
+            //ThisType & operator = ( const ThisType && other )
+            //ThisType & operator = ( ThisType & other )
             ThisType & operator = ( const ThisType & other )
             {
                 assert( other.m_pointer );
@@ -98,41 +98,43 @@ namespace Heap
                 assert( other.m_pointer );
                 return *this = *other.m_pointer;
             }
+
+            //static constexpr void guard ( ThisType && )
+            //static constexpr void guard ( const ThisType && )
+            //static constexpr void guard ( ThisType & )
+            static constexpr void guard ( const ThisType & )
+            {
+                // nothing to do
+            }
+
+            //static constexpr void unguard ( ThisType && )
+            //static constexpr void unguard ( const ThisType && )
+            //static constexpr void unguard ( ThisType & )
+            static constexpr void unguard ( const ThisType & )
+            {
+                // nothing to do
+            }
+
+            static constexpr _Type && value ( ThisType && holder )
+            {
+                return ::std::forward< _Type >( *holder.m_pointer );
+            }
+
+            static constexpr const _Type && value ( const ThisType && holder )
+            {
+                return ::std::forward< const _Type >( *holder.m_pointer );
+            }
+
+            static constexpr _Type & value ( ThisType & holder )
+            {
+                return *holder.m_pointer;
+            }
+
+            static constexpr const _Type & value ( const ThisType & holder )
+            {
+                return *holder.m_pointer;
+            }
         };
-
-        template < typename _Type >
-        //static constexpr void guardHolder ( Holder< _Type > & )
-        //static constexpr void guardHolder ( Holder< _Type > && )
-        static constexpr void guardHolder ( const Holder< _Type > & )
-        {
-            // nothing to do
-        }
-
-        template < typename _Type >
-        //static constexpr void unguardHolder ( Holder< _Type > & )
-        //static constexpr void unguardHolder ( Holder< _Type > && )
-        static constexpr void unguardHolder ( const Holder< _Type > & )
-        {
-            // nothing to do
-        }
-
-        template < typename _Type >
-        static constexpr _Type & value ( Holder< _Type > & holder )
-        {
-            return *holder.m_pointer;
-        }
-
-        template < typename _Type >
-        static constexpr const _Type & value ( const Holder< _Type > & holder )
-        {
-            return *holder.m_pointer;
-        }
-
-        template < typename _Type >
-        static constexpr _Type && value ( Holder< _Type > && holder )
-        {
-            return ::std::forward< _Type >( *holder.m_pointer );
-        }
     };
 }
 

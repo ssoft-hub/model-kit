@@ -25,7 +25,7 @@ namespace ThreadSafe
             using Lock = _Lock;
             using Value = _Type;
             using LockGuard = ::std::lock_guard< Lock >;
-            using WritableGuard = ::HolderGuard< ThisType &, Tool >;
+            using WritableGuard = ::HolderGuard< ThisType & >;
 
             mutable Lock m_lock;
             Value m_value;
@@ -40,7 +40,7 @@ namespace ThreadSafe
             Holder ( ThisType && other )
                 : m_lock()
             {
-                using OtherMovableGuard = ::HolderGuard< ThisType &&, Tool >;
+                using OtherMovableGuard = ::HolderGuard< ThisType && >;
                 OtherMovableGuard guard( other );
                 m_value = ::std::forward< Value >( other.m_value );
             }
@@ -48,7 +48,7 @@ namespace ThreadSafe
             Holder ( const ThisType & other )
                 : m_lock()
             {
-                using OtherReadableGuard = ::HolderGuard< const ThisType &, Tool >;
+                using OtherReadableGuard = ::HolderGuard< const ThisType &  >;
                 OtherReadableGuard guard( other );
                 m_value =  other.m_value;
             }
@@ -57,7 +57,7 @@ namespace ThreadSafe
             Holder ( Holder< _OtherType > && other )
                 : m_lock()
             {
-                using OtherMovableGuard = ::HolderGuard< Holder< _OtherType > &&, Tool >;
+                using OtherMovableGuard = ::HolderGuard< Holder< _OtherType > && >;
                 OtherMovableGuard guard( other );
                 m_value = ::std::forward< Value >( other.m_value );
             }
@@ -66,7 +66,7 @@ namespace ThreadSafe
             Holder ( const Holder< _OtherType > & other )
                 : m_lock()
             {
-                using OtherReadableGuard = ::HolderGuard< const Holder< _OtherType > &, Tool >;
+                using OtherReadableGuard = ::HolderGuard< const Holder< _OtherType > & >;
                 OtherReadableGuard guard( other );
                 m_value =  other.m_value;
             }
@@ -94,7 +94,7 @@ namespace ThreadSafe
 
             ThisType & operator = ( ThisType && other )
             {
-                using OtherMovableGuard = ::HolderGuard< ThisType &&, Tool >;
+                using OtherMovableGuard = ::HolderGuard< ThisType && >;
                 OtherMovableGuard other_guard( ::std::forward< ThisType >( other ) );
                 WritableGuard guard( *this );
                 m_value = ::std::forward< Value >( other.m_value );
@@ -103,7 +103,7 @@ namespace ThreadSafe
 
             ThisType & operator = ( const ThisType & other )
             {
-                using OtherReadableGuard = ::HolderGuard< const ThisType &, Tool >;
+                using OtherReadableGuard = ::HolderGuard< const ThisType & >;
                 OtherReadableGuard other_guard( other );
                 WritableGuard guard( *this );
                 m_value = other.m_value;
@@ -114,7 +114,7 @@ namespace ThreadSafe
             ThisType & operator = ( Holder< _OtherType > && other )
             {
                 using OtherType = Holder< _OtherType >;
-                using OtherMovableGuard = ::HolderGuard< OtherType &&, Tool >;
+                using OtherMovableGuard = ::HolderGuard< OtherType && >;
                 OtherMovableGuard other_guard( ::std::forward< OtherType >( other ) );
                 WritableGuard guard( *this );
                 m_value = ::std::forward< typename OtherType::Value >( other.m_value );
@@ -125,47 +125,49 @@ namespace ThreadSafe
             ThisType & operator = ( const Holder< _OtherType > & other )
             {
                 using OtherType = Holder< _OtherType >;
-                using OtherReadableGuard = ::HolderGuard< const OtherType &, Tool >;
+                using OtherReadableGuard = ::HolderGuard< const OtherType & >;
                 OtherReadableGuard other_guard( other );
                 WritableGuard guard( *this );
                 m_value = other.m_value;
                 return *this;
             }
+
+            //static constexpr void guard ( ThisType && )
+            //static constexpr void guard ( const ThisType && )
+            //static constexpr void guard ( ThisType & )
+            static constexpr void guard ( const ThisType & holder )
+            {
+                holder.m_lock.lock();
+            }
+
+            //static constexpr void unguard ( ThisType && )
+            //static constexpr void unguard ( const ThisType && )
+            //static constexpr void unguard ( ThisType & )
+            static constexpr void unguard ( const ThisType & holder )
+            {
+                holder.m_lock.unlock();
+            }
+
+            static constexpr _Type && value ( ThisType && holder )
+            {
+                return ::std::forward< _Type && >( holder.m_value );
+            }
+
+            static constexpr const _Type && value ( const ThisType && holder )
+            {
+                return ::std::forward< const _Type && >( holder.m_value );
+            }
+
+            static constexpr _Type & value ( ThisType & holder )
+            {
+                return ::std::forward< _Type & >( holder.m_value );
+            }
+
+            static constexpr const _Type & value ( const ThisType & holder )
+            {
+                return ::std::forward< const _Type & >( holder.m_value );
+            }
         };
-
-        template < typename _Type >
-        //static constexpr void guardHolder ( Holder< _Type > & )
-        //static constexpr void guardHolder ( Holder< _Type > && )
-        static constexpr void guardHolder ( const Holder< _Type > & holder )
-        {
-            holder.m_lock.lock();
-        }
-
-        template < typename _Type >
-        //static constexpr void unguardHolder ( Holder< _Type > & )
-        //static constexpr void unguardHolder ( Holder< _Type > && )
-        static constexpr void unguardHolder ( const Holder< _Type > & holder )
-        {
-            holder.m_lock.unlock();
-        }
-
-        template < typename _Type >
-        static constexpr _Type & value ( Holder< _Type > & holder )
-        {
-            return holder.m_value;
-        }
-
-        template < typename _Type >
-        static constexpr const _Type & value ( const Holder< _Type > & holder )
-        {
-            return holder.m_value;
-        }
-
-        template < typename _Type >
-        static constexpr _Type && value ( Holder< _Type > && holder )
-        {
-            return ::std::forward< _Type >( holder.m_value );
-        }
     };
 }
 

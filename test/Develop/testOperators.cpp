@@ -38,6 +38,8 @@ public:
     Data ( const ThisType && other ) : m_value( ::std::forward< const _Type >( other.m_value ) ) { ::std::cout << "Data(const Data &&)" << ::std::endl; }
     ~Data () { ::std::cout << "~Data()" << ::std::endl; }
 
+    Data & operator = ( const Data & other ) { m_value = other.m_value; return *this; }
+
     void valueMethod () { ::std::cout << "valueMethod()" << ::std::endl; }
     void valueConstMethod () const { ::std::cout << "valueConstMethod()" << ::std::endl; }
     void rvalueMethod () && { ::std::cout << "rvalueMethod()" << ::std::endl; }
@@ -45,15 +47,15 @@ public:
     void lvalueMethod () & { ::std::cout << "lvalueMethod()" << ::std::endl; }
     void lvalueConstMethod () const & { ::std::cout << "lvalueConstMethod()" << ::std::endl; }
 
-    template < typename _Index > void operator [] ( _Index && ) & { ::std::cout << "operator [] &" << ::std::endl; }
-    template < typename _Index > void operator [] ( _Index && ) const & { ::std::cout << "operator [] const &" << ::std::endl; }
-    template < typename _Index > void operator [] ( _Index && ) && { ::std::cout << "operator [] &&" << ::std::endl; }
-    template < typename _Index > void operator [] ( _Index && ) const && { ::std::cout << "operator [] const &&" << ::std::endl; }
+    template < typename _Index > _Type & operator [] ( _Index && ) & { ::std::cout << "operator [] &" << ::std::endl; return m_value; }
+    template < typename _Index > const _Type & operator [] ( _Index && ) const & { ::std::cout << "operator [] const &" << ::std::endl; return m_value; }
+    template < typename _Index > _Type && operator [] ( _Index && ) && { ::std::cout << "operator [] &&" << ::std::endl; return ::std::forward< _Type >( m_value ); }
+    template < typename _Index > const _Type && operator [] ( _Index && ) const && { ::std::cout << "operator [] const &&" << ::std::endl; return ::std::forward< const _Type >( m_value ); }
 
-    template < typename ... _Arguments > void operator () ( _Arguments && ... ) & { ::std::cout << "operator () &" << ::std::endl; }
-    template < typename ... _Arguments > void operator () ( _Arguments && ... ) const & { ::std::cout << "operator () const &" << ::std::endl; }
-    template < typename ... _Arguments > void operator () ( _Arguments && ... ) && { ::std::cout << "operator () &&" << ::std::endl; }
-    template < typename ... _Arguments > void operator () ( _Arguments && ... ) const && { ::std::cout << "operator () const &&" << ::std::endl; }
+    template < typename ... _Arguments > _Type & operator () ( _Arguments && ... ) & { ::std::cout << "operator () &" << ::std::endl; return m_value; }
+    template < typename ... _Arguments > const _Type & operator () ( _Arguments && ... ) const & { ::std::cout << "operator () const &" << ::std::endl; return m_value; }
+    template < typename ... _Arguments > _Type && operator () ( _Arguments && ... ) && { ::std::cout << "operator () &&" << ::std::endl; return ::std::forward< _Type >( m_value ); }
+    template < typename ... _Arguments > const _Type && operator () ( _Arguments && ... ) const && { ::std::cout << "operator () const &&" << ::std::endl; return ::std::forward< const _Type >( m_value ); }
 
     template < typename ... _Arguments >
     static ThisType make ( _Arguments && ... arguments ) { return Data( ::std::forward< _Arguments >( arguments ) ... ); }
@@ -70,6 +72,9 @@ void testConstructors ()
     TestData five( asConst( one ) );
     TestData six( TestData::Value::make() );
     TestData seven( asConst( TestData::Value::make() ) );
+
+    TestData() = 10;
+    one = 10;
 
     (void) one;
     (void) two;
@@ -118,11 +123,18 @@ void testDiffToolConstructors ()
 
 void testUnaryOperators ()
 {
-    //using IntImpl = Featured< Data< double >, ::Implicit::RawTool >;
+    using TestData = Featured< Data< int > >;
 
+    TestData impl_int = 10;
+    impl_int[0];
+    asConst( impl_int )[0];
+    TestData()[0];
+    asConst( TestData() )[0];
 
-
-//    IntImpl impl_int = 10;
+    impl_int(0, 1);
+    asConst( impl_int )(0, 1);
+    TestData()(0, 1);
+    asConst( TestData() )(0, 1);
 
 //    // lvalue
 //    +impl_int;

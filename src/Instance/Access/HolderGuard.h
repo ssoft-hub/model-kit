@@ -2,13 +2,14 @@
 #ifndef GUARD_HOLDER_POINTER_H
 #define GUARD_HOLDER_POINTER_H
 
+#include <type_traits>
 #include <utility>
 
-template < typename _Refer, typename _Tool >
+template < typename _Refer >
 struct HolderGuard
 {
     using Refer = _Refer;
-    using Tool = _Tool;
+    using Holder = ::std::decay_t< Refer >;
 
     static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must be a reference!" );
 
@@ -17,7 +18,7 @@ struct HolderGuard
     HolderGuard ( Refer holder )
         : m_holder( ::std::forward< Refer >( holder ) )
     {
-        Tool::guardHolder( ::std::forward< Refer >( m_holder ) );
+        Holder::guard( ::std::forward< Refer >( m_holder ) );
     }
 
     HolderGuard ( HolderGuard & holder ) = delete;
@@ -27,7 +28,7 @@ struct HolderGuard
 
     ~HolderGuard ()
     {
-        Tool::unguardHolder( ::std::forward< Refer >( m_holder ) );
+        Holder::unguard( ::std::forward< Refer >( m_holder ) );
     }
 };
 

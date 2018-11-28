@@ -84,47 +84,43 @@ namespace Member
             {
                 return *this = other.m_result_refer;
             }
+
+            //static constexpr void guard ( ThisType && )
+            //static constexpr void guard ( const ThisType && )
+            //static constexpr void guard ( ThisType & )
+            static constexpr void guard ( const ThisType & )
+            {
+                // nothing to do
+            }
+
+            //static constexpr void unguard ( ThisType && )
+            //static constexpr void unguard ( const ThisType && )
+            //static constexpr void unguard ( ThisType & )
+            static constexpr void unguard ( const ThisType & )
+            {
+                // nothing to do
+            }
+
+            static constexpr _Type && value ( ThisType && holder )
+            {
+                return ::std::forward< _Type && >( holder.m_result_refer );
+            }
+
+            static constexpr const _Type && value ( const ThisType && holder )
+            {
+                return ::std::forward< const _Type && >( holder.m_result_refer );
+            }
+
+            static constexpr _Type & value ( ThisType & holder )
+            {
+                return ::std::forward< _Type & >( holder.m_result_refer );
+            }
+
+            static constexpr const _Type & value ( const ThisType & holder )
+            {
+                return ::std::forward< const _Type & >( holder.m_result_refer );
+            }
         };
-
-        template < typename _Type >
-        //static constexpr void guardHolder ( Holder< _Type > & )
-        //static constexpr void guardHolder ( Holder< _Type > && )
-        static constexpr void guardHolder ( const Holder< _Type > & )
-        {
-            // nothing to do
-        }
-
-        template < typename _Type >
-        //static constexpr void unguardHolder ( Holder< _Type > & )
-        //static constexpr void unguardHolder ( Holder< _Type > && )
-        static constexpr void unguardHolder ( const Holder< _Type > & )
-        {
-            // nothing to do
-        }
-
-        template < typename _Type >
-        static constexpr _Type & value ( Holder< _Type > & holder )
-        {
-            return holder.m_result_refer;
-        }
-
-        template < typename _Type >
-        static constexpr const _Type & value ( const Holder< _Type > & holder )
-        {
-            return holder.m_result_refer;
-        }
-
-        template < typename _Type >
-        static constexpr _Type && value ( Holder< _Type > && holder )
-        {
-            return ::std::forward< _Type >( holder.m_result_refer );
-        }
-
-        template < typename _Type >
-        static constexpr const _Type && value ( const Holder< _Type > && holder )
-        {
-            return ::std::forward< const _Type >( holder.m_result_refer );
-        }
     };
 }
 

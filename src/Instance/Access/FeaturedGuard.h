@@ -92,7 +92,7 @@ namespace Private
         using Refer = _Refer;
         using Pointer = ReferPointer< Refer >;
         using Featured = ::std::decay_t< Refer >;
-        using Tool = typename Featured::Tool;
+        using Tool = typename Featured::Holder;
         using Holder = typename Featured::Holder;
         using HolderRefer = ::SimilarRefer< Holder, Refer >;
         using Value = typename Featured::Value;
@@ -115,7 +115,7 @@ namespace Private
         SpecialFeaturedGuard ( Refer refer )
             : m_pointer( ::std::forward< Refer >( refer ) )
         {
-            Tool::guardHolder( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
+            Holder::guard( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
         }
 
         SpecialFeaturedGuard ( ThisType && other )
@@ -126,7 +126,7 @@ namespace Private
         ~SpecialFeaturedGuard ()
         {
             if ( !!m_pointer )
-                Tool::unguardHolder( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
+                Holder::unguard( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
         }
 
         constexpr bool operator ! () const

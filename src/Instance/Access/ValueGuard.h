@@ -113,7 +113,7 @@ namespace Private
     public:
         using Refer = _Refer;
         using Featured = ::std::decay_t< Refer >;
-        using Tool = typename Featured::Tool;
+        using Tool = typename Featured::Holder;
 
         using Value = typename Featured::Value;
         using ValueRefer = ::SimilarRefer< Value, Refer >;
