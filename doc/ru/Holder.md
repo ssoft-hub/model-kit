@@ -13,11 +13,11 @@
 Реализация **Holder** имеет стандартизованный интерфейс следующего вида
 
 ```cpp
-template < typename _Type >
+template < typename _Value >
 struct Holder
 {
-    using ThisType = Holder< _Type >;
-    using Value = _Type;
+    using ThisType = Holder< _Value >;
+    using Value = _Value;
 
     Value m_value;
 
@@ -65,10 +65,10 @@ struct Holder
     static void unguard ( ThisType & );
     static void unguard ( const ThisType & );
 
-    static  _Type & value ( ThisType & holder );
-    static const _Type & value ( const ThisType & holder );
-    static _Type && value ( ThisType && holder );
-    static const _Type && value ( const Holder< _Type > && holder );
+    static  _Value & value ( ThisType & holder );
+    static const _Value & value ( const ThisType & holder );
+    static _Value && value ( ThisType && holder );
+    static const _Value && value ( const Holder< _Value > && holder );
 };
 ```
 
@@ -150,10 +150,10 @@ static void unguard ( const ThisType & );
 Доступ к экземпляру агрегированного значения осуществляются с помощью методов **value()**.
 
 ```cpp
-static  _Type & value ( ThisType & holder );
-static const _Type & value ( const ThisType & holder );
-static _Type && value ( ThisType && holder );
-static const _Type && value ( const Holder< _Type > && holder );
+static  _Value & value ( ThisType & holder );
+static const _Value & value ( const ThisType & holder );
+static _Value && value ( ThisType && holder );
+static const _Value && value ( const Holder< _Value > && holder );
 ```
 
 Для пользовательских типов **Holder** должна быть обязательно обеспечена реализация всех этих методов, иначе это приведет к ошибке компиляции.
