@@ -17,9 +17,9 @@ void parentChildTest ()
 //    using UniqueItemEnd = Item::UniqueItemEnd;
 
 
-    constexpr Featured< int > child_count = 10;
+    Featured< int > child_count = 10;
     ::std::cout
-        << ::std::endl << "Begin test" << child_count << ::std::endl;
+        << ::std::endl << "Begin test" << *&child_count << ::std::endl;
 
 //    Featured< UniqueItemEnd > parent = UniqueItemEnd::make();
 

@@ -3,6 +3,6 @@ TEMPLATE = subdirs
 SUBDIRS *= \
     Atomic \
     BaseDerived \
-    FeaturedTrait \
+    InstanceTrait \
     ParentChild \
     Syntax \

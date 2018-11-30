@@ -1,5 +1,4 @@
-#include <ModelKit/Featured.h>
-#include <ModelKit/Featured/Tool.h>
+#include <ModelKit/Instance.h>
 #include <iostream>
 
 struct BaseType
@@ -14,76 +13,76 @@ struct DerivedType
 int main ( int /*argc*/, char ** /*argv*/ )
 {
     ::std::cout
-        << "IsCompatibleHelper< Featured< int >, Featured< int > >::value" << ::std::endl
+        << "is_compatible< Featured< int >, Featured< int > >" << ::std::endl
         << true << " = "
-        << IsCompatibleHelper< Featured< int >, Featured< int > >::value << ::std::endl;
+        << is_compatible< Featured< int >, Featured< int > > << ::std::endl;
     ::std::cout
-        << "IsCompatibleHelper< Featured< int >, Featured< double > >::value" << ::std::endl
+        << "is_compatible< Featured< int >, Featured< double > >" << ::std::endl
         << false << " = "
-        << IsCompatibleHelper< Featured< int >, Featured< double > >::value << ::std::endl;
+        << is_compatible< Featured< int >, Featured< double > > << ::std::endl;
     ::std::cout
-        << "IsCompatibleHelper< Featured< BaseType >, Featured< DerivedType > >::value" << ::std::endl
+        << "is_compatible< Featured< BaseType >, Featured< DerivedType > >" << ::std::endl
         << true << " = "
-        << IsCompatibleHelper< Featured< BaseType >, Featured< DerivedType > >::value << ::std::endl;
+        << is_compatible< Featured< BaseType >, Featured< DerivedType > > << ::std::endl;
     ::std::cout
-        << "IsCompatibleHelper< Featured< DerivedType >, Featured< BaseType > >::value" << ::std::endl
+        << "is_compatible< Featured< DerivedType >, Featured< BaseType > >" << ::std::endl
         << false << " = "
-        << IsCompatibleHelper< Featured< DerivedType >, Featured< BaseType > >::value << ::std::endl;
+        << is_compatible< Featured< DerivedType >, Featured< BaseType > > << ::std::endl;
 
     using FirstType = Featured< Featured< Featured< BaseType
-        , ::Std::Shared::ImplicitTool >
-        , ::Std::Unique::HeapTool >
-        , ::Std::Mutex::AtomicTool >;
+        , ::Implicit::SharedTool >
+        , ::Heap::UniqueTool >
+        , ::ThreadSafe::RecursiveMutexTool >;
 
     using SecondType = Featured< Featured< Featured< DerivedType
-        , ::Std::Shared::ImplicitTool >
-        , ::Std::Unique::HeapTool >
-        , ::Std::Mutex::AtomicTool >;
+        , ::Implicit::SharedTool >
+        , ::Heap::UniqueTool >
+        , ::ThreadSafe::RecursiveMutexTool >;
 
     ::std::cout
-        << "IsCompatibleHelper< FirstType, SecondType >::value" << ::std::endl
+        << "is_compatible< FirstType, SecondType >" << ::std::endl
         << true << " = "
-        << IsCompatibleHelper< FirstType, SecondType >::value << ::std::endl;
+        << is_compatible< FirstType, SecondType > << ::std::endl;
     ::std::cout
-        << "IsCompatibleHelper< SecondType, FirstType >::value" << ::std::endl
+        << "is_compatible< SecondType, FirstType >" << ::std::endl
         << false << " = "
-        << IsCompatibleHelper< SecondType, FirstType >::value << ::std::endl;
+        << is_compatible< SecondType, FirstType > << ::std::endl;
 
-    using FirstPartType = Featured< BaseType, ::Std::Shared::ImplicitTool >;
-    using SecondPartType = Featured< DerivedType, ::Std::Shared::ImplicitTool >;
+    using FirstPartType = Featured< BaseType, ::Implicit::SharedTool >;
+    using SecondPartType = Featured< DerivedType, ::Implicit::SharedTool >;
 
     ::std::cout
-        << "IsThisPartOfOtherHelper< FirstPartType, FirstType >::value" << ::std::endl
+        << "is_this_part_of_other< FirstPartType, FirstType >" << ::std::endl
         << true << " = "
-        << IsThisPartOfOtherHelper< FirstPartType, FirstType >::value << ::std::endl;
+        << is_this_part_of_other< FirstPartType, FirstType > << ::std::endl;
     ::std::cout
-        << "IsThisPartOfOtherHelper< SecondPartType, FirstType >::value" << ::std::endl
+        << "is_this_part_of_other< SecondPartType, FirstType >" << ::std::endl
         << false << " = "
-        << IsThisPartOfOtherHelper< SecondPartType, FirstType >::value << ::std::endl;
+        << is_this_part_of_other< SecondPartType, FirstType > << ::std::endl;
     ::std::cout
-        << "IsThisPartOfOtherHelper< FirstPartType, SecondType >::value" << ::std::endl
+        << "is_this_part_of_other< FirstPartType, SecondType >" << ::std::endl
         << true << " = "
-        << IsThisPartOfOtherHelper< FirstPartType, SecondType >::value << ::std::endl;
+        << is_this_part_of_other< FirstPartType, SecondType > << ::std::endl;
     ::std::cout
-        << "IsThisPartOfOtherHelper< SecondPartType, SecondType >::value" << ::std::endl
+        << "is_this_part_of_other< SecondPartType, SecondType >" << ::std::endl
         << true << " = "
-        << IsThisPartOfOtherHelper< SecondPartType, SecondType >::value << ::std::endl;
+        << is_this_part_of_other< SecondPartType, SecondType > << ::std::endl;
     ::std::cout
-        << "IsThisPartOfOtherHelper< FirstType, FirstType >::value" << ::std::endl
+        << "is_this_part_of_other< FirstType, FirstType >" << ::std::endl
         << false << " = "
-        << IsThisPartOfOtherHelper< FirstType, FirstType >::value << ::std::endl;
+        << is_this_part_of_other< FirstType, FirstType > << ::std::endl;
     ::std::cout
-        << "IsThisPartOfOtherHelper< FirstType, SecondType >::value" << ::std::endl
+        << "is_this_part_of_other< FirstType, SecondType >" << ::std::endl
         << false << " = "
-        << IsThisPartOfOtherHelper< FirstType, SecondType >::value << ::std::endl;
+        << is_this_part_of_other< FirstType, SecondType > << ::std::endl;
     ::std::cout
-        << "IsThisPartOfOtherHelper< SecondType, FirstType >::value" << ::std::endl
+        << "is_this_part_of_other< SecondType, FirstType >" << ::std::endl
         << false << " = "
-        << IsThisPartOfOtherHelper< SecondType, FirstType >::value << ::std::endl;
+        << is_this_part_of_other< SecondType, FirstType > << ::std::endl;
     ::std::cout
-        << "IsThisPartOfOtherHelper< FirstPartType, SecondPartType >::value" << ::std::endl
+        << "is_this_part_of_other< FirstPartType, SecondPartType >" << ::std::endl
         << false << " = "
-        << IsThisPartOfOtherHelper< FirstPartType, SecondPartType >::value << ::std::endl;
+        << is_this_part_of_other< FirstPartType, SecondPartType > << ::std::endl;
 
     FirstType first_value;
     FirstPartType first_part_value;
