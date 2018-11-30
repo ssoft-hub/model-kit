@@ -14,7 +14,7 @@ constexpr ::std::add_const_t< _Type > & asConst ( _Type & value ) noexcept
 template < typename _Type >
 constexpr ::std::add_const_t< _Type > && asConst ( _Type && value ) noexcept
 {
-    return ::std::forward< _Type >( value );
+    return ::std::forward< ::std::add_const_t< _Type > >( value );
 }
 
 #endif
