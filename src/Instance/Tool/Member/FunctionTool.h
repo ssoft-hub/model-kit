@@ -35,54 +35,50 @@ namespace Member
 
             Holder ( const ThisType & other ) = delete;
 
-            template < typename _OtherType >
-            ThisType & operator = ( _OtherType && other )
+            template < typename _OtherValue >
+            void operator = ( _OtherValue && other )
             {
-                m_result_refer = ::std::forward< _OtherType >( other );
-                return *this;
+                m_result_refer = ::std::forward< _OtherValue >( other );
             }
 
-            template < typename _OtherType >
-            ThisType & operator = ( const _OtherType && other )
+            template < typename _OtherValue >
+            void operator = ( const _OtherValue && other )
             {
-                m_result_refer = ::std::forward< const _OtherType >( other );
-                return *this;
+                m_result_refer = ::std::forward< const _OtherValue >( other );
             }
 
-            template < typename _OtherType >
-            ThisType & operator = ( _OtherType & other )
+            template < typename _OtherValue >
+            void operator = ( _OtherValue & other )
             {
                 m_result_refer = other;
-                return *this;
             }
 
-            template < typename _OtherType >
-            ThisType & operator = ( const _OtherType & other )
+            template < typename _OtherValue >
+            void operator = ( const _OtherValue & other )
             {
                 m_result_refer = other;
-                return *this;
             }
 
-            ThisType & operator = ( ThisType && other )
+            void operator = ( ThisType && other )
             {
-                return *this = ::std::forward< ResultRefer >( other.m_result_refer );
+                *this = ::std::forward< ResultRefer >( other.m_result_refer );
             }
 
-            ThisType & operator = ( const ThisType & other )
+            void operator = ( const ThisType & other )
             {
-                return *this = other.m_result_refer;
+                *this = other.m_result_refer;
             }
 
-            template < typename _OtherType >
-            ThisType & operator = ( Holder< _OtherType > && other )
+            template < typename _OtherValue >
+            void operator = ( Holder< _OtherValue > && other )
             {
-                return *this = ::std::forward< typename Holder< _OtherType >::ResultRefer >( other.m_result_refer );
+                *this = ::std::forward< typename Holder< _OtherValue >::ResultRefer >( other.m_result_refer );
             }
 
-            template < typename _OtherType >
-            ThisType & operator = ( const Holder< _OtherType > & other )
+            template < typename _OtherValue >
+            void operator = ( const Holder< _OtherValue > & other )
             {
-                return *this = other.m_result_refer;
+                *this = other.m_result_refer;
             }
 
             //static constexpr void guard ( ThisType && )
@@ -103,22 +99,22 @@ namespace Member
 
             static constexpr _Type && value ( ThisType && holder )
             {
-                return ::std::forward< _Type && >( holder.m_result_refer );
+                return ::std::forward< _Type >( holder.m_result_refer );
             }
 
             static constexpr const _Type && value ( const ThisType && holder )
             {
-                return ::std::forward< const _Type && >( holder.m_result_refer );
+                return ::std::forward< const _Type >( holder.m_result_refer );
             }
 
             static constexpr _Type & value ( ThisType & holder )
             {
-                return ::std::forward< _Type & >( holder.m_result_refer );
+                return holder.m_result_refer;
             }
 
             static constexpr const _Type & value ( const ThisType & holder )
             {
-                return ::std::forward< const _Type & >( holder.m_result_refer );
+                return holder.m_result_refer;
             }
         };
     };

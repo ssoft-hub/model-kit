@@ -4,6 +4,7 @@
 
 #include <atomic>
 #include <cassert>
+#include <memory>
 #include <ModelKit/Instance/Access/HolderGuard.h>
 #include <utility>
 
@@ -13,95 +14,111 @@ namespace Implicit
      * Инструмент для формирования значения в "куче" на основе
      * "голого" raw указателя.
      */
-    struct RawTool
+    template < typename _Counter >
+    struct CountedRawTool
     {
-        template < typename _Type,
-            typename _CounterType = ::std::atomic< int32_t > >
-        struct CountedType
+        struct BaseCounted
         {
-            using ThisType = CountedType< _Type, _CounterType >;
+            using Counter = _Counter;
+            Counter m_counter;
+            BaseCounted () : m_counter() {}
+            virtual ~BaseCounted () {}
+        };
 
-            using Value = _Type;
-            using CounterType = _CounterType;
+        template < typename _Value >
+        struct Counted
+            : public BaseCounted
+        {
+            using ThisType = Counted< _Value >;
+            using Value = _Value;
 
-            CounterType m_counter;
             Value m_value;
 
             template < typename ... _Arguments >
-            CountedType ( _Arguments && ... arguments )
-                : m_counter()
+            Counted ( _Arguments && ... arguments )
+                : BaseCounted()
                 , m_value( ::std::forward< _Arguments >( arguments ) ... )
             {
             }
         };
 
-        template < typename _Type,
-            typename _CounterType = ::std::atomic< int32_t > >
+        template < typename _Value >
         struct Holder
         {
-            using ThisType = Holder< _Type, _CounterType >;
+            using ThisType = Holder< _Value >;
+            using Value = _Value;
 
-            using Value = CountedType< _Type >;
-            using RawPointer = Value *;
-            using ConstRawPointer = const Value *;
+            using CountedValue = Counted< Value >;
+            using CountedPointer = BaseCounted *;
+            using Access = Value *;
             using WritableGuard = ::HolderGuard< ThisType & >;
 
-            RawPointer m_pointer;
+            CountedPointer m_pointer;
+            Access m_access; // to resolve multiple inheritance
 
             template < typename ... _Arguments >
             Holder ( _Arguments && ... arguments )
-                : m_pointer( new Value( ::std::forward< _Arguments >( arguments ) ... ) )
+                : m_pointer( new CountedValue( ::std::forward< _Arguments >( arguments ) ... ) )
+                , m_access( ::std::addressof( static_cast< CountedValue * >( m_pointer )->m_value ) )
             {
             }
 
             Holder ( ThisType && other )
-                : m_pointer( ::std::forward< RawPointer >( other.m_pointer ) )
+                : m_pointer( ::std::forward< CountedPointer >( other.m_pointer ) )
+                , m_access( ::std::forward< Access >( other.m_access ) )
             {
                 other.m_pointer = nullptr;
             }
 
             Holder ( const ThisType && other )
-                : m_pointer( ::std::forward< ConstRawPointer >( other.m_pointer ) )
+                : m_pointer( other.m_pointer )
+                , m_access( other.m_access )
             {
-                other.m_pointer = nullptr;
+                increment();
             }
 
             Holder ( ThisType & other )
                 : m_pointer( other.m_pointer )
+                , m_access( other.m_access )
             {
                 increment();
             }
 
             Holder ( const ThisType & other )
                 : m_pointer( other.m_pointer )
+                , m_access( other.m_access )
             {
                 increment();
             }
 
-            template < typename _OtherType >
-            Holder ( Holder< _OtherType > && other )
-                : m_pointer( ::std::forward< typename Holder< _OtherType >::RawPointer >( other.m_pointer ) )
+            template < typename _OtherValue >
+            Holder ( Holder< _OtherValue > && other )
+                : m_pointer( ::std::forward< typename Holder< _OtherValue >::CountedPointer >( other.m_pointer ) )
+                , m_access( ::std::forward< typename Holder< _OtherValue >::Access >( other.m_access ) )
             {
                 other.m_pointer = nullptr;
             }
 
-            template < typename _OtherType >
-            Holder ( const Holder< _OtherType > && other )
-                : m_pointer( ::std::forward< typename Holder< _OtherType >::ConstRawPointer >( other.m_pointer ) )
-            {
-                other.m_pointer = nullptr;
-            }
-
-            template < typename _OtherType >
-            Holder (  Holder< _OtherType > & other )
+            template < typename _OtherValue >
+            Holder ( const Holder< _OtherValue > && other )
                 : m_pointer( other.m_pointer )
+                , m_access( other.m_access )
             {
                 increment();
             }
 
-            template < typename _OtherType >
-            Holder ( const Holder< _OtherType > & other )
+            template < typename _OtherValue >
+            Holder ( Holder< _OtherValue > & other )
                 : m_pointer( other.m_pointer )
+                , m_access( other.m_access )
+            {
+                increment();
+            }
+
+            template < typename _OtherValue >
+            Holder ( const Holder< _OtherValue > & other )
+                : m_pointer( other.m_pointer )
+                , m_access( other.m_access )
             {
                 increment();
             }
@@ -114,88 +131,129 @@ namespace Implicit
             void increment ()
             {
                 if ( m_pointer )
-                    m_pointer->m_counter.fetch_add( 1 );
+                    ++m_pointer->m_counter;
             }
 
             void decrement ()
             {
-                if ( m_pointer && !m_pointer->m_counter.fetch_sub( 1 ) )
+                if ( m_pointer && !(--m_pointer->m_counter) )
                 {
                     delete m_pointer;
                     m_pointer = nullptr;
                 }
             }
 
-            template < typename _OtherType >
-            ThisType & operator = ( _OtherType && other )
+            template < typename _Argument >
+            void operator = ( _Argument && argument )
             {
                 assert( m_pointer );
                 WritableGuard guard( *this );
-                m_pointer->m_value = ::std::forward< _OtherType >( other );
-                return *this;
+                *m_access = ::std::forward< _Argument >( argument );
             }
 
-            template < typename _OtherType >
-            ThisType & operator = ( const _OtherType & other )
-            {
-                assert( m_pointer );
-                WritableGuard guard( *this );
-                m_pointer->m_value = other;
-                return *this;
-            }
-
-            ThisType & operator = ( ThisType && other )
+            void operator = ( ThisType && other )
             {
                 decrement();
                 m_pointer = other.m_pointer;
+                m_access = other.m_access;
                 other.m_pointer = nullptr;
-                return *this;
             }
 
-            ThisType & operator = ( const ThisType & other )
+            void operator = ( const ThisType && other )
             {
                 if ( m_pointer != other.m_pointer )
                 {
                     decrement();
                     m_pointer = other.m_pointer;
+                    m_access = other.m_access;
                     increment();
                 }
-                return *this;
             }
 
-            template < typename _OtherType >
-            ThisType & operator = ( Holder< _OtherType > && other )
+            void operator = ( ThisType & other )
             {
-                static_assert( ::std::is_base_of< _Type, _OtherType >::value,
-                    "_Type must be base of _OtherType" );
-
-                decrement();
-                // TODO: проверить вариант с множественным наследованием
-                m_pointer = reinterpret_cast< RawPointer >( other.m_pointer );
-                other.m_pointer = nullptr;
-                return *this;
-            }
-
-            template < typename _OtherType >
-            ThisType & operator = ( const Holder< _OtherType > & other )
-            {
-                static_assert( ::std::is_base_of< _Type, _OtherType >::value,
-                    "_Type must be base of _OtherType" );
-
-                if ( m_pointer != reinterpret_cast< RawPointer >( other.m_pointer ) )
+                if ( m_pointer != other.m_pointer )
                 {
                     decrement();
-                    // TODO: проверить вариант с множественным наследованием
-                    m_pointer = reinterpret_cast< RawPointer >( other.m_pointer );
+                    m_pointer = other.m_pointer;
+                    m_access = other.m_access;
+                    increment();
+                }
+            }
+
+            void operator = ( const ThisType & other )
+            {
+                if ( m_pointer != other.m_pointer )
+                {
+                    decrement();
+                    m_pointer = other.m_pointer;
+                    m_access = other.m_access;
+                    increment();
+                }
+            }
+
+            template < typename _OtherValue >
+            void operator = ( Holder< _OtherValue > && other )
+            {
+                static_assert( ::std::is_base_of< _Value, _OtherValue >::value,
+                    "_Value must be base of _OtherValue" );
+
+                decrement();
+                m_pointer = other.m_pointer;
+                m_access = other.m_access;
+                other.m_pointer = nullptr;
+            }
+
+            template < typename _OtherValue >
+            void operator = ( const Holder< _OtherValue > && other )
+            {
+                static_assert( ::std::is_base_of< _Value, _OtherValue >::value,
+                    "_Value must be base of _OtherValue" );
+
+                if ( m_pointer != reinterpret_cast< CountedPointer >( other.m_pointer ) )
+                {
+                    decrement();
+                    m_pointer = other.m_pointer;
+                    m_access = other.m_access;
                     increment();
                 }
                 return *this;
+            }
+
+            template < typename _OtherValue >
+            void operator = ( Holder< _OtherValue > & other )
+            {
+                static_assert( ::std::is_base_of< _Value, _OtherValue >::value,
+                    "_Value must be base of _OtherValue" );
+
+                if ( m_pointer != reinterpret_cast< CountedPointer >( other.m_pointer ) )
+                {
+                    decrement();
+                    m_pointer = other.m_pointer;
+                    m_access = other.m_access;
+                    increment();
+                }
+            }
+
+            template < typename _OtherValue >
+            void operator = ( const Holder< _OtherValue > & other )
+            {
+                static_assert( ::std::is_base_of< _Value, _OtherValue >::value,
+                    "_Value must be base of _OtherValue" );
+
+                if ( m_pointer != reinterpret_cast< CountedPointer >( other.m_pointer ) )
+                {
+                    decrement();
+                    m_pointer = other.m_pointer;
+                    m_access = other.m_access;
+                    increment();
+                }
             }
 
             static constexpr void guard ( ThisType & holder )
             {
                 if ( !!holder.m_pointer && !!holder.m_pointer->m_counter )
-                    holder = Holder< _Type >( holder.m_pointer->m_value );
+                    holder = Holder< Value >( *holder.m_access );
             }
 
             //static constexpr void guard ( ThisType && )
@@ -213,27 +271,32 @@ namespace Implicit
                 // nothing to do
             }
 
-            static constexpr _Type && value ( ThisType && holder )
+            static constexpr Value && value ( ThisType && holder )
             {
-                return ::std::forward< _Type && >( holder.m_pointer->m_value );
+                return ::std::forward< Value >( *holder.m_access );
             }
 
-            static constexpr const _Type && value ( const ThisType && holder )
+            static constexpr const Value && value ( const ThisType && holder )
             {
-                return ::std::forward< const _Type && >( holder.m_pointer->m_value );
+                return ::std::forward< const Value >( *holder.m_access );
             }
 
-            static constexpr _Type & value ( ThisType & holder )
+            static constexpr Value & value ( ThisType & holder )
             {
-                return ::std::forward< _Type & >( holder.m_pointer->m_value );
+                return *holder.m_access;
             }
 
-            static constexpr const _Type & value ( const ThisType & holder )
+            static constexpr const Value & value ( const ThisType & holder )
             {
-                return ::std::forward< const _Type & >( holder.m_pointer->m_value );
+                return *holder.m_access;
             }
         };
     };
+}
+
+namespace Implicit
+{
+    using RawTool = struct CountedRawTool< ::std::atomic< int32_t > >;
 }
 
 #endif

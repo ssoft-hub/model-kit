@@ -7,7 +7,9 @@
 
 using Map = ::std::map< ::std::string, ::std::pair< ::std::string, int > >;
 
-using AtomicMap = Featured< Map, ThreadSafe::MutexTool >;
+using RecursiveMutexMap = Featured< Map, ThreadSafe::RecursiveMutexTool >;
+using SharedMutexMap = Featured< Map, ThreadSafe::SharedMutexTool >;
+
 using DefaultMap = Featured< Map, Inplace::DefaultTool >;
 using ImplicitMap = Featured< Map, Implicit::RawTool >;
 
@@ -25,7 +27,7 @@ void func ()
         test_map->find( "potato" )->second.second++;
     }
 
-    auto read_ptr = &asConst(test_map);
+    auto read_ptr = &asConst( test_map );
     ::std::cout
         << "potato is " << read_ptr->at( "potato" ).first
         << " " << read_ptr->at( "potato" ).second
@@ -61,13 +63,14 @@ void example ()
 int main ( int, char ** )
 {
     // Паралельно, но не атомарно.
-    // example< Map >();
+    //example< Map >();
     // Паралельно, но не атомарно.
     example< DefaultMap >();
     // Паралельно, но не атомарно.
     example< ImplicitMap >();
     // Псевдопаралельно с блокировками, атомарно.
-    example< AtomicMap >();
-
+    example< RecursiveMutexMap >();
+    // Псевдопаралельно с блокировками, атомарно.
+    example< SharedMutexMap >();
     return 0;
 }

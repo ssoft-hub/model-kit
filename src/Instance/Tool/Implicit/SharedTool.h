@@ -18,23 +18,35 @@ namespace Implicit
      */
     struct SharedTool
     {
-        template < typename _Type >
+        template < typename _Value >
         struct Holder
         {
-            using ThisType = Holder< _Type >;
-            using PointerType = ::std::shared_ptr< _Type >;
+            using ThisType = Holder< _Value >;
+            using Value = _Value;
+
+            using Pointer = ::std::shared_ptr< Value >;
             using WritableGuard = ::HolderGuard< ThisType & >;
 
-            PointerType m_pointer;
+            Pointer m_pointer;
 
             template < typename ... _Arguments >
             Holder ( _Arguments && ... arguments )
-                : m_pointer( ::std::make_unique< _Type >( ::std::forward< _Arguments >( arguments ) ... ) )
+                : m_pointer( ::std::make_shared< Value >( ::std::forward< _Arguments >( arguments ) ... ) )
             {
             }
 
             Holder ( ThisType && other )
-                : m_pointer( ::std::forward< PointerType >( other.m_pointer ) )
+                : m_pointer( ::std::forward< Pointer >( other.m_pointer ) )
+            {
+            }
+
+            Holder ( const ThisType && other )
+                : m_pointer( other.m_pointer )
+            {
+            }
+
+            Holder ( ThisType & other )
+                : m_pointer( other.m_pointer )
             {
             }
 
@@ -43,14 +55,26 @@ namespace Implicit
             {
             }
 
-            template < typename _OtherType >
-            Holder ( Holder< _OtherType > && other )
-                : m_pointer( ::std::forward< typename Holder< _OtherType >::PointerType >( other.m_pointer ) )
+            template < typename _OtherValue >
+            Holder ( Holder< _OtherValue > && other )
+                : m_pointer( ::std::forward< typename Holder< _OtherValue >::Pointer >( other.m_pointer ) )
             {
             }
 
-            template < typename _OtherType >
-            Holder ( const Holder< _OtherType > & other )
+            template < typename _OtherValue >
+            Holder ( const Holder< _OtherValue > && other )
+                : m_pointer( other.m_pointer )
+            {
+            }
+
+            template < typename _OtherValue >
+            Holder ( Holder< _OtherValue > & other )
+                : m_pointer( other.m_pointer )
+            {
+            }
+
+            template < typename _OtherValue >
+            Holder ( const Holder< _OtherValue > & other )
                 : m_pointer( other.m_pointer )
             {
             }
@@ -60,55 +84,63 @@ namespace Implicit
                 m_pointer.reset();
             }
 
-            template < typename _OtherType >
-            ThisType & operator = ( _OtherType && other )
+            template < typename _Argument >
+            void operator = ( _Argument && argument )
             {
                 assert( m_pointer );
                 WritableGuard guard( *this );
-                *m_pointer.get() = ::std::forward< _OtherType >( other );
-                return *this;
+                *m_pointer.get() = ::std::forward< _Argument >( argument );
             }
 
-            template < typename _OtherType >
-            ThisType & operator = ( const _OtherType & other )
+            void operator = ( ThisType && other )
             {
-                assert( m_pointer );
-                WritableGuard guard( *this );
-                *m_pointer.get() = other;
-                return *this;
+                m_pointer = ::std::forward< Pointer >( other.m_pointer );
             }
 
-            ThisType & operator = ( ThisType && other )
-            {
-                m_pointer = ::std::forward< PointerType >( other.m_pointer );
-                return *this;
-            }
-
-            ThisType & operator = ( const ThisType & other )
+            void operator = ( const ThisType && other )
             {
                 m_pointer = other.m_pointer;
-                return *this;
             }
 
-            template < typename _OtherType >
-            ThisType & operator = ( Holder< _OtherType > && other )
-            {
-                using OtherPointerType = typename Holder< _OtherType >::PointerType;
-                m_pointer = ::std::forward< OtherPointerType >( other.m_pointer );
-                return *this;
-            }
-
-            template < typename _OtherType >
-            ThisType & operator = ( const Holder< _OtherType > & other )
+            void operator = ( ThisType & other )
             {
                 m_pointer = other.m_pointer;
-                return *this;
+            }
+
+            void operator = ( const ThisType & other )
+            {
+                m_pointer = other.m_pointer;
+            }
+
+            template < typename _OtherValue >
+            void operator = ( Holder< _OtherValue > && other )
+            {
+                using OtherPointer = typename Holder< _OtherValue >::Pointer;
+                m_pointer = ::std::forward< OtherPointer >( other.m_pointer );
+            }
+
+            template < typename _OtherValue >
+            void operator = ( const Holder< _OtherValue > && other )
+            {
+                m_pointer = other.m_pointer;
+            }
+
+            template < typename _OtherValue >
+            void operator = ( Holder< _OtherValue > & other )
+            {
+                m_pointer = other.m_pointer;
+            }
+
+            template < typename _OtherValue >
+            void operator = ( const Holder< _OtherValue > & other )
+            {
+                m_pointer = other.m_pointer;
             }
 
             static constexpr void guard ( ThisType & holder )
             {
                 if ( !!holder.m_pointer && !holder.m_pointer.unique() )
-                    holder = Holder< _Type >( *holder.m_pointer.get() );
+                    holder = Holder< Value >( *holder.m_pointer.get() );
             }
 
             //static constexpr void guard ( ThisType && )
@@ -126,24 +158,24 @@ namespace Implicit
                 // nothing to do
             }
 
-            static constexpr _Type && value ( ThisType && holder )
+            static constexpr Value && value ( ThisType && holder )
             {
-                return ::std::forward< _Type && >( *holder.m_pointer.get() );
+                return ::std::forward< Value >( *holder.m_pointer.get() );
             }
 
-            static constexpr const _Type && value ( const ThisType && holder )
+            static constexpr const Value && value ( const ThisType && holder )
             {
-                return ::std::forward< const _Type && >( *holder.m_pointer.get() );
+                return ::std::forward< const Value >( *holder.m_pointer.get() );
             }
 
-            static constexpr _Type & value ( ThisType & holder )
+            static constexpr Value & value ( ThisType & holder )
             {
-                return ::std::forward< _Type & >( *holder.m_pointer.get() );
+                return *holder.m_pointer.get();
             }
 
-            static constexpr const _Type & value ( const ThisType & holder )
+            static constexpr const Value & value ( const ThisType & holder )
             {
-                return ::std::forward< const _Type & >( *holder.m_pointer.get() );
+                return *holder.m_pointer.get();
             }
         };
     };

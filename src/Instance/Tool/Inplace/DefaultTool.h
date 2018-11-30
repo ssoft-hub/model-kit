@@ -13,72 +13,80 @@ namespace Inplace
      */
     struct DefaultTool
     {
-        template < typename _Type >
+        template < typename _Value >
         struct Holder
         {
-            using ThisType = Holder< _Type >;
-            using Value = _Type;
+            using ThisType = Holder< _Value >;
+            using Value = _Value;
 
             Value m_value;
 
             template < typename ... _Arguments >
-            Holder ( _Arguments && ... arguments )
+            constexpr Holder ( _Arguments && ... arguments )
                 : m_value( ::std::forward< _Arguments >( arguments ) ... )
             {
             }
 
             Holder ( ThisType && other )
-                : Holder( ::std::forward< Value >( other.m_value ) )
+                : m_value( ::std::forward< Value >( other.m_value ) )
             {
             }
 
             Holder ( const ThisType && other )
-                : Holder( ::std::forward< const Value >( other.m_value ) )
+                : m_value( ::std::forward< const Value >( other.m_value ) )
             {
             }
 
             Holder ( ThisType & other )
-                : Holder( other.m_value )
+                : m_value( other.m_value )
             {
             }
 
             Holder ( const ThisType & other )
-                : Holder( other.m_value )
+                : m_value( other.m_value )
             {
             }
 
-            template < typename _OtherType >
-            Holder ( Holder< _OtherType > && other )
-                : Holder( ::std::forward< typename Holder< _OtherType >::Value >( other.m_value ) )
+            template < typename _OtherValue >
+            Holder ( Holder< _OtherValue > && other )
+                : m_value( ::std::forward< typename Holder< _OtherValue >::Value >( other.m_value ) )
             {
             }
 
-            template < typename _OtherType >
-            Holder ( const Holder< _OtherType > && other )
-                : Holder( ::std::forward< typename Holder< const _OtherType >::Value >( other.m_value ) )
+            template < typename _OtherValue >
+            Holder ( const Holder< _OtherValue > && other )
+                : m_value( ::std::forward< typename Holder< const _OtherValue >::Value >( other.m_value ) )
             {
             }
 
-            template < typename _OtherType >
-            Holder ( Holder< _OtherType > & other )
-                : Holder( other.m_value )
+            template < typename _OtherValue >
+            Holder ( Holder< _OtherValue > & other )
+                : m_value( other.m_value )
             {
             }
 
-            template < typename _OtherType >
-            Holder ( const Holder< _OtherType > & other )
-                : Holder( other.m_value )
+            template < typename _OtherValue >
+            Holder ( const Holder< _OtherValue > & other )
+                : m_value( other.m_value )
             {
             }
 
-            template < typename _OtherType >
-            void operator = ( _OtherType && other )
+            template < typename _Argument >
+            void operator = ( _Argument && argument )
             {
-                m_value = ::std::forward< _OtherType >( other );
+                m_value = ::std::forward< _Argument >( argument );
             }
 
-            //void operator = ( ThisType && other );
-            //void operator = ( const ThisType && other );
+            void operator = ( ThisType && other )
+            {
+                m_value = ::std::forward< Value >( other.m_value );
+            }
+
+            void operator = ( const ThisType && other )
+            {
+                m_value = ::std::forward< const Value >( other.m_value );
+            }
+
             void operator = ( ThisType & other )
             {
                 *this = other.m_value;
@@ -89,26 +97,26 @@ namespace Inplace
                 return *this = other.m_value;
             }
 
-            template < typename _OtherType >
-            void operator = ( Holder< _OtherType > && other )
+            template < typename _OtherValue >
+            void operator = ( Holder< _OtherValue > && other )
             {
-                *this = ::std::forward< typename Holder< _OtherType >::Value >( other.m_value );
+                *this = ::std::forward< typename Holder< _OtherValue >::Value >( other.m_value );
             }
 
-            template < typename _OtherType >
-            void operator = ( const Holder< _OtherType > && other )
+            template < typename _OtherValue >
+            void operator = ( const Holder< _OtherValue > && other )
             {
-                *this = ::std::forward< typename Holder< const _OtherType >::Value >( other.m_value );
+                *this = ::std::forward< typename Holder< const _OtherValue >::Value >( other.m_value );
             }
 
-            template < typename _OtherType >
-            void operator = ( Holder< _OtherType > & other )
+            template < typename _OtherValue >
+            void operator = ( Holder< _OtherValue > & other )
             {
                 *this = other.m_value;
             }
 
-            template < typename _OtherType >
-            void operator = ( const Holder< _OtherType > & other )
+            template < typename _OtherValue >
+            void operator = ( const Holder< _OtherValue > & other )
             {
                 *this = other.m_value;
             }
@@ -129,24 +137,24 @@ namespace Inplace
                 // nothing to do
             }
 
-            static constexpr _Type && value ( ThisType && holder )
+            static constexpr Value && value ( ThisType && holder )
             {
-                return ::std::forward< _Type && >( holder.m_value );
+                return ::std::forward< Value >( holder.m_value );
             }
 
-            static constexpr const _Type && value ( const ThisType && holder )
+            static constexpr const Value && value ( const ThisType && holder )
             {
-                return ::std::forward< const _Type && >( holder.m_value );
+                return ::std::forward< const Value >( holder.m_value );
             }
 
-            static constexpr _Type & value ( ThisType & holder )
+            static constexpr Value & value ( ThisType & holder )
             {
-                return ::std::forward< _Type & >( holder.m_value );
+                return holder.m_value;
             }
 
-            static constexpr const _Type & value ( const ThisType & holder )
+            static constexpr const Value & value ( const ThisType & holder )
             {
-                return ::std::forward< const _Type & >( holder.m_value );
+                return holder.m_value;
             }
         };
     };

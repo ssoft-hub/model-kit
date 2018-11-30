@@ -33,8 +33,6 @@ public:
     using Value = _Value;
     using Tool = _Tool;
     using Holder = typename Tool:: template Holder< _Value >;
-    template < typename _Type, typename = ::std::enable_if_t< is_featured< _Type > > >
-    using AnyFeatured = _Type;
 
 private:
     /*

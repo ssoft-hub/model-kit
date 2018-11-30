@@ -14,46 +14,63 @@ namespace Heap
      */
     struct RawTool
     {
-        template < typename _Type >
+        template < typename _Value >
         struct Holder
         {
-            using ThisType = Holder< _Type >;
-            using PointerType = _Type *;
+            using ThisType = Holder< _Value >;
+            using Value = _Value;
+            using Pointer = _Value *;
 
-            PointerType m_pointer;
+            Pointer m_pointer;
 
             template < typename ... _Arguments >
             Holder ( _Arguments && ... arguments )
-                : m_pointer( new _Type( ::std::forward< _Arguments >( arguments ) ... ) )
+                : m_pointer( new Value( ::std::forward< _Arguments >( arguments ) ... ) )
             {
             }
 
             Holder ( ThisType && other )
-                : m_pointer( ::std::forward< PointerType >( other.m_pointer ) )
+                : m_pointer( ::std::forward< Pointer >( other.m_pointer ) )
             {
                 other.m_pointer = nullptr;
             }
 
-            //Holder ( const ThisType && other );
-            //Holder ( ThisType & other );
+            Holder ( const ThisType && other )
+                : Holder( ::std::forward< const Pointer >( *other.m_pointer ) )
+            {
+            }
+
+            Holder ( ThisType & other )
+                : Holder( *other.m_pointer )
+            {
+            }
+
             Holder ( const ThisType & other )
                 : Holder( *other.m_pointer )
             {
             }
 
-            template < typename _OtherType >
-            Holder ( Holder< _OtherType > && other )
-                : m_pointer( ::std::forward< typename Holder< _OtherType >::PointerType >( other.m_pointer ) )
+            template < typename _OtherValue >
+            Holder ( Holder< _OtherValue > && other )
+                : m_pointer( ::std::forward< typename Holder< _OtherValue >::Pointer >( other.m_pointer ) )
             {
                 other.m_pointer = nullptr;
             }
 
-            //template < typename _OtherType >
-            //Holder ( const Holder< _OtherType > && other )
-            //template < typename _OtherType >
-            //Holder ( Holder< _OtherType > & other )
-            template < typename _OtherType >
-            Holder ( const Holder< _OtherType > & other )
+            template < typename _OtherValue >
+            Holder ( const Holder< _OtherValue > && other )
+                : Holder( *other.m_pointer )
+            {
+            }
+
+            template < typename _OtherValue >
+            Holder ( Holder< _OtherValue > & other )
+                : Holder( *other.m_pointer )
+            {
+            }
+
+            template < typename _OtherValue >
+            Holder ( const Holder< _OtherValue > & other )
                 : Holder( *other.m_pointer )
             {
             }
@@ -64,39 +81,61 @@ namespace Heap
             }
 
             template < typename _Argument >
-            ThisType & operator = ( _Argument && argument )
+            void operator = ( _Argument && argument )
             {
                 assert( m_pointer );
                 *m_pointer = ::std::forward< _Argument >( argument );
-                return *this;
             }
 
-            ThisType & operator = ( ThisType && other )
+            void operator = ( ThisType && other )
             {
                 ::std::swap( m_pointer, other.m_pointer );
                 return *this;
             }
 
-            //ThisType & operator = ( const ThisType && other )
-            //ThisType & operator = ( ThisType & other )
-            ThisType & operator = ( const ThisType & other )
+            void operator = ( const ThisType && other )
             {
                 assert( other.m_pointer );
                 return *this = *other.m_pointer;
             }
 
-            template < typename _OtherType >
-            ThisType & operator = ( Holder< _OtherType > && other )
-            {
-                ::std::swap< PointerType >( m_pointer, other.m_pointer );
-                return *this;
-            }
-
-            template < typename _OtherType >
-            ThisType & operator = ( const Holder< _OtherType > & other )
+            void operator = ( ThisType & other )
             {
                 assert( other.m_pointer );
                 return *this = *other.m_pointer;
+            }
+
+            void operator = ( const ThisType & other )
+            {
+                assert( other.m_pointer );
+                return *this = *other.m_pointer;
+            }
+
+            template < typename _OtherValue >
+            void operator = ( Holder< _OtherValue > && other )
+            {
+                ::std::swap< Pointer >( m_pointer, other.m_pointer );
+            }
+
+            template < typename _OtherValue >
+            void operator = ( const Holder< _OtherValue > && other )
+            {
+                assert( other.m_pointer );
+                *this = *other.m_pointer;
+            }
+
+            template < typename _OtherValue >
+            void operator = ( Holder< _OtherValue > & other )
+            {
+                assert( other.m_pointer );
+                *this = *other.m_pointer;
+            }
+
+            template < typename _OtherValue >
+            void operator = ( const Holder< _OtherValue > & other )
+            {
+                assert( other.m_pointer );
+                *this = *other.m_pointer;
             }
 
             //static constexpr void guard ( ThisType && )
@@ -115,22 +154,22 @@ namespace Heap
                 // nothing to do
             }
 
-            static constexpr _Type && value ( ThisType && holder )
+            static constexpr Value && value ( ThisType && holder )
             {
-                return ::std::forward< _Type >( *holder.m_pointer );
+                return ::std::forward< Value >( *holder.m_pointer );
             }
 
-            static constexpr const _Type && value ( const ThisType && holder )
+            static constexpr const Value && value ( const ThisType && holder )
             {
-                return ::std::forward< const _Type >( *holder.m_pointer );
+                return ::std::forward< const Value >( *holder.m_pointer );
             }
 
-            static constexpr _Type & value ( ThisType & holder )
+            static constexpr Value & value ( ThisType & holder )
             {
                 return *holder.m_pointer;
             }
 
-            static constexpr const _Type & value ( const ThisType & holder )
+            static constexpr const Value & value ( const ThisType & holder )
             {
                 return *holder.m_pointer;
             }

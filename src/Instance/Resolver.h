@@ -42,6 +42,12 @@ namespace Private
     class FeaturedValueResolver;
 }
 
+/*
+ * NOTE: Можно было бы реализовать случай преобразования одного вида Holder
+ * в другой с помощью FeaturedConvertResolver. Однако это нарушит инкапсуляцию
+ * Holder и позволит получить доступ к его внутреннему содержимому,
+ * что в свою очередь может изменить ожидаемое поведение.
+ */
 namespace Private
 {
     template < typename _Featured, typename _OtherRefer >
