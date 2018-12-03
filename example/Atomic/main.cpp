@@ -7,11 +7,11 @@
 
 using Map = ::std::map< ::std::string, ::std::pair< ::std::string, int > >;
 
-using RecursiveMutexMap = Featured< Map, ThreadSafe::RecursiveMutexTool >;
-using SharedMutexMap = Featured< Map, ThreadSafe::SharedMutexTool >;
+using RecursiveMutexMap = Instance< Map, ThreadSafe::RecursiveMutexTool >;
+using SharedMutexMap = Instance< Map, ThreadSafe::SharedMutexTool >;
 
-using DefaultMap = Featured< Map, Inplace::DefaultTool >;
-using ImplicitMap = Featured< Map, Implicit::RawTool >;
+using DefaultMap = Instance< Map, Inplace::DefaultTool >;
+using ImplicitMap = Instance< Map, Implicit::RawTool >;
 
 template < typename _MapType >
 void func ()

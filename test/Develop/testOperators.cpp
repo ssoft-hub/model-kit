@@ -63,7 +63,7 @@ public:
 
 void testConstructors ()
 {
-    using TestData = Featured< Data< double > >;
+    using TestData = Instance< Data< double > >;
 
     TestData one;
     TestData two( 1 );
@@ -87,8 +87,8 @@ void testConstructors ()
 
 void testSameToolConstructors ()
 {
-    using TestData = Featured< Data< double > >;
-    using SameData = Featured< Data< int > >;
+    using TestData = Instance< Data< double > >;
+    using SameData = Instance< Data< int > >;
 
     SameData one;
     TestData four( one );
@@ -105,8 +105,8 @@ void testSameToolConstructors ()
 
 void testDiffToolConstructors ()
 {
-    using TestData = Featured< Data< double > >;
-    using SameData = Featured< Data< int >, ::Implicit::SharedTool >;
+    using TestData = Instance< Data< double > >;
+    using SameData = Instance< Data< int >, ::Implicit::SharedTool >;
 
     SameData one;
     TestData four( one );
@@ -123,7 +123,7 @@ void testDiffToolConstructors ()
 
 void testUnaryOperators ()
 {
-    using TestData = Featured< Data< int > >;
+    using TestData = Instance< Data< int > >;
 
     TestData impl_int = 10;
     impl_int[0];
@@ -155,8 +155,8 @@ void testUnaryOperators ()
 
 //void testBinaryOperators ()
 //{
-//    using IntCpp = Featured< int, ::Cpp::Inplace::DefaultTool >;
-//    using IntImpl = Featured< int, ::Std::Shared::ImplicitTool >;
+//    using IntCpp = Instance< int, ::Cpp::Inplace::DefaultTool >;
+//    using IntImpl = Instance< int, ::Std::Shared::ImplicitTool >;
 
 //    IntCpp cpp_int = 5;
 //    IntImpl impl_int = 10;
@@ -297,16 +297,16 @@ void testUnaryOperators ()
 
 //struct OtherType
 //{
-//    Featured< TenMyTypes > m_my_datas;
+//    Instance< TenMyTypes > m_my_datas;
 //};
 
 //using OtherTypes = ::std::vector< OtherType >;
 
 //void testMemberOperators ()
 //{
-//    Featured< MyType > my_data;
-//    Featured< OtherType > other_data;
-//    Featured< OtherTypes > other_datas;
+//    Instance< MyType > my_data;
+//    Instance< OtherType > other_data;
+//    Instance< OtherTypes > other_datas;
 
 //    other_datas->push_back( *&other_data );
 //    other_datas->push_back( *&other_data );
@@ -314,7 +314,7 @@ void testUnaryOperators ()
 
 //    my_data->m_age = 10;
 
-//    Featured< OtherTypes >()[0];
+//    Instance< OtherTypes >()[0];
 
 //    for ( size_t i = 0; i < other_datas->size(); ++i )
 //    {

@@ -6,12 +6,12 @@
 //template < typename _TestType >
 //void testTool ()
 //{
-//    Featured< _TestType > value;
-//    Featured< _TestType > other;
+//    Instance< _TestType > value;
+//    Instance< _TestType > other;
 
 //    other = _TestType();
 //    value = ::std::move( other ); // other not valid!!!
-//    other = Featured< _TestType >();
+//    other = Instance< _TestType >();
 //    other = value;
 
 //    value->m_first_name = "first name";
@@ -39,23 +39,23 @@
 //void testToolByTool ()
 //{
 //    testTool< _Type >();
-//    testTool< Featured< _Type, ::Cpp::Inplace::DefaultTool > >();
-//    testTool< Featured< _Type, ::Cpp::Raw::HeapTool > >();
-//    testTool< Featured< _Type, ::Implicit::RawTool > >();
-//    testTool< Featured< _Type, ::Std::Mutex::AtomicTool > >();
-//    testTool< Featured< _Type, ::Std::Shared::ImplicitTool > >();
-//    testTool< Featured< _Type, ::Std::Shared::HeapTool > >();
-//    testTool< Featured< _Type, ::Std::Unique::HeapTool > >();
+//    testTool< Instance< _Type, ::Cpp::Inplace::DefaultTool > >();
+//    testTool< Instance< _Type, ::Cpp::Raw::HeapTool > >();
+//    testTool< Instance< _Type, ::Implicit::RawTool > >();
+//    testTool< Instance< _Type, ::Std::Mutex::AtomicTool > >();
+//    testTool< Instance< _Type, ::Std::Shared::ImplicitTool > >();
+//    testTool< Instance< _Type, ::Std::Shared::HeapTool > >();
+//    testTool< Instance< _Type, ::Std::Unique::HeapTool > >();
 //}
 
 //void testAllTool ()
 //{
 //    testToolByTool< MyType >();
-//    testToolByTool< Featured< MyType, ::Cpp::Inplace::DefaultTool > >();
-//    testToolByTool< Featured< MyType, ::Cpp::Raw::HeapTool > >();
-//    testToolByTool< Featured< MyType, ::Implicit::RawTool > >();
-//    testToolByTool< Featured< MyType, ::Std::Mutex::AtomicTool > >();
-//    testToolByTool< Featured< MyType, ::Std::Shared::ImplicitTool > >();
-//    testToolByTool< Featured< MyType, ::Std::Shared::HeapTool > >();
-//    testToolByTool< Featured< MyType, ::Std::Unique::HeapTool > >();
+//    testToolByTool< Instance< MyType, ::Cpp::Inplace::DefaultTool > >();
+//    testToolByTool< Instance< MyType, ::Cpp::Raw::HeapTool > >();
+//    testToolByTool< Instance< MyType, ::Implicit::RawTool > >();
+//    testToolByTool< Instance< MyType, ::Std::Mutex::AtomicTool > >();
+//    testToolByTool< Instance< MyType, ::Std::Shared::ImplicitTool > >();
+//    testToolByTool< Instance< MyType, ::Std::Shared::HeapTool > >();
+//    testToolByTool< Instance< MyType, ::Std::Unique::HeapTool > >();
 //}

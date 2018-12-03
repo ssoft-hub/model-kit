@@ -12,8 +12,8 @@ using DerivedInt = DerivedType::Int;
 using DerivedString = DerivedType::String;
 
 using Tool = ::Heap::UniqueTool;
-using HeapInt = Featured< int, Tool >;
-using HeapString = Featured< ::std::string, Tool >;
+using HeapInt = Instance< int, Tool >;
+using HeapString = Instance< ::std::string, Tool >;
 
 void printBase ( const BaseType & base_value )
 {
@@ -25,9 +25,9 @@ void printBase ( const BaseType & base_value )
 
 void testBase ()
 {
-    Featured< BaseType > default_base_value;
-    Featured< BaseType > contruct_base_value( 10, "Constructed base type" );
-    Featured< BaseType > move_base_value = Featured< BaseType >( 20, "Moved base type" );
+    Instance< BaseType > default_base_value;
+    Instance< BaseType > contruct_base_value( 10, "Constructed base type" );
+    Instance< BaseType > move_base_value = Instance< BaseType >( 20, "Moved base type" );
 
     default_base_value = contruct_base_value;
 
@@ -38,7 +38,7 @@ void testBase ()
 
 void testBaseSetting ()
 {
-    Featured< BaseType > base_value;
+    Instance< BaseType > base_value;
 
     base_value->m_int = 1;
     base_value->m_string = "one";
@@ -68,9 +68,9 @@ void printDerived ( const DerivedType & derived_value )
 
 void testDerived ()
 {
-    Featured< DerivedType > default_derived_value; //
-    Featured< DerivedType > contruct_derived_value( 10, "Constructed derived type" ); //
-    Featured< DerivedType > move_derived_value = Featured< DerivedType >( 20, "Moved derived type" ); //
+    Instance< DerivedType > default_derived_value; //
+    Instance< DerivedType > contruct_derived_value( 10, "Constructed derived type" ); //
+    Instance< DerivedType > move_derived_value = Instance< DerivedType >( 20, "Moved derived type" ); //
 
     default_derived_value = contruct_derived_value; //
 
@@ -81,10 +81,10 @@ void testDerived ()
 
 void testBaseDerivedSetting ()
 {
-    using BaseTestType = Featured< BaseType, ::Implicit::RawTool >;
-    using DerivedTestType = Featured< DerivedType, ::Implicit::RawTool >;
+    using BaseTestType = Instance< BaseType, ::Implicit::RawTool >;
+    using DerivedTestType = Instance< DerivedType, ::Implicit::RawTool >;
 
-    Featured< DerivedTestType > derived_value;
+    Instance< DerivedTestType > derived_value;
 
     derived_value->BaseType::m_int = 1;
     derived_value->BaseType::m_string = "one";
@@ -110,11 +110,11 @@ void testBaseDerivedSetting ()
     derived_value->m_string = HeapString( "negative four" );
     printDerived( *&asConst(derived_value) );
 
-    Featured< BaseTestType > base_value;
+    Instance< BaseTestType > base_value;
     base_value = derived_value; // OK
     printBase( *&asConst(base_value) );
 
-    //Featured< DerivedType > other_derived_value = base_value; //ERROR
+    //Instance< DerivedType > other_derived_value = base_value; //ERROR
 }
 
 int main ( int, char ** )

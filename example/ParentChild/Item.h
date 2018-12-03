@@ -26,8 +26,8 @@ public:
     typedef ::std::list< NoneItemEnd > NoneItemEnds;
 
 private:
-    Featured< NoneItemEnd > m_parent_end;
-    Featured< UniqueItemEnds > m_child_ends;
+    Instance< NoneItemEnd > m_parent_end;
+    Instance< UniqueItemEnds > m_child_ends;
 
 public:
     Item ()

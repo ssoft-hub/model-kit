@@ -60,9 +60,9 @@ struct My
     void lvalueConstMethod () const & {}
 };
 
-void compileTestFeaturedTrancpatancy ()
+void compileTestInstanceTrancpatancy ()
 {
-    Featured< My > featured;
+    Instance< My > featured;
     My value;
 
     My().rvalueMethod();
@@ -85,32 +85,32 @@ void compileTestFeaturedTrancpatancy ()
     //asConst( ReferPointer< My && >( My() ) )->rvalueConstMethod();
 
     // как следствие, не работает
-    //Featured< My >()->rvalueMethod();
-    //Featured< My >()->rvalueConstMethod();
-    //asConst( Featured< My >() )->rvalueConstMethod();
+    //Instance< My >()->rvalueMethod();
+    //Instance< My >()->rvalueConstMethod();
+    //asConst( Instance< My >() )->rvalueConstMethod();
 
     //My().lvalueMethod(); // почему-то T&& не преобразуется к T&
     My().lvalueConstMethod();
     asConst( My() ).lvalueConstMethod();
 
-    Featured< My >()->lvalueMethod();
-    Featured< My >()->lvalueConstMethod();
-    asConst( Featured< My >() )->lvalueConstMethod();
+    Instance< My >()->lvalueMethod();
+    Instance< My >()->lvalueConstMethod();
+    asConst( Instance< My >() )->lvalueConstMethod();
 
     featured->lvalueMethod();
     featured->lvalueConstMethod();
     value.lvalueMethod();
     value.lvalueConstMethod();
 
-    isSimilar( Featured< My >(), My() );
-    isSimilar( Featured< My >(), *&Featured< My >() );
+    isSimilar( Instance< My >(), My() );
+    isSimilar( Instance< My >(), *&Instance< My >() );
     isSimilar( featured, value );
     isSimilar( featured, *&featured );
 }
 
 extern void testResultOf();
-extern void testFeaturedValue ();
-extern void testFeaturedContainer ();
+extern void testInstanceValue ();
+extern void testInstanceContainer ();
 
 extern void testConstructors ();
 extern void testSameToolConstructors ();
@@ -122,9 +122,9 @@ int main ( int /*argc*/, char ** /*argv*/ )
     testSameToolConstructors ();
     testDiffToolConstructors ();
 
-    compileTestFeaturedTrancpatancy();
+    compileTestInstanceTrancpatancy();
     //testResultOf();
-    testFeaturedContainer();
+    testInstanceContainer();
 
 //    testMemberOperators();
 //    testConstructor();
@@ -135,32 +135,32 @@ int main ( int /*argc*/, char ** /*argv*/ )
 ////    int int_value; // OK
 ////    const int int_value = 0; // ERROR
 
-//    Featured< int > int_value; // OK
-////    const Featured< int > int_value = 0; // ERROR
-////    Featured< const int > int_value = 0; // ERROR
+//    Instance< int > int_value; // OK
+////    const Instance< int > int_value = 0; // ERROR
+////    Instance< const int > int_value = 0; // ERROR
 
-////    Featured< Featured< int, ImplicitTool > > int_value; // OK
-////    const Featured< Featured< int, ImplicitTool > > int_value; // ERROR
-////    Featured< const Featured< int, ImplicitTool > > int_value; // ERROR
-////    Featured< Featured< const int, ImplicitTool > > int_value; // ERROR
+////    Instance< Instance< int, ImplicitTool > > int_value; // OK
+////    const Instance< Instance< int, ImplicitTool > > int_value; // ERROR
+////    Instance< const Instance< int, ImplicitTool > > int_value; // ERROR
+////    Instance< Instance< const int, ImplicitTool > > int_value; // ERROR
 
-////    Featured< UniqueEnd< int, ToolType > > int_value( UniqueEnd< int, ToolType >::make( 10 ) ); // OK
-////    const Featured< UniqueEnd< int, ToolType > > int_value; // OK
-////    Featured< const UniqueEnd< int, ToolType > > int_value; // OK
-////    Featured< UniqueEnd< const int, ToolType > > int_value; // ERROR
+////    Instance< UniqueEnd< int, ToolType > > int_value( UniqueEnd< int, ToolType >::make( 10 ) ); // OK
+////    const Instance< UniqueEnd< int, ToolType > > int_value; // OK
+////    Instance< const UniqueEnd< int, ToolType > > int_value; // OK
+////    Instance< UniqueEnd< const int, ToolType > > int_value; // ERROR
 
-////    Featured< SharedEnd< int, ToolType >  > int_value; // OK
-////    const Featured< SharedEnd< int, ToolType >  > int_value; // OK
-////    Featured< const SharedEnd< int, ToolType >  > int_value; // OK
-////    Featured< SharedEnd< const int, ToolType > > int_value; // ERROR
+////    Instance< SharedEnd< int, ToolType >  > int_value; // OK
+////    const Instance< SharedEnd< int, ToolType >  > int_value; // OK
+////    Instance< const SharedEnd< int, ToolType >  > int_value; // OK
+////    Instance< SharedEnd< const int, ToolType > > int_value; // ERROR
 
 //    (*&int_value) += 12345;
 //    *&asConst(int_value);
 
-//    Featured< ::std::string > name;
+//    Instance< ::std::string > name;
 //    name = "Hello";
 
-//    Featured< Featured< Item, Tool >, ImplicitTool > item;
+//    Instance< Instance< Item, Tool >, ImplicitTool > item;
 //    item->m_int = 67890;
 //    item->m_string = "Item";
 //    item->m_unique_string = "Changed unique string";
@@ -177,7 +177,7 @@ int main ( int /*argc*/, char ** /*argv*/ )
 //        << asConst(item)->m_refer_string << ::std::endl
 //    ;
 
-//    Featured< Featured< Item, Tool >, ImplicitTool > other_item;// = item;
+//    Instance< Instance< Item, Tool >, ImplicitTool > other_item;// = item;
 ////    (*&other_item ).m_refer = (*&asConst(item ).m_string;
 //    other_item = item;
 
@@ -202,34 +202,34 @@ int main ( int /*argc*/, char ** /*argv*/ )
 //        int m_member;
 //    };
 
-//    Featured< ExampleType > value;
+//    Instance< ExampleType > value;
 
 //    // Синтаксис подобный значению:
 //    // распределяет значение в соответствии с типом value.
 //    value = ExampleType();
 
 //    // Доступ к неконстантному внутреннему значению
-//    (*&value);  // совместим с типом отличным от Featured
+//    (*&value);  // совместим с типом отличным от Instance
 
 //    // Доступ к константному внутреннему значению
-//    (*&asConst(value)); // совместим с типом отличным от Featured
+//    (*&asConst(value)); // совместим с типом отличным от Instance
 
 //    // Доступ к неконстантному члену класса
-//    value->m_member;    // не совместим с типом отличным от Featured
-//    (&value)->m_member; // совместим с типом отличным от Featured
-//    (*&value).m_member; // совместим с типом отличным от Featured
+//    value->m_member;    // не совместим с типом отличным от Instance
+//    (&value)->m_member; // совместим с типом отличным от Instance
+//    (*&value).m_member; // совместим с типом отличным от Instance
 
 //    // Доступ к константному члену класса
-//    asConst(value)->m_member;      // не совместим с типом отличным от Featured
-//    (&asConst(value))->m_member;   // совместим с типом отличным от Featured
-//    (*&asConst(value)).m_member;   // совместим с типом отличным от Featured
+//    asConst(value)->m_member;      // не совместим с типом отличным от Instance
+//    (&asConst(value))->m_member;   // совместим с типом отличным от Instance
+//    (*&asConst(value)).m_member;   // совместим с типом отличным от Instance
 //}
 
 //void operatorExample ()
 //{
-//    Featured< int > test_value;
-//    Featured< int > left_value;
-//    Featured< int > right_value;
+//    Instance< int > test_value;
+//    Instance< int > left_value;
+//    Instance< int > right_value;
 //    int cpp_value = 1;
 
 //    left_value + right_value;
@@ -430,27 +430,27 @@ decltype(auto) squareBrackets ( _Refer refer, _Arguments && ... arguments )
 //    //using R1 = ::std::result_of_t< decltype( squareBrackets1< Container &, int > )&( Container &, int ) >;
 //}
 
-void testFeaturedValue ()
+void testInstanceValue ()
 {
-    { Featured< double > value; }
-    { Featured< double > value( double() ); }
-    { Featured< double > value = double(); (void)value; }
-    { Featured< double > value( Featured< double >() ); }
-    { Featured< double > value = Featured< double >(); (void)value; }
-    { Featured< double > value( Featured< int >() ); }
-    { Featured< double > value = Featured< int >(); (void)value; }
+    { Instance< double > value; }
+    { Instance< double > value( double() ); }
+    { Instance< double > value = double(); (void)value; }
+    { Instance< double > value( Instance< double >() ); }
+    { Instance< double > value = Instance< double >(); (void)value; }
+    { Instance< double > value( Instance< int >() ); }
+    { Instance< double > value = Instance< int >(); (void)value; }
 }
 
-void testFeaturedContainer ()
+void testInstanceContainer ()
 {
     using Container = ::std::vector< double >;
-    //using Container = Featured< ::std::vector< double >, Implicit::SharedTool >;
+    //using Container = Instance< ::std::vector< double >, Implicit::SharedTool >;
 
-    { Featured< Container > value; }
-    { Featured< Container > value( Container() ); }
-    { Featured< Container > value = Container(); (void)value; }
+    { Instance< Container > value; }
+    { Instance< Container > value( Container() ); }
+    { Instance< Container > value = Container(); (void)value; }
     {
-        Featured< Container > container;
+        Instance< Container > container;
         for ( int i = 0; i < 10; ++i )
             container->push_back( i );
 
@@ -467,8 +467,8 @@ void testFeaturedContainer ()
         for ( int i = 0; i < 10; ++i )
             container[ i ] = asConst( container )[ 9 - i ];
 
-        Featured< Container >()[0];
-        asConst( Featured< Container >() )[0];
+        Instance< Container >()[0];
+        asConst( Instance< Container >() )[0];
     }
 }
 
@@ -487,11 +487,11 @@ void testFeaturedContainer ()
 //    using SharedString = SharedEnd< String >;
 //    using ReferString = NoneEnd< String >;
 
-//    Featured< Int > m_int;
-//    Featured< String > m_string;
-//    Featured< UniqueString > m_unique_string;
-//    Featured< SharedString > m_shared_string;
-//    Featured< ReferString > m_refer_string;
+//    Instance< Int > m_int;
+//    Instance< String > m_string;
+//    Instance< UniqueString > m_unique_string;
+//    Instance< SharedString > m_shared_string;
+//    Instance< ReferString > m_refer_string;
 
 //    Item ()
 //        : m_int()
@@ -589,24 +589,24 @@ void testFeaturedContainer ()
 
 //void testConstructor ()
 //{
-////    using TestFeatured = Featured< TestType >;
-//    using TestFeatured = Featured< Optimal< TestType > >;
+////    using TestInstance = Instance< TestType >;
+//    using TestInstance = Instance< Optimal< TestType > >;
 
 //    // Конструктор без инициализации
 //    {
-//        TestFeatured value( InitializeType::NotInitialized );
+//        TestInstance value( InitializeType::NotInitialized );
 //        foo( value );
 //    }
 
 //    // Конструктор по умолчанию
 //    {
-//        TestFeatured value;
+//        TestInstance value;
 //        foo( value );
 //    }
 
 //    // Конструктор инициализации по значению и соответсвующий оператор равенства
 //    {
-//        TestFeatured value( "Hello!" );
+//        TestInstance value( "Hello!" );
 //        value = ::std::string( "Hello Memory!" );
 //        foo( value );
 //    }
@@ -615,23 +615,23 @@ void testFeaturedContainer ()
 //    {
 //        const TestType first_text = ::std::string( "Hello!" );
 //        const TestType second_text = ::std::string( "Hello Memory!" );
-//        TestFeatured value( first_text );
+//        TestInstance value( first_text );
 //        value = second_text;
 //        foo( value );
 //    }
 
 //    // Конструктор перемещения и соответсвующий оператор равенства
 //    {
-//        TestFeatured first( "Move test" );
-//        TestFeatured second( ::std::move( first ) );
+//        TestInstance first( "Move test" );
+//        TestInstance second( ::std::move( first ) );
 //        first = ::std::move( second );
 //        foo( first );
 //    }
 
 //    // Конструктор копирования и соответсвующий оператор равенства
 //    {
-//        TestFeatured first( "Copy test" );
-//        TestFeatured second( first );
+//        TestInstance first( "Copy test" );
+//        TestInstance second( first );
 //        second = first;
 //        foo( first );
 //    }
@@ -643,11 +643,11 @@ void testFeaturedContainer ()
 //    // Значения определенного типа
 ////    using UniqueInt = UniqueEnd< int, ::Cpp::Inplace::DefaultTool >;
 ////    using SharedInt = SharedEnd< int, ::Cpp::Inplace::DefaultTool >;
-//    using UniqueInt = Featured< int, ::Cpp::Inplace::DefaultTool >;
-//    using SharedInt = Featured< int, ::Cpp::Inplace::DefaultTool >;
+//    using UniqueInt = Instance< int, ::Cpp::Inplace::DefaultTool >;
+//    using SharedInt = Instance< int, ::Cpp::Inplace::DefaultTool >;
 
-//    Featured< UniqueInt > unique_int;
-//    Featured< SharedInt > shared_int;
+//    Instance< UniqueInt > unique_int;
+//    Instance< SharedInt > shared_int;
 
 //    shared_int = unique_int; // равенство на уровне внутренних значений.
 //}

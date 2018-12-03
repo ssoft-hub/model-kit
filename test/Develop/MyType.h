@@ -5,8 +5,8 @@
 
 struct MyType
 {
-    Featured< ::std::string > m_first_name;
-    Featured< ::std::string > m_last_name;
-    Featured< int > m_age;
-    Featured< double > m_stature;
+    Instance< ::std::string > m_first_name;
+    Instance< ::std::string > m_last_name;
+    Instance< int > m_age;
+    Instance< double > m_stature;
 };

@@ -1,2 +1,2 @@
-#include "ModelKit/Instance.h"
+#include "ModelKit/Featuring.h"
 #include "ModelKit/Utility.h"
