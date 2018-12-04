@@ -38,7 +38,7 @@ namespace Private
         using Pointer = ReferPointer< Refer >;
 
         static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must be a reference!" );
-        static_assert( !::is_featured< ::std::decay_t< Refer > >, "The template parameter _Refer must be a not featured type reference!" );
+        static_assert( !::is_instance< ::std::decay_t< Refer > >, "The template parameter _Refer must be a not instance type reference!" );
 
     private:
         Pointer m_pointer;
@@ -99,7 +99,7 @@ namespace Private
         using ValueRefer = ::SimilarRefer< Value, Refer >;
 
         static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must be a reference!" );
-        static_assert( ::is_featured< Instance >, "The template parameter _Refer must be a featured type reference!" );
+        static_assert( ::is_instance< Instance >, "The template parameter _Refer must be a instance type reference!" );
         static_assert( ::is_similar< Refer, ValueRefer >, "The Refer and ValueRefer must be similar types!" );
         static_assert( ::is_similar< Refer, HolderRefer >, "The Refer and HolderRefer must be similar types!" );
 

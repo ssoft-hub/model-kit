@@ -17,12 +17,90 @@ namespace Operator
 {
     namespace Private
     {
-        template < typename _Refer, typename ... _Arguments >
+        template < typename _Kind >
+        struct InvokeHelper;
+
+        struct FundamentalKind {};
+        struct BlockedInstanceKind {};
+        struct DefaultInstanceKind {};
+
+        template < typename _Returned >
+        struct OperatorKindHelper
+        {
+            using Returned = _Returned;
+            using Type = ::std::conditional_t< ::std::is_fundamental< Returned >::value || ::std::is_enum< Returned >::value,
+                FundamentalKind,
+                ::std::conditional_t< ::std::is_reference< Returned >::value,
+                    BlockedInstanceKind,
+                    DefaultInstanceKind > >;
+        };
+
+        template <>
+        struct InvokeHelper< FundamentalKind >
+        {
+            template < typename _InstanceRefer, typename _Invokable, typename ... _Arguments >
+            static decltype(auto) invoke ( _InstanceRefer instance, _Invokable invokable, _Arguments && ... arguments )
+            {
+                using ValueRefer = SimilarRefer< typename ::std::decay_t< _InstanceRefer >::Value, _InstanceRefer >;
+                return invokable( ::std::forward< ValueRefer >( InstanceGuard< _InstanceRefer >( ::std::forward< _InstanceRefer >( instance ) ).value() ), ::std::forward< _Arguments >( arguments ) ... );
+            }
+        };
+
+        template <>
+        struct InvokeHelper< BlockedInstanceKind >
+        {
+            template < typename _InstanceRefer, typename _Invokable, typename ... _Arguments >
+            static decltype(auto) invoke ( _InstanceRefer instance, _Invokable invokable, _Arguments && ... arguments )
+            {
+                using ValueRefer = SimilarRefer< typename ::std::decay_t< _InstanceRefer >::Value, _InstanceRefer >;
+                using Returned = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
+                using Result = ::std::remove_reference_t< Returned >;
+                using Tool = ::Invokable::FunctionTool< _InstanceRefer, _Invokable, _Arguments ... >;
+
+                return Instance< Result, Tool >( ::std::forward< _InstanceRefer >( instance ), invokable, ::std::forward< _Arguments >( arguments ) ...  );
+            }
+        };
+
+        template <>
+        struct InvokeHelper< DefaultInstanceKind >
+        {
+            template < typename _InstanceRefer, typename _Invokable, typename ... _Arguments >
+            static decltype(auto) invoke ( _InstanceRefer instance, _Invokable invokable, _Arguments && ... arguments )
+            {
+                using ValueRefer = SimilarRefer< typename ::std::decay_t< _InstanceRefer >::Value, _InstanceRefer >;
+                using Returned = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
+                using Result = ::std::remove_reference_t< Returned >;
+                using Tool = ::Inplace::DefaultTool;
+
+                return Instance< Result, Tool >( invokable( ::std::forward< ValueRefer >( InstanceGuard< _InstanceRefer >( ::std::forward< _InstanceRefer >( instance ) ).value() ), ::std::forward< _Arguments >( arguments ) ... ) );
+            }
+        };
+    }
+
+    template < typename _Returned >
+    using OperatorKind = typename Private::OperatorKindHelper< _Returned >::Type;
+
+    template < typename _InstanceRefer, typename _Invokable, typename ... _Arguments >
+    static decltype(auto) invoke ( _InstanceRefer instance, _Invokable invokable, _Arguments && ... arguments )
+    {
+        using ValueRefer = SimilarRefer< typename ::std::remove_reference_t< _InstanceRefer >::Value, _InstanceRefer >;
+        using Returned = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
+        //using Returned = decltype( ::std::declval< _Invokable >().operator () ( ::std::declval< ValueRefer >(), ::std::declval< _Arguments >() ... ) );
+        return Private::InvokeHelper< OperatorKind< Returned > >:: template invoke< _InstanceRefer >(
+            ::std::forward< _InstanceRefer >( instance ), invokable, ::std::forward< _Arguments >( arguments ) ... );
+    }
+};
+
+namespace Operator
+{
+    namespace Private
+    {
+        template < typename _Refer, typename _Argument >
         struct SquareBrackets
         {
-            decltype(auto) operator () ( _Refer refer, _Arguments && ... arguments )
+            decltype(auto) operator () ( _Refer refer, _Argument && argument )
             {
-                return refer.operator[] ( ::std::forward< _Arguments >( arguments ) ... );
+                return refer.operator[] ( ::std::forward< _Argument >( argument ) );
             }
         };
     }
@@ -44,51 +122,168 @@ namespace Operator
 {
     namespace Private
     {
-        template < bool _use_featured >
-        struct InvokeHelper;
-
-        template <>
-        struct InvokeHelper< true >
+        template < typename _Refer >
+        struct UnaryPrefixPlus
         {
-            template < typename _InstanceRefer, typename _Invokable, typename ... _Arguments >
-            static decltype(auto) invoke ( _InstanceRefer featured, _Invokable invokable, _Arguments && ... arguments )
+            static_assert( !is_instance< ::std::decay_t< _Refer > >, "sds" );
+
+            using Result = decltype( + std::declval< _Refer >() );
+            Result operator () ( _Refer refer )
             {
-                using ValueRefer = SimilarRefer< typename ::std::decay_t< _InstanceRefer >::Value, _InstanceRefer >;
-                using Returned = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
-                using Result = ::std::remove_reference_t< Returned >;
-                using Tool = ::Invokable::FunctionTool< _InstanceRefer, _Invokable, _Arguments ... >;
-
-                return Instance< Result, Tool >( ::std::forward< _InstanceRefer >( featured ), invokable, ::std::forward< _Arguments >( arguments ) ...  );
-            }
-        };
-
-        template <>
-        struct InvokeHelper< false >
-        {
-            template < typename _InstanceRefer, typename _Invokable, typename ... _Arguments >
-            static decltype(auto) invoke ( _InstanceRefer featured, _Invokable invokable, _Arguments && ... arguments )
-            {
-                using ValueRefer = SimilarRefer< typename ::std::decay_t< _InstanceRefer >::Value, _InstanceRefer >;
-                using Returned = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
-                using Result = ::std::remove_reference_t< Returned >;
-                using Tool = ::Inplace::DefaultTool;
-
-                return Instance< Result, Tool >( invokable( ::std::forward< ValueRefer >( InstanceGuard< _InstanceRefer >( featured ).value() ), ::std::forward< _Arguments >( arguments ) ... ) );
+                return + ::std::forward< _Refer >( refer );
             }
         };
     }
 
-    template < typename _InstanceRefer, typename _Invokable, typename ... _Arguments >
-    static decltype(auto) invoke ( _InstanceRefer featured, _Invokable invokable, _Arguments && ... arguments )
+    namespace Private
     {
-        using ValueRefer = SimilarRefer< typename ::std::remove_reference_t< _InstanceRefer >::Value, _InstanceRefer >;
-        using Returned = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
-
-        // Возвращаем результат в виде Fetured< Result, Inplace::DefaultTool >, если оператор возвращает значение.
-        // Возвращаем результат в виде Fetured< Result, Member::FunctionTool >, если оператор возвращает ссылку.
-        return Private::InvokeHelper< ::std::is_reference< Returned >::value >:: template invoke< _InstanceRefer >(
-            ::std::forward< _InstanceRefer >( featured ), invokable, ::std::forward< _Arguments >( arguments ) ... );
+        template < typename _Refer >
+        struct UnaryPrefixMinus
+        {
+            decltype(auto) operator () ( _Refer refer )
+            {
+                return - ::std::forward< _Refer >( refer );
+            }
+        };
     }
-};
 
+    namespace Private
+    {
+        template < typename _Refer >
+        struct UnaryPrefixPlusPlus
+        {
+            decltype(auto) operator () ( _Refer refer )
+            {
+                return ++ ::std::forward< _Refer >( refer );
+            }
+        };
+    }
+
+    namespace Private
+    {
+        template < typename _Refer >
+        struct UnaryPrefixMinusMinus
+        {
+            decltype(auto) operator () ( _Refer refer )
+            {
+                return -- ::std::forward< _Refer >( refer );
+            }
+        };
+    }
+
+    namespace Private
+    {
+        template < typename _Refer >
+        struct UnaryPostfixPlusPlus
+        {
+            decltype(auto) operator () ( _Refer refer )
+            {
+                return ::std::forward< _Refer >( refer ) ++;
+            }
+        };
+    }
+
+    namespace Private
+    {
+        template < typename _Refer >
+        struct UnaryPostfixMinusMinus
+        {
+            decltype(auto) operator () ( _Refer refer )
+            {
+                return ::std::forward< _Refer >( refer ) --;
+            }
+        };
+    }
+
+    namespace Private
+    {
+        template < typename _Refer >
+        struct UnaryPrefixBitwiseNot
+        {
+            decltype(auto) operator () ( _Refer refer )
+            {
+                return ~ ::std::forward< _Refer >( refer );
+            }
+        };
+    }
+
+    namespace Private
+    {
+        template < typename _Refer >
+        struct UnaryPrefixLogicalNot
+        {
+            decltype(auto) operator () ( _Refer refer )
+            {
+                return ! ::std::forward< _Refer >( refer );
+            }
+        };
+    }
+}
+
+namespace Operator
+{
+    namespace Private
+    {
+        template < typename _Right, typename _Left >
+        struct IsEqual
+        {
+            decltype(auto) operator () ( _Right && refer, _Left && argument )
+            {
+                return ::std::forward< _Right >( refer ) == ::std::forward< _Left >( argument );
+            }
+        };
+
+        template < typename _Refer, typename _Argument >
+        struct NotEqual
+        {
+            decltype(auto) operator () ( _Refer refer, _Argument && argument )
+            {
+                return ::std::forward< _Refer >( refer ) = ::std::forward< _Argument >( argument );
+            }
+        };
+
+        template < typename _Refer, typename _Argument >
+        struct BinaryRightLess
+        {
+            decltype(auto) operator () ( _Refer refer, _Argument && argument )
+            {
+                return refer.operator < ( ::std::forward< _Argument >( argument ) );
+            }
+        };
+
+        template < typename _Refer, typename _Argument >
+        struct LessOrEqual
+        {
+            decltype(auto) operator () ( _Refer refer, _Argument && argument )
+            {
+                return refer.operator <= ( ::std::forward< _Argument >( argument ) );
+            }
+        };
+
+        template < typename _Refer, typename _Argument >
+        struct Greater
+        {
+            decltype(auto) operator () ( _Refer refer, _Argument && argument )
+            {
+                return refer.operator > ( ::std::forward< _Argument >( argument ) );
+            }
+        };
+
+        template < typename _Refer, typename _Argument >
+        struct GreaterOrEqual
+        {
+            decltype(auto) operator () ( _Refer refer, _Argument && argument )
+            {
+                return refer.operator >= ( ::std::forward< _Argument >( argument ) );
+            }
+        };
+    }
+}
+
+namespace Operator
+{
+    namespace Private
+    {
+    }
+}
 #endif

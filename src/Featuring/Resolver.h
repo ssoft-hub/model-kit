@@ -149,19 +149,19 @@ namespace Private
         using NextResolver = InstanceResolver< Instance, OtherValueRefer >;
         using AccessRefer = typename NextResolver::AccessRefer;
 
-        static_assert( ::is_featured< Instance >, "The template parameter _Instance must be a featured!" );
+        static_assert( ::is_instance< Instance >, "The template parameter _Instance must be a instance!" );
         static_assert( ::std::is_reference< OtherRefer >::value, "The template parameter _OtherRefer must be a reference!" );
-        static_assert( ::is_featured< OtherInstance >, "The template parameter _OtherRefer must be a featured type reference!" );
+        static_assert( ::is_instance< OtherInstance >, "The template parameter _OtherRefer must be a instance type reference!" );
         static_assert( ::is_similar< OtherRefer, OtherValueRefer >, "The OtherRefer and OtherValueRefer must be similar types!" );
 
     private:
-        OtherInstanceGuard m_featured_pointer;
+        OtherInstanceGuard m_instance_pointer;
         NextResolver m_next_resolver;
 
     public:
         InstanceThisPathOfOtherResolver ( OtherRefer other )
-            : m_featured_pointer( ::std::forward< OtherRefer >( other ) )
-            , m_next_resolver( ::std::forward< OtherValueRefer >( m_featured_pointer.value() ) )
+            : m_instance_pointer( ::std::forward< OtherRefer >( other ) )
+            , m_next_resolver( ::std::forward< OtherValueRefer >( m_instance_pointer.value() ) )
         {
         }
 
@@ -186,7 +186,7 @@ namespace Private
         using OtherValueGuard = ValueGuard< OtherRefer >;
         using AccessRefer = typename OtherValueGuard::AccessRefer;
 
-        static_assert( ::is_featured< Instance >, "The template parameter _Instance must be a featured!" );
+        static_assert( ::is_instance< Instance >, "The template parameter _Instance must be a instance!" );
         static_assert( ::std::is_reference< OtherRefer >::value, "The template parameter _OtherRefer must be a reference!" );
 
     private:

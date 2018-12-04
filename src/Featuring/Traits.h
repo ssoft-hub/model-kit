@@ -20,7 +20,7 @@ namespace Private
  * Признак того, что экземпляр данного типа является Instance.
  */
 template < typename _Test >
-static constexpr bool is_featured = ::IsInstance< _Test >::value;
+static constexpr bool is_instance = ::IsInstance< _Test >::value;
 
 /*!
  * Признак совместимости типов.
@@ -128,24 +128,22 @@ namespace Private
         static constexpr bool is_const = ::std::is_const< EtalonValue >::value;
         static constexpr bool is_volitile = ::std::is_volatile< EtalonValue >::value;
 
-
-
         using Type = ::std::conditional_t< is_volitile,
             ::std::conditional_t< is_rvalue,
-                volatile _Type &&,
+                ::std::add_rvalue_reference_t< ::std::add_volatile_t< _Type > >,
                 ::std::conditional_t < is_lvalue,
-                    volatile _Type &,
-                    volatile _Type > >,
+                    ::std::add_lvalue_reference_t< ::std::add_volatile_t< _Type > >,
+                    ::std::add_volatile_t< _Type > > >,
             ::std::conditional_t< is_const,
                 ::std::conditional_t< is_rvalue,
-                    const _Type &&,
+                    ::std::add_rvalue_reference_t< ::std::add_const_t< _Type > >,
                     ::std::conditional_t < is_lvalue,
-                        const _Type &,
-                        const _Type > >,
+                        ::std::add_lvalue_reference_t< ::std::add_const_t< _Type > >,
+                        ::std::add_const_t< _Type > > >,
                 ::std::conditional_t< is_rvalue,
-                   _Type &&,
+                    ::std::add_rvalue_reference_t< _Type >,
                     ::std::conditional_t< is_lvalue,
-                        _Type &,
+                        ::std::add_lvalue_reference_t< _Type >,
                         _Type > > > >;
     };
 }

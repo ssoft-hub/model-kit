@@ -21,8 +21,8 @@ namespace Invokable
             InstanceGuard m_feature_guard;
             ResultRefer m_result_refer;
 
-            Holder ( _InstanceRefer featured, _Invokable invokable, _Arguments && ... arguments )
-                : m_feature_guard( ::std::forward< _InstanceRefer >( featured ) )
+            Holder ( _InstanceRefer instance, _Invokable invokable, _Arguments && ... arguments )
+                : m_feature_guard( ::std::forward< _InstanceRefer >( instance ) )
                 , m_result_refer( ::std::forward< ResultRefer >( invokable( ::std::forward< ValueRefer >( m_feature_guard.value() ), ::std::forward< _Arguments >( arguments ) ...  ) ) )
             {
             }

@@ -57,6 +57,46 @@ public:
     template < typename ... _Arguments > _Type && operator () ( _Arguments && ... ) && { ::std::cout << "operator () &&" << ::std::endl; return ::std::forward< _Type >( m_value ); }
     template < typename ... _Arguments > const _Type && operator () ( _Arguments && ... ) const && { ::std::cout << "operator () const &&" << ::std::endl; return ::std::forward< const _Type >( m_value ); }
 
+    void operator + () & { ::std::cout << "operator + &" << ::std::endl; }
+    void operator + () const & { ::std::cout << "operator + const &" << ::std::endl; }
+    void operator + () && { ::std::cout << "operator + &&" << ::std::endl; }
+    void operator + () const && { ::std::cout << "operator + const &&" << ::std::endl; }
+
+    void operator - () & { ::std::cout << "operator - &" << ::std::endl; }
+    void operator - () const & { ::std::cout << "operator - const &" << ::std::endl; }
+    void operator - () && { ::std::cout << "operator - &&" << ::std::endl; }
+    void operator - () const && { ::std::cout << "operator - const &&" << ::std::endl; }
+
+    void operator ++ () & { ::std::cout << "operator ++ &" << ::std::endl; }
+    void operator ++ () const & { ::std::cout << "operator ++ const &" << ::std::endl; }
+    void operator ++ () && { ::std::cout << "operator ++ &&" << ::std::endl; }
+    void operator ++ () const && { ::std::cout << "operator ++ const &&" << ::std::endl; }
+
+    void operator -- () & { ::std::cout << "operator -- &" << ::std::endl; }
+    void operator -- () const & { ::std::cout << "operator -- const &" << ::std::endl; }
+    void operator -- () && { ::std::cout << "operator -- &&" << ::std::endl; }
+    void operator -- () const && { ::std::cout << "operator -- const &&" << ::std::endl; }
+
+    void operator ++ ( int ) & { ::std::cout << "operator _++ &" << ::std::endl; }
+    void operator ++ ( int ) const & { ::std::cout << "operator _++ const &" << ::std::endl; }
+    void operator ++ ( int ) && { ::std::cout << "operator _++ &&" << ::std::endl; }
+    void operator ++ ( int ) const && { ::std::cout << "operator _++ const &&" << ::std::endl; }
+
+    void operator -- ( int ) & { ::std::cout << "operator _-- &" << ::std::endl; }
+    void operator -- ( int ) const & { ::std::cout << "operator _-- const &" << ::std::endl; }
+    void operator -- ( int ) && { ::std::cout << "operator _-- &&" << ::std::endl; }
+    void operator -- ( int ) const && { ::std::cout << "operator _-- const &&" << ::std::endl; }
+
+    void operator ~ () & { ::std::cout << "operator ~ &" << ::std::endl; }
+    void operator ~ () const & { ::std::cout << "operator ~ const &" << ::std::endl; }
+    void operator ~ () && { ::std::cout << "operator ~ &&" << ::std::endl; }
+    void operator ~ () const && { ::std::cout << "operator ~ const &&" << ::std::endl; }
+
+    void operator ! () & { ::std::cout << "operator ! &" << ::std::endl; }
+    void operator ! () const & { ::std::cout << "operator ! const &" << ::std::endl; }
+    void operator ! () && { ::std::cout << "operator ! &&" << ::std::endl; }
+    void operator ! () const && { ::std::cout << "operator ! const &&" << ::std::endl; }
+
     template < typename ... _Arguments >
     static ThisType make ( _Arguments && ... arguments ) { return Data( ::std::forward< _Arguments >( arguments ) ... ); }
 };
@@ -125,169 +165,185 @@ void testUnaryOperators ()
 {
     using TestData = Instance< Data< int > >;
 
-    TestData impl_int = 10;
-    impl_int[0];
-    asConst( impl_int )[0];
+    TestData impl_data = 10;
+    impl_data[0];
+    asConst( impl_data )[0];
     TestData()[0];
     asConst( TestData() )[0];
 
-    impl_int(0, 1);
-    asConst( impl_int )(0, 1);
+    impl_data(0, 1);
+    asConst( impl_data )(0, 1);
     TestData()(0, 1);
     asConst( TestData() )(0, 1);
 
-//    // lvalue
-//    +impl_int;
-//    -impl_int;
-//    ++impl_int;
-//    --impl_int;
-//    !impl_int;
-//    ~impl_int;
+    // lvalue
+    +impl_data;
+    +asConst(impl_data);
+    -impl_data;
+    -asConst(impl_data);
+    ++impl_data;
+    ++asConst(impl_data);
+    --impl_data;
+    --asConst(impl_data);
+    impl_data++;
+    asConst(impl_data)++;
+    impl_data--;
+    asConst(impl_data)--;
+    !impl_data;
+    ~impl_data;
 
-//    // rvalue
-//    +IntImpl();
-//    -IntImpl();
-//    ++IntImpl();
-//    --IntImpl();
-//    !IntImpl();
-//    ~IntImpl();
-//}
+    // rvalue
+    +TestData();
+    +asConst( TestData() );
+    -TestData();
+    -asConst( TestData() );
+    ++TestData();
+    ++asConst( TestData() );
+    --TestData();
+    --asConst( TestData() );
+    TestData()++;
+    asConst(TestData())++;
+    TestData()--;
+    asConst(TestData())--;
+    !TestData();
+    ~TestData();
+}
 
-//void testBinaryOperators ()
-//{
-//    using IntCpp = Instance< int, ::Cpp::Inplace::DefaultTool >;
-//    using IntImpl = Instance< int, ::Std::Shared::ImplicitTool >;
+void testBinaryOperators ()
+{
+    using IntCpp = Instance< int, ::Inplace::DefaultTool >;
+    using IntImpl = Instance< int, ::Implicit::SharedTool >;
 
-//    IntCpp cpp_int = 5;
-//    IntImpl impl_int = 10;
+    IntCpp cpp_int = 5;
+    IntImpl impl_int = 10;
 
-//    // lvalue / lvalue
-//    cpp_int + impl_int;
-//    cpp_int - impl_int;
-//    cpp_int * impl_int;
-//    cpp_int / impl_int;
-//    cpp_int % impl_int;
+    // lvalue / lvalue
+    cpp_int + impl_int;
+    cpp_int - impl_int;
+    cpp_int * impl_int;
+    cpp_int / impl_int;
+    cpp_int % impl_int;
 
-//    cpp_int == impl_int;
-//    cpp_int != impl_int;
-//    cpp_int > impl_int;
-//    cpp_int < impl_int;
-//    cpp_int >= impl_int;
-//    cpp_int <= impl_int;
-//    cpp_int && impl_int;
-//    cpp_int || impl_int;
-//    cpp_int & impl_int;
-//    cpp_int | impl_int;
-//    cpp_int ^ impl_int;
-//    cpp_int >> impl_int;
-//    cpp_int << impl_int;
+    cpp_int == impl_int;
+    cpp_int != impl_int;
+    cpp_int > impl_int;
+    cpp_int < impl_int;
+    cpp_int >= impl_int;
+    cpp_int <= impl_int;
+    cpp_int && impl_int;
+    cpp_int || impl_int;
+    cpp_int & impl_int;
+    cpp_int | impl_int;
+    cpp_int ^ impl_int;
+    cpp_int >> impl_int;
+    cpp_int << impl_int;
 
-//    cpp_int += impl_int;
-//    cpp_int -= impl_int;
-//    cpp_int *= impl_int;
-//    cpp_int /= impl_int;
-//    cpp_int %= impl_int;
-//    cpp_int &= impl_int;
-//    cpp_int |= impl_int;
-//    cpp_int ^= impl_int;
-//    cpp_int >>= impl_int;
-//    cpp_int <<= impl_int;
+    cpp_int += impl_int;
+    cpp_int -= impl_int;
+    cpp_int *= impl_int;
+    cpp_int /= impl_int;
+    cpp_int %= impl_int;
+    cpp_int &= impl_int;
+    cpp_int |= impl_int;
+    cpp_int ^= impl_int;
+    cpp_int >>= impl_int;
+    cpp_int <<= impl_int;
 
-//    // lvalue / rvalue
-//    cpp_int + IntImpl();
-//    cpp_int - IntImpl();
-//    cpp_int * IntImpl();
-//    cpp_int / IntImpl();
-//    cpp_int % IntImpl();
+    // lvalue / rvalue
+    cpp_int + IntImpl();
+    cpp_int - IntImpl();
+    cpp_int * IntImpl();
+    cpp_int / IntImpl();
+    cpp_int % IntImpl();
 
-//    cpp_int == IntImpl();
-//    cpp_int != IntImpl();
-//    cpp_int > IntImpl();
-//    cpp_int < IntImpl();
-//    cpp_int >= IntImpl();
-//    cpp_int <= IntImpl();
-//    cpp_int && IntImpl();
-//    cpp_int || IntImpl();
-//    cpp_int & IntImpl();
-//    cpp_int | IntImpl();
-//    cpp_int ^ IntImpl();
-//    cpp_int >> IntImpl();
-//    cpp_int << IntImpl();
+    cpp_int == IntImpl();
+    cpp_int != IntImpl();
+    cpp_int > IntImpl();
+    cpp_int < IntImpl();
+    cpp_int >= IntImpl();
+    cpp_int <= IntImpl();
+    cpp_int && IntImpl();
+    cpp_int || IntImpl();
+    cpp_int & IntImpl();
+    cpp_int | IntImpl();
+    cpp_int ^ IntImpl();
+    cpp_int >> IntImpl();
+    cpp_int << IntImpl();
 
-//    cpp_int += IntImpl();
-//    cpp_int -= IntImpl();
-//    cpp_int *= IntImpl();
-//    cpp_int /= IntImpl();
-//    cpp_int %= IntImpl();
-//    cpp_int &= IntImpl();
-//    cpp_int |= IntImpl();
-//    cpp_int ^= IntImpl();
-//    cpp_int >>= IntImpl();
-//    cpp_int <<= IntImpl();
+    cpp_int += IntImpl();
+    cpp_int -= IntImpl();
+    cpp_int *= IntImpl();
+    cpp_int /= IntImpl();
+    cpp_int %= IntImpl();
+    cpp_int &= IntImpl();
+    cpp_int |= IntImpl();
+    cpp_int ^= IntImpl();
+    cpp_int >>= IntImpl();
+    cpp_int <<= IntImpl();
 
-//    // rvalue / lvalue
-//    IntCpp() + impl_int;
-//    IntCpp() - impl_int;
-//    IntCpp() * impl_int;
-//    IntCpp() / impl_int;
-//    IntCpp() % impl_int;
+    // rvalue / lvalue
+    IntCpp() + impl_int;
+    IntCpp() - impl_int;
+    IntCpp() * impl_int;
+    IntCpp() / impl_int;
+    IntCpp() % impl_int;
 
-//    IntCpp() == impl_int;
-//    IntCpp() != impl_int;
-//    IntCpp() > impl_int;
-//    IntCpp() < impl_int;
-//    IntCpp() >= impl_int;
-//    IntCpp() <= impl_int;
-//    IntCpp() && impl_int;
-//    IntCpp() || impl_int;
-//    IntCpp() & impl_int;
-//    IntCpp() | impl_int;
-//    IntCpp() ^ impl_int;
-//    IntCpp() >> impl_int;
-//    IntCpp() << impl_int;
+    IntCpp() == impl_int;
+    IntCpp() != impl_int;
+    IntCpp() > impl_int;
+    IntCpp() < impl_int;
+    IntCpp() >= impl_int;
+    IntCpp() <= impl_int;
+    IntCpp() && impl_int;
+    IntCpp() || impl_int;
+    IntCpp() & impl_int;
+    IntCpp() | impl_int;
+    IntCpp() ^ impl_int;
+    IntCpp() >> impl_int;
+    IntCpp() << impl_int;
 
-//    IntCpp() += impl_int;
-//    IntCpp() -= impl_int;
-//    IntCpp() *= impl_int;
-//    IntCpp() /= impl_int;
-//    IntCpp() %= impl_int;
-//    IntCpp() &= impl_int;
-//    IntCpp() |= impl_int;
-//    IntCpp() ^= impl_int;
-//    IntCpp() >>= impl_int;
-//    IntCpp() <<= impl_int;
+    IntCpp() += impl_int;
+    IntCpp() -= impl_int;
+    IntCpp() *= impl_int;
+    IntCpp() /= impl_int;
+    IntCpp() %= impl_int;
+    IntCpp() &= impl_int;
+    IntCpp() |= impl_int;
+    IntCpp() ^= impl_int;
+    IntCpp() >>= impl_int;
+    IntCpp() <<= impl_int;
 
-//    // rvalue / rvalue
-//    IntCpp() + IntImpl();
-//    IntCpp() - IntImpl();
-//    IntCpp() * IntImpl();
-//    IntCpp() / IntImpl();
-//    IntCpp() % IntImpl();
+    // rvalue / rvalue
+    IntCpp() + IntImpl();
+    IntCpp() - IntImpl();
+    IntCpp() * IntImpl();
+    IntCpp() / IntImpl();
+    IntCpp() % IntImpl();
 
-//    IntCpp() == IntImpl();
-//    IntCpp() != IntImpl();
-//    IntCpp() > IntImpl();
-//    IntCpp() < IntImpl();
-//    IntCpp() >= IntImpl();
-//    IntCpp() <= IntImpl();
-//    IntCpp() && IntImpl();
-//    IntCpp() || IntImpl();
-//    IntCpp() & IntImpl();
-//    IntCpp() | IntImpl();
-//    IntCpp() ^ IntImpl();
-//    IntCpp() >> IntImpl();
-//    IntCpp() << IntImpl();
+    IntCpp() == IntImpl();
+    IntCpp() != IntImpl();
+    IntCpp() > IntImpl();
+    IntCpp() < IntImpl();
+    IntCpp() >= IntImpl();
+    IntCpp() <= IntImpl();
+    IntCpp() && IntImpl();
+    IntCpp() || IntImpl();
+    IntCpp() & IntImpl();
+    IntCpp() | IntImpl();
+    IntCpp() ^ IntImpl();
+    IntCpp() >> IntImpl();
+    IntCpp() << IntImpl();
 
-//    IntCpp() += IntImpl();
-//    IntCpp() -= IntImpl();
-//    IntCpp() *= IntImpl();
-//    IntCpp() /= IntImpl();
-//    IntCpp() %= IntImpl();
-//    IntCpp() &= IntImpl();
-//    IntCpp() |= IntImpl();
-//    IntCpp() ^= IntImpl();
-//    IntCpp() >>= IntImpl();
-//    IntCpp() <<= IntImpl();
+    IntCpp() += IntImpl();
+    IntCpp() -= IntImpl();
+    IntCpp() *= IntImpl();
+    IntCpp() /= IntImpl();
+    IntCpp() %= IntImpl();
+    IntCpp() &= IntImpl();
+    IntCpp() |= IntImpl();
+    IntCpp() ^= IntImpl();
+    IntCpp() >>= IntImpl();
+    IntCpp() <<= IntImpl();
 }
 
 //#include <vector>

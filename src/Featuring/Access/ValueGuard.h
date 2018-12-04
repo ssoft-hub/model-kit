@@ -40,50 +40,50 @@ namespace Private
         using AccessRefer = Refer;
 
         static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must be a reference!" );
-        static_assert( !::is_featured< ::std::decay_t< Refer > >, "The template parameter _Refer must be a not featured type reference!" );
+        static_assert( !::is_instance< ::std::decay_t< Refer > >, "The template parameter _Refer must be a not instance type reference!" );
 
     private:
-        Guard m_featured_guard;
+        Guard m_instance_guard;
 
     public:
         constexpr DefaultValueGuard ()
-            : m_featured_guard()
+            : m_instance_guard()
         {
         }
 
         DefaultValueGuard ( Refer refer )
-            : m_featured_guard( ::std::forward< Refer >( refer ) )
+            : m_instance_guard( ::std::forward< Refer >( refer ) )
         {
         }
 
         DefaultValueGuard ( Guard && other )
-            : m_featured_guard( ::std::forward< Guard >( other ) )
+            : m_instance_guard( ::std::forward< Guard >( other ) )
         {
         }
 
         DefaultValueGuard ( ThisType && other )
-            : m_featured_guard( ::std::forward< Guard >( other.m_featured_guard ) )
+            : m_instance_guard( ::std::forward< Guard >( other.m_instance_guard ) )
         {
         }
 
         constexpr bool operator ! () const
         {
-            return !m_featured_guard;
+            return !m_instance_guard;
         }
 
         constexpr AccessRefer operator * () const
         {
-            return ::std::forward< AccessRefer >( *m_featured_guard );
+            return ::std::forward< AccessRefer >( *m_instance_guard );
         }
 
         constexpr const Guard & operator -> () const &
         {
-            return m_featured_guard;
+            return m_instance_guard;
         }
 
         constexpr const Guard && operator -> () const &&
         {
-            return ::std::forward< const Guard >( m_featured_guard );
+            return ::std::forward< const Guard >( m_instance_guard );
         }
     };
 }
@@ -124,35 +124,35 @@ namespace Private
         using AccessRefer = typename ValueGuard::AccessRefer;
 
         static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must be a reference!" );
-        static_assert( ::is_featured< Instance >, "The template parameter _Refer must be a featured type reference!" );
+        static_assert( ::is_instance< Instance >, "The template parameter _Refer must be a instance type reference!" );
         static_assert( ::is_similar< Refer, ValueRefer >, "The Refer and ValueRefer must be similar types!" );
         static_assert( ::is_similar< Refer, HolderRefer >, "The Refer and HolderRefer must be similar types!" );
 
     private:
-        InstanceGuard m_featured_guard;
+        InstanceGuard m_instance_guard;
         ValueGuard m_value_guard;
 
     public:
         constexpr SpecialValueGuard ()
-            : m_featured_guard()
+            : m_instance_guard()
             , m_value_guard()
         {
         }
 
         SpecialValueGuard ( _Refer refer )
-            : m_featured_guard( ::std::forward< _Refer >( refer ) )
-            , m_value_guard( ::std::forward< ValueRefer >( Tool::value( ::std::forward< HolderRefer >( (*m_featured_guard).m_holder ) ) ) )
+            : m_instance_guard( ::std::forward< _Refer >( refer ) )
+            , m_value_guard( ::std::forward< ValueRefer >( Tool::value( ::std::forward< HolderRefer >( (*m_instance_guard).m_holder ) ) ) )
         {
         }
 
         SpecialValueGuard ( InstanceGuard && other )
-            : m_featured_guard( ::std::forward< InstanceGuard >( other ) )
-            , m_value_guard( ::std::forward< ValueRefer >( Tool::value( ::std::forward< HolderRefer >( (*m_featured_guard).m_holder ) ) ) )
+            : m_instance_guard( ::std::forward< InstanceGuard >( other ) )
+            , m_value_guard( ::std::forward< ValueRefer >( Tool::value( ::std::forward< HolderRefer >( (*m_instance_guard).m_holder ) ) ) )
         {
         }
 
         SpecialValueGuard ( ThisType && other )
-            : m_featured_guard( ::std::forward< InstanceGuard >( other.m_featured_guard ) )
+            : m_instance_guard( ::std::forward< InstanceGuard >( other.m_instance_guard ) )
             , m_value_guard( ::std::forward< ValueGuard >( other.m_value_guard ) )
         {
         }

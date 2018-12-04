@@ -62,7 +62,7 @@ struct My
 
 void compileTestInstanceTrancpatancy ()
 {
-    Instance< My > featured;
+    Instance< My > instance;
     My value;
 
     My().rvalueMethod();
@@ -97,15 +97,15 @@ void compileTestInstanceTrancpatancy ()
     Instance< My >()->lvalueConstMethod();
     asConst( Instance< My >() )->lvalueConstMethod();
 
-    featured->lvalueMethod();
-    featured->lvalueConstMethod();
+    instance->lvalueMethod();
+    instance->lvalueConstMethod();
     value.lvalueMethod();
     value.lvalueConstMethod();
 
     isSimilar( Instance< My >(), My() );
     isSimilar( Instance< My >(), *&Instance< My >() );
-    isSimilar( featured, value );
-    isSimilar( featured, *&featured );
+    isSimilar( instance, value );
+    isSimilar( instance, *&instance );
 }
 
 extern void testResultOf();
@@ -115,6 +115,8 @@ extern void testInstanceContainer ();
 extern void testConstructors ();
 extern void testSameToolConstructors ();
 extern void testDiffToolConstructors ();
+
+extern void testUnaryOperators ();
 
 int main ( int /*argc*/, char ** /*argv*/ )
 {
@@ -126,6 +128,7 @@ int main ( int /*argc*/, char ** /*argv*/ )
     //testResultOf();
     testInstanceContainer();
 
+    testUnaryOperators();
 //    testMemberOperators();
 //    testConstructor();
 //    testAllTool();
