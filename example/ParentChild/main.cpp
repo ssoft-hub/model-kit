@@ -499,11 +499,11 @@ int main ( int /*narg*/, char ** /*varg*/ )
 //void foo ()
 //{
 //    Test test;
-//    TypeInstance type_featured;
-//    InRead in_read( const_type_featured );
-////    ConstTypeInstance const_type_featured;
+//    TypeInstance type_instance;
+//    InRead in_read( const_type_instance );
+////    ConstTypeInstance const_type_instance;
 
-//    test.setReadableValue( type_featured );
+//    test.setReadableValue( type_instance );
 //    test.setReadableValue( in_read );
 ////    test.setReadableValue( in_read );
 //}
