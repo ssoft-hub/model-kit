@@ -198,12 +198,32 @@ public:
         return ::std::forward< const ThisType >( *this );
     }
 
+    ValueGuard< volatile ThisType && > operator -> () volatile &&
+    {
+        return ::std::forward< volatile ThisType >( *this );
+    }
+
+    ValueGuard< const volatile ThisType && > operator -> () const volatile &&
+    {
+        return ::std::forward< const volatile ThisType >( *this );
+    }
+
     ValueGuard< ThisType & > operator -> () &
     {
         return *this;
     }
 
     ValueGuard< const ThisType & > operator -> () const &
+    {
+        return *this;
+    }
+
+    ValueGuard< volatile ThisType & > operator -> () volatile &
+    {
+        return *this;
+    }
+
+    ValueGuard< const volatile ThisType & > operator -> () const volatile &
     {
         return *this;
     }
@@ -219,6 +239,16 @@ public:
         return ::std::forward< const ThisType >( *this );
     }
 
+    ValueGuard< volatile ThisType && > operator & () volatile &&
+    {
+        return ::std::forward< const ThisType >( *this );
+    }
+
+    ValueGuard< const volatile ThisType && > operator & () const volatile &&
+    {
+        return ::std::forward< const volatile ThisType >( *this );
+    }
+
     ValueGuard< ThisType & > operator & () &
     {
         return *this;
@@ -229,7 +259,45 @@ public:
         return *this;
     }
 
+    ValueGuard< volatile ThisType & > operator & () volatile &
+    {
+        return *this;
+    }
+
+    ValueGuard< const volatile ThisType & > operator & () const volatile &
+    {
+        return *this;
+    }
+
     /// Проксирование оператора []
+    template< typename _Argument >
+    constexpr decltype(auto) operator [] ( _Argument && argument ) &&
+    {
+        auto invokable = ::Operator::Private::SquareBrackets< Value &&, _Argument && >();
+        return Operator::invoke< ThisType && >( ::std::forward< ThisType >( *this ), invokable, ::std::forward< _Argument >( argument ) );
+    }
+
+    template< typename _Argument >
+    constexpr decltype(auto) operator [] ( _Argument && argument ) const &&
+    {
+        auto invokable = ::Operator::Private::SquareBrackets< const Value &&, _Argument && >();
+        return Operator::invoke< const ThisType && >( ::std::forward< const ThisType >( *this ), invokable, ::std::forward< _Argument >( argument ) );
+    }
+
+    template< typename _Argument >
+    constexpr decltype(auto) operator [] ( _Argument && argument ) volatile &&
+    {
+        auto invokable = ::Operator::Private::SquareBrackets< volatile Value &&, _Argument && >();
+        return Operator::invoke< volatile ThisType && >( ::std::forward< volatile ThisType >( *this ), invokable, ::std::forward< _Argument >( argument ) );
+    }
+
+    template< typename _Argument >
+    constexpr decltype(auto) operator [] ( _Argument && argument ) const volatile &&
+    {
+        auto invokable = ::Operator::Private::SquareBrackets< const volatile Value &&, _Argument && >();
+        return Operator::invoke< const volatile ThisType && >( ::std::forward< const volatile ThisType >( *this ), invokable, ::std::forward< _Argument >( argument ) );
+    }
+
     template< typename _Argument >
     constexpr decltype(auto) operator [] ( _Argument && argument ) &
     {
@@ -245,20 +313,48 @@ public:
     }
 
     template< typename _Argument >
-    constexpr decltype(auto) operator [] ( _Argument && argument ) &&
+    constexpr decltype(auto) operator [] ( _Argument && argument ) volatile &
     {
-        auto invokable = ::Operator::Private::SquareBrackets< Value &&, _Argument && >();
-        return Operator::invoke< ThisType && >( ::std::forward< ThisType >( *this ), invokable, ::std::forward< _Argument >( argument ) );
+        auto invokable = ::Operator::Private::SquareBrackets< volatile Value &, _Argument && >();
+        return Operator::invoke< volatile ThisType & >( *this, invokable, ::std::forward< _Argument >( argument ) );
     }
 
     template< typename _Argument >
-    constexpr decltype(auto) operator [] ( _Argument && argument ) const &&
+    constexpr decltype(auto) operator [] ( _Argument && argument ) const volatile &
     {
-        auto invokable = ::Operator::Private::SquareBrackets< const Value &&, _Argument && >();
-        return Operator::invoke< const ThisType && >( ::std::forward< const ThisType >( *this ), invokable, ::std::forward< _Argument >( argument ) );
+        auto invokable = ::Operator::Private::SquareBrackets< const volatile Value &, _Argument && >();
+        return Operator::invoke< const volatile ThisType & >( *this, invokable, ::std::forward< _Argument >( argument ) );
     }
 
     /// Проксирование оператора ()
+    template < typename ... _Arguments >
+    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) &&
+    {
+        auto invokable = ::Operator::Private::RoundBrackets< Value &&, _Arguments && ... >();
+        return Operator::invoke< ThisType && >( ::std::forward< ThisType >( *this ), invokable, ::std::forward< _Arguments >( arguments ) ... );
+    }
+
+    template < typename ... _Arguments >
+    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) const &&
+    {
+        auto invokable = ::Operator::Private::RoundBrackets< const Value &&, _Arguments && ... >();
+        return Operator::invoke< const ThisType && >( ::std::forward< const ThisType >( *this ), invokable, ::std::forward< _Arguments >( arguments ) ... );
+    }
+
+    template < typename ... _Arguments >
+    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) volatile &&
+    {
+        auto invokable = ::Operator::Private::RoundBrackets< volatile Value &&, _Arguments && ... >();
+        return Operator::invoke< volatile ThisType && >( ::std::forward< volatile ThisType >( *this ), invokable, ::std::forward< _Arguments >( arguments ) ... );
+    }
+
+    template < typename ... _Arguments >
+    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) const volatile &&
+    {
+        auto invokable = ::Operator::Private::RoundBrackets< const volatile Value &&, _Arguments && ... >();
+        return Operator::invoke< const volatile ThisType && >( ::std::forward< const volatile ThisType >( *this ), invokable, ::std::forward< _Arguments >( arguments ) ... );
+    }
+
     template < typename ... _Arguments >
     constexpr decltype(auto) operator () ( _Arguments && ... arguments ) &
     {
@@ -274,119 +370,18 @@ public:
     }
 
     template < typename ... _Arguments >
-    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) &&
+    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) volatile &
     {
-        auto invokable = ::Operator::Private::RoundBrackets< Value &&, _Arguments && ... >();
-        return Operator::invoke< ThisType && >( ::std::forward< ThisType >( *this ), invokable, ::std::forward< _Arguments >( arguments ) ... );
+        auto invokable = ::Operator::Private::RoundBrackets< volatile Value &, _Arguments && ... >();
+        return Operator::invoke< volatile ThisType & >( *this, invokable, ::std::forward< _Arguments >( arguments ) ... );
     }
 
     template < typename ... _Arguments >
-    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) const &&
+    constexpr decltype(auto) operator () ( _Arguments && ... arguments ) const volatile &
     {
-        auto invokable = ::Operator::Private::RoundBrackets< const Value &&, _Arguments && ... >();
-        return Operator::invoke< const ThisType && >( ::std::forward< const ThisType >( *this ), invokable, ::std::forward< _Arguments >( arguments ) ... );
+        auto invokable = ::Operator::Private::RoundBrackets< const volatile Value &, _Arguments && ... >();
+        return Operator::invoke< const volatile ThisType & >( *this, invokable, ::std::forward< _Arguments >( arguments ) ... );
     }
 };
-
-namespace Operator
-{
-    template < typename _Instance,
-        typename = ::std::enable_if_t< ::is_instance< ::std::decay_t< _Instance > > > >
-    using AnyKingOfInstance = _Instance;
-
-    template < typename _Argument,
-        typename = ::std::enable_if_t< !::is_instance< ::std::decay_t< _Argument > > > >
-    using NotInstance = _Argument;
-}
-
-// Unary operators
-#define INSTANCE_PREFIX_UNARY_OPERATOR( symbol, invokable ) \
-    template < typename _RightInstance > \
-    inline decltype(auto) operator symbol ( ::Operator::AnyKingOfInstance< _RightInstance > && value ) \
-    { \
-        using RightInstance = ::std::decay_t< _RightInstance >; \
-        using RightInstanceRefer = ::std::add_rvalue_reference_t< ::Operator::AnyKingOfInstance< _RightInstance > >; \
-        using RightValueRefer = ::SimilarRefer< typename RightInstance::Value, RightInstanceRefer >; \
-        return Operator::invoke< RightInstanceRefer >( ::std::forward< RightInstanceRefer >( value ), invokable< RightValueRefer >() ); \
-    } \
-
-INSTANCE_PREFIX_UNARY_OPERATOR( +, ::Operator::Private::UnaryPrefixPlus )
-INSTANCE_PREFIX_UNARY_OPERATOR( -, ::Operator::Private::UnaryPrefixMinus )
-INSTANCE_PREFIX_UNARY_OPERATOR( ++, ::Operator::Private::UnaryPrefixPlusPlus )
-INSTANCE_PREFIX_UNARY_OPERATOR( --, ::Operator::Private::UnaryPrefixMinusMinus )
-INSTANCE_PREFIX_UNARY_OPERATOR( ~, ::Operator::Private::UnaryPrefixBitwiseNot )
-INSTANCE_PREFIX_UNARY_OPERATOR( !, ::Operator::Private::UnaryPrefixLogicalNot )
-#undef INSTANCE_PREFIX_UNARY_OPERATOR
-
-#define INSTANCE_POSTFIX_UNARY_OPERATOR( symbol, invokable ) \
-    template < typename _LeftInstance > \
-    inline decltype(auto) operator symbol ( ::Operator::AnyKingOfInstance< _LeftInstance > && value, int ) \
-    { \
-        using LeftInstance = ::std::decay_t< _LeftInstance >; \
-        using LeftInstanceRefer = ::std::add_rvalue_reference_t< Operator::AnyKingOfInstance< _LeftInstance > >; \
-        using LeftValueRefer = ::SimilarRefer< typename LeftInstance::Value, LeftInstanceRefer >; \
-        return Operator::invoke< LeftInstanceRefer >( ::std::forward< LeftInstanceRefer >( value ), invokable< LeftValueRefer >() ); \
-    } \
-
-INSTANCE_POSTFIX_UNARY_OPERATOR( ++, ::Operator::Private::UnaryPostfixPlusPlus )
-INSTANCE_POSTFIX_UNARY_OPERATOR( --, ::Operator::Private::UnaryPostfixMinusMinus )
-#undef INSTANCE_POSTFIX_UNARY_OPERATOR
-
-#define INSTANCE_BINARY_OPERATOR( symbol, invokable ) \
-    template < typename _LeftInstance, typename _RightInstance, \
-        typename = ::std::enable_if_t< ::is_instance< ::std::decay_t< _LeftInstance > > && ::is_instance< ::std::decay_t< _RightInstance > > > > \
-    inline decltype(auto) operator symbol ( ::Operator::AnyKingOfInstance< _LeftInstance > && /*left*/, ::Operator::AnyKingOfInstance< _RightInstance > && /*right*/ ) \
-    { \
-        return; \
-    } \
-//    \
-//    template < typename _LeftInstance, typename _RightArgument, \
-//        typename = ::std::enable_if_t< ::is_instance< ::std::decay_t< _LeftInstance > > && !::is_instance< ::std::decay_t< _RightArgument > > > > \
-//    inline decltype(auto) operator symbol ( ::Operator::AnyKingOfInstance< _LeftInstance > && /*left*/, ::Operator::NotInstance< _RightArgument > && /*right*/ ) \
-//    { \
-//        return; \
-//    } \
-//    \
-//    template < typename _LeftArgument, typename _RightInstance, \
-//        typename = ::std::enable_if_t< !::is_instance< ::std::decay_t< _LeftArgument > > && ::is_instance< ::std::decay_t< _RightInstance > > > > \
-//    inline decltype(auto) operator symbol ( ::Operator::NotInstance< _LeftArgument > && /*left*/, ::Operator::AnyKingOfInstance< _RightInstance > && /*right*/ ) \
-//    { \
-//        return; \
-//    } \
-
-// Binary operators
-INSTANCE_BINARY_OPERATOR( ==, ??? )
-INSTANCE_BINARY_OPERATOR( !=, ??? )
-INSTANCE_BINARY_OPERATOR( <, ??? )
-INSTANCE_BINARY_OPERATOR( <=, ??? )
-INSTANCE_BINARY_OPERATOR( >, ??? )
-INSTANCE_BINARY_OPERATOR( >=, ??? )
-
-INSTANCE_BINARY_OPERATOR( *, ??? )
-INSTANCE_BINARY_OPERATOR( /, ??? )
-INSTANCE_BINARY_OPERATOR( %, ??? )
-INSTANCE_BINARY_OPERATOR( +, ??? )
-INSTANCE_BINARY_OPERATOR( -, ??? )
-
-INSTANCE_BINARY_OPERATOR( <<, ??? )
-INSTANCE_BINARY_OPERATOR( >>, ??? )
-
-INSTANCE_BINARY_OPERATOR( &, ??? )
-INSTANCE_BINARY_OPERATOR( ^, ??? )
-INSTANCE_BINARY_OPERATOR( |, ??? )
-INSTANCE_BINARY_OPERATOR( &&, ??? )
-INSTANCE_BINARY_OPERATOR( ||, ??? )
-
-INSTANCE_BINARY_OPERATOR( *=, ??? )
-INSTANCE_BINARY_OPERATOR( /=, ??? )
-INSTANCE_BINARY_OPERATOR( %=, ??? )
-INSTANCE_BINARY_OPERATOR( +=, ??? )
-INSTANCE_BINARY_OPERATOR( -=, ??? )
-INSTANCE_BINARY_OPERATOR( <<=, ??? )
-INSTANCE_BINARY_OPERATOR( >>=, ??? )
-INSTANCE_BINARY_OPERATOR( &=, ??? )
-INSTANCE_BINARY_OPERATOR( ^=, ??? )
-INSTANCE_BINARY_OPERATOR( |=, ??? )
-
 
 #endif
