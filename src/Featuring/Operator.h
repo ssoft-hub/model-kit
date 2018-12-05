@@ -287,24 +287,14 @@ namespace Operator
     }
 }
 
-namespace Operator
-{
-    template < typename _Instance,
-        typename = ::std::enable_if_t< ::is_instance< ::std::decay_t< _Instance > > > >
-    using AnyKingOfInstance = _Instance;
-
-    template < typename _Argument,
-        typename = ::std::enable_if_t< !::is_instance< ::std::decay_t< _Argument > > > >
-    using NotInstance = _Argument;
-}
-
 // Unary operators
 #define INSTANCE_PREFIX_UNARY_OPERATOR( symbol, invokable ) \
-    template < typename _RightInstance > \
-    inline decltype(auto) operator symbol ( ::Operator::AnyKingOfInstance< _RightInstance > && value ) \
+    template < typename _Right, \
+        typename = ::std::enable_if_t< ::is_instance< ::std::decay_t< _Right > > > > \
+    inline decltype(auto) operator symbol ( _Right && value ) \
     { \
-        using RightInstance = ::std::decay_t< _RightInstance >; \
-        using RightInstanceRefer = ::std::add_rvalue_reference_t< ::Operator::AnyKingOfInstance< _RightInstance > >; \
+        using RightInstance = ::std::decay_t< _Right >; \
+        using RightInstanceRefer = ::std::add_rvalue_reference_t< _Right >; \
         using RightValueRefer = ::SimilarRefer< typename RightInstance::Value, RightInstanceRefer >; \
         return Operator::invoke< RightInstanceRefer >( ::std::forward< RightInstanceRefer >( value ), invokable< RightValueRefer >() ); \
     } \
@@ -319,11 +309,12 @@ INSTANCE_PREFIX_UNARY_OPERATOR( !, ::Operator::Private::UnaryPrefixLogicalNot )
 #undef INSTANCE_PREFIX_UNARY_OPERATOR
 
 #define INSTANCE_POSTFIX_UNARY_OPERATOR( symbol, invokable ) \
-    template < typename _LeftInstance > \
-    inline decltype(auto) operator symbol ( ::Operator::AnyKingOfInstance< _LeftInstance > && value, int ) \
+    template < typename _Left, \
+        typename = ::std::enable_if_t< ::is_instance< ::std::decay_t< _Left > > > > \
+    inline decltype(auto) operator symbol ( _Left && value, int ) \
     { \
-        using LeftInstance = ::std::decay_t< _LeftInstance >; \
-        using LeftInstanceRefer = ::std::add_rvalue_reference_t< Operator::AnyKingOfInstance< _LeftInstance > >; \
+        using LeftInstance = ::std::decay_t< _Left >; \
+        using LeftInstanceRefer = ::std::add_rvalue_reference_t< _Left >; \
         using LeftValueRefer = ::SimilarRefer< typename LeftInstance::Value, LeftInstanceRefer >; \
         return Operator::invoke< LeftInstanceRefer >( ::std::forward< LeftInstanceRefer >( value ), invokable< LeftValueRefer >() ); \
     } \
@@ -334,29 +325,12 @@ INSTANCE_POSTFIX_UNARY_OPERATOR( --, ::Operator::Private::UnaryPostfixMinusMinus
 #undef INSTANCE_POSTFIX_UNARY_OPERATOR
 
 #define INSTANCE_BINARY_OPERATOR( symbol, invokable ) \
-    template < typename _LeftInstance, typename _RightInstance, \
-        typename = ::std::enable_if_t< ::is_instance< ::std::decay_t< _LeftInstance > > && ::is_instance< ::std::decay_t< _RightInstance > > > > \
-    inline decltype(auto) operator symbol ( ::Operator::AnyKingOfInstance< _LeftInstance > && /*left*/, ::Operator::AnyKingOfInstance< _RightInstance > && /*right*/ ) \
+    template < typename _Left, typename _Right, \
+        typename = ::std::enable_if_t< ::is_instance< ::std::decay_t< _Right > > || ::is_instance< ::std::decay_t< _Left > > > > \
+    inline decltype(auto) operator symbol ( _Left && /*left*/, _Right && /*right*/ ) \
     { \
         return; \
     } \
-
-/*
-    \
-    template < typename _LeftInstance, typename _RightArgument, \
-        typename = ::std::enable_if_t< ::is_instance< ::std::decay_t< _LeftInstance > > && !::is_instance< ::std::decay_t< _RightArgument > > > > \
-    inline decltype(auto) operator symbol ( ::Operator::AnyKingOfInstance< _LeftInstance > && left, ::Operator::NotInstance< _RightArgument > && right ) \
-    { \
-        return; \
-    } \
-    \
-    template < typename _LeftArgument, typename _RightInstance, \
-        typename = ::std::enable_if_t< !::is_instance< ::std::decay_t< _LeftArgument > > && ::is_instance< ::std::decay_t< _RightInstance > > > > \
-    inline decltype(auto) operator symbol ( ::Operator::NotInstance< _LeftArgument > && left, ::Operator::AnyKingOfInstance< _RightInstance > && right ) \
-    { \
-        return; \
-    } \
-*/
 
 // Binary operators
 INSTANCE_BINARY_OPERATOR( ==, ??? )
