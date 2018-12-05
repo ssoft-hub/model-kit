@@ -57,45 +57,77 @@ public:
     template < typename ... _Arguments > _Type && operator () ( _Arguments && ... ) && { ::std::cout << "operator () &&" << ::std::endl; return ::std::forward< _Type >( m_value ); }
     template < typename ... _Arguments > const _Type && operator () ( _Arguments && ... ) const && { ::std::cout << "operator () const &&" << ::std::endl; return ::std::forward< const _Type >( m_value ); }
 
-    void operator + () & { ::std::cout << "operator + &" << ::std::endl; }
-    void operator + () const & { ::std::cout << "operator + const &" << ::std::endl; }
     void operator + () && { ::std::cout << "operator + &&" << ::std::endl; }
     void operator + () const && { ::std::cout << "operator + const &&" << ::std::endl; }
+    void operator + () & { ::std::cout << "operator + &" << ::std::endl; }
+    void operator + () const & { ::std::cout << "operator + const &" << ::std::endl; }
+    void operator + () volatile && { ::std::cout << "operator + volatile &&" << ::std::endl; }
+    void operator + () volatile const && { ::std::cout << "operator + const volatile &&" << ::std::endl; }
+    void operator + () volatile & { ::std::cout << "operator + volatile &" << ::std::endl; }
+    void operator + () volatile const & { ::std::cout << "operator + const volatile &" << ::std::endl; }
 
-    void operator - () & { ::std::cout << "operator - &" << ::std::endl; }
-    void operator - () const & { ::std::cout << "operator - const &" << ::std::endl; }
     void operator - () && { ::std::cout << "operator - &&" << ::std::endl; }
     void operator - () const && { ::std::cout << "operator - const &&" << ::std::endl; }
+    void operator - () & { ::std::cout << "operator - &" << ::std::endl; }
+    void operator - () const & { ::std::cout << "operator - const &" << ::std::endl; }
+    void operator - () volatile && { ::std::cout << "operator - volatile &&" << ::std::endl; }
+    void operator - () volatile const && { ::std::cout << "operator - const volatile &&" << ::std::endl; }
+    void operator - () volatile & { ::std::cout << "operator - volatile &" << ::std::endl; }
+    void operator - () volatile const & { ::std::cout << "operator - const volatile &" << ::std::endl; }
 
-    void operator ++ () & { ::std::cout << "operator ++ &" << ::std::endl; }
-    void operator ++ () const & { ::std::cout << "operator ++ const &" << ::std::endl; }
     void operator ++ () && { ::std::cout << "operator ++ &&" << ::std::endl; }
     void operator ++ () const && { ::std::cout << "operator ++ const &&" << ::std::endl; }
+    void operator ++ () & { ::std::cout << "operator ++ &" << ::std::endl; }
+    void operator ++ () const & { ::std::cout << "operator ++ const &" << ::std::endl; }
+    void operator ++ () volatile && { ::std::cout << "operator ++ volatile &&" << ::std::endl; }
+    void operator ++ () volatile const && { ::std::cout << "operator ++ const volatile &&" << ::std::endl; }
+    void operator ++ () volatile & { ::std::cout << "operator ++ volatile &" << ::std::endl; }
+    void operator ++ () volatile const & { ::std::cout << "operator ++ const volatile &" << ::std::endl; }
 
-    void operator -- () & { ::std::cout << "operator -- &" << ::std::endl; }
-    void operator -- () const & { ::std::cout << "operator -- const &" << ::std::endl; }
     void operator -- () && { ::std::cout << "operator -- &&" << ::std::endl; }
     void operator -- () const && { ::std::cout << "operator -- const &&" << ::std::endl; }
+    void operator -- () & { ::std::cout << "operator -- &" << ::std::endl; }
+    void operator -- () const & { ::std::cout << "operator -- const &" << ::std::endl; }
+    void operator -- () volatile && { ::std::cout << "operator -- volatile &&" << ::std::endl; }
+    void operator -- () volatile const && { ::std::cout << "operator -- const volatile &&" << ::std::endl; }
+    void operator -- () volatile & { ::std::cout << "operator -- volatile &" << ::std::endl; }
+    void operator -- () volatile const & { ::std::cout << "operator -- const volatile &" << ::std::endl; }
 
-    void operator ++ ( int ) & { ::std::cout << "operator _++ &" << ::std::endl; }
-    void operator ++ ( int ) const & { ::std::cout << "operator _++ const &" << ::std::endl; }
     void operator ++ ( int ) && { ::std::cout << "operator _++ &&" << ::std::endl; }
     void operator ++ ( int ) const && { ::std::cout << "operator _++ const &&" << ::std::endl; }
+    void operator ++ ( int ) & { ::std::cout << "operator _++ &" << ::std::endl; }
+    void operator ++ ( int ) const & { ::std::cout << "operator _++ const &" << ::std::endl; }
+    void operator ++ ( int ) volatile && { ::std::cout << "operator ++ volatile &&" << ::std::endl; }
+    void operator ++ ( int ) volatile const && { ::std::cout << "operator ++ const volatile &&" << ::std::endl; }
+    void operator ++ ( int ) volatile & { ::std::cout << "operator ++ volatile &" << ::std::endl; }
+    void operator ++ ( int ) volatile const & { ::std::cout << "operator ++ const volatile &" << ::std::endl; }
 
-    void operator -- ( int ) & { ::std::cout << "operator _-- &" << ::std::endl; }
-    void operator -- ( int ) const & { ::std::cout << "operator _-- const &" << ::std::endl; }
     void operator -- ( int ) && { ::std::cout << "operator _-- &&" << ::std::endl; }
     void operator -- ( int ) const && { ::std::cout << "operator _-- const &&" << ::std::endl; }
+    void operator -- ( int ) & { ::std::cout << "operator _-- &" << ::std::endl; }
+    void operator -- ( int ) const & { ::std::cout << "operator _-- const &" << ::std::endl; }
+    void operator -- ( int ) volatile && { ::std::cout << "operator -- volatile &&" << ::std::endl; }
+    void operator -- ( int ) volatile const && { ::std::cout << "operator -- const volatile &&" << ::std::endl; }
+    void operator -- ( int ) volatile & { ::std::cout << "operator -- volatile &" << ::std::endl; }
+    void operator -- ( int ) volatile const & { ::std::cout << "operator -- const volatile &" << ::std::endl; }
 
-    void operator ~ () & { ::std::cout << "operator ~ &" << ::std::endl; }
-    void operator ~ () const & { ::std::cout << "operator ~ const &" << ::std::endl; }
     void operator ~ () && { ::std::cout << "operator ~ &&" << ::std::endl; }
     void operator ~ () const && { ::std::cout << "operator ~ const &&" << ::std::endl; }
+    void operator ~ () & { ::std::cout << "operator ~ &" << ::std::endl; }
+    void operator ~ () const & { ::std::cout << "operator ~ const &" << ::std::endl; }
+    void operator ~ () volatile && { ::std::cout << "operator ~ volatile &&" << ::std::endl; }
+    void operator ~ () volatile const && { ::std::cout << "operator ~ const volatile &&" << ::std::endl; }
+    void operator ~ () volatile & { ::std::cout << "operator ~ volatile &" << ::std::endl; }
+    void operator ~ () volatile const & { ::std::cout << "operator ~ const volatile &" << ::std::endl; }
 
-    void operator ! () & { ::std::cout << "operator ! &" << ::std::endl; }
-    void operator ! () const & { ::std::cout << "operator ! const &" << ::std::endl; }
     void operator ! () && { ::std::cout << "operator ! &&" << ::std::endl; }
     void operator ! () const && { ::std::cout << "operator ! const &&" << ::std::endl; }
+    void operator ! () & { ::std::cout << "operator ! &" << ::std::endl; }
+    void operator ! () const & { ::std::cout << "operator ! const &" << ::std::endl; }
+    void operator ! () volatile && { ::std::cout << "operator ! volatile &&" << ::std::endl; }
+    void operator ! () volatile const && { ::std::cout << "operator ! const volatile &&" << ::std::endl; }
+    void operator ! () volatile & { ::std::cout << "operator ! volatile &" << ::std::endl; }
+    void operator ! () volatile const & { ::std::cout << "operator ! const volatile &" << ::std::endl; }
 
     template < typename ... _Arguments >
     static ThisType make ( _Arguments && ... arguments ) { return Data( ::std::forward< _Arguments >( arguments ) ... ); }
@@ -167,14 +199,14 @@ void testUnaryOperators ()
 
     TestData impl_data = 10;
     impl_data[0];
-    asConst( impl_data )[0];
+    asConst(impl_data)[0];
     TestData()[0];
-    asConst( TestData() )[0];
+    asConst(TestData())[0];
 
     impl_data(0, 1);
-    asConst( impl_data )(0, 1);
+    asConst(impl_data)(0, 1);
     TestData()(0, 1);
-    asConst( TestData() )(0, 1);
+    asConst(TestData())(0, 1);
 
     // lvalue
     +impl_data;
@@ -190,23 +222,63 @@ void testUnaryOperators ()
     impl_data--;
     asConst(impl_data)--;
     !impl_data;
+    !asConst(impl_data);
     ~impl_data;
+    ~asConst(impl_data);
 
     // rvalue
     +TestData();
-    +asConst( TestData() );
+    +asConst(TestData());
     -TestData();
-    -asConst( TestData() );
+    -asConst(TestData());
     ++TestData();
-    ++asConst( TestData() );
+    ++asConst(TestData());
     --TestData();
-    --asConst( TestData() );
+    --asConst(TestData());
     TestData()++;
     asConst(TestData())++;
     TestData()--;
     asConst(TestData())--;
     !TestData();
+    !asConst(TestData());
     ~TestData();
+    ~asConst(TestData());
+
+    using VTestData = volatile TestData;
+    VTestData vol_data = 10;
+    +vol_data;
+    //+asConst(vol_data);
+    -vol_data;
+    -asConst(vol_data);
+    ++vol_data;
+    ++asConst(vol_data);
+    --vol_data;
+    --asConst(vol_data);
+    vol_data++;
+    asConst(vol_data)++;
+    vol_data--;
+    asConst(vol_data)--;
+    !vol_data;
+    !asConst(vol_data);
+    ~vol_data;
+    ~asConst(vol_data);
+
+//    +VTestData();
+//    +asConst(VTestData());
+//    -VTestData();
+//    -asConst(VTestData());
+//    ++VTestData();
+//    ++asConst(VTestData());
+//    --VTestData();
+//    --asConst(VTestData());
+//    VTestData()++;
+//    asConst(VTestData())++;
+//    VTestData()--;
+//    asConst(VTestData())--;
+//    !VTestData();
+//    !asConst(VTestData());
+//    ~VTestData();
+//    ~asConst(VTestData());
 }
 
 void testBinaryOperators ()

@@ -37,12 +37,32 @@ namespace Inplace
             {
             }
 
+            Holder ( volatile ThisType && other )
+                : m_value( ::std::forward< volatile Value >( other.m_value ) )
+            {
+            }
+
+            Holder ( const volatile ThisType && other )
+                : m_value( ::std::forward< const volatile Value >( other.m_value ) )
+            {
+            }
+
             Holder ( ThisType & other )
                 : m_value( other.m_value )
             {
             }
 
             Holder ( const ThisType & other )
+                : m_value( other.m_value )
+            {
+            }
+
+            Holder ( volatile ThisType & other )
+                : m_value( other.m_value )
+            {
+            }
+
+            Holder ( const volatile ThisType & other )
                 : m_value( other.m_value )
             {
             }
@@ -129,10 +149,26 @@ namespace Inplace
                 // nothing to do
             }
 
+            //static constexpr void guard ( volatile ThisType && )
+            //static constexpr void guard ( const volatile ThisType && )
+            //static constexpr void guard ( volatile ThisType & )
+            static constexpr void guard ( const volatile ThisType & )
+            {
+                // nothing to do
+            }
+
             //static constexpr void unguard ( ThisType && )
             //static constexpr void unguard ( const ThisType && )
             //static constexpr void unguard ( ThisType & )
             static constexpr void unguard ( const ThisType & )
+            {
+                // nothing to do
+            }
+
+            //static constexpr void unguard ( volatile ThisType && )
+            //static constexpr void unguard ( const volatile ThisType && )
+            //static constexpr void unguard ( volatile ThisType & )
+            static constexpr void unguard ( const volatile ThisType & )
             {
                 // nothing to do
             }
@@ -153,6 +189,26 @@ namespace Inplace
             }
 
             static constexpr const Value & value ( const ThisType & holder )
+            {
+                return holder.m_value;
+            }
+
+            static constexpr volatile Value && value ( volatile ThisType && holder )
+            {
+                return ::std::forward< volatile Value >( holder.m_value );
+            }
+
+            static constexpr const volatile Value && value ( const volatile ThisType && holder )
+            {
+                return ::std::forward< const volatile Value >( holder.m_value );
+            }
+
+            static constexpr volatile Value & value ( volatile ThisType & holder )
+            {
+                return holder.m_value;
+            }
+
+            static constexpr const volatile Value & value ( const volatile ThisType & holder )
             {
                 return holder.m_value;
             }

@@ -12,6 +12,7 @@
 
 template < typename _Value, typename _Tool >
 class Instance;
+namespace Inplace { class DefaultTool; }
 
 namespace Operator
 {
@@ -56,7 +57,6 @@ namespace Operator
                 using Returned = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
                 using Result = ::std::remove_reference_t< Returned >;
                 using Tool = ::Invokable::FunctionTool< _InstanceRefer, _Invokable, _Arguments ... >;
-
                 return Instance< Result, Tool >( ::std::forward< _InstanceRefer >( instance ), invokable, ::std::forward< _Arguments >( arguments ) ...  );
             }
         };
@@ -71,7 +71,6 @@ namespace Operator
                 using Returned = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
                 using Result = ::std::remove_reference_t< Returned >;
                 using Tool = ::Inplace::DefaultTool;
-
                 return Instance< Result, Tool >( invokable( ::std::forward< ValueRefer >( InstanceGuard< _InstanceRefer >( ::std::forward< _InstanceRefer >( instance ) ).value() ), ::std::forward< _Arguments >( arguments ) ... ) );
             }
         };
@@ -95,24 +94,24 @@ namespace Operator
 {
     namespace Private
     {
-        template < typename _Refer, typename _Argument >
+        template < typename _Left, typename _Argument >
         struct SquareBrackets
         {
-            decltype(auto) operator () ( _Refer refer, _Argument && argument )
+            constexpr decltype(auto) operator () ( _Left && left, _Argument && argument )
             {
-                return refer.operator[] ( ::std::forward< _Argument >( argument ) );
+                return ::std::forward< _Left >( left )[ ::std::forward< _Argument >( argument ) ];
             }
         };
     }
 
     namespace Private
     {
-        template < typename _Refer, typename ... _Arguments >
+        template < typename _Left, typename ... _Arguments >
         struct RoundBrackets
         {
-            decltype(auto) operator () ( _Refer refer, _Arguments && ... arguments )
+            constexpr decltype(auto) operator () ( _Left && left, _Arguments && ... arguments )
             {
-                return refer.operator() ( ::std::forward< _Arguments >( arguments ) ... );
+                return ::std::forward< _Left >( left )( ::std::forward< _Arguments >( arguments ) ... );
             }
         };
     }
@@ -122,99 +121,96 @@ namespace Operator
 {
     namespace Private
     {
-        template < typename _Refer >
+        template < typename _Right >
         struct UnaryPrefixPlus
         {
-            static_assert( !is_instance< ::std::decay_t< _Refer > >, "sds" );
-
-            using Result = decltype( + std::declval< _Refer >() );
-            Result operator () ( _Refer refer )
+            constexpr decltype(auto) operator () ( _Right && right )
             {
-                return + ::std::forward< _Refer >( refer );
+                return + ::std::forward< _Right >( right );
             }
         };
     }
 
     namespace Private
     {
-        template < typename _Refer >
+        template < typename _Right >
         struct UnaryPrefixMinus
         {
-            decltype(auto) operator () ( _Refer refer )
+            constexpr decltype(auto) operator () ( _Right && right )
             {
-                return - ::std::forward< _Refer >( refer );
+                return - ::std::forward< _Right >( right );
             }
         };
     }
 
     namespace Private
     {
-        template < typename _Refer >
+        template < typename _Right >
         struct UnaryPrefixPlusPlus
         {
-            decltype(auto) operator () ( _Refer refer )
+            constexpr decltype(auto) operator () ( _Right && right )
             {
-                return ++ ::std::forward< _Refer >( refer );
+                return ++ ::std::forward< _Right >( right );
             }
         };
     }
 
     namespace Private
     {
-        template < typename _Refer >
+        template < typename _Right >
         struct UnaryPrefixMinusMinus
         {
-            decltype(auto) operator () ( _Refer refer )
+            constexpr decltype(auto) operator () ( _Right && right )
             {
-                return -- ::std::forward< _Refer >( refer );
+                return -- ::std::forward< _Right >( right );
             }
         };
     }
 
     namespace Private
     {
-        template < typename _Refer >
+        template < typename _Left >
         struct UnaryPostfixPlusPlus
         {
-            decltype(auto) operator () ( _Refer refer )
+            constexpr decltype(auto) operator () ( _Left && left )
             {
-                return ::std::forward< _Refer >( refer ) ++;
+                return ::std::forward< _Left >( left ) ++;
             }
         };
     }
 
     namespace Private
     {
-        template < typename _Refer >
+        template < typename _Left >
         struct UnaryPostfixMinusMinus
         {
-            decltype(auto) operator () ( _Refer refer )
+            constexpr decltype(auto) operator () ( _Left && left )
             {
-                return ::std::forward< _Refer >( refer ) --;
+                return ::std::forward< _Left >( left ) --;
             }
         };
     }
 
     namespace Private
     {
-        template < typename _Refer >
+        template < typename _Right >
         struct UnaryPrefixBitwiseNot
         {
-            decltype(auto) operator () ( _Refer refer )
+            constexpr decltype(auto) operator () ( _Right && right )
             {
-                return ~ ::std::forward< _Refer >( refer );
+                return ~ ::std::forward< _Right >( right );
             }
         };
     }
 
     namespace Private
     {
-        template < typename _Refer >
+        template < typename _Right >
         struct UnaryPrefixLogicalNot
         {
-            decltype(auto) operator () ( _Refer refer )
+            constexpr decltype(auto) operator () ( _Right && right )
             {
-                return ! ::std::forward< _Refer >( refer );
+                return ! ::std::forward< _Right >( right );
             }
         };
     }
@@ -224,57 +220,57 @@ namespace Operator
 {
     namespace Private
     {
-        template < typename _Right, typename _Left >
+        template < typename _Left, typename _Right >
         struct IsEqual
         {
-            decltype(auto) operator () ( _Right && refer, _Left && argument )
+            constexpr decltype(auto) operator () ( _Left && left, _Right && right )
             {
-                return ::std::forward< _Right >( refer ) == ::std::forward< _Left >( argument );
+                return ::std::forward< _Left >( left ) == ::std::forward< _Right >( right );
             }
         };
 
-        template < typename _Refer, typename _Argument >
+        template < typename _Left, typename _Right >
         struct NotEqual
         {
-            decltype(auto) operator () ( _Refer refer, _Argument && argument )
+            constexpr decltype(auto) operator () ( _Left && left, _Right && right )
             {
-                return ::std::forward< _Refer >( refer ) = ::std::forward< _Argument >( argument );
+                return ::std::forward< _Left >( left ) != ::std::forward< _Right >( right );
             }
         };
 
-        template < typename _Refer, typename _Argument >
-        struct BinaryRightLess
+        template < typename _Left, typename _Right >
+        struct Less
         {
-            decltype(auto) operator () ( _Refer refer, _Argument && argument )
+            constexpr decltype(auto) operator () ( _Left && left, _Right && right )
             {
-                return refer.operator < ( ::std::forward< _Argument >( argument ) );
+                return ::std::forward< _Left >( left ) < ::std::forward< _Right >( right );
             }
         };
 
-        template < typename _Refer, typename _Argument >
+        template < typename _Left, typename _Right >
         struct LessOrEqual
         {
-            decltype(auto) operator () ( _Refer refer, _Argument && argument )
+            constexpr decltype(auto) operator () ( _Left && left, _Right && right )
             {
-                return refer.operator <= ( ::std::forward< _Argument >( argument ) );
+                return ::std::forward< _Left >( left ) <= ::std::forward< _Right >( right );
             }
         };
 
-        template < typename _Refer, typename _Argument >
+        template < typename _Left, typename _Right >
         struct Greater
         {
-            decltype(auto) operator () ( _Refer refer, _Argument && argument )
+            constexpr decltype(auto) operator () ( _Left && left, _Right && right )
             {
-                return refer.operator > ( ::std::forward< _Argument >( argument ) );
+                return ::std::forward< _Left >( left ) > ::std::forward< _Right >( right );
             }
         };
 
-        template < typename _Refer, typename _Argument >
+        template < typename _Left, typename _Right >
         struct GreaterOrEqual
         {
-            decltype(auto) operator () ( _Refer refer, _Argument && argument )
+            constexpr decltype(auto) operator () ( _Left && left, _Right && right )
             {
-                return refer.operator >= ( ::std::forward< _Argument >( argument ) );
+                return ::std::forward< _Left >( left ) >= ::std::forward< _Right >( right );
             }
         };
     }

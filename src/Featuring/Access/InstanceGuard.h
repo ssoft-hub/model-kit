@@ -38,7 +38,7 @@ namespace Private
         using Pointer = ReferPointer< Refer >;
 
         static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must be a reference!" );
-        static_assert( !::is_instance< ::std::decay_t< Refer > >, "The template parameter _Refer must be a not instance type reference!" );
+        static_assert( !::is_instance< ::std::decay_t< Refer > >, "The template parameter _Refer must be a not Instance type reference!" );
 
     private:
         Pointer m_pointer;
@@ -99,7 +99,7 @@ namespace Private
         using ValueRefer = ::SimilarRefer< Value, Refer >;
 
         static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must be a reference!" );
-        static_assert( ::is_instance< Instance >, "The template parameter _Refer must be a instance type reference!" );
+        static_assert( ::is_instance< Instance >, "The template parameter _Refer must be a Instance type reference!" );
         static_assert( ::is_similar< Refer, ValueRefer >, "The Refer and ValueRefer must be similar types!" );
         static_assert( ::is_similar< Refer, HolderRefer >, "The Refer and HolderRefer must be similar types!" );
 
@@ -161,15 +161,21 @@ namespace Private
     };
 
     template < typename _Value, typename _Tool >
+    struct InstanceGuardHelper< Instance< _Value, _Tool > && >
+    {
+        using Type = Private::SpecialInstanceGuard< Instance< _Value, _Tool > && >;
+    };
+
+    template < typename _Value, typename _Tool >
     struct InstanceGuardHelper< Instance< _Value, _Tool > & >
     {
         using Type = Private::SpecialInstanceGuard< Instance< _Value, _Tool > & >;
     };
 
     template < typename _Value, typename _Tool >
-    struct InstanceGuardHelper< Instance< _Value, _Tool > && >
+    struct InstanceGuardHelper< const Instance< _Value, _Tool > && >
     {
-        using Type = Private::SpecialInstanceGuard< Instance< _Value, _Tool > && >;
+        using Type = Private::SpecialInstanceGuard< const Instance< _Value, _Tool > && >;
     };
 
     template < typename _Value, typename _Tool >
@@ -179,9 +185,27 @@ namespace Private
     };
 
     template < typename _Value, typename _Tool >
-    struct InstanceGuardHelper< const Instance< _Value, _Tool > && >
+    struct InstanceGuardHelper< volatile Instance< _Value, _Tool > && >
     {
-        using Type = Private::SpecialInstanceGuard< const Instance< _Value, _Tool > && >;
+        using Type = Private::SpecialInstanceGuard< volatile Instance< _Value, _Tool > && >;
+    };
+
+    template < typename _Value, typename _Tool >
+    struct InstanceGuardHelper< volatile Instance< _Value, _Tool > & >
+    {
+        using Type = Private::SpecialInstanceGuard< volatile Instance< _Value, _Tool > & >;
+    };
+
+    template < typename _Value, typename _Tool >
+    struct InstanceGuardHelper< const volatile Instance< _Value, _Tool > && >
+    {
+        using Type = Private::SpecialInstanceGuard< const volatile Instance< _Value, _Tool > && >;
+    };
+
+    template < typename _Value, typename _Tool >
+    struct InstanceGuardHelper< const volatile Instance< _Value, _Tool > & >
+    {
+        using Type = Private::SpecialInstanceGuard< const volatile Instance< _Value, _Tool > & >;
     };
 
     // disabled
@@ -190,6 +214,12 @@ namespace Private
 
     template < typename _Value, typename _Tool >
     struct InstanceGuardHelper< const Instance< _Value, _Tool > > {};
+
+    template < typename _Value, typename _Tool >
+    struct InstanceGuardHelper< volatile Instance< _Value, _Tool > > {};
+
+    template < typename _Value, typename _Tool >
+    struct InstanceGuardHelper< const volatile Instance< _Value, _Tool > > {};
 }
 
 #endif

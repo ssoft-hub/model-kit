@@ -128,23 +128,11 @@ namespace Private
         static constexpr bool is_const = ::std::is_const< EtalonValue >::value;
         static constexpr bool is_volitile = ::std::is_volatile< EtalonValue >::value;
 
-        using Type = ::std::conditional_t< is_volitile,
-            ::std::conditional_t< is_rvalue,
-                ::std::add_rvalue_reference_t< ::std::add_volatile_t< _Type > >,
-                ::std::conditional_t < is_lvalue,
-                    ::std::add_lvalue_reference_t< ::std::add_volatile_t< _Type > >,
-                    ::std::add_volatile_t< _Type > > >,
-            ::std::conditional_t< is_const,
-                ::std::conditional_t< is_rvalue,
-                    ::std::add_rvalue_reference_t< ::std::add_const_t< _Type > >,
-                    ::std::conditional_t < is_lvalue,
-                        ::std::add_lvalue_reference_t< ::std::add_const_t< _Type > >,
-                        ::std::add_const_t< _Type > > >,
-                ::std::conditional_t< is_rvalue,
-                    ::std::add_rvalue_reference_t< _Type >,
-                    ::std::conditional_t< is_lvalue,
-                        ::std::add_lvalue_reference_t< _Type >,
-                        _Type > > > >;
+        using VCheckedType = ::std::conditional_t< is_volitile, ::std::add_volatile_t< _Type >, _Type >;
+        using CVCheckedType =::std::conditional_t< is_const, ::std::add_const_t< VCheckedType >, VCheckedType >;
+        using Type = ::std::conditional_t< is_rvalue, ::std::add_rvalue_reference_t< CVCheckedType >, ::std::add_lvalue_reference_t< CVCheckedType > >;
+
+        static_assert( ::is_similar< Type, _Refer >, "Result Type must be similar _Refer" );
     };
 }
 

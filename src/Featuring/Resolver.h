@@ -151,7 +151,7 @@ namespace Private
 
         static_assert( ::is_instance< Instance >, "The template parameter _Instance must be a instance!" );
         static_assert( ::std::is_reference< OtherRefer >::value, "The template parameter _OtherRefer must be a reference!" );
-        static_assert( ::is_instance< OtherInstance >, "The template parameter _OtherRefer must be a instance type reference!" );
+        static_assert( ::is_instance< OtherInstance >, "The template parameter _OtherRefer must be a Instance type reference!" );
         static_assert( ::is_similar< OtherRefer, OtherValueRefer >, "The OtherRefer and OtherValueRefer must be similar types!" );
 
     private:
