@@ -19,7 +19,7 @@ class ReferPointer
 public:
     using Refer = _Refer;
     using Value = ::std::remove_reference_t< Refer >;
-    using RawPointer = Value *;
+    using RawPointer = ::std::add_pointer_t< Value >;
 
     static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must be a reference!" );
 
@@ -54,6 +54,8 @@ public:
 
     constexpr RawPointer operator -> () const
     {
+//        bool is_const = ::std::is_const< Value >::value;
+//        bool is_volatile = ::std::is_volatile< Value >::value;
         return ::std::addressof( m_refer );
     }
 };

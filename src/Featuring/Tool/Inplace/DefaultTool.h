@@ -141,37 +141,25 @@ namespace Inplace
                 *this = other.m_value;
             }
 
-            //static constexpr void guard ( ThisType && )
-            //static constexpr void guard ( const ThisType && )
-            //static constexpr void guard ( ThisType & )
-            static constexpr void guard ( const ThisType & )
-            {
-                // nothing to do
-            }
+            // nothing to do
+            static constexpr void guard ( ThisType && ) {}
+            static constexpr void guard ( const ThisType && ) {}
+            static constexpr void guard ( ThisType & ) {}
+            static constexpr void guard ( const ThisType & ) {}
+            static constexpr void guard ( volatile ThisType && ) {}
+            static constexpr void guard ( const volatile ThisType && ) {}
+            static constexpr void guard ( volatile ThisType & ) {}
+            static constexpr void guard ( const volatile ThisType & ) {}
 
-            //static constexpr void guard ( volatile ThisType && )
-            //static constexpr void guard ( const volatile ThisType && )
-            //static constexpr void guard ( volatile ThisType & )
-            static constexpr void guard ( const volatile ThisType & )
-            {
-                // nothing to do
-            }
-
-            //static constexpr void unguard ( ThisType && )
-            //static constexpr void unguard ( const ThisType && )
-            //static constexpr void unguard ( ThisType & )
-            static constexpr void unguard ( const ThisType & )
-            {
-                // nothing to do
-            }
-
-            //static constexpr void unguard ( volatile ThisType && )
-            //static constexpr void unguard ( const volatile ThisType && )
-            //static constexpr void unguard ( volatile ThisType & )
-            static constexpr void unguard ( const volatile ThisType & )
-            {
-                // nothing to do
-            }
+            // nothing to do
+            static constexpr void unguard ( ThisType && ) {}
+            static constexpr void unguard ( const ThisType && ) {}
+            static constexpr void unguard ( ThisType & ) {}
+            static constexpr void unguard ( const ThisType & ) {}
+            static constexpr void unguard ( volatile ThisType && ) {}
+            static constexpr void unguard ( const volatile ThisType && ) {}
+            static constexpr void unguard ( volatile ThisType & ) {}
+            static constexpr void unguard ( const volatile ThisType & ) {}
 
             static constexpr Value && value ( ThisType && holder )
             {

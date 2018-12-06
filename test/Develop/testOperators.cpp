@@ -196,6 +196,7 @@ void testDiffToolConstructors ()
 void testUnaryOperators ()
 {
     using TestData = Instance< Data< int > >;
+    using VTestData = volatile TestData;
 
     TestData impl_data = 10;
     impl_data[0];
@@ -244,10 +245,9 @@ void testUnaryOperators ()
     ~TestData();
     ~asConst(TestData());
 
-    using VTestData = volatile TestData;
     VTestData vol_data = 10;
     +vol_data;
-    //+asConst(vol_data);
+    +asConst(vol_data);
     -vol_data;
     -asConst(vol_data);
     ++vol_data;
@@ -263,22 +263,22 @@ void testUnaryOperators ()
     ~vol_data;
     ~asConst(vol_data);
 
-//    +VTestData();
-//    +asConst(VTestData());
-//    -VTestData();
-//    -asConst(VTestData());
-//    ++VTestData();
-//    ++asConst(VTestData());
-//    --VTestData();
-//    --asConst(VTestData());
-//    VTestData()++;
-//    asConst(VTestData())++;
-//    VTestData()--;
-//    asConst(VTestData())--;
-//    !VTestData();
-//    !asConst(VTestData());
-//    ~VTestData();
-//    ~asConst(VTestData());
+    +VTestData();
+    +asConst(VTestData());
+    -VTestData();
+    -asConst(VTestData());
+    ++VTestData();
+    ++asConst(VTestData());
+    --VTestData();
+    --asConst(VTestData());
+    VTestData()++;
+    asConst(VTestData())++;
+    VTestData()--;
+    asConst(VTestData())--;
+    !VTestData();
+    !asConst(VTestData());
+    ~VTestData();
+    ~asConst(VTestData());
 }
 
 void testBinaryOperators ()

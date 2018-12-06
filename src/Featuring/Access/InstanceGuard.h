@@ -100,8 +100,8 @@ namespace Private
 
         static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must be a reference!" );
         static_assert( ::is_instance< Instance >, "The template parameter _Refer must be a Instance type reference!" );
-        static_assert( ::is_similar< Refer, ValueRefer >, "The Refer and ValueRefer must be similar types!" );
-        static_assert( ::is_similar< Refer, HolderRefer >, "The Refer and HolderRefer must be similar types!" );
+        static_assert( ::is_similar< ValueRefer, Refer >, "The Refer and ValueRefer must be similar types!" );
+        static_assert( ::is_similar< HolderRefer, Refer >, "The Refer and HolderRefer must be similar types!" );
 
     private:
         Pointer m_pointer;

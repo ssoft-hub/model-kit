@@ -52,8 +52,8 @@ struct IsSimilar
     : public ::std::integral_constant< bool,
            ::std::is_rvalue_reference< _Type >::value == ::std::is_rvalue_reference< _Other >::value
         && ::std::is_lvalue_reference< _Type >::value == ::std::is_lvalue_reference< _Other >::value
-        && ::std::is_const< _Type >::value == ::std::is_const< _Other >::value
-        && ::std::is_volatile< _Type >::value == ::std::is_volatile< _Other >::value >
+        && ( ::std::is_const< ::std::remove_reference_t< _Type > >::value || !::std::is_const< ::std::remove_reference_t< _Other > >::value )
+        && ( ::std::is_volatile< ::std::remove_reference_t< _Type > >::value || !::std::is_volatile< ::std::remove_reference_t< _Other > >::value ) >
 {
 };
 
@@ -122,13 +122,13 @@ namespace Private
         static_assert( !::std::is_reference< _Type >::value, "The template parameter _Type must be a not reference." );
         static_assert( ::std::is_reference< _Refer >::value, "The template parameter _Refer must be a reference." );
 
-        using EtalonValue = ::std::remove_reference_t< _Refer >;
+        using ValueFromRefer = ::std::remove_reference_t< _Refer >;
         static constexpr bool is_lvalue = ::std::is_lvalue_reference< _Refer >::value;
         static constexpr bool is_rvalue = ::std::is_rvalue_reference< _Refer >::value;
-        static constexpr bool is_const = ::std::is_const< EtalonValue >::value;
-        static constexpr bool is_volitile = ::std::is_volatile< EtalonValue >::value;
+        static constexpr bool is_const = ::std::is_const< ValueFromRefer >::value;
+        static constexpr bool is_volatile = ::std::is_volatile< ValueFromRefer >::value;
 
-        using VCheckedType = ::std::conditional_t< is_volitile, ::std::add_volatile_t< _Type >, _Type >;
+        using VCheckedType = ::std::conditional_t< is_volatile, ::std::add_volatile_t< _Type >, _Type >;
         using CVCheckedType =::std::conditional_t< is_const, ::std::add_const_t< VCheckedType >, VCheckedType >;
         using Type = ::std::conditional_t< is_rvalue, ::std::add_rvalue_reference_t< CVCheckedType >, ::std::add_lvalue_reference_t< CVCheckedType > >;
 
