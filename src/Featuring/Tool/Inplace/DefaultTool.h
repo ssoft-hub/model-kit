@@ -141,6 +141,66 @@ namespace Inplace
                 m_value = ::std::forward< const volatile Value >( other.m_value );
             }
 
+            constexpr void operator = ( ThisType && other ) volatile
+            {
+                m_value = ::std::forward< Value >( other.m_value );
+            }
+
+            constexpr void operator = ( const ThisType && other ) volatile
+            {
+                m_value = ::std::forward< const Value >( other.m_value );
+            }
+
+            constexpr void operator = ( volatile ThisType && other ) volatile
+            {
+                m_value = ::std::forward< volatile Value >( other.m_value );
+            }
+
+            constexpr void operator = ( const volatile ThisType && other ) volatile
+            {
+                m_value = ::std::forward< const volatile Value >( other.m_value );
+            }
+
+            constexpr void operator = ( ThisType && other ) const volatile
+            {
+                m_value = ::std::forward< Value >( other.m_value );
+            }
+
+            constexpr void operator = ( const ThisType && other ) const volatile
+            {
+                m_value = ::std::forward< const Value >( other.m_value );
+            }
+
+            constexpr void operator = ( volatile ThisType && other ) const volatile
+            {
+                m_value = ::std::forward< volatile Value >( other.m_value );
+            }
+
+            constexpr void operator = ( const volatile ThisType && other ) const volatile
+            {
+                m_value = ::std::forward< const volatile Value >( other.m_value );
+            }
+
+            constexpr void operator = ( ThisType && other ) const
+            {
+                m_value = ::std::forward< Value >( other.m_value );
+            }
+
+            constexpr void operator = ( const ThisType && other ) const
+            {
+                m_value = ::std::forward< const Value >( other.m_value );
+            }
+
+            constexpr void operator = ( volatile ThisType && other ) const
+            {
+                m_value = ::std::forward< volatile Value >( other.m_value );
+            }
+
+            constexpr void operator = ( const volatile ThisType && other ) const
+            {
+                m_value = ::std::forward< const volatile Value >( other.m_value );
+            }
+
             constexpr void operator = ( ThisType & other )
             {
                 *this = other.m_value;
@@ -157,6 +217,66 @@ namespace Inplace
             }
 
             constexpr void operator = ( const volatile ThisType & other )
+            {
+                return *this = other.m_value;
+            }
+
+            constexpr void operator = ( ThisType & other ) const
+            {
+                *this = other.m_value;
+            }
+
+            constexpr void operator = ( const ThisType & other ) const
+            {
+                return *this = other.m_value;
+            }
+
+            constexpr void operator = ( volatile ThisType & other ) const
+            {
+                *this = other.m_value;
+            }
+
+            constexpr void operator = ( const volatile ThisType & other ) const
+            {
+                return *this = other.m_value;
+            }
+
+            constexpr void operator = ( ThisType & other ) volatile
+            {
+                *this = other.m_value;
+            }
+
+            constexpr void operator = ( const ThisType & other ) volatile
+            {
+                return *this = other.m_value;
+            }
+
+            constexpr void operator = ( volatile ThisType & other ) volatile
+            {
+                *this = other.m_value;
+            }
+
+            constexpr void operator = ( const volatile ThisType & other ) volatile
+            {
+                return *this = other.m_value;
+            }
+
+            constexpr void operator = ( ThisType & other ) const volatile
+            {
+                *this = other.m_value;
+            }
+
+            constexpr void operator = ( const ThisType & other ) const volatile
+            {
+                return *this = other.m_value;
+            }
+
+            constexpr void operator = ( volatile ThisType & other ) const volatile
+            {
+                *this = other.m_value;
+            }
+
+            constexpr void operator = ( const volatile ThisType & other ) const volatile
             {
                 return *this = other.m_value;
             }

@@ -487,41 +487,39 @@ void testConstructors ()
     { TestData data = ::std::move( lvalue_cv ); }
 }
 
-template < typename _Data >
+template < typename _Argument >
+void warnOff ( _Argument && ) {}
+
+template < typename _Data, typename _Other >
 void testAssignmentOperator ()
 {
-    using TestData = _Data;
-    using CTestData = ::std::add_const_t< _Data >;
-    using VTestData = ::std::add_volatile_t< _Data >;;
-    using CVTestData = ::std::add_cv_t< _Data >;;
+    using Data = _Data;
+    using Other = _Other;
 
-    TestData data;
-    TestData & lvalue = data;
-    CTestData & lvalue_c = asConst( data );
-    VTestData & lvalue_v = asVolatile( data );
-    CVTestData & lvalue_cv = asConstVolatile( data );
+    Data data;
+    Other other;
 
-    lvalue = lvalue;
-    lvalue = lvalue_c;
-    lvalue = lvalue_v;
-    lvalue = lvalue_cv;
-    lvalue = ::std::move( lvalue );
-    lvalue = asConst( ::std::move( lvalue ) );
-    lvalue = asVolatile( ::std::move( lvalue ) );
-    lvalue = asConstVolatile( ::std::move( lvalue ) );
+    warnOff( data = other );
+    warnOff( data = asConst( other ) );
+    warnOff( data = asVolatile( other ) );
+    warnOff( data = asConstVolatile( other ) );
+    warnOff( data = ::std::move( other ) );
+    warnOff( data = asConst( ::std::move( other ) ) );
+    warnOff( data = asVolatile( ::std::move( other ) ) );
+    warnOff( data = asConstVolatile( ::std::move( other ) ) );
 
-    ::std::move( lvalue ) = lvalue;
-    ::std::move( lvalue ) = lvalue_c;
-    ::std::move( lvalue ) = lvalue_v;
-    ::std::move( lvalue ) = lvalue_cv;
-    ::std::move( lvalue ) = ::std::move( lvalue );
-    ::std::move( lvalue ) = asConst( ::std::move( lvalue ) );
-    ::std::move( lvalue ) = asVolatile( ::std::move( lvalue ) );
-    ::std::move( lvalue ) = asConstVolatile( ::std::move( lvalue ) );
+    warnOff( ::std::move( data ) = other );
+    warnOff( ::std::move( data ) = asConst( other ) );
+    warnOff( ::std::move( data ) = asVolatile( other ) );
+    warnOff( ::std::move( data ) = asConstVolatile( other ) );
+    warnOff( ::std::move( data ) = ::std::move( other ) );
+    warnOff( ::std::move( data ) = asConst( ::std::move( other ) ) );
+    warnOff( ::std::move( data ) = asVolatile( ::std::move( other ) ) );
+    warnOff( ::std::move( data ) = asConstVolatile( ::std::move( other ) ) );
 }
 
 template < typename _Data >
-void testUnaryOperators ()
+void testInstance ()
 {
     using TestData = _Data;
 
@@ -635,11 +633,11 @@ template < typename _Data >
 void testAll ()
 {
     testConstructors< _Data >();
-    //testAssignmentOperator< _Data >();
-    testUnaryOperators< _Data >();
+    testAssignmentOperator< _Data, _Data >();
+    testInstance< _Data >();
 }
 
-void testUnaryOperators ()
+void testFeaturing ()
 {
     using TestData = Instance< Data< int > >;
     using CTestData = const TestData;

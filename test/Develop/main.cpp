@@ -116,7 +116,7 @@ extern void testConstructors ();
 extern void testSameToolConstructors ();
 extern void testDiffToolConstructors ();
 
-extern void testUnaryOperators ();
+extern void testFeaturing ();
 
 int main ( int /*argc*/, char ** /*argv*/ )
 {
@@ -128,7 +128,7 @@ int main ( int /*argc*/, char ** /*argv*/ )
     //testResultOf();
     testInstanceContainer();
 
-    testUnaryOperators();
+    testFeaturing();
 //    testMemberOperators();
 //    testConstructor();
 //    testAllTool();

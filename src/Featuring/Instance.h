@@ -157,59 +157,245 @@ public:
     }
 
     template < typename _Argument >
+    ThisType && operator = ( _Argument && other ) const &&
+    {
+        m_holder = InstanceResolver< ThisType, _Argument && >( ::std::forward< _Argument >( other ) ).resolve();
+        return ::std::forward< ThisType >( *this );
+    }
+
+    template < typename _Argument >
+    ThisType && operator = ( _Argument && other ) volatile &&
+    {
+        m_holder = InstanceResolver< ThisType, _Argument && >( ::std::forward< _Argument >( other ) ).resolve();
+        return ::std::forward< ThisType >( *this );
+    }
+
+    template < typename _Argument >
+    ThisType && operator = ( _Argument && other ) const volatile &&
+    {
+        m_holder = InstanceResolver< ThisType, _Argument && >( ::std::forward< _Argument >( other ) ).resolve();
+        return ::std::forward< ThisType >( *this );
+    }
+
+    template < typename _Argument >
     ThisType & operator = ( _Argument && other ) &
     {
         m_holder = InstanceResolver< ThisType, _Argument && >( ::std::forward< _Argument >( other ) ).resolve();
         return *this;
     }
 
+    template < typename _Argument >
+    ThisType && operator = ( _Argument && other ) const &
+    {
+        m_holder = InstanceResolver< ThisType, _Argument && >( ::std::forward< _Argument >( other ) ).resolve();
+        return ::std::forward< ThisType >( *this );
+    }
+
+    template < typename _Argument >
+    ThisType && operator = ( _Argument && other ) volatile &
+    {
+        m_holder = InstanceResolver< ThisType, _Argument && >( ::std::forward< _Argument >( other ) ).resolve();
+        return ::std::forward< ThisType >( *this );
+    }
+
+    template < typename _Argument >
+    ThisType && operator = ( _Argument && other ) const volatile &
+    {
+        m_holder = InstanceResolver< ThisType, _Argument && >( ::std::forward< _Argument >( other ) ).resolve();
+        return ::std::forward< ThisType >( *this );
+    }
+
     // Assignment operators for ThisType
     ThisType && operator = ( ThisType && other ) &&
     {
         m_holder = InstanceResolver< ThisType, ThisType && >( ::std::forward< ThisType >( other ) ).resolve();
-        return *this;
+        return ::std::forward< ThisType >( *this );
     }
 
     ThisType && operator = ( const ThisType && other ) &&
     {
         m_holder = InstanceResolver< ThisType, const ThisType && >( ::std::forward< const ThisType >( other ) ).resolve();
-        return *this;
+        return ::std::forward< ThisType >( *this );
     }
 
     ThisType && operator = ( volatile ThisType && other ) &&
     {
         m_holder = InstanceResolver< ThisType, volatile ThisType && >( ::std::forward< volatile ThisType >( other ) ).resolve();
-        return *this;
+        return ::std::forward< ThisType >( *this );
     }
 
     ThisType && operator = ( const volatile ThisType && other ) &&
     {
         m_holder = InstanceResolver< ThisType, const volatile ThisType && >( ::std::forward< const volatile ThisType >( other ) ).resolve();
-        return *this;
+        return ::std::forward< ThisType >( *this );
     }
 
     ThisType && operator = ( ThisType & other ) &&
     {
         m_holder = InstanceResolver< ThisType, ThisType & >( other ).resolve();
-        return *this;
+        return ::std::forward< ThisType >( *this );
     }
 
     ThisType && operator = ( const ThisType & other ) &&
     {
         m_holder = InstanceResolver< ThisType, const ThisType & >( other ).resolve();
-        return *this;
+        return ::std::forward< ThisType >( *this );
     }
 
     ThisType && operator = ( volatile ThisType & other ) &&
     {
         m_holder = InstanceResolver< ThisType, volatile ThisType & >( other ).resolve();
-        return *this;
+        return ::std::forward< ThisType >( *this );
     }
 
     ThisType && operator = ( const volatile ThisType & other ) &&
     {
         m_holder = InstanceResolver< ThisType, const volatile ThisType & >( other ).resolve();
-        return *this;
+        return ::std::forward< ThisType >( *this );
+    }
+
+    const ThisType && operator = ( ThisType && other ) const &&
+    {
+        m_holder = InstanceResolver< ThisType, ThisType && >( ::std::forward< ThisType >( other ) ).resolve();
+        return ::std::forward< const ThisType >( *this );
+    }
+
+    const ThisType && operator = ( const ThisType && other ) const &&
+    {
+        m_holder = InstanceResolver< ThisType, const ThisType && >( ::std::forward< const ThisType >( other ) ).resolve();
+        return ::std::forward< const ThisType >( *this );
+    }
+
+    const ThisType && operator = ( volatile ThisType && other ) const &&
+    {
+        m_holder = InstanceResolver< ThisType, volatile ThisType && >( ::std::forward< volatile ThisType >( other ) ).resolve();
+        return ::std::forward< const ThisType >( *this );
+    }
+
+    const ThisType && operator = ( const volatile ThisType && other ) const &&
+    {
+        m_holder = InstanceResolver< ThisType, const volatile ThisType && >( ::std::forward< const volatile ThisType >( other ) ).resolve();
+        return ::std::forward< const ThisType >( *this );
+    }
+
+    const ThisType && operator = ( ThisType & other ) const &&
+    {
+        m_holder = InstanceResolver< ThisType, ThisType & >( other ).resolve();
+        return ::std::forward< const ThisType >( *this );
+    }
+
+    const ThisType && operator = ( const ThisType & other ) const &&
+    {
+        m_holder = InstanceResolver< ThisType, const ThisType & >( other ).resolve();
+        return ::std::forward< const ThisType >( *this );
+    }
+
+    const ThisType && operator = ( volatile ThisType & other ) const &&
+    {
+        m_holder = InstanceResolver< ThisType, volatile ThisType & >( other ).resolve();
+        return ::std::forward< const ThisType >( *this );
+    }
+
+    const ThisType && operator = ( const volatile ThisType & other ) const &&
+    {
+        m_holder = InstanceResolver< ThisType, const volatile ThisType & >( other ).resolve();
+        return ::std::forward< const ThisType >( *this );
+    }
+
+    volatile ThisType && operator = ( ThisType && other ) volatile &&
+    {
+        m_holder = InstanceResolver< ThisType, ThisType && >( ::std::forward< ThisType >( other ) ).resolve();
+        return ::std::forward< volatile ThisType >( *this );
+    }
+
+    volatile ThisType && operator = ( const ThisType && other ) volatile &&
+    {
+        m_holder = InstanceResolver< ThisType, const ThisType && >( ::std::forward< const ThisType >( other ) ).resolve();
+        return ::std::forward< volatile ThisType >( *this );
+    }
+
+    volatile ThisType && operator = ( volatile ThisType && other ) volatile &&
+    {
+        m_holder = InstanceResolver< ThisType, volatile ThisType && >( ::std::forward< volatile ThisType >( other ) ).resolve();
+        return ::std::forward< volatile ThisType >( *this );
+    }
+
+    volatile ThisType && operator = ( const volatile ThisType && other ) volatile &&
+    {
+        m_holder = InstanceResolver< ThisType, const volatile ThisType && >( ::std::forward< const volatile ThisType >( other ) ).resolve();
+        return ::std::forward< volatile ThisType >( *this );
+    }
+
+    volatile ThisType && operator = ( ThisType & other ) volatile &&
+    {
+        m_holder = InstanceResolver< ThisType, ThisType & >( other ).resolve();
+        return ::std::forward< volatile ThisType >( *this );
+    }
+
+    volatile ThisType && operator = ( const ThisType & other ) volatile &&
+    {
+        m_holder = InstanceResolver< ThisType, const ThisType & >( other ).resolve();
+        return ::std::forward< volatile ThisType >( *this );
+    }
+
+    volatile ThisType && operator = ( volatile ThisType & other ) volatile &&
+    {
+        m_holder = InstanceResolver< ThisType, volatile ThisType & >( other ).resolve();
+        return ::std::forward< volatile ThisType >( *this );
+    }
+
+    volatile ThisType && operator = ( const volatile ThisType & other ) volatile &&
+    {
+        m_holder = InstanceResolver< ThisType, const volatile ThisType & >( other ).resolve();
+        return ::std::forward< volatile ThisType >( *this );
+    }
+
+    const volatile ThisType && operator = ( ThisType && other ) const volatile &&
+    {
+        m_holder = InstanceResolver< ThisType, ThisType && >( ::std::forward< ThisType >( other ) ).resolve();
+        return ::std::forward< const volatile ThisType >( *this );
+    }
+
+    const volatile ThisType && operator = ( const ThisType && other ) const volatile &&
+    {
+        m_holder = InstanceResolver< ThisType, const ThisType && >( ::std::forward< const ThisType >( other ) ).resolve();
+        return ::std::forward< const volatile ThisType >( *this );
+    }
+
+    const volatile ThisType && operator = ( volatile ThisType && other ) const volatile &&
+    {
+        m_holder = InstanceResolver< ThisType, volatile ThisType && >( ::std::forward< volatile ThisType >( other ) ).resolve();
+        return ::std::forward< const volatile ThisType >( *this );
+    }
+
+    const volatile ThisType && operator = ( const volatile ThisType && other ) const volatile &&
+    {
+        m_holder = InstanceResolver< ThisType, const volatile ThisType && >( ::std::forward< const volatile ThisType >( other ) ).resolve();
+        return ::std::forward< const volatile ThisType >( *this );
+    }
+
+    const volatile ThisType && operator = ( ThisType & other ) const volatile &&
+    {
+        m_holder = InstanceResolver< ThisType, ThisType & >( other ).resolve();
+        return ::std::forward< const volatile ThisType >( *this );
+    }
+
+    const volatile ThisType && operator = ( const ThisType & other ) const volatile &&
+    {
+        m_holder = InstanceResolver< ThisType, const ThisType & >( other ).resolve();
+        return ::std::forward< const volatile ThisType >( *this );
+    }
+
+    const volatile ThisType && operator = ( volatile ThisType & other ) const volatile &&
+    {
+        m_holder = InstanceResolver< ThisType, volatile ThisType & >( other ).resolve();
+        return ::std::forward< const volatile ThisType >( *this );
+    }
+
+    const volatile ThisType && operator = ( const volatile ThisType & other ) const volatile &&
+    {
+        m_holder = InstanceResolver< ThisType, const volatile ThisType & >( other ).resolve();
+        return ::std::forward< const volatile ThisType >( *this );
     }
 
     ThisType & operator = ( ThisType && other ) &
@@ -255,6 +441,150 @@ public:
     }
 
     ThisType & operator = ( const volatile ThisType & other ) &
+    {
+        m_holder = InstanceResolver< ThisType, const volatile ThisType & >( other ).resolve();
+        return *this;
+    }
+
+    const ThisType & operator = ( ThisType && other ) const &
+    {
+        m_holder = InstanceResolver< ThisType, ThisType && >( ::std::forward< ThisType >( other ) ).resolve();
+        return *this;
+    }
+
+    const ThisType & operator = ( const ThisType && other ) const &
+    {
+        m_holder = InstanceResolver< ThisType, const ThisType && >( ::std::forward< const ThisType >( other ) ).resolve();
+        return *this;
+    }
+
+    const ThisType & operator = ( volatile ThisType && other ) const &
+    {
+        m_holder = InstanceResolver< ThisType, volatile ThisType && >( ::std::forward< volatile ThisType >( other ) ).resolve();
+        return *this;
+    }
+
+    const ThisType & operator = ( const volatile ThisType && other ) const &
+    {
+        m_holder = InstanceResolver< ThisType, const volatile ThisType && >( ::std::forward< const volatile ThisType >( other ) ).resolve();
+        return *this;
+    }
+
+    const ThisType & operator = ( ThisType & other ) const &
+    {
+        m_holder = InstanceResolver< ThisType, ThisType & >( other ).resolve();
+        return *this;
+    }
+
+    const ThisType & operator = ( const ThisType & other ) const &
+    {
+        m_holder = InstanceResolver< ThisType, const ThisType & >( other ).resolve();
+        return *this;
+    }
+
+    const ThisType & operator = ( volatile ThisType & other ) const &
+    {
+        m_holder = InstanceResolver< ThisType, volatile ThisType & >( other ).resolve();
+        return *this;
+    }
+
+    const ThisType & operator = ( const volatile ThisType & other ) const &
+    {
+        m_holder = InstanceResolver< ThisType, const volatile ThisType & >( other ).resolve();
+        return *this;
+    }
+
+    volatile ThisType & operator = ( ThisType && other ) volatile &
+    {
+        m_holder = InstanceResolver< ThisType, ThisType && >( ::std::forward< ThisType >( other ) ).resolve();
+        return *this;
+    }
+
+    volatile ThisType & operator = ( const ThisType && other ) volatile &
+    {
+        m_holder = InstanceResolver< ThisType, const ThisType && >( ::std::forward< const ThisType >( other ) ).resolve();
+        return *this;
+    }
+
+    volatile ThisType & operator = ( volatile ThisType && other ) volatile &
+    {
+        m_holder = InstanceResolver< ThisType, volatile ThisType && >( ::std::forward< volatile ThisType >( other ) ).resolve();
+        return *this;
+    }
+
+    volatile ThisType & operator = ( const volatile ThisType && other ) volatile &
+    {
+        m_holder = InstanceResolver< ThisType, const volatile ThisType && >( ::std::forward< const volatile ThisType >( other ) ).resolve();
+        return *this;
+    }
+
+    volatile ThisType & operator = ( ThisType & other ) volatile &
+    {
+        m_holder = InstanceResolver< ThisType, ThisType & >( other ).resolve();
+        return *this;
+    }
+
+    volatile ThisType & operator = ( const ThisType & other ) volatile &
+    {
+        m_holder = InstanceResolver< ThisType, const ThisType & >( other ).resolve();
+        return *this;
+    }
+
+    volatile ThisType & operator = ( volatile ThisType & other ) volatile &
+    {
+        m_holder = InstanceResolver< ThisType, volatile ThisType & >( other ).resolve();
+        return *this;
+    }
+
+    volatile ThisType & operator = ( const volatile ThisType & other ) volatile &
+    {
+        m_holder = InstanceResolver< ThisType, const volatile ThisType & >( other ).resolve();
+        return *this;
+    }
+
+    const volatile ThisType & operator = ( ThisType && other ) const volatile &
+    {
+        m_holder = InstanceResolver< ThisType, ThisType && >( ::std::forward< ThisType >( other ) ).resolve();
+        return *this;
+    }
+
+    const volatile ThisType & operator = ( const ThisType && other ) const volatile &
+    {
+        m_holder = InstanceResolver< ThisType, const ThisType && >( ::std::forward< const ThisType >( other ) ).resolve();
+        return *this;
+    }
+
+    const volatile ThisType & operator = ( volatile ThisType && other ) const volatile &
+    {
+        m_holder = InstanceResolver< ThisType, volatile ThisType && >( ::std::forward< volatile ThisType >( other ) ).resolve();
+        return *this;
+    }
+
+    const volatile ThisType & operator = ( const volatile ThisType && other ) const volatile &
+    {
+        m_holder = InstanceResolver< ThisType, const volatile ThisType && >( ::std::forward< const volatile ThisType >( other ) ).resolve();
+        return *this;
+    }
+
+    const volatile ThisType & operator = ( ThisType & other ) const volatile &
+    {
+        m_holder = InstanceResolver< ThisType, ThisType & >( other ).resolve();
+        return *this;
+    }
+
+    const volatile ThisType & operator = ( const ThisType & other ) const volatile &
+    {
+        m_holder = InstanceResolver< ThisType, const ThisType & >( other ).resolve();
+        return *this;
+    }
+
+    const volatile ThisType & operator = ( volatile ThisType & other ) const volatile &
+    {
+        m_holder = InstanceResolver< ThisType, volatile ThisType & >( other ).resolve();
+        return *this;
+    }
+
+    const volatile ThisType & operator = ( const volatile ThisType & other ) const volatile &
     {
         m_holder = InstanceResolver< ThisType, const volatile ThisType & >( other ).resolve();
         return *this;
