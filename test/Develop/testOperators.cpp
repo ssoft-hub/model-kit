@@ -1,6 +1,8 @@
 #include "ModelKit.h"
 #include <iostream>
 
+#define FUNC_INFO __PRETTY_FUNCTION__
+
 template < typename _Type >
 class Data
 {
@@ -11,123 +13,391 @@ public:
     _Type m_value;
 
 public:
-    Data () : m_value() { ::std::cout << "Data()" << ::std::endl; }
-
     template < typename ... _Arguments >
     Data ( _Arguments && ... arguments ) : m_value( ::std::forward< _Arguments >( arguments ) ... )
-    {
-        auto out_lambda = [] ( auto && param ) { ::std::cout << ::std::forward< decltype( param ) >( param ) << " "; };
-
-        ::std::cout << "Data( ";
-        out_lambda( ::std::forward< _Arguments >( arguments ) ... );
-        ::std::cout << ")" << ::std::endl;
-    }
+        { ::std::cout << FUNC_INFO << ::std::endl; }
 
     template < typename _Other >
-    Data ( Data< _Other > && other ) : m_value( ::std::forward< _Other >( other.m_value ) ) { ::std::cout << "Data(Data<> &&)" << ::std::endl; }
+    Data ( Data< _Other > && other ) : m_value( ::std::forward< _Other >( other.m_value ) )
+        { ::std::cout << FUNC_INFO << ::std::endl; }
     template < typename _Other >
-    Data ( const Data< _Other > && other ) : m_value( ::std::forward< const _Other >( other.m_value ) ) { ::std::cout << "Data(const Data<> &&)" << ::std::endl; }
+    Data ( const Data< _Other > && other ) : m_value( ::std::forward< const _Other >( other.m_value ) )
+        { ::std::cout << FUNC_INFO << ::std::endl; }
     template < typename _Other >
-    Data ( Data< _Other > & other ) : m_value( other.m_value ) { ::std::cout << "Data(Data<> &)" << ::std::endl; }
+    Data ( volatile Data< _Other > && other ) : m_value( ::std::forward< _Other >( other.m_value ) )
+        { ::std::cout << FUNC_INFO << ::std::endl; }
     template < typename _Other >
-    Data ( const Data< _Other > & other ) : m_value( other.m_value ) { ::std::cout << "Data(const Data<> &)" << ::std::endl; }
+    Data ( const volatile Data< _Other > && other ) : m_value( ::std::forward< const _Other >( other.m_value ) )
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    template < typename _Other >
+    Data ( Data< _Other > & other ) : m_value( other.m_value )
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    template < typename _Other >
+    Data ( const Data< _Other > & other ) : m_value( other.m_value )
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    template < typename _Other >
+    Data ( volatile Data< _Other > & other ) : m_value( other.m_value )
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    template < typename _Other >
+    Data ( const volatile Data< _Other > & other ) : m_value( other.m_value )
+        { ::std::cout << FUNC_INFO << ::std::endl; }
 
-    Data ( ThisType & other ) : m_value( other.m_value ) { ::std::cout << "Data(Data &)" << ::std::endl; }
-    Data ( ThisType && other ) : m_value( ::std::forward< _Type >( other.m_value ) ) { ::std::cout << "Data(Data &&)" << ::std::endl; }
-    Data ( const ThisType & other ) : m_value( other.m_value ) { ::std::cout << "Data(const Data &)" << ::std::endl; }
-    Data ( const ThisType && other ) : m_value( ::std::forward< const _Type >( other.m_value ) ) { ::std::cout << "Data(const Data &&)" << ::std::endl; }
-    ~Data () { ::std::cout << "~Data()" << ::std::endl; }
+    Data ( ThisType && other ) : m_value( ::std::forward< _Type >( other.m_value ) )
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    Data ( const ThisType && other ) : m_value( ::std::forward< const _Type >( other.m_value ) )
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    Data ( volatile ThisType && other ) : m_value( ::std::forward< volatile _Type >( other.m_value ) )
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    Data ( const volatile ThisType && other ) : m_value( ::std::forward< const volatile _Type >( other.m_value ) )
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    Data ( ThisType & other ) : m_value( other.m_value )
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    Data ( const ThisType & other ) : m_value( other.m_value )
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    Data ( volatile ThisType & other ) : m_value( other.m_value )
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    Data ( const volatile ThisType & other ) : m_value( other.m_value )
+        { ::std::cout << FUNC_INFO << ::std::endl; }
 
-    Data & operator = ( const Data & other ) { m_value = other.m_value; return *this; }
+    ~Data ()
+        { ::std::cout << FUNC_INFO << ::std::endl; }
 
-    void valueMethod () { ::std::cout << "valueMethod()" << ::std::endl; }
-    void valueConstMethod () const { ::std::cout << "valueConstMethod()" << ::std::endl; }
-    void rvalueMethod () && { ::std::cout << "rvalueMethod()" << ::std::endl; }
-    void rvalueConstMethod () const && { ::std::cout << "rvalueConstMethod()" << ::std::endl; }
-    void lvalueMethod () & { ::std::cout << "lvalueMethod()" << ::std::endl; }
-    void lvalueConstMethod () const & { ::std::cout << "lvalueConstMethod()" << ::std::endl; }
+    template < typename _Argument >
+    decltype(auto) operator = ( _Argument && )
+        { ::std::cout << FUNC_INFO << ::std::endl; }
 
-    template < typename _Index > _Type & operator [] ( _Index && ) & { ::std::cout << "operator [] &" << ::std::endl; return m_value; }
-    template < typename _Index > const _Type & operator [] ( _Index && ) const & { ::std::cout << "operator [] const &" << ::std::endl; return m_value; }
-    template < typename _Index > _Type && operator [] ( _Index && ) && { ::std::cout << "operator [] &&" << ::std::endl; return ::std::forward< _Type >( m_value ); }
-    template < typename _Index > const _Type && operator [] ( _Index && ) const && { ::std::cout << "operator [] const &&" << ::std::endl; return ::std::forward< const _Type >( m_value ); }
+    void operator = ( ThisType && ) &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const ThisType && ) &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( volatile ThisType && ) &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const volatile ThisType && ) &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( ThisType & ) &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const ThisType & ) &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( volatile ThisType & ) &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const volatile ThisType & ) &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
 
-    template < typename ... _Arguments > _Type & operator () ( _Arguments && ... ) & { ::std::cout << "operator () &" << ::std::endl; return m_value; }
-    template < typename ... _Arguments > const _Type & operator () ( _Arguments && ... ) const & { ::std::cout << "operator () const &" << ::std::endl; return m_value; }
-    template < typename ... _Arguments > _Type && operator () ( _Arguments && ... ) && { ::std::cout << "operator () &&" << ::std::endl; return ::std::forward< _Type >( m_value ); }
-    template < typename ... _Arguments > const _Type && operator () ( _Arguments && ... ) const && { ::std::cout << "operator () const &&" << ::std::endl; return ::std::forward< const _Type >( m_value ); }
+    void operator = ( ThisType && ) const &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const ThisType && ) const &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( volatile ThisType && ) const &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const volatile ThisType && ) const &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( ThisType & ) const &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const ThisType & ) const &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( volatile ThisType & ) const &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const volatile ThisType & ) const &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
 
-    void operator + () && { ::std::cout << "operator + &&" << ::std::endl; }
-    void operator + () const && { ::std::cout << "operator + const &&" << ::std::endl; }
-    void operator + () & { ::std::cout << "operator + &" << ::std::endl; }
-    void operator + () const & { ::std::cout << "operator + const &" << ::std::endl; }
-    void operator + () volatile && { ::std::cout << "operator + volatile &&" << ::std::endl; }
-    void operator + () volatile const && { ::std::cout << "operator + const volatile &&" << ::std::endl; }
-    void operator + () volatile & { ::std::cout << "operator + volatile &" << ::std::endl; }
-    void operator + () volatile const & { ::std::cout << "operator + const volatile &" << ::std::endl; }
+    void operator = ( ThisType && ) volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const ThisType && ) volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( volatile ThisType && ) volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const volatile ThisType && ) volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( ThisType & ) volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const ThisType & ) volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( volatile ThisType & ) volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const volatile ThisType & ) volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
 
-    void operator - () && { ::std::cout << "operator - &&" << ::std::endl; }
-    void operator - () const && { ::std::cout << "operator - const &&" << ::std::endl; }
-    void operator - () & { ::std::cout << "operator - &" << ::std::endl; }
-    void operator - () const & { ::std::cout << "operator - const &" << ::std::endl; }
-    void operator - () volatile && { ::std::cout << "operator - volatile &&" << ::std::endl; }
-    void operator - () volatile const && { ::std::cout << "operator - const volatile &&" << ::std::endl; }
-    void operator - () volatile & { ::std::cout << "operator - volatile &" << ::std::endl; }
-    void operator - () volatile const & { ::std::cout << "operator - const volatile &" << ::std::endl; }
+    void operator = ( ThisType && ) const volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const ThisType && ) const volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( volatile ThisType && ) const volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const volatile ThisType && ) const volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( ThisType & ) const volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const ThisType & ) const volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( volatile ThisType & ) const volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const volatile ThisType & ) const volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
 
-    void operator ++ () && { ::std::cout << "operator ++ &&" << ::std::endl; }
-    void operator ++ () const && { ::std::cout << "operator ++ const &&" << ::std::endl; }
-    void operator ++ () & { ::std::cout << "operator ++ &" << ::std::endl; }
-    void operator ++ () const & { ::std::cout << "operator ++ const &" << ::std::endl; }
-    void operator ++ () volatile && { ::std::cout << "operator ++ volatile &&" << ::std::endl; }
-    void operator ++ () volatile const && { ::std::cout << "operator ++ const volatile &&" << ::std::endl; }
-    void operator ++ () volatile & { ::std::cout << "operator ++ volatile &" << ::std::endl; }
-    void operator ++ () volatile const & { ::std::cout << "operator ++ const volatile &" << ::std::endl; }
+    void operator = ( ThisType && ) &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const ThisType && ) &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( volatile ThisType && ) &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const volatile ThisType && ) &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( ThisType & ) &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const ThisType & ) &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( volatile ThisType & ) &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const volatile ThisType & ) &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
 
-    void operator -- () && { ::std::cout << "operator -- &&" << ::std::endl; }
-    void operator -- () const && { ::std::cout << "operator -- const &&" << ::std::endl; }
-    void operator -- () & { ::std::cout << "operator -- &" << ::std::endl; }
-    void operator -- () const & { ::std::cout << "operator -- const &" << ::std::endl; }
-    void operator -- () volatile && { ::std::cout << "operator -- volatile &&" << ::std::endl; }
-    void operator -- () volatile const && { ::std::cout << "operator -- const volatile &&" << ::std::endl; }
-    void operator -- () volatile & { ::std::cout << "operator -- volatile &" << ::std::endl; }
-    void operator -- () volatile const & { ::std::cout << "operator -- const volatile &" << ::std::endl; }
+    void operator = ( ThisType && ) const &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const ThisType && ) const &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( volatile ThisType && ) const &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const volatile ThisType && ) const &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( ThisType & ) const &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const ThisType & ) const &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( volatile ThisType & ) const &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const volatile ThisType & ) const &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
 
-    void operator ++ ( int ) && { ::std::cout << "operator _++ &&" << ::std::endl; }
-    void operator ++ ( int ) const && { ::std::cout << "operator _++ const &&" << ::std::endl; }
-    void operator ++ ( int ) & { ::std::cout << "operator _++ &" << ::std::endl; }
-    void operator ++ ( int ) const & { ::std::cout << "operator _++ const &" << ::std::endl; }
-    void operator ++ ( int ) volatile && { ::std::cout << "operator ++ volatile &&" << ::std::endl; }
-    void operator ++ ( int ) volatile const && { ::std::cout << "operator ++ const volatile &&" << ::std::endl; }
-    void operator ++ ( int ) volatile & { ::std::cout << "operator ++ volatile &" << ::std::endl; }
-    void operator ++ ( int ) volatile const & { ::std::cout << "operator ++ const volatile &" << ::std::endl; }
+    void operator = ( ThisType && ) volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const ThisType && ) volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( volatile ThisType && ) volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const volatile ThisType && ) volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( ThisType & ) volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const ThisType & ) volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( volatile ThisType & ) volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const volatile ThisType & ) volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
 
-    void operator -- ( int ) && { ::std::cout << "operator _-- &&" << ::std::endl; }
-    void operator -- ( int ) const && { ::std::cout << "operator _-- const &&" << ::std::endl; }
-    void operator -- ( int ) & { ::std::cout << "operator _-- &" << ::std::endl; }
-    void operator -- ( int ) const & { ::std::cout << "operator _-- const &" << ::std::endl; }
-    void operator -- ( int ) volatile && { ::std::cout << "operator -- volatile &&" << ::std::endl; }
-    void operator -- ( int ) volatile const && { ::std::cout << "operator -- const volatile &&" << ::std::endl; }
-    void operator -- ( int ) volatile & { ::std::cout << "operator -- volatile &" << ::std::endl; }
-    void operator -- ( int ) volatile const & { ::std::cout << "operator -- const volatile &" << ::std::endl; }
+    void operator = ( ThisType && ) const volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const ThisType && ) const volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( volatile ThisType && ) const volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const volatile ThisType && ) const volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( ThisType & ) const volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const ThisType & ) const volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( volatile ThisType & ) const volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator = ( const volatile ThisType & ) const volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
 
-    void operator ~ () && { ::std::cout << "operator ~ &&" << ::std::endl; }
-    void operator ~ () const && { ::std::cout << "operator ~ const &&" << ::std::endl; }
-    void operator ~ () & { ::std::cout << "operator ~ &" << ::std::endl; }
-    void operator ~ () const & { ::std::cout << "operator ~ const &" << ::std::endl; }
-    void operator ~ () volatile && { ::std::cout << "operator ~ volatile &&" << ::std::endl; }
-    void operator ~ () volatile const && { ::std::cout << "operator ~ const volatile &&" << ::std::endl; }
-    void operator ~ () volatile & { ::std::cout << "operator ~ volatile &" << ::std::endl; }
-    void operator ~ () volatile const & { ::std::cout << "operator ~ const volatile &" << ::std::endl; }
+    void valueMethod ()
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void valueConstMethod () const
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void valueVolatileMethod () volatile
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void valueConstVolatileMethod () const volatile
+        { ::std::cout << FUNC_INFO << ::std::endl; }
 
-    void operator ! () && { ::std::cout << "operator ! &&" << ::std::endl; }
-    void operator ! () const && { ::std::cout << "operator ! const &&" << ::std::endl; }
-    void operator ! () & { ::std::cout << "operator ! &" << ::std::endl; }
-    void operator ! () const & { ::std::cout << "operator ! const &" << ::std::endl; }
-    void operator ! () volatile && { ::std::cout << "operator ! volatile &&" << ::std::endl; }
-    void operator ! () volatile const && { ::std::cout << "operator ! const volatile &&" << ::std::endl; }
-    void operator ! () volatile & { ::std::cout << "operator ! volatile &" << ::std::endl; }
-    void operator ! () volatile const & { ::std::cout << "operator ! const volatile &" << ::std::endl; }
+    void rvalueMethod () &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void rvalueConstMethod () const &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void rvalueVolatileMethod () volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void rvalueConstVolatileMethod () const volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+
+    void lvalueMethod () &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void lvalueConstMethod () const &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void lvalueVolatileMethod () volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void lvalueConstVolatileMethod () const volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+
+    template < typename _Index > void operator [] ( _Index && ) &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    template < typename _Index > void operator [] ( _Index && ) const &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    template < typename _Index > void operator [] ( _Index && ) volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    template < typename _Index > void operator [] ( _Index && ) const volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    template < typename _Index > void operator [] ( _Index && ) &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    template < typename _Index > void operator [] ( _Index && ) const &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    template < typename _Index > void operator [] ( _Index && ) volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    template < typename _Index > void operator [] ( _Index && ) const volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+
+    template < typename ... _Arguments > void operator () ( _Arguments && ... ) &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    template < typename ... _Arguments > void operator () ( _Arguments && ... ) const &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    template < typename ... _Arguments > void operator () ( _Arguments && ... ) volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    template < typename ... _Arguments > void operator () ( _Arguments && ... ) const volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    template < typename ... _Arguments > void operator () ( _Arguments && ... ) &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    template < typename ... _Arguments > void operator () ( _Arguments && ... ) const &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    template < typename ... _Arguments > void operator () ( _Arguments && ... ) volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    template < typename ... _Arguments > void operator () ( _Arguments && ... ) const volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+
+    void operator + () &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator + () const &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator + () volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator + () const volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator + () &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator + () const &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator + () volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator + () const volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+
+    void operator - () &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator - () const &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator - () volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator - () const volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator - () &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator - () const &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator - () volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator - () const volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+
+    void operator ++ () &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ++ () const &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ++ () volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ++ () const volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ++ () &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ++ () const &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ++ () volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ++ () const volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+
+    void operator -- () &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator -- () const &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator -- () volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator -- () const volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator -- () &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator -- () const &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator -- () volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator -- () const volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+
+    void operator ++ ( int ) &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ++ ( int ) const &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ++ ( int ) volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ++ ( int ) const volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ++ ( int ) &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ++ ( int ) const &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ++ ( int ) volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ++ ( int ) const volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+
+    void operator -- ( int ) &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator -- ( int ) const &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator -- ( int ) volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator -- ( int ) const volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator -- ( int ) &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator -- ( int ) const &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator -- ( int ) volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator -- ( int ) const volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+
+    void operator ~ () &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ~ () const &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ~ () volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ~ () const volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ~ () &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ~ () const &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ~ () volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ~ () const volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+
+    void operator ! () &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ! () const &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ! () volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ! () const volatile &&
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ! () &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ! () const &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ! () volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
+    void operator ! () const volatile &
+        { ::std::cout << FUNC_INFO << ::std::endl; }
 
     template < typename ... _Arguments >
     static ThisType make ( _Arguments && ... arguments ) { return Data( ::std::forward< _Arguments >( arguments ) ... ); }
@@ -193,92 +463,193 @@ void testDiffToolConstructors ()
     (void) seven;
 }
 
+template < typename _Data >
+void testConstructors ()
+{
+    using TestData = _Data;
+    using CTestData = const TestData;
+    using VTestData = volatile TestData;
+    using CVTestData = const volatile TestData;
+
+    TestData lvalue;
+    CTestData lvalue_c;
+    VTestData lvalue_v;
+    CVTestData lvalue_cv;
+
+    { TestData data; }
+    { TestData data = lvalue; }
+    { TestData data = lvalue_c; }
+    { TestData data = lvalue_v; }
+    { TestData data = lvalue_cv; }
+    { TestData data = ::std::move( lvalue ); }
+    { TestData data = ::std::move( lvalue_c ); }
+    { TestData data = ::std::move( lvalue_v ); }
+    { TestData data = ::std::move( lvalue_cv ); }
+}
+
+template < typename _Data >
+void testAssignmentOperator ()
+{
+    using TestData = _Data;
+    using CTestData = ::std::add_const_t< _Data >;
+    using VTestData = ::std::add_volatile_t< _Data >;;
+    using CVTestData = ::std::add_cv_t< _Data >;;
+
+    TestData data;
+    TestData & lvalue = data;
+    CTestData & lvalue_c = asConst( data );
+    VTestData & lvalue_v = asVolatile( data );
+    CVTestData & lvalue_cv = asConstVolatile( data );
+
+    lvalue = lvalue;
+    lvalue = lvalue_c;
+    lvalue = lvalue_v;
+    lvalue = lvalue_cv;
+    lvalue = ::std::move( lvalue );
+    lvalue = asConst( ::std::move( lvalue ) );
+    lvalue = asVolatile( ::std::move( lvalue ) );
+    lvalue = asConstVolatile( ::std::move( lvalue ) );
+
+    ::std::move( lvalue ) = lvalue;
+    ::std::move( lvalue ) = lvalue_c;
+    ::std::move( lvalue ) = lvalue_v;
+    ::std::move( lvalue ) = lvalue_cv;
+    ::std::move( lvalue ) = ::std::move( lvalue );
+    ::std::move( lvalue ) = asConst( ::std::move( lvalue ) );
+    ::std::move( lvalue ) = asVolatile( ::std::move( lvalue ) );
+    ::std::move( lvalue ) = asConstVolatile( ::std::move( lvalue ) );
+}
+
+template < typename _Data >
+void testUnaryOperators ()
+{
+    using TestData = _Data;
+
+    TestData data;
+    TestData & lvalue = data;
+
+    // lvalue
+    lvalue[0];
+    asConst(lvalue)[0];
+    asVolatile(lvalue)[0];
+    asConstVolatile(lvalue)[0];
+
+    lvalue(0, 1);
+    asConst(lvalue)(0, 1);
+    asVolatile(lvalue)(0, 1);
+    asConstVolatile(lvalue)(0, 1);
+
+    +lvalue;
+    +asConst(lvalue);
+    +asVolatile(lvalue);
+    +asConstVolatile(lvalue);
+
+    -lvalue;
+    -asConst(lvalue);
+    -asVolatile(lvalue);
+    -asConstVolatile(lvalue);
+
+    ++lvalue;
+    ++asConst(lvalue);
+    ++asVolatile(lvalue);
+    ++asConstVolatile(lvalue);
+
+    --lvalue;
+    --asConst(lvalue);
+    --asVolatile(lvalue);
+    --asConstVolatile(lvalue);
+
+    lvalue++;
+    asConst(lvalue)++;
+    asVolatile(lvalue)++;
+    asConstVolatile(lvalue)++;
+
+    lvalue--;
+    asConst(lvalue)--;
+    asVolatile(lvalue)--;
+    asConstVolatile(lvalue)--;
+
+    !lvalue;
+    !asConst(lvalue);
+    !asVolatile(lvalue);
+    !asConstVolatile(lvalue);
+
+    ~lvalue;
+    ~asConst(lvalue);
+    ~asVolatile(lvalue);
+    ~asConstVolatile(lvalue);
+
+    // rvalue
+    ::std::move( lvalue )[0];
+    asConst( ::std::move( lvalue ) )[0];
+    asVolatile( ::std::move( lvalue ) )[0];
+    asConstVolatile( ::std::move( lvalue ) )[0];
+
+    ::std::move( lvalue )(0, 1);
+    asConst( ::std::move( lvalue ) )(0, 1);
+    asVolatile( ::std::move( lvalue ) )(0, 1);
+    asConstVolatile( ::std::move( lvalue ) )(0, 1);
+
+    +::std::move( lvalue );
+    +asConst( ::std::move( lvalue ) );
+    +asVolatile( ::std::move( lvalue ) );
+    +asConstVolatile( ::std::move( lvalue ) );
+
+    -::std::move( lvalue );
+    -asConst( ::std::move( lvalue ) );
+    -asVolatile( ::std::move( lvalue ) );
+    -asConstVolatile( ::std::move( lvalue ) );
+
+    ++::std::move( lvalue );
+    ++asConst( ::std::move( lvalue ) );
+    ++asVolatile( ::std::move( lvalue ) );
+    ++asConstVolatile( ::std::move( lvalue ) );
+
+    --::std::move( lvalue );
+    --asConst( ::std::move( lvalue ) );
+    --asVolatile( ::std::move( lvalue ) );
+    --asConstVolatile( ::std::move( lvalue ) );
+
+    ::std::move( lvalue )++;
+    asConst( ::std::move( lvalue ) )++;
+    asVolatile( ::std::move( lvalue ) )++;
+    asConstVolatile( ::std::move( lvalue ) )++;
+
+    ::std::move( lvalue )--;
+    asConst( ::std::move( lvalue ) )--;
+    asVolatile( ::std::move( lvalue ) )--;
+    asConstVolatile( ::std::move( lvalue ) )--;
+
+    !::std::move( lvalue );
+    !asConst( ::std::move( lvalue ) );
+    !asVolatile( ::std::move( lvalue ) );
+    !asConstVolatile( ::std::move( lvalue ) );
+
+    ~::std::move( lvalue );
+    ~asConst( ::std::move( lvalue ) );
+    ~asVolatile( ::std::move( lvalue ) );
+    ~asConstVolatile( ::std::move( lvalue ) );
+}
+
+template < typename _Data >
+void testAll ()
+{
+    testConstructors< _Data >();
+    //testAssignmentOperator< _Data >();
+    testUnaryOperators< _Data >();
+}
+
 void testUnaryOperators ()
 {
     using TestData = Instance< Data< int > >;
+    using CTestData = const TestData;
     using VTestData = volatile TestData;
+    using CVTestData = const volatile TestData;
 
-    TestData impl_data = 10;
-    impl_data[0];
-    asConst(impl_data)[0];
-    TestData()[0];
-    asConst(TestData())[0];
-
-    impl_data(0, 1);
-    asConst(impl_data)(0, 1);
-    TestData()(0, 1);
-    asConst(TestData())(0, 1);
-
-    // lvalue
-    +impl_data;
-    +asConst(impl_data);
-    -impl_data;
-    -asConst(impl_data);
-    ++impl_data;
-    ++asConst(impl_data);
-    --impl_data;
-    --asConst(impl_data);
-    impl_data++;
-    asConst(impl_data)++;
-    impl_data--;
-    asConst(impl_data)--;
-    !impl_data;
-    !asConst(impl_data);
-    ~impl_data;
-    ~asConst(impl_data);
-
-    // rvalue
-    +TestData();
-    +asConst(TestData());
-    -TestData();
-    -asConst(TestData());
-    ++TestData();
-    ++asConst(TestData());
-    --TestData();
-    --asConst(TestData());
-    TestData()++;
-    asConst(TestData())++;
-    TestData()--;
-    asConst(TestData())--;
-    !TestData();
-    !asConst(TestData());
-    ~TestData();
-    ~asConst(TestData());
-
-    VTestData vol_data = 10;
-    +vol_data;
-    +asConst(vol_data);
-    -vol_data;
-    -asConst(vol_data);
-    ++vol_data;
-    ++asConst(vol_data);
-    --vol_data;
-    --asConst(vol_data);
-    vol_data++;
-    asConst(vol_data)++;
-    vol_data--;
-    asConst(vol_data)--;
-    !vol_data;
-    !asConst(vol_data);
-    ~vol_data;
-    ~asConst(vol_data);
-
-    +VTestData();
-    +asConst(VTestData());
-    -VTestData();
-    -asConst(VTestData());
-    ++VTestData();
-    ++asConst(VTestData());
-    --VTestData();
-    --asConst(VTestData());
-    VTestData()++;
-    asConst(VTestData())++;
-    VTestData()--;
-    asConst(VTestData())--;
-    !VTestData();
-    !asConst(VTestData());
-    ~VTestData();
-    ~asConst(VTestData());
+    testAll< TestData >();
+    testAll< CTestData >();
+    testAll< VTestData >();
+    testAll< CVTestData  >();
 }
 
 void testBinaryOperators ()

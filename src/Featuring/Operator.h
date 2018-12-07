@@ -283,7 +283,7 @@ namespace Operator
     }
 }
 
-// Unary operators
+// Unary prefix operators
 #define INSTANCE_PREFIX_UNARY_OPERATOR( symbol, invokable ) \
     template < typename _Right, \
         typename = ::std::enable_if_t< ::is_instance< ::std::decay_t< _Right > > > > \
@@ -295,15 +295,7 @@ namespace Operator
         return Operator::invoke< RightInstanceRefer >( ::std::forward< RightInstanceRefer >( value ), invokable< RightValueRefer >() ); \
     } \
 
-INSTANCE_PREFIX_UNARY_OPERATOR( +, ::Operator::Private::UnaryPrefixPlus )
-INSTANCE_PREFIX_UNARY_OPERATOR( -, ::Operator::Private::UnaryPrefixMinus )
-INSTANCE_PREFIX_UNARY_OPERATOR( ++, ::Operator::Private::UnaryPrefixPlusPlus )
-INSTANCE_PREFIX_UNARY_OPERATOR( --, ::Operator::Private::UnaryPrefixMinusMinus )
-INSTANCE_PREFIX_UNARY_OPERATOR( ~, ::Operator::Private::UnaryPrefixBitwiseNot )
-INSTANCE_PREFIX_UNARY_OPERATOR( !, ::Operator::Private::UnaryPrefixLogicalNot )
-
-#undef INSTANCE_PREFIX_UNARY_OPERATOR
-
+// Unary postfix operators
 #define INSTANCE_POSTFIX_UNARY_OPERATOR( symbol, invokable ) \
     template < typename _Left, \
         typename = ::std::enable_if_t< ::is_instance< ::std::decay_t< _Left > > > > \
@@ -315,11 +307,7 @@ INSTANCE_PREFIX_UNARY_OPERATOR( !, ::Operator::Private::UnaryPrefixLogicalNot )
         return Operator::invoke< LeftInstanceRefer >( ::std::forward< LeftInstanceRefer >( value ), invokable< LeftValueRefer >() ); \
     } \
 
-INSTANCE_POSTFIX_UNARY_OPERATOR( ++, ::Operator::Private::UnaryPostfixPlusPlus )
-INSTANCE_POSTFIX_UNARY_OPERATOR( --, ::Operator::Private::UnaryPostfixMinusMinus )
-
-#undef INSTANCE_POSTFIX_UNARY_OPERATOR
-
+// Binary operators
 #define INSTANCE_BINARY_OPERATOR( symbol, invokable ) \
     template < typename _Left, typename _Right, \
         typename = ::std::enable_if_t< ::is_instance< ::std::decay_t< _Right > > || ::is_instance< ::std::decay_t< _Left > > > > \
@@ -328,29 +316,16 @@ INSTANCE_POSTFIX_UNARY_OPERATOR( --, ::Operator::Private::UnaryPostfixMinusMinus
         return; \
     } \
 
-// Binary operators
-INSTANCE_BINARY_OPERATOR( ==, ??? )
-INSTANCE_BINARY_OPERATOR( !=, ??? )
-INSTANCE_BINARY_OPERATOR( <, ??? )
-INSTANCE_BINARY_OPERATOR( <=, ??? )
-INSTANCE_BINARY_OPERATOR( >, ??? )
-INSTANCE_BINARY_OPERATOR( >=, ??? )
-
+// Arithmetic operators
+INSTANCE_PREFIX_UNARY_OPERATOR( +, ::Operator::Private::UnaryPrefixPlus )
+INSTANCE_PREFIX_UNARY_OPERATOR( -, ::Operator::Private::UnaryPrefixMinus )
 INSTANCE_BINARY_OPERATOR( *, ??? )
 INSTANCE_BINARY_OPERATOR( /, ??? )
 INSTANCE_BINARY_OPERATOR( %, ??? )
 INSTANCE_BINARY_OPERATOR( +, ??? )
 INSTANCE_BINARY_OPERATOR( -, ??? )
 
-INSTANCE_BINARY_OPERATOR( <<, ??? )
-INSTANCE_BINARY_OPERATOR( >>, ??? )
-
-INSTANCE_BINARY_OPERATOR( &, ??? )
-INSTANCE_BINARY_OPERATOR( ^, ??? )
-INSTANCE_BINARY_OPERATOR( |, ??? )
-INSTANCE_BINARY_OPERATOR( &&, ??? )
-INSTANCE_BINARY_OPERATOR( ||, ??? )
-
+// Compound assignment
 INSTANCE_BINARY_OPERATOR( *=, ??? )
 INSTANCE_BINARY_OPERATOR( /=, ??? )
 INSTANCE_BINARY_OPERATOR( %=, ??? )
@@ -362,6 +337,35 @@ INSTANCE_BINARY_OPERATOR( &=, ??? )
 INSTANCE_BINARY_OPERATOR( ^=, ??? )
 INSTANCE_BINARY_OPERATOR( |=, ??? )
 
+// Increment and decrement
+INSTANCE_PREFIX_UNARY_OPERATOR( ++, ::Operator::Private::UnaryPrefixPlusPlus )
+INSTANCE_PREFIX_UNARY_OPERATOR( --, ::Operator::Private::UnaryPrefixMinusMinus )
+INSTANCE_POSTFIX_UNARY_OPERATOR( ++, ::Operator::Private::UnaryPostfixPlusPlus )
+INSTANCE_POSTFIX_UNARY_OPERATOR( --, ::Operator::Private::UnaryPostfixMinusMinus )
+
+// Relational and comparison operators
+INSTANCE_BINARY_OPERATOR( ==, ??? )
+INSTANCE_BINARY_OPERATOR( !=, ??? )
+INSTANCE_BINARY_OPERATOR( <, ??? )
+INSTANCE_BINARY_OPERATOR( <=, ??? )
+INSTANCE_BINARY_OPERATOR( >, ??? )
+INSTANCE_BINARY_OPERATOR( >=, ??? )
+
+// Logical operators
+INSTANCE_PREFIX_UNARY_OPERATOR( !, ::Operator::Private::UnaryPrefixLogicalNot )
+INSTANCE_BINARY_OPERATOR( &&, ??? )
+INSTANCE_BINARY_OPERATOR( ||, ??? )
+
+// Bitwise operators
+INSTANCE_PREFIX_UNARY_OPERATOR( ~, ::Operator::Private::UnaryPrefixBitwiseNot )
+INSTANCE_BINARY_OPERATOR( &, ??? )
+INSTANCE_BINARY_OPERATOR( ^, ??? )
+INSTANCE_BINARY_OPERATOR( |, ??? )
+INSTANCE_BINARY_OPERATOR( <<, ??? )
+INSTANCE_BINARY_OPERATOR( >>, ??? )
+
+#undef INSTANCE_PREFIX_UNARY_OPERATOR
+#undef INSTANCE_POSTFIX_UNARY_OPERATOR
 #undef INSTANCE_BINARY_OPERATOR
 
 #endif

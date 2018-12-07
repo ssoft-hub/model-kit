@@ -63,6 +63,18 @@ public:
     {
     }
 
+    Instance ( volatile ThisType && other )
+        : m_holder( InstanceResolver< ThisType, volatile ThisType && >(
+            ::std::forward< volatile ThisType >( other ) ).resolve() )
+    {
+    }
+
+    Instance ( const volatile ThisType && other )
+        : m_holder( InstanceResolver< ThisType, const volatile ThisType && >(
+            ::std::forward< const volatile ThisType >( other ) ).resolve() )
+    {
+    }
+
     Instance ( ThisType & other )
         : m_holder( InstanceResolver< ThisType, ThisType & >( other ).resolve() )
     {
@@ -70,6 +82,16 @@ public:
 
     Instance ( const ThisType & other )
         : m_holder( InstanceResolver< ThisType, const ThisType & >( other ).resolve() )
+    {
+    }
+
+    Instance ( volatile ThisType & other )
+        : m_holder( InstanceResolver< ThisType, volatile ThisType & >( other ).resolve() )
+    {
+    }
+
+    Instance ( const volatile ThisType & other )
+        : m_holder( InstanceResolver< ThisType, const volatile ThisType & >( other ).resolve() )
     {
     }
 
@@ -89,6 +111,20 @@ public:
     }
 
     template < typename _OtherValue, typename _OtherTool >
+    Instance ( volatile Instance< _OtherValue, _OtherTool > && other )
+        : m_holder( InstanceResolver< ThisType, volatile Instance< _OtherValue, _OtherTool > && >(
+            ::std::forward< volatile Instance< _OtherValue, _OtherTool > >( other ) ).resolve() )
+    {
+    }
+
+    template < typename _OtherValue, typename _OtherTool >
+    Instance ( const volatile Instance< _OtherValue, _OtherTool > && other )
+        : m_holder( InstanceResolver< ThisType, const volatile Instance< _OtherValue, _OtherTool > && >(
+            ::std::forward< const volatile Instance< _OtherValue, _OtherTool > >( other ) ).resolve() )
+    {
+    }
+
+    template < typename _OtherValue, typename _OtherTool >
     Instance ( const Instance< _OtherValue, _OtherTool > & other )
         : m_holder( InstanceResolver< ThisType, const Instance< _OtherValue, _OtherTool > & >( other ).resolve() )
     {
@@ -100,46 +136,34 @@ public:
     {
     }
 
-    /// Операторы присвоения (в т.ч. Instance< _OtherValue, _OtherTool >)
-    template < typename _OtherValue >
-    ThisType & operator = ( _OtherValue && other ) &
+    template < typename _OtherValue, typename _OtherTool >
+    Instance ( const volatile Instance< _OtherValue, _OtherTool > & other )
+        : m_holder( InstanceResolver< ThisType, const volatile Instance< _OtherValue, _OtherTool > & >( other ).resolve() )
     {
-        m_holder = InstanceResolver< ThisType, _OtherValue && >( ::std::forward< _OtherValue >( other ) ).resolve();
-        return *this;
     }
 
-    template < typename _OtherValue >
-    ThisType && operator = ( _OtherValue && other ) &&
+    template < typename _OtherValue, typename _OtherTool >
+    constexpr Instance ( volatile Instance< _OtherValue, _OtherTool > & other )
+        : m_holder( InstanceResolver< ThisType, volatile Instance< _OtherValue, _OtherTool > & >( other ).resolve() )
     {
-        m_holder = InstanceResolver< ThisType, _OtherValue && >( ::std::forward< _OtherValue >( other ) ).resolve();
+    }
+
+    // Assignment operators for (including Instance< _OtherValue, _OtherTool >)
+    template < typename _Argument >
+    ThisType && operator = ( _Argument && other ) &&
+    {
+        m_holder = InstanceResolver< ThisType, _Argument && >( ::std::forward< _Argument >( other ) ).resolve();
         return ::std::forward< ThisType >( *this );
     }
 
-    /// Операторы присвоения ThisType
-    ThisType & operator = ( ThisType && other ) &
+    template < typename _Argument >
+    ThisType & operator = ( _Argument && other ) &
     {
-        m_holder = InstanceResolver< ThisType, ThisType && >( ::std::forward< ThisType >( other ) ).resolve();
+        m_holder = InstanceResolver< ThisType, _Argument && >( ::std::forward< _Argument >( other ) ).resolve();
         return *this;
     }
 
-    ThisType & operator = ( const ThisType && other ) &
-    {
-        m_holder = InstanceResolver< ThisType, ThisType && >( ::std::forward< const ThisType >( other ) ).resolve();
-        return *this;
-    }
-
-    ThisType & operator = ( ThisType & other ) &
-    {
-        m_holder = InstanceResolver< ThisType, ThisType & >( other ).resolve();
-        return *this;
-    }
-
-    ThisType & operator = ( const ThisType & other ) &
-    {
-        m_holder = InstanceResolver< ThisType, const ThisType & >( other ).resolve();
-        return *this;
-    }
-
+    // Assignment operators for ThisType
     ThisType && operator = ( ThisType && other ) &&
     {
         m_holder = InstanceResolver< ThisType, ThisType && >( ::std::forward< ThisType >( other ) ).resolve();
@@ -148,7 +172,19 @@ public:
 
     ThisType && operator = ( const ThisType && other ) &&
     {
-        m_holder = InstanceResolver< ThisType, ThisType && >( ::std::forward< const ThisType >( other ) ).resolve();
+        m_holder = InstanceResolver< ThisType, const ThisType && >( ::std::forward< const ThisType >( other ) ).resolve();
+        return *this;
+    }
+
+    ThisType && operator = ( volatile ThisType && other ) &&
+    {
+        m_holder = InstanceResolver< ThisType, volatile ThisType && >( ::std::forward< volatile ThisType >( other ) ).resolve();
+        return *this;
+    }
+
+    ThisType && operator = ( const volatile ThisType && other ) &&
+    {
+        m_holder = InstanceResolver< ThisType, const volatile ThisType && >( ::std::forward< const volatile ThisType >( other ) ).resolve();
         return *this;
     }
 
@@ -164,7 +200,67 @@ public:
         return *this;
     }
 
-    /// Операторы преобразования к типу
+    ThisType && operator = ( volatile ThisType & other ) &&
+    {
+        m_holder = InstanceResolver< ThisType, volatile ThisType & >( other ).resolve();
+        return *this;
+    }
+
+    ThisType && operator = ( const volatile ThisType & other ) &&
+    {
+        m_holder = InstanceResolver< ThisType, const volatile ThisType & >( other ).resolve();
+        return *this;
+    }
+
+    ThisType & operator = ( ThisType && other ) &
+    {
+        m_holder = InstanceResolver< ThisType, ThisType && >( ::std::forward< ThisType >( other ) ).resolve();
+        return *this;
+    }
+
+    ThisType & operator = ( const ThisType && other ) &
+    {
+        m_holder = InstanceResolver< ThisType, const ThisType && >( ::std::forward< const ThisType >( other ) ).resolve();
+        return *this;
+    }
+
+    ThisType & operator = ( volatile ThisType && other ) &
+    {
+        m_holder = InstanceResolver< ThisType, volatile ThisType && >( ::std::forward< volatile ThisType >( other ) ).resolve();
+        return *this;
+    }
+
+    ThisType & operator = ( const volatile ThisType && other ) &
+    {
+        m_holder = InstanceResolver< ThisType, const volatile ThisType && >( ::std::forward< const volatile ThisType >( other ) ).resolve();
+        return *this;
+    }
+
+    ThisType & operator = ( ThisType & other ) &
+    {
+        m_holder = InstanceResolver< ThisType, ThisType & >( other ).resolve();
+        return *this;
+    }
+
+    ThisType & operator = ( const ThisType & other ) &
+    {
+        m_holder = InstanceResolver< ThisType, const ThisType & >( other ).resolve();
+        return *this;
+    }
+
+    ThisType & operator = ( volatile ThisType & other ) &
+    {
+        m_holder = InstanceResolver< ThisType, volatile ThisType & >( other ).resolve();
+        return *this;
+    }
+
+    ThisType & operator = ( const volatile ThisType & other ) &
+    {
+        m_holder = InstanceResolver< ThisType, const volatile ThisType & >( other ).resolve();
+        return *this;
+    }
+
+    // Convertation operators
     operator Instance< const _Value, _Tool > & ()
     {
         return reinterpret_cast< Instance< const _Value, _Tool > & >( *this );
