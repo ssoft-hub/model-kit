@@ -181,21 +181,69 @@ namespace Operator
     } \
 
 #define UNARY_OPERATOR_INT_IMPLEMENTAION( symbol, Invokable ) \
+    namespace Operator { template < typename > struct Invokable; } \
+    namespace Operator { namespace Spec { template < typename > struct Invokable; } } \
+    \
+    namespace Operator \
+    { \
+        namespace Spec \
+        { \
+            /* For unguarded Holder only */ \
+            template < typename _Value, template < typename > class _Holder > \
+            struct Invokable< _Holder< _Value > > \
+            { \
+                using Holder = _Holder< _Value >; \
+                using Value = _Value; \
+                template < typename _Refer, typename ... _Arguments > \
+                constexpr decltype(auto) operator () ( _Refer && refer, _Arguments && ... arguments ) \
+                { \
+                    using HolderRefer= ::std::add_rvalue_reference_t< _Refer >; \
+                    static_assert( ::std::is_same< Holder, ::std::decay_t< HolderRefer > >::value, \
+                        "The template parameter _Refer must be a refer of template parameter Instance< _Value, _Tool >::Holder." ); \
+                    using ValueRefer = ::SimilarRefer< Value, HolderRefer >; \
+                    return ::Operator::Invokable< Value >()( ::std::forward< ValueRefer >( Holder::value( ::std::forward< HolderRefer >( refer ) ) ), ::std::forward< _Arguments >( arguments ) ... ); \
+                } \
+            };\
+        } \
+    } \
+    \
     namespace Operator \
     { \
         template < typename _Value > \
         struct Invokable \
         { \
-            static_assert( ::std::is_same< _Value, ::std::decay_t< _Value > >::value, \
+            using Type = _Value; \
+            static_assert( ::std::is_same< Type, ::std::decay_t< Type > >::value, \
                 "The template parameter _Value must be decayed." ); \
-            template < typename _Refer > \
-            constexpr decltype(auto) operator () ( _Refer && refer ) \
+            template < typename _Refer, typename ... _Arguments > \
+            constexpr decltype(auto) operator () ( _Refer && refer, _Arguments && ... arguments ) \
             { \
-                static_assert( ::std::is_same< _Value, ::std::decay_t< _Refer > >::value, \
+                using Refer= ::std::add_rvalue_reference_t< _Refer >; \
+                static_assert( ::std::is_same< Type, ::std::decay_t< Refer > >::value, \
                     "The template parameter _Refer must be a refer of template parameter _Value." ); \
-                return ::std::forward< _Refer >( refer ) /* TODO: symbol*/; \
+                return ::std::forward< Refer >( refer ) symbol; \
             } \
         }; \
+    } \
+    \
+    namespace Operator \
+    { \
+        template < typename _Value, typename _Tool > \
+        struct Invokable< ::Instance< _Value, _Tool > > \
+        { \
+            using Instance = ::Instance< _Value, _Tool >; \
+            using Holder = typename Instance::Holder; \
+            template < typename _Refer, typename ... _Arguments > \
+            constexpr decltype(auto) operator () ( _Refer && refer, _Arguments && ... arguments ) \
+            { \
+                using InstanceRefer= ::std::add_rvalue_reference_t< _Refer >; \
+                static_assert( ::std::is_same< Instance, ::std::decay_t< InstanceRefer > >::value, \
+                    "The template parameter _Refer must be a refer of template parameter Instance< _Value, _Tool >." ); \
+                using HolderRefer = ::SimilarRefer< Holder, InstanceRefer >; \
+                /* TODO: вернуть Instance с заблокированным Holder, или Instance над значением, или фундаментальное значение */ \
+                return ::Operator::Spec::Invokable< Holder >()( ::std::forward< HolderRefer >( refer.m_holder ), ::std::forward< _Arguments >( arguments ) ... ); \
+            } \
+        };\
     } \
 
 #define BINARY_OPERATOR_IMPLEMENTAION( symbol, Invokable ) \
@@ -295,7 +343,7 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
     template < typename _Left, typename _RightValue, typename _RightTool > \
     constexpr decltype(auto) operator symbol ( _Left && /*left*/, Instance< _RightValue, _RightTool > right_refer right ) \
     { \
-        /* TODO: */ int a, b; Invokable< int &, int & >( a, b ); \
+        /* TODO: */ \
         return ::std::forward< Instance< _RightValue, _RightTool > right_refer >( right ); \
     } \
 
@@ -331,7 +379,6 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
     template < typename _Argument > \
     constexpr decltype(auto) operator symbol ( _Argument && argument ) this_refer \
     { \
-        /* TODO: */ \
         return Invokable< ThisType >()( \
             ::std::forward< ThisType this_refer >( *this ), \
             ::std::forward< _Argument >( argument ) ); \
@@ -339,24 +386,25 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
 
 #define POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENTS( symbol, this_refer, Invokable ) \
     template < typename ... _Arguments > \
-    constexpr decltype(auto) operator symbol ( _Arguments && ... /*arguments*/ ) this_refer \
+    constexpr decltype(auto) operator symbol ( _Arguments && ... arguments ) this_refer \
     { \
-        /* TODO: */ \
-        return ::std::forward< ThisType this_refer >( *this ); \
+        return Invokable< ThisType >()( \
+            ::std::forward< ThisType this_refer >( *this ), \
+            ::std::forward< _Arguments >( arguments ) ... ); \
     } \
 
 #define PREFIX_OPERATOR_PROTOTYPE( symbol, this_refer, Invokable ) \
     constexpr decltype(auto) operator symbol () this_refer \
     { \
-        /* TODO: */ \
-        return ::std::forward< ThisType this_refer >( *this ); \
+        return Invokable< ThisType >()( \
+            ::std::forward< ThisType this_refer >( *this ) ); \
     } \
 
 #define POSTFIX_OPERATOR_PROTOTYPE_WITH_INT( symbol, this_refer, Invokable ) \
     constexpr decltype(auto) operator symbol ( int ) this_refer \
     { \
-        /* TODO: */ \
-        return ::std::forward< ThisType this_refer >( *this ); \
+        return Invokable< ThisType >()( \
+            ::std::forward< ThisType this_refer >( *this ) ); \
     } \
 
 #define POSTFIX_UNARY_OPERATOR_FOR_ACCESS_PROTOTYPE( symbol, this_refer ) \
@@ -557,39 +605,39 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
 
 /* RIGHT-SIDE INSTANCE OPERATORS */
 
-///* Arithmetic operators */
-//GLOBAL_BINARY_OPERATOR( *, ::Operator::Private::Multiply )
-//GLOBAL_BINARY_OPERATOR( /, ::Operator::Private::Divide )
-//GLOBAL_BINARY_OPERATOR( %, ::Operator::Private::Modulo )
-//GLOBAL_BINARY_OPERATOR( +, ::Operator::Private::Addition )
-//GLOBAL_BINARY_OPERATOR( -, ::Operator::Private::Subtraction )
-///* Compound assignment */
-//GLOBAL_BINARY_OPERATOR( *=, ??? )
-//GLOBAL_BINARY_OPERATOR( /=, ??? )
-//GLOBAL_BINARY_OPERATOR( %=, ??? )
-//GLOBAL_BINARY_OPERATOR( +=, ??? )
-//GLOBAL_BINARY_OPERATOR( -=, ??? )
-//GLOBAL_BINARY_OPERATOR( <<=, ??? )
-//GLOBAL_BINARY_OPERATOR( >>=, ??? )
-//GLOBAL_BINARY_OPERATOR( &=, ??? )
-//GLOBAL_BINARY_OPERATOR( ^=, ??? )
-//GLOBAL_BINARY_OPERATOR( |=, ??? )
-///* Relational and comparison operators */
-//GLOBAL_BINARY_OPERATOR( ==, ??? )
-//GLOBAL_BINARY_OPERATOR( !=, ??? )
-//GLOBAL_BINARY_OPERATOR( <, ??? )
-//GLOBAL_BINARY_OPERATOR( <=, ??? )
-//GLOBAL_BINARY_OPERATOR( >, ??? )
-//GLOBAL_BINARY_OPERATOR( >=, ??? )
-///* Logical operators */
-//GLOBAL_BINARY_OPERATOR( &&, ??? )
-//GLOBAL_BINARY_OPERATOR( ||, ??? )
-///* Bitwise operators */
-//GLOBAL_BINARY_OPERATOR( &, ??? )
-//GLOBAL_BINARY_OPERATOR( ^, ??? )
-//GLOBAL_BINARY_OPERATOR( |, ??? )
-//GLOBAL_BINARY_OPERATOR( <<, ??? )
-//GLOBAL_BINARY_OPERATOR( >>, ??? )
+/* Arithmetic operators */
+GLOBAL_BINARY_OPERATOR( *, ::Operator::Multiply )
+GLOBAL_BINARY_OPERATOR( /, ::Operator::Divide )
+GLOBAL_BINARY_OPERATOR( %, ::Operator::Modulo )
+GLOBAL_BINARY_OPERATOR( +, ::Operator::Addition )
+GLOBAL_BINARY_OPERATOR( -, ::Operator::Subtraction )
+/* Compound assignment */
+GLOBAL_BINARY_OPERATOR( *=, ::Operator::MultiplyAssignment )
+GLOBAL_BINARY_OPERATOR( /=, ::Operator::DivideAssignment )
+GLOBAL_BINARY_OPERATOR( %=, ::Operator::ModuloAssignment )
+GLOBAL_BINARY_OPERATOR( +=, ::Operator::AdditionAssignment )
+GLOBAL_BINARY_OPERATOR( -=, ::Operator::SubtractionAssignment )
+GLOBAL_BINARY_OPERATOR( <<=, ::Operator::ShiftLeftAssignment )
+GLOBAL_BINARY_OPERATOR( >>=, ::Operator::ShiftRightAssignment )
+GLOBAL_BINARY_OPERATOR( &=, ::Operator::BitwiseAndAssignment )
+GLOBAL_BINARY_OPERATOR( ^=, ::Operator::BitwiseXorAssignment )
+GLOBAL_BINARY_OPERATOR( |=, ::Operator::BitwiseOrAssignment )
+/* Relational and comparison operators */
+GLOBAL_BINARY_OPERATOR( ==, ::Operator::IsEqual )
+GLOBAL_BINARY_OPERATOR( !=, ::Operator::NotEqual )
+GLOBAL_BINARY_OPERATOR( <, ::Operator::Less )
+GLOBAL_BINARY_OPERATOR( <=, ::Operator::LessOrEqual )
+GLOBAL_BINARY_OPERATOR( >, ::Operator::Greater )
+GLOBAL_BINARY_OPERATOR( >=, ::Operator::GreaterOrEqual )
+/* Logical operators */
+GLOBAL_BINARY_OPERATOR( &&, ::Operator::LogicalAnd )
+GLOBAL_BINARY_OPERATOR( ||, ::Operator::LogicalOr )
+/* Bitwise operators */
+GLOBAL_BINARY_OPERATOR( &, ::Operator::BitwiseAnd )
+GLOBAL_BINARY_OPERATOR( ^, ::Operator::BitwiseXor )
+GLOBAL_BINARY_OPERATOR( |, ::Operator::BitwiseOr )
+GLOBAL_BINARY_OPERATOR( <<, ::Operator::ShiftLeft )
+GLOBAL_BINARY_OPERATOR( >>, ::Operator::ShiftRight )
 
 #undef INSTANCE_PREFIX_UNARY_OPERATOR
 #undef INSTANCE_POSTFIX_UNARY_OPERATOR
