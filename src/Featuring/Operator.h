@@ -114,30 +114,75 @@ namespace Operator
     }
 };
 
+#define UNARY_OPERATOR_IMPLEMENTAION( symbol, name ) \
+    template < typename _Type > \
+    struct name \
+    { \
+        static_assert( ::std::is_same< _Type, ::std::decay_t< _Type > >::value, \
+            "The template parameter _Type must be decayed." ); \
+        template < typename _Refer, typename ... _Arguments > \
+        constexpr decltype(auto) operator () ( _Refer && refer, _Arguments && ... /*arguments*/ ) \
+        { \
+            static_assert( ::std::is_same< _Type, ::std::decay_t< _Refer > >::value, \
+                "The template parameter _Refer must be a refer of template parameter _Type." ); \
+            return ::std::forward< _Refer >( refer )/*TODO: . operator symbol ( ::std::forward< _Arguments >( arguments ) ... )*/; \
+        } \
+    }; \
+    \
+/*    template < typename _Right > \
+    struct name< Instance< _Right > \
+    { \
+        constexpr decltype(auto) operator () ( _Right && right ) \
+        { \
+            return symbol ::std::forward< _Right >( right ); \
+        } \
+    }; */ \
+
+#define UNARY_OPERATOR_INT_IMPLEMENTAION( symbol, name ) \
+    template < typename _Type > \
+    struct name \
+    { \
+        static_assert( ::std::is_same< _Type, ::std::decay_t< _Type > >::value, \
+            "The template parameter _Type must be decayed." ); \
+        template < typename _Refer > \
+        constexpr decltype(auto) operator () ( _Refer && refer ) \
+        { \
+            static_assert( ::std::is_same< _Type, ::std::decay_t< _Refer > >::value, \
+                "The template parameter _Refer must be a refer of template parameter _Type." ); \
+            return ::std::forward< _Refer >( refer ) /* TODO: symbol*/; \
+        } \
+    }; \
+
+#define BINARY_OPERATOR_IMPLEMENTAION( symbol, name ) \
+    template < typename _Left, typename _Right > \
+    struct name \
+    { \
+        static_assert( ::std::is_same< _Left, ::std::decay_t< _Left > >::value, \
+            "The template parameter _Left must be decayed." ); \
+        static_assert( ::std::is_same< _Right, ::std::decay_t< _Right > >::value, \
+            "The template parameter _Right must be decayed." ); \
+        template < typename _LeftRefer, typename _RightRefer > \
+        constexpr decltype(auto) operator () ( _LeftRefer && left, _RightRefer && /*right*/ ) \
+        { \
+            return ::std::forward< _Left >( left )/* TODO: symbol ::std::forward< _Right >( right )*/; \
+        } \
+    }; \
+
+
 namespace Operator
 {
     namespace Private
     {
-        template < typename _Left, typename _Argument >
-        struct SquareBrackets
-        {
-            constexpr decltype(auto) operator () ( _Left && left, _Argument && argument )
-            {
-                return ::std::forward< _Left >( left )[ ::std::forward< _Argument >( argument ) ];
-            }
-        };
-    }
-
-    namespace Private
-    {
-        template < typename _Left, typename ... _Arguments >
-        struct RoundBrackets
-        {
-            constexpr decltype(auto) operator () ( _Left && left, _Arguments && ... arguments )
-            {
-                return ::std::forward< _Left >( left )( ::std::forward< _Arguments >( arguments ) ... );
-            }
-        };
+        UNARY_OPERATOR_IMPLEMENTAION( [], SquareBrackets )
+        UNARY_OPERATOR_IMPLEMENTAION( (), RoundBrackets )
+        UNARY_OPERATOR_IMPLEMENTAION( +, UnaryPrefixPlus )
+        UNARY_OPERATOR_IMPLEMENTAION( -, UnaryPrefixMinus )
+        UNARY_OPERATOR_IMPLEMENTAION( ++, UnaryPrefixPlusPlus )
+        UNARY_OPERATOR_IMPLEMENTAION( --, UnaryPrefixMinusMinus )
+        UNARY_OPERATOR_IMPLEMENTAION( ~, UnaryPrefixBitwiseNot )
+        UNARY_OPERATOR_IMPLEMENTAION( !, UnaryPrefixLogicalNot )
+        UNARY_OPERATOR_INT_IMPLEMENTAION( ++, UnaryPostfixPlusPlus )
+        UNARY_OPERATOR_INT_IMPLEMENTAION( --, UnaryPostfixMinusMinus )
     }
 }
 
@@ -145,198 +190,75 @@ namespace Operator
 {
     namespace Private
     {
-        template < typename _Right >
-        struct UnaryPrefixPlus
-        {
-            constexpr decltype(auto) operator () ( _Right && right )
-            {
-                return + ::std::forward< _Right >( right );
-            }
-        };
-    }
+        BINARY_OPERATOR_IMPLEMENTAION( ==, IsEqual )
+        BINARY_OPERATOR_IMPLEMENTAION( !=, NotEqual )
+        BINARY_OPERATOR_IMPLEMENTAION( <, Less )
+        BINARY_OPERATOR_IMPLEMENTAION( <=, LessOrEqual )
+        BINARY_OPERATOR_IMPLEMENTAION( >, Greater )
+        BINARY_OPERATOR_IMPLEMENTAION( >=, GreaterOrEqual )
 
-    namespace Private
-    {
-        template < typename _Right >
-        struct UnaryPrefixMinus
-        {
-            constexpr decltype(auto) operator () ( _Right && right )
-            {
-                return - ::std::forward< _Right >( right );
-            }
-        };
-    }
+        BINARY_OPERATOR_IMPLEMENTAION( *, Multiply )
+        BINARY_OPERATOR_IMPLEMENTAION( /, Divide )
+        BINARY_OPERATOR_IMPLEMENTAION( %, Modulo )
+        BINARY_OPERATOR_IMPLEMENTAION( +, Addition )
+        BINARY_OPERATOR_IMPLEMENTAION( -, Subtraction )
 
-    namespace Private
-    {
-        template < typename _Right >
-        struct UnaryPrefixPlusPlus
-        {
-            constexpr decltype(auto) operator () ( _Right && right )
-            {
-                return ++ ::std::forward< _Right >( right );
-            }
-        };
-    }
+        BINARY_OPERATOR_IMPLEMENTAION( <<, ShiftLeft )
+        BINARY_OPERATOR_IMPLEMENTAION( >>, ShiftRight )
 
-    namespace Private
-    {
-        template < typename _Right >
-        struct UnaryPrefixMinusMinus
-        {
-            constexpr decltype(auto) operator () ( _Right && right )
-            {
-                return -- ::std::forward< _Right >( right );
-            }
-        };
-    }
+        BINARY_OPERATOR_IMPLEMENTAION( &, BitwiseAnd )
+        BINARY_OPERATOR_IMPLEMENTAION( |, BitwiseOr )
+        BINARY_OPERATOR_IMPLEMENTAION( ^, BitwiseXor )
 
-    namespace Private
-    {
-        template < typename _Left >
-        struct UnaryPostfixPlusPlus
-        {
-            constexpr decltype(auto) operator () ( _Left && left )
-            {
-                return ::std::forward< _Left >( left ) ++;
-            }
-        };
-    }
+        BINARY_OPERATOR_IMPLEMENTAION( &&, LogicalAnd )
+        BINARY_OPERATOR_IMPLEMENTAION( ||, LogicalOr )
 
-    namespace Private
-    {
-        template < typename _Left >
-        struct UnaryPostfixMinusMinus
-        {
-            constexpr decltype(auto) operator () ( _Left && left )
-            {
-                return ::std::forward< _Left >( left ) --;
-            }
-        };
-    }
-
-    namespace Private
-    {
-        template < typename _Right >
-        struct UnaryPrefixBitwiseNot
-        {
-            constexpr decltype(auto) operator () ( _Right && right )
-            {
-                return ~ ::std::forward< _Right >( right );
-            }
-        };
-    }
-
-    namespace Private
-    {
-        template < typename _Right >
-        struct UnaryPrefixLogicalNot
-        {
-            constexpr decltype(auto) operator () ( _Right && right )
-            {
-                return ! ::std::forward< _Right >( right );
-            }
-        };
+        BINARY_OPERATOR_IMPLEMENTAION( =, Assignment )
+        BINARY_OPERATOR_IMPLEMENTAION( *=, MultiplyAssignment )
+        BINARY_OPERATOR_IMPLEMENTAION( /=, DivideAssignment )
+        BINARY_OPERATOR_IMPLEMENTAION( %=, ModuloAssignment )
+        BINARY_OPERATOR_IMPLEMENTAION( +=, AdditionAssignment )
+        BINARY_OPERATOR_IMPLEMENTAION( -=, SubtractionAssignment )
+        BINARY_OPERATOR_IMPLEMENTAION( <<=, ShiftLeftAssignment )
+        BINARY_OPERATOR_IMPLEMENTAION( >>=, ShiftRightAssignment )
+        BINARY_OPERATOR_IMPLEMENTAION( &=, BitwiseAndAssignment )
+        BINARY_OPERATOR_IMPLEMENTAION( |=, BitwiseOrAssignment )
+        BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
     }
 }
 
-namespace Operator
-{
-    namespace Private
-    {
-        template < typename _Left, typename _Right >
-        struct IsEqual
-        {
-            constexpr decltype(auto) operator () ( _Left && left, _Right && right )
-            {
-                return ::std::forward< _Left >( left ) == ::std::forward< _Right >( right );
-            }
-        };
+/*
+// Unary prefix operators
+#define INSTANCE_PREFIX_UNARY_OPERATOR( symbol, invokable ) \
+    template < typename _Right, \
+        typename = ::std::enable_if_t< ::is_instance< ::std::decay_t< _Right > > > > \
+    inline decltype(auto) operator symbol ( _Right && value ) \
+    { \
+        using RightInstance = ::std::decay_t< _Right >; \
+        using RightInstanceRefer = ::std::add_rvalue_reference_t< _Right >; \
+        using RightValueRefer = ::SimilarRefer< typename RightInstance::Value, RightInstanceRefer >; \
+        return Operator::invoke< RightInstanceRefer >( ::std::forward< RightInstanceRefer >( value ), invokable< RightValueRefer >() ); \
+    } \
 
-        template < typename _Left, typename _Right >
-        struct NotEqual
-        {
-            constexpr decltype(auto) operator () ( _Left && left, _Right && right )
-            {
-                return ::std::forward< _Left >( left ) != ::std::forward< _Right >( right );
-            }
-        };
-
-        template < typename _Left, typename _Right >
-        struct Less
-        {
-            constexpr decltype(auto) operator () ( _Left && left, _Right && right )
-            {
-                return ::std::forward< _Left >( left ) < ::std::forward< _Right >( right );
-            }
-        };
-
-        template < typename _Left, typename _Right >
-        struct LessOrEqual
-        {
-            constexpr decltype(auto) operator () ( _Left && left, _Right && right )
-            {
-                return ::std::forward< _Left >( left ) <= ::std::forward< _Right >( right );
-            }
-        };
-
-        template < typename _Left, typename _Right >
-        struct Greater
-        {
-            constexpr decltype(auto) operator () ( _Left && left, _Right && right )
-            {
-                return ::std::forward< _Left >( left ) > ::std::forward< _Right >( right );
-            }
-        };
-
-        template < typename _Left, typename _Right >
-        struct GreaterOrEqual
-        {
-            constexpr decltype(auto) operator () ( _Left && left, _Right && right )
-            {
-                return ::std::forward< _Left >( left ) >= ::std::forward< _Right >( right );
-            }
-        };
-    }
-}
-
-namespace Operator
-{
-    namespace Private
-    {
-    }
-}
-
-//// Unary prefix operators
-//#define INSTANCE_PREFIX_UNARY_OPERATOR( symbol, invokable ) \
-//    template < typename _Right, \
-//        typename = ::std::enable_if_t< ::is_instance< ::std::decay_t< _Right > > > > \
-//    inline decltype(auto) operator symbol ( _Right && value ) \
-//    { \
-//        using RightInstance = ::std::decay_t< _Right >; \
-//        using RightInstanceRefer = ::std::add_rvalue_reference_t< _Right >; \
-//        using RightValueRefer = ::SimilarRefer< typename RightInstance::Value, RightInstanceRefer >; \
-//        return Operator::invoke< RightInstanceRefer >( ::std::forward< RightInstanceRefer >( value ), invokable< RightValueRefer >() ); \
-//    } \
-
-//// Unary postfix operators
-//#define INSTANCE_POSTFIX_UNARY_OPERATOR( symbol, invokable ) \
-//    template < typename _Left, \
-//        typename = ::std::enable_if_t< ::is_instance< ::std::decay_t< _Left > > > > \
-//    inline decltype(auto) operator symbol ( _Left && value, int ) \
-//    { \
-//        using LeftInstance = ::std::decay_t< _Left >; \
-//        using LeftInstanceRefer = ::std::add_rvalue_reference_t< _Left >; \
-//        using LeftValueRefer = ::SimilarRefer< typename LeftInstance::Value, LeftInstanceRefer >; \
-//        return Operator::invoke< LeftInstanceRefer >( ::std::forward< LeftInstanceRefer >( value ), invokable< LeftValueRefer >() ); \
-//    } \
+// Unary postfix operators
+#define INSTANCE_POSTFIX_UNARY_OPERATOR( symbol, invokable ) \
+    template < typename _Left, \
+        typename = ::std::enable_if_t< ::is_instance< ::std::decay_t< _Left > > > > \
+    inline decltype(auto) operator symbol ( _Left && value, int ) \
+    { \
+        using LeftInstance = ::std::decay_t< _Left >; \
+        using LeftInstanceRefer = ::std::add_rvalue_reference_t< _Left >; \
+        using LeftValueRefer = ::SimilarRefer< typename LeftInstance::Value, LeftInstanceRefer >; \
+        return Operator::invoke< LeftInstanceRefer >( ::std::forward< LeftInstanceRefer >( value ), invokable< LeftValueRefer >() ); \
+    } \
+*/
 
 // Binary operators
 #define GLOBAL_BINARY_OPERATOR_PROTOTYPE( symbol, right_refer, invokable ) \
     template < typename _Left, typename _RightValue, typename _RightTool > \
     constexpr decltype(auto) operator symbol ( _Left && /*left*/, Instance< _RightValue, _RightTool > right_refer right ) \
     { \
-        /* TODO: */ \
+        /* TODO: */ int a, b; invokable< int &, int & >( a, b ); \
         return ::std::forward< Instance< _RightValue, _RightTool > right_refer >( right ); \
     } \
 
@@ -354,16 +276,28 @@ namespace Operator
     constexpr decltype(auto) operator symbol ( ThisType other_refer other ) this_refer \
     { \
         /* TODO: */ \
-        ::std::forward< Holder this_refer >( m_holder ) = InstanceResolver< ThisType, ThisType other_refer >( ::std::forward< ThisType other_refer >( other ) ).resolve(); \
+        ::std::forward< Holder this_refer >( m_holder ) symbol InstanceResolver< ThisType, ThisType other_refer >( ::std::forward< ThisType other_refer >( other ) ).resolve(); \
         return ::std::forward< ThisType this_refer >( *this ); \
+    } \
+
+#define BINARY_OPERATOR_PROTOTYPE_FOR_ANY( symbol, this_refer, invokable ) \
+    template < typename _Other > \
+    constexpr decltype(auto) operator symbol ( _Other && other ) this_refer \
+    { \
+        /* TODO: */ \
+        return invokable< ThisType, ::std::decay_t< _Other > >()( \
+            ::std::forward< ThisType this_refer >( *this ), \
+            ::std::forward< _Other && >( other ) ); \
     } \
 
 #define POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( symbol, this_refer, invokable ) \
     template < typename _Argument > \
-    constexpr decltype(auto) operator symbol ( _Argument && /*argument*/ ) this_refer \
+    constexpr decltype(auto) operator symbol ( _Argument && argument ) this_refer \
     { \
         /* TODO: */ \
-        return ::std::forward< ThisType this_refer >( *this ); \
+        return invokable< ThisType >()( \
+            ::std::forward< ThisType this_refer >( *this ), \
+            ::std::forward< _Argument >( argument ) ); \
     } \
 
 #define POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENTS( symbol, this_refer, invokable ) \
@@ -500,14 +434,14 @@ namespace Operator
     POSTFIX_OPERATOR_PROTOTYPE_WITH_INT( symbol, const volatile &, invokable ) \
 
 #define BINARY_OPERATOR_FOR_ANY( symbol, invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( symbol, &&, invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( symbol, const &&, invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( symbol, volatile &&, invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( symbol, const volatile &&, invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( symbol, &, invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( symbol, const &, invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( symbol, volatile &, invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( symbol, const volatile &, invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( symbol, &&, invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( symbol, const &&, invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( symbol, volatile &&, invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( symbol, const volatile &&, invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( symbol, &, invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( symbol, const &, invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( symbol, volatile &, invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( symbol, const volatile &, invokable ) \
 
 #define BINARY_OPERATOR_FOR_THIS_INSTANCE( symbol, invokable ) \
     BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, &&, invokable ) \
@@ -575,89 +509,41 @@ namespace Operator
     BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, volatile &, invokable ) \
     BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, const volatile &, invokable ) \
 
-#define OPERATORS_DEFINITION \
-    /* Subscript */ \
-    POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT( [], ??? ) \
-    /* Functional forms */ \
-    POSTFIX_UNARY_OPERATOR_WITH_ARGUMENTS( (), ??? ) \
-    /* Arithmetic operators */ \
-    PREFIX_UNARY_OPERATOR( +, ::Operator::Private::UnaryPrefixPlus ) \
-    PREFIX_UNARY_OPERATOR( -, ::Operator::Private::UnaryPrefixMinus ) \
-    BINARY_OPERATOR_FOR_ANY( *, ??? ) \
-    BINARY_OPERATOR_FOR_ANY( /, ??? ) \
-    BINARY_OPERATOR_FOR_ANY( %, ??? ) \
-    BINARY_OPERATOR_FOR_ANY( +, ??? ) \
-    BINARY_OPERATOR_FOR_ANY( -, ??? ) \
-    /* Compound assignment */ \
-    BINARY_OPERATOR_FOR_ANY( *=, ??? ) \
-    BINARY_OPERATOR_FOR_ANY( /=, ??? ) \
-    BINARY_OPERATOR_FOR_ANY( %=, ??? ) \
-    BINARY_OPERATOR_FOR_ANY( +=, ??? ) \
-    BINARY_OPERATOR_FOR_ANY( -=, ??? ) \
-    BINARY_OPERATOR_FOR_ANY( <<=, ??? ) \
-    BINARY_OPERATOR_FOR_ANY( >>=, ??? ) \
-    BINARY_OPERATOR_FOR_ANY( &=, ??? ) \
-    BINARY_OPERATOR_FOR_ANY( ^=, ??? ) \
-    BINARY_OPERATOR_FOR_ANY( |=, ??? ) \
-    /* Increment and decrement */ \
-    PREFIX_UNARY_OPERATOR( ++, ::Operator::Private::UnaryPrefixPlusPlus ) \
-    PREFIX_UNARY_OPERATOR( --, ::Operator::Private::UnaryPrefixMinusMinus ) \
-    POSTFIX_UNARY_OPERATOR_WITH_INT( ++, ::Operator::Private::UnaryPostfixPlusPlus ) \
-    POSTFIX_UNARY_OPERATOR_WITH_INT( --, ::Operator::Private::UnaryPostfixMinusMinus ) \
-    /* Relational and comparison operators */ \
-    BINARY_OPERATOR_FOR_ANY( ==, ??? ) \
-    BINARY_OPERATOR_FOR_ANY( !=, ??? ) \
-    BINARY_OPERATOR_FOR_ANY( <, ??? ) \
-    BINARY_OPERATOR_FOR_ANY( <=, ??? ) \
-    BINARY_OPERATOR_FOR_ANY( >, ??? ) \
-    BINARY_OPERATOR_FOR_ANY( >=, ??? ) \
-    /* Logical operators */ \
-    PREFIX_UNARY_OPERATOR( !, ::Operator::Private::UnaryPrefixLogicalNot ) \
-    BINARY_OPERATOR_FOR_ANY( &&, ??? ) \
-    BINARY_OPERATOR_FOR_ANY( ||, ??? ) \
-    /* Bitwise operators */ \
-    PREFIX_UNARY_OPERATOR( ~, ::Operator::Private::UnaryPrefixBitwiseNot ) \
-    BINARY_OPERATOR_FOR_ANY( &, ??? ) \
-    BINARY_OPERATOR_FOR_ANY( ^, ??? ) \
-    BINARY_OPERATOR_FOR_ANY( |, ??? ) \
-    BINARY_OPERATOR_FOR_ANY( <<, ??? ) \
-    BINARY_OPERATOR_FOR_ANY( >>, ??? ) \
-
 /* RIGHT-SIDE INSTANCE OPERATORS */
 
-/* Arithmetic operators */
-GLOBAL_BINARY_OPERATOR( *, ??? )
-GLOBAL_BINARY_OPERATOR( /, ??? )
-GLOBAL_BINARY_OPERATOR( %, ??? )
-GLOBAL_BINARY_OPERATOR( +, ??? )
-GLOBAL_BINARY_OPERATOR( -, ??? )
-/* Compound assignment */
-GLOBAL_BINARY_OPERATOR( *=, ??? )
-GLOBAL_BINARY_OPERATOR( /=, ??? )
-GLOBAL_BINARY_OPERATOR( %=, ??? )
-GLOBAL_BINARY_OPERATOR( +=, ??? )
-GLOBAL_BINARY_OPERATOR( -=, ??? )
-GLOBAL_BINARY_OPERATOR( <<=, ??? )
-GLOBAL_BINARY_OPERATOR( >>=, ??? )
-GLOBAL_BINARY_OPERATOR( &=, ??? )
-GLOBAL_BINARY_OPERATOR( ^=, ??? )
-GLOBAL_BINARY_OPERATOR( |=, ??? )
-/* Relational and comparison operators */
-GLOBAL_BINARY_OPERATOR( ==, ??? )
-GLOBAL_BINARY_OPERATOR( !=, ??? )
-GLOBAL_BINARY_OPERATOR( <, ??? )
-GLOBAL_BINARY_OPERATOR( <=, ??? )
-GLOBAL_BINARY_OPERATOR( >, ??? )
-GLOBAL_BINARY_OPERATOR( >=, ??? )
-/* Logical operators */
-GLOBAL_BINARY_OPERATOR( &&, ??? )
-GLOBAL_BINARY_OPERATOR( ||, ??? )
-/* Bitwise operators */
-GLOBAL_BINARY_OPERATOR( &, ??? )
-GLOBAL_BINARY_OPERATOR( ^, ??? )
-GLOBAL_BINARY_OPERATOR( |, ??? )
-GLOBAL_BINARY_OPERATOR( <<, ??? )
-GLOBAL_BINARY_OPERATOR( >>, ??? )
+///* Arithmetic operators */
+//GLOBAL_BINARY_OPERATOR( *, ::Operator::Private::Multiply )
+//GLOBAL_BINARY_OPERATOR( /, ::Operator::Private::Divide )
+//GLOBAL_BINARY_OPERATOR( %, ::Operator::Private::Modulo )
+//GLOBAL_BINARY_OPERATOR( +, ::Operator::Private::Addition )
+//GLOBAL_BINARY_OPERATOR( -, ::Operator::Private::Subtraction )
+///* Compound assignment */
+//GLOBAL_BINARY_OPERATOR( *=, ??? )
+//GLOBAL_BINARY_OPERATOR( /=, ??? )
+//GLOBAL_BINARY_OPERATOR( %=, ??? )
+//GLOBAL_BINARY_OPERATOR( +=, ??? )
+//GLOBAL_BINARY_OPERATOR( -=, ??? )
+//GLOBAL_BINARY_OPERATOR( <<=, ??? )
+//GLOBAL_BINARY_OPERATOR( >>=, ??? )
+//GLOBAL_BINARY_OPERATOR( &=, ??? )
+//GLOBAL_BINARY_OPERATOR( ^=, ??? )
+//GLOBAL_BINARY_OPERATOR( |=, ??? )
+///* Relational and comparison operators */
+//GLOBAL_BINARY_OPERATOR( ==, ??? )
+//GLOBAL_BINARY_OPERATOR( !=, ??? )
+//GLOBAL_BINARY_OPERATOR( <, ??? )
+//GLOBAL_BINARY_OPERATOR( <=, ??? )
+//GLOBAL_BINARY_OPERATOR( >, ??? )
+//GLOBAL_BINARY_OPERATOR( >=, ??? )
+///* Logical operators */
+//GLOBAL_BINARY_OPERATOR( &&, ??? )
+//GLOBAL_BINARY_OPERATOR( ||, ??? )
+///* Bitwise operators */
+//GLOBAL_BINARY_OPERATOR( &, ??? )
+//GLOBAL_BINARY_OPERATOR( ^, ??? )
+//GLOBAL_BINARY_OPERATOR( |, ??? )
+//GLOBAL_BINARY_OPERATOR( <<, ??? )
+//GLOBAL_BINARY_OPERATOR( >>, ??? )
 
 #undef INSTANCE_PREFIX_UNARY_OPERATOR
 #undef INSTANCE_POSTFIX_UNARY_OPERATOR
