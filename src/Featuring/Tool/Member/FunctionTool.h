@@ -5,7 +5,7 @@
 #include <ModelKit/Featuring/Access/InstanceGuard.h>
 #include <ModelKit/Featuring/Traits.h>
 
-namespace Invokable
+namespace _Invokable
 {
     template < typename _InstanceRefer, typename _Invokable, typename ... _Arguments >
     struct FunctionTool

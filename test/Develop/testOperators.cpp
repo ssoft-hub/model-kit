@@ -487,8 +487,10 @@ void testConstructors ()
     { TestData data = ::std::move( lvalue_cv ); }
 }
 
-template < typename _Argument >
-void warnOff ( _Argument && ) {}
+/* Remove warning like this:
+ * implicit dereference will not access object of type 'volatile ...' in statement */
+template < typename ... _Arguments >
+void warnOff ( _Arguments && ... ) {}
 
 template < typename _Data, typename _Other >
 void testAssignmentOperator ()
@@ -527,106 +529,106 @@ void testInstance ()
     TestData & lvalue = data;
 
     // lvalue
-    warnOff( lvalue[0] );
-    warnOff( asConst(lvalue)[0] );
-    warnOff( asVolatile(lvalue)[0] );
-    warnOff( asConstVolatile(lvalue)[0] );
+    lvalue[0];
+    asConst(lvalue)[0];
+    asVolatile(lvalue)[0];
+    asConstVolatile(lvalue)[0];
 
-    warnOff( lvalue(0, 1) );
-    warnOff( asConst(lvalue)(0, 1) );
-    warnOff( asVolatile(lvalue)(0, 1) );
-    warnOff( asConstVolatile(lvalue)(0, 1) );
+    lvalue(0, 1);
+    asConst(lvalue)(0, 1);
+    asVolatile(lvalue)(0, 1);
+    asConstVolatile(lvalue)(0, 1);
 
-    warnOff( +lvalue );
-    warnOff( +asConst(lvalue) );
-    warnOff( +asVolatile(lvalue) );
-    warnOff( +asConstVolatile(lvalue) );
+    +lvalue;
+    +asConst(lvalue);
+    +asVolatile(lvalue);
+    +asConstVolatile(lvalue);
 
-    warnOff( -lvalue );
-    warnOff( -asConst(lvalue) );
-    warnOff( -asVolatile(lvalue) );
-    warnOff( -asConstVolatile(lvalue) );
+    -lvalue;
+    -asConst(lvalue);
+    -asVolatile(lvalue);
+    -asConstVolatile(lvalue);
 
-    warnOff( ++lvalue );
-    warnOff( ++asConst(lvalue) );
-    warnOff( ++asVolatile(lvalue) );
-    warnOff( ++asConstVolatile(lvalue) );
+    ++lvalue;
+    ++asConst(lvalue);
+    ++asVolatile(lvalue);
+    ++asConstVolatile(lvalue);
 
-    warnOff( --lvalue );
-    warnOff( --asConst(lvalue) );
-    warnOff( --asVolatile(lvalue) );
-    warnOff( --asConstVolatile(lvalue) );
+    --lvalue;
+    --asConst(lvalue);
+    --asVolatile(lvalue);
+    --asConstVolatile(lvalue);
 
-    warnOff( lvalue++ );
-    warnOff( asConst(lvalue)++ );
-    warnOff( asVolatile(lvalue)++ );
-    warnOff( asConstVolatile(lvalue)++ );
+    lvalue++;
+    asConst(lvalue)++;
+    asVolatile(lvalue)++;
+    asConstVolatile(lvalue)++;
 
-    warnOff( lvalue-- );
-    warnOff( asConst(lvalue)-- );
-    warnOff( asVolatile(lvalue)-- );
-    warnOff( asConstVolatile(lvalue)-- );
+    lvalue--;
+    asConst(lvalue)--;
+    asVolatile(lvalue)--;
+    asConstVolatile(lvalue)--;
 
-    warnOff( !lvalue );
-    warnOff( !asConst(lvalue) );
-    warnOff( !asVolatile(lvalue) );
-    warnOff( !asConstVolatile(lvalue) );
+    !lvalue;
+    !asConst(lvalue);
+    !asVolatile(lvalue);
+    !asConstVolatile(lvalue);
 
-    warnOff( ~lvalue );
-    warnOff( ~asConst(lvalue) );
-    warnOff( ~asVolatile(lvalue) );
-    warnOff( ~asConstVolatile(lvalue) );
+    ~lvalue;
+    ~asConst(lvalue);
+    ~asVolatile(lvalue);
+    ~asConstVolatile(lvalue);
 
     // rvalue
-    warnOff( ::std::move( lvalue )[0] );
-    warnOff( asConst( ::std::move( lvalue ) )[0] );
-    warnOff( asVolatile( ::std::move( lvalue ) )[0] );
-    warnOff( asConstVolatile( ::std::move( lvalue ) )[0] );
+    ::std::move( lvalue )[0];
+    asConst( ::std::move( lvalue ) )[0];
+    asVolatile( ::std::move( lvalue ) )[0];
+    asConstVolatile( ::std::move( lvalue ) )[0];
 
-    warnOff( ::std::move( lvalue )(0, 1) );
-    warnOff( asConst( ::std::move( lvalue ) )(0, 1) );
-    warnOff( asVolatile( ::std::move( lvalue ) )(0, 1) );
-    warnOff( asConstVolatile( ::std::move( lvalue ) )(0, 1) );
+    ::std::move( lvalue )(0, 1);
+    asConst( ::std::move( lvalue ) )(0, 1);
+    asVolatile( ::std::move( lvalue ) )(0, 1);
+    asConstVolatile( ::std::move( lvalue ) )(0, 1);
 
-    warnOff( +::std::move( lvalue ) );
-    warnOff( +asConst( ::std::move( lvalue ) ) );
-    warnOff( +asVolatile( ::std::move( lvalue ) ) );
-    warnOff( +asConstVolatile( ::std::move( lvalue ) ) );
+    +::std::move( lvalue );
+    +asConst( ::std::move( lvalue ) );
+    +asVolatile( ::std::move( lvalue ) );
+    +asConstVolatile( ::std::move( lvalue ) );
 
-    warnOff( -::std::move( lvalue ) );
-    warnOff( -asConst( ::std::move( lvalue ) ) );
-    warnOff( -asVolatile( ::std::move( lvalue ) ) );
-    warnOff( -asConstVolatile( ::std::move( lvalue ) ) );
+    -::std::move( lvalue );
+    -asConst( ::std::move( lvalue ) );
+    -asVolatile( ::std::move( lvalue ) );
+    -asConstVolatile( ::std::move( lvalue ) );
 
-    warnOff( ++::std::move( lvalue ) );
-    warnOff( ++asConst( ::std::move( lvalue ) ) );
-    warnOff( ++asVolatile( ::std::move( lvalue ) ) );
-    warnOff( ++asConstVolatile( ::std::move( lvalue ) ) );
+    ++::std::move( lvalue );
+    ++asConst( ::std::move( lvalue ) );
+    ++asVolatile( ::std::move( lvalue ) );
+    ++asConstVolatile( ::std::move( lvalue ) );
 
-    warnOff( --::std::move( lvalue ) );
-    warnOff( --asConst( ::std::move( lvalue ) ) );
-    warnOff( --asVolatile( ::std::move( lvalue ) ) );
-    warnOff( --asConstVolatile( ::std::move( lvalue ) ) );
+    --::std::move( lvalue );
+    --asConst( ::std::move( lvalue ) );
+    --asVolatile( ::std::move( lvalue ) );
+    --asConstVolatile( ::std::move( lvalue ) );
 
-    warnOff( ::std::move( lvalue )++ );
-    warnOff( asConst( ::std::move( lvalue ) )++ );
-    warnOff( asVolatile( ::std::move( lvalue ) )++ );
-    warnOff( asConstVolatile( ::std::move( lvalue ) )++ );
+    ::std::move( lvalue )++;
+    asConst( ::std::move( lvalue ) )++;
+    asVolatile( ::std::move( lvalue ) )++;
+    asConstVolatile( ::std::move( lvalue ) )++;
 
-    warnOff( ::std::move( lvalue )-- );
-    warnOff( asConst( ::std::move( lvalue ) )-- );
-    warnOff( asVolatile( ::std::move( lvalue ) )-- );
-    warnOff( asConstVolatile( ::std::move( lvalue ) )-- );
+    ::std::move( lvalue )--;
+    asConst( ::std::move( lvalue ) )--;
+    asVolatile( ::std::move( lvalue ) )--;
+    asConstVolatile( ::std::move( lvalue ) )--;
 
-    warnOff( !::std::move( lvalue ) );
-    warnOff( !asConst( ::std::move( lvalue ) ) );
-    warnOff( !asVolatile( ::std::move( lvalue ) ) );
-    warnOff( !asConstVolatile( ::std::move( lvalue ) ) );
+    !::std::move( lvalue );
+    !asConst( ::std::move( lvalue ) );
+    !asVolatile( ::std::move( lvalue ) );
+    !asConstVolatile( ::std::move( lvalue ) );
 
-    warnOff( ~::std::move( lvalue ) );
-    warnOff( ~asConst( ::std::move( lvalue ) ) );
-    warnOff( ~asVolatile( ::std::move( lvalue ) ) );
-    warnOff( ~asConstVolatile( ::std::move( lvalue ) ) );
+    ~::std::move( lvalue );
+    ~asConst( ::std::move( lvalue ) );
+    ~asVolatile( ::std::move( lvalue ) );
+    ~asConstVolatile( ::std::move( lvalue ) );
 }
 
 template < typename _Data >

@@ -51,9 +51,9 @@ public:
     CONSTRUCTOR_FOR_OTHER_INSTANCE
 
     /* All kind of assignment operators for any type (including Instance< _OtherValue, _OtherTool >) */
-    BINARY_OPERATOR_FOR_ANY( =, ::Operator::Private::Assignment )
+    BINARY_OPERATOR_FOR_ANY( =, ::Operator::Assignment )
     /* All kind of assignment operators for ThisType */
-    BINARY_OPERATOR_FOR_THIS_INSTANCE( =, ::Operator::Private::Assignment )
+    BINARY_OPERATOR_FOR_THIS_INSTANCE( =, ::Operator::Assignment )
 
     /* Member access */
     // NOTE: Используется доступ через оператор "->", но семантически необходим ".".
@@ -63,51 +63,51 @@ public:
     /* Reference */
     POSTFIX_UNARY_OPERATOR_FOR_ACCESS( & )
     /* Subscript */
-    POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT( [], ::Operator::Private::SquareBrackets )
+    POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT( [], ::Operator::SquareBrackets )
     /* Functional forms */
-    POSTFIX_UNARY_OPERATOR_WITH_ARGUMENTS( (), ::Operator::Private::RoundBrackets )
+    POSTFIX_UNARY_OPERATOR_WITH_ARGUMENTS( (), ::Operator::RoundBrackets )
     /* Arithmetic operators */
-    PREFIX_UNARY_OPERATOR( +, ::Operator::Private::UnaryPrefixPlus )
-    PREFIX_UNARY_OPERATOR( -, ::Operator::Private::UnaryPrefixMinus )
-    BINARY_OPERATOR_FOR_ANY( *, ::Operator::Private::Multiply )
-    BINARY_OPERATOR_FOR_ANY( /, ::Operator::Private::Divide )
-    BINARY_OPERATOR_FOR_ANY( %, ::Operator::Private::Modulo )
-    BINARY_OPERATOR_FOR_ANY( +, ::Operator::Private::Addition )
-    BINARY_OPERATOR_FOR_ANY( -, ::Operator::Private::Subtraction )
+    PREFIX_UNARY_OPERATOR( +, ::Operator::UnaryPrefixPlus )
+    PREFIX_UNARY_OPERATOR( -, ::Operator::UnaryPrefixMinus )
+    BINARY_OPERATOR_FOR_ANY( *, ::Operator::Multiply )
+    BINARY_OPERATOR_FOR_ANY( /, ::Operator::Divide )
+    BINARY_OPERATOR_FOR_ANY( %, ::Operator::Modulo )
+    BINARY_OPERATOR_FOR_ANY( +, ::Operator::Addition )
+    BINARY_OPERATOR_FOR_ANY( -, ::Operator::Subtraction )
     /* Compound assignment */
-    BINARY_OPERATOR_FOR_ANY( *=, ::Operator::Private::MultiplyAssignment )
-    BINARY_OPERATOR_FOR_ANY( /=, ::Operator::Private::DivideAssignment )
-    BINARY_OPERATOR_FOR_ANY( %=, ::Operator::Private::ModuloAssignment )
-    BINARY_OPERATOR_FOR_ANY( +=, ::Operator::Private::AdditionAssignment )
-    BINARY_OPERATOR_FOR_ANY( -=, ::Operator::Private::SubtractionAssignment )
-    BINARY_OPERATOR_FOR_ANY( <<=, ::Operator::Private::ShiftLeftAssignment )
-    BINARY_OPERATOR_FOR_ANY( >>=, ::Operator::Private::ShiftRightAssignment )
-    BINARY_OPERATOR_FOR_ANY( &=, ::Operator::Private::BitwiseAndAssignment )
-    BINARY_OPERATOR_FOR_ANY( ^=, ::Operator::Private::BitwiseXorAssignment )
-    BINARY_OPERATOR_FOR_ANY( |=, ::Operator::Private::BitwiseOrAssignment )
+    BINARY_OPERATOR_FOR_ANY( *=, ::Operator::MultiplyAssignment )
+    BINARY_OPERATOR_FOR_ANY( /=, ::Operator::DivideAssignment )
+    BINARY_OPERATOR_FOR_ANY( %=, ::Operator::ModuloAssignment )
+    BINARY_OPERATOR_FOR_ANY( +=, ::Operator::AdditionAssignment )
+    BINARY_OPERATOR_FOR_ANY( -=, ::Operator::SubtractionAssignment )
+    BINARY_OPERATOR_FOR_ANY( <<=, ::Operator::ShiftLeftAssignment )
+    BINARY_OPERATOR_FOR_ANY( >>=, ::Operator::ShiftRightAssignment )
+    BINARY_OPERATOR_FOR_ANY( &=, ::Operator::BitwiseAndAssignment )
+    BINARY_OPERATOR_FOR_ANY( ^=, ::Operator::BitwiseXorAssignment )
+    BINARY_OPERATOR_FOR_ANY( |=, ::Operator::BitwiseOrAssignment )
     /* Increment and decrement */
-    PREFIX_UNARY_OPERATOR( ++, ::Operator::Private::UnaryPrefixPlusPlus )
-    PREFIX_UNARY_OPERATOR( --, ::Operator::Private::UnaryPrefixMinusMinus )
-    POSTFIX_UNARY_OPERATOR_WITH_INT( ++, ::Operator::Private::UnaryPostfixPlusPlus )
-    POSTFIX_UNARY_OPERATOR_WITH_INT( --, ::Operator::Private::UnaryPostfixMinusMinus )
+    PREFIX_UNARY_OPERATOR( ++, ::Operator::UnaryPrefixPlusPlus )
+    PREFIX_UNARY_OPERATOR( --, ::Operator::UnaryPrefixMinusMinus )
+    POSTFIX_UNARY_OPERATOR_WITH_INT( ++, ::Operator::UnaryPostfixPlusPlus )
+    POSTFIX_UNARY_OPERATOR_WITH_INT( --, ::Operator::UnaryPostfixMinusMinus )
     /* Relational and comparison operators */
-    BINARY_OPERATOR_FOR_ANY( ==, ::Operator::Private::IsEqual )
-    BINARY_OPERATOR_FOR_ANY( !=, ::Operator::Private::NotEqual )
-    BINARY_OPERATOR_FOR_ANY( <, ::Operator::Private::Less )
-    BINARY_OPERATOR_FOR_ANY( <=, ::Operator::Private::LessOrEqual )
-    BINARY_OPERATOR_FOR_ANY( >, ::Operator::Private::Greater )
-    BINARY_OPERATOR_FOR_ANY( >=, ::Operator::Private::GreaterOrEqual )
+    BINARY_OPERATOR_FOR_ANY( ==, ::Operator::IsEqual )
+    BINARY_OPERATOR_FOR_ANY( !=, ::Operator::NotEqual )
+    BINARY_OPERATOR_FOR_ANY( <, ::Operator::Less )
+    BINARY_OPERATOR_FOR_ANY( <=, ::Operator::LessOrEqual )
+    BINARY_OPERATOR_FOR_ANY( >, ::Operator::Greater )
+    BINARY_OPERATOR_FOR_ANY( >=, ::Operator::GreaterOrEqual )
     /* Logical operators */
-    PREFIX_UNARY_OPERATOR( !, ::Operator::Private::UnaryPrefixLogicalNot )
-    BINARY_OPERATOR_FOR_ANY( &&, ::Operator::Private::LogicalAnd )
-    BINARY_OPERATOR_FOR_ANY( ||, ::Operator::Private::LogicalOr )
+    PREFIX_UNARY_OPERATOR( !, ::Operator::UnaryPrefixLogicalNot )
+    BINARY_OPERATOR_FOR_ANY( &&, ::Operator::LogicalAnd )
+    BINARY_OPERATOR_FOR_ANY( ||, ::Operator::LogicalOr )
     /* Bitwise operators */
-    PREFIX_UNARY_OPERATOR( ~, ::Operator::Private::UnaryPrefixBitwiseNot )
-    BINARY_OPERATOR_FOR_ANY( &, ::Operator::Private::BitwiseAnd )
-    BINARY_OPERATOR_FOR_ANY( ^, ::Operator::Private::BitwiseXor )
-    BINARY_OPERATOR_FOR_ANY( |, ::Operator::Private::BitwiseOr )
-    BINARY_OPERATOR_FOR_ANY( <<, ::Operator::Private::ShiftLeft )
-    BINARY_OPERATOR_FOR_ANY( >>, ::Operator::Private::ShiftRight )
+    PREFIX_UNARY_OPERATOR( ~, ::Operator::UnaryPrefixBitwiseNot )
+    BINARY_OPERATOR_FOR_ANY( &, ::Operator::BitwiseAnd )
+    BINARY_OPERATOR_FOR_ANY( ^, ::Operator::BitwiseXor )
+    BINARY_OPERATOR_FOR_ANY( |, ::Operator::BitwiseOr )
+    BINARY_OPERATOR_FOR_ANY( <<, ::Operator::ShiftLeft )
+    BINARY_OPERATOR_FOR_ANY( >>, ::Operator::ShiftRight )
     /* Type-casting */
     CAST_OPERATOR
 };
