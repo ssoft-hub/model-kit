@@ -2,6 +2,8 @@
 #ifndef OPERATOR_RESOLVER_H
 #define OPERATOR_RESOLVER_H
 
+#define SINGLE_ARG(...) __VA_ARGS__
+
 #include <ModelKit/Featuring/Tool/Inplace/DefaultTool.h>
 #include <ModelKit/Featuring/Tool/Member/FunctionTool.h>
 #include <ModelKit/Featuring/Traits.h>
@@ -67,7 +69,7 @@ namespace Operator
             static decltype(auto) invoke ( _InstanceRefer instance, _Invokable invokable, _Arguments && ... arguments )
             {
                 using ValueRefer = SimilarRefer< typename ::std::decay_t< _InstanceRefer >::Value, _InstanceRefer >;
-                return invokable( ::std::forward< ValueRefer >( InstanceGuard< _InstanceRefer >( ::std::forward< _InstanceRefer >( instance ) ).value() ), ::std::forward< _Arguments >( arguments ) ... );
+                return Invokable( ::std::forward< ValueRefer >( InstanceGuard< _InstanceRefer >( ::std::forward< _InstanceRefer >( instance ) ).value() ), ::std::forward< _Arguments >( arguments ) ... );
             }
         };
 
@@ -444,6 +446,11 @@ namespace Operator
         };\
     } \
 
+
+UNARY_OPERATOR_IMPLEMENTAION( * , Indirection )
+UNARY_OPERATOR_IMPLEMENTAION( ->*, MemberIndirection )
+BINARY_OPERATOR_IMPLEMENTAION( SINGLE_ARG( , ), Comma )
+
 UNARY_OPERATOR_IMPLEMENTAION( [], SquareBrackets )
 UNARY_OPERATOR_IMPLEMENTAION( (), RoundBrackets )
 UNARY_OPERATOR_IMPLEMENTAION( +, UnaryPrefixPlus )
@@ -497,27 +504,27 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
     { \
         /* TODO: */ \
         using RightInstance = Instance< _RightValue, _RightTool >; \
-        return Invokable< ::std::decay_t< _Left >, RightInstance >()( \
+        return ::Operator::Invokable< ::std::decay_t< _Left >, RightInstance >()( \
             ::std::forward< _Left >( left ), \
             ::std::forward< RightInstance right_refer >( right ) ); \
     } \
 
 #define GLOBAL_BINARY_OPERATOR( symbol, Invokable ) \
-    GLOBAL_BINARY_OPERATOR_PROTOTYPE( symbol, &&, Invokable ) \
-    GLOBAL_BINARY_OPERATOR_PROTOTYPE( symbol, const &&, Invokable ) \
-    GLOBAL_BINARY_OPERATOR_PROTOTYPE( symbol, volatile &&, Invokable ) \
-    GLOBAL_BINARY_OPERATOR_PROTOTYPE( symbol, const volatile &&, Invokable ) \
-    GLOBAL_BINARY_OPERATOR_PROTOTYPE( symbol, &, Invokable ) \
-    GLOBAL_BINARY_OPERATOR_PROTOTYPE( symbol, const &, Invokable ) \
-    GLOBAL_BINARY_OPERATOR_PROTOTYPE( symbol, volatile &, Invokable ) \
-    GLOBAL_BINARY_OPERATOR_PROTOTYPE( symbol, const volatile &, Invokable ) \
+    GLOBAL_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), &&, Invokable ) \
+    GLOBAL_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const &&, Invokable ) \
+    GLOBAL_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), volatile &&, Invokable ) \
+    GLOBAL_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const volatile &&, Invokable ) \
+    GLOBAL_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), &, Invokable ) \
+    GLOBAL_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const &, Invokable ) \
+    GLOBAL_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), volatile &, Invokable ) \
+    GLOBAL_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const volatile &, Invokable ) \
 
 #define BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, this_refer, other_refer, Invokable ) \
     constexpr decltype(auto) operator symbol ( ThisType other_refer other ) this_refer \
     { \
         /* TODO: */ \
         /*::std::forward< Holder this_refer >( m_holder ) symbol InstanceResolver< ThisType, ThisType other_refer >( ::std::forward< ThisType other_refer >( other ) ).resolve();*/ \
-        return Invokable< ThisType, ThisType >()( \
+        return ::Operator::Invokable< ThisType, ThisType >()( \
             ::std::forward< ThisType this_refer >( *this ), \
             ::std::forward< ThisType other_refer >( other ) ); \
     } \
@@ -527,7 +534,7 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
     constexpr decltype(auto) operator symbol ( _Other && other ) this_refer \
     { \
         /* TODO: */ \
-        return Invokable< ThisType, ::std::decay_t< _Other > >()( \
+        return ::Operator::Invokable< ThisType, ::std::decay_t< _Other > >()( \
             ::std::forward< ThisType this_refer >( *this ), \
             ::std::forward< _Other && >( other ) ); \
     } \
@@ -536,7 +543,7 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
     template < typename _Argument > \
     constexpr decltype(auto) operator symbol ( _Argument && argument ) this_refer \
     { \
-        return Invokable< ThisType >()( \
+        return ::Operator::Invokable< ThisType >()( \
             ::std::forward< ThisType this_refer >( *this ), \
             ::std::forward< _Argument >( argument ) ); \
     } \
@@ -545,7 +552,7 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
     template < typename ... _Arguments > \
     constexpr decltype(auto) operator symbol ( _Arguments && ... arguments ) this_refer \
     { \
-        return Invokable< ThisType >()( \
+        return ::Operator::Invokable< ThisType >()( \
             ::std::forward< ThisType this_refer >( *this ), \
             ::std::forward< _Arguments >( arguments ) ... ); \
     } \
@@ -553,18 +560,24 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
 #define PREFIX_OPERATOR_PROTOTYPE( symbol, this_refer, Invokable ) \
     constexpr decltype(auto) operator symbol () this_refer \
     { \
-        return Invokable< ThisType >()( \
+        return ::Operator::Invokable< ThisType >()( \
             ::std::forward< ThisType this_refer >( *this ) ); \
     } \
 
 #define POSTFIX_OPERATOR_PROTOTYPE_WITH_INT( symbol, this_refer, Invokable ) \
     constexpr decltype(auto) operator symbol ( int ) this_refer \
     { \
-        return Invokable< ThisType >()( \
+        return ::Operator::Invokable< ThisType >()( \
             ::std::forward< ThisType this_refer >( *this ) ); \
     } \
 
-#define POSTFIX_UNARY_OPERATOR_FOR_ACCESS_PROTOTYPE( symbol, this_refer ) \
+#define ADDRESS_OF_OPERATOR_PROTOTYPE( symbol, this_refer ) \
+    constexpr ValueGuard< ThisType this_refer > operator symbol () this_refer \
+    { \
+        return ::std::forward< ThisType this_refer >( *this ); \
+    } \
+
+#define DEREFERENCE_OPERATOR_PROTOTYPE( symbol, this_refer ) \
     constexpr ValueGuard< ThisType this_refer > operator symbol () this_refer \
     { \
         return ::std::forward< ThisType this_refer >( *this ); \
@@ -625,139 +638,149 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
     CAST_OPERATOR_PROTOTYPE( volatile & ) \
     CAST_OPERATOR_PROTOTYPE( const volatile & ) \
 
-#define POSTFIX_UNARY_OPERATOR_FOR_ACCESS( symbol ) \
-    POSTFIX_UNARY_OPERATOR_FOR_ACCESS_PROTOTYPE( symbol, && ) \
-    POSTFIX_UNARY_OPERATOR_FOR_ACCESS_PROTOTYPE( symbol, const && ) \
-    POSTFIX_UNARY_OPERATOR_FOR_ACCESS_PROTOTYPE( symbol, volatile && ) \
-    POSTFIX_UNARY_OPERATOR_FOR_ACCESS_PROTOTYPE( symbol, const volatile && ) \
-    POSTFIX_UNARY_OPERATOR_FOR_ACCESS_PROTOTYPE( symbol, & ) \
-    POSTFIX_UNARY_OPERATOR_FOR_ACCESS_PROTOTYPE( symbol, const & ) \
-    POSTFIX_UNARY_OPERATOR_FOR_ACCESS_PROTOTYPE( symbol, volatile & ) \
-    POSTFIX_UNARY_OPERATOR_FOR_ACCESS_PROTOTYPE( symbol, const volatile & ) \
+#define ADDRESS_OF_OPERATOR( symbol ) \
+    ADDRESS_OF_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), && ) \
+    ADDRESS_OF_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const && ) \
+    ADDRESS_OF_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), volatile && ) \
+    ADDRESS_OF_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const volatile && ) \
+    ADDRESS_OF_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), & ) \
+    ADDRESS_OF_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const & ) \
+    ADDRESS_OF_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), volatile & ) \
+    ADDRESS_OF_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const volatile & ) \
+
+#define DEREFERENCE_OPERATOR( symbol ) \
+    DEREFERENCE_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), && ) \
+    DEREFERENCE_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const && ) \
+    DEREFERENCE_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), volatile && ) \
+    DEREFERENCE_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const volatile && ) \
+    DEREFERENCE_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), & ) \
+    DEREFERENCE_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const & ) \
+    DEREFERENCE_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), volatile & ) \
+    DEREFERENCE_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const volatile & ) \
 
 #define FRIEND_OPERATOR_ACCESS( Invokable ) \
-    template < typename > friend struct Invokable; \
+    template < typename > friend struct ::Operator::Invokable; \
 
 #define PREFIX_UNARY_OPERATOR( symbol, Invokable ) \
     FRIEND_OPERATOR_ACCESS( Invokable ) \
-    PREFIX_OPERATOR_PROTOTYPE( symbol, &&, Invokable ) \
-    PREFIX_OPERATOR_PROTOTYPE( symbol, const &&, Invokable ) \
-    PREFIX_OPERATOR_PROTOTYPE( symbol, volatile &&, Invokable ) \
-    PREFIX_OPERATOR_PROTOTYPE( symbol, const volatile &&, Invokable ) \
-    PREFIX_OPERATOR_PROTOTYPE( symbol, &, Invokable ) \
-    PREFIX_OPERATOR_PROTOTYPE( symbol, const &, Invokable ) \
-    PREFIX_OPERATOR_PROTOTYPE( symbol, volatile &, Invokable ) \
-    PREFIX_OPERATOR_PROTOTYPE( symbol, const volatile &, Invokable ) \
+    PREFIX_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), &&, Invokable ) \
+    PREFIX_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const &&, Invokable ) \
+    PREFIX_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), volatile &&, Invokable ) \
+    PREFIX_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const volatile &&, Invokable ) \
+    PREFIX_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), &, Invokable ) \
+    PREFIX_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const &, Invokable ) \
+    PREFIX_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), volatile &, Invokable ) \
+    PREFIX_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const volatile &, Invokable ) \
 
 #define POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT( symbol, Invokable ) \
     FRIEND_OPERATOR_ACCESS( Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( symbol, &&, Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( symbol, const &&, Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( symbol, volatile &&, Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( symbol, const volatile &&, Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( symbol, &, Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( symbol, const &, Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( symbol, volatile &, Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( symbol, const volatile &, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( SINGLE_ARG( symbol ), &&, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( SINGLE_ARG( symbol ), const &&, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( SINGLE_ARG( symbol ), volatile &&, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( SINGLE_ARG( symbol ), const volatile &&, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( SINGLE_ARG( symbol ), &, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( SINGLE_ARG( symbol ), const &, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( SINGLE_ARG( symbol ), volatile &, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( SINGLE_ARG( symbol ), const volatile &, Invokable ) \
 
 #define POSTFIX_UNARY_OPERATOR_WITH_ARGUMENTS( symbol, Invokable ) \
     FRIEND_OPERATOR_ACCESS( Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENTS( symbol, &&, Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENTS( symbol, const &&, Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENTS( symbol, volatile &&, Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENTS( symbol, const volatile &&, Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENTS( symbol, &, Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENTS( symbol, const &, Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENTS( symbol, volatile &, Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENTS( symbol, const volatile &, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENTS( SINGLE_ARG( symbol ), &&, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENTS( SINGLE_ARG( symbol ), const &&, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENTS( SINGLE_ARG( symbol ), volatile &&, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENTS( SINGLE_ARG( symbol ), const volatile &&, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENTS( SINGLE_ARG( symbol ), &, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENTS( SINGLE_ARG( symbol ), const &, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENTS( SINGLE_ARG( symbol ), volatile &, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENTS( SINGLE_ARG( symbol ), const volatile &, Invokable ) \
 
 #define POSTFIX_UNARY_OPERATOR_WITH_INT( symbol, Invokable ) \
     FRIEND_OPERATOR_ACCESS( Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_INT( symbol, &&, Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_INT( symbol, const &&, Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_INT( symbol, volatile &&, Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_INT( symbol, const volatile &&, Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_INT( symbol, &, Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_INT( symbol, const &, Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_INT( symbol, volatile &, Invokable ) \
-    POSTFIX_OPERATOR_PROTOTYPE_WITH_INT( symbol, const volatile &, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_INT( SINGLE_ARG( symbol ), &&, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_INT( SINGLE_ARG( symbol ), const &&, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_INT( SINGLE_ARG( symbol ), volatile &&, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_INT( SINGLE_ARG( symbol ), const volatile &&, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_INT( SINGLE_ARG( symbol ), &, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_INT( SINGLE_ARG( symbol ), const &, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_INT( SINGLE_ARG( symbol ), volatile &, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_INT( SINGLE_ARG( symbol ), const volatile &, Invokable ) \
 
 #define BINARY_OPERATOR_FOR_ANY( symbol, Invokable ) \
     FRIEND_OPERATOR_ACCESS( Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( symbol, &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( symbol, const &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( symbol, volatile &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( symbol, const volatile &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( symbol, &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( symbol, const &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( symbol, volatile &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( symbol, const volatile &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( SINGLE_ARG( symbol ), &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( SINGLE_ARG( symbol ), const &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( SINGLE_ARG( symbol ), volatile &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( SINGLE_ARG( symbol ), const volatile &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( SINGLE_ARG( symbol ), &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( SINGLE_ARG( symbol ), const &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( SINGLE_ARG( symbol ), volatile &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_ANY( SINGLE_ARG( symbol ), const volatile &, Invokable ) \
 
 #define BINARY_OPERATOR_FOR_THIS_INSTANCE( symbol, Invokable ) \
     FRIEND_OPERATOR_ACCESS( Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, const &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, volatile &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, const volatile &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, const &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, volatile &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, const volatile &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, const &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, volatile &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, const volatile &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, const &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, volatile &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, const volatile &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, const &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, volatile &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, const volatile &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, const &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, volatile &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, const volatile &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, const &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, volatile &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, const volatile &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, const &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, volatile &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, const volatile &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, const &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, volatile &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, const volatile &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, const &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, volatile &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, const volatile &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, const &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, volatile &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, const volatile &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, const &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, volatile &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, const volatile &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, const &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, volatile &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, const volatile &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, const &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, volatile &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, const volatile &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, const &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, volatile &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, const volatile &&, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, const &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, volatile &, Invokable ) \
-    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, const volatile &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &&, &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &&, const &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &&, volatile &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &&, const volatile &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &&, &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &&, const &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &&, volatile &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &&, const volatile &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &&, &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &&, const &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &&, volatile &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &&, const volatile &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &&, &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &&, const &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &&, volatile &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &&, const volatile &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &&, &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &&, const &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &&, volatile &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &&, const volatile &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &&, &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &&, const &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &&, volatile &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &&, const volatile &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &&, &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &&, const &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &&, volatile &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &&, const volatile &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &&, &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &&, const &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &&, volatile &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &&, const volatile &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &, &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &, const &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &, volatile &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &, const volatile &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &, &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &, const &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &, volatile &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &, const volatile &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &, &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &, const &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &, volatile &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &, const volatile &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &, &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &, const &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &, volatile &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &, const volatile &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &, &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &, const &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &, volatile &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &, const volatile &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &, &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &, const &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &, volatile &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &, const volatile &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &, &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &, const &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &, volatile &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &, const volatile &&, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &, &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &, const &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &, volatile &, Invokable ) \
+    BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &, const volatile &, Invokable ) \
 
 #endif
