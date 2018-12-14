@@ -3,6 +3,136 @@
 
 #define FUNC_INFO __PRETTY_FUNCTION__
 
+#define DATA_UNARY_OPERATOR_INT_PROTOTYPE( symbol, refer ) \
+    void operator symbol ( int ) refer \
+    { ::std::cout << FUNC_INFO << ::std::endl; } \
+
+#define DATA_UNARY_OPERATOR_INT( symbol ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( symbol, && ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( symbol, const && ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( symbol, volatile && ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( symbol, const volatile && ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( symbol, & ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( symbol, const & ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( symbol, volatile & ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( symbol, const volatile & ) \
+
+#define DATA_UNARY_OPERATOR_PROTOTYPE( symbol, refer ) \
+    void operator symbol () refer \
+    { ::std::cout << FUNC_INFO << ::std::endl; } \
+
+#define DATA_UNARY_OPERATOR( symbol ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( symbol, && ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( symbol, const && ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( symbol, volatile && ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( symbol, const volatile && ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( symbol, & ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( symbol, const & ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( symbol, volatile & ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( symbol, const volatile & ) \
+
+#define DATA_BINARY_OPERATOR_PROTOTYPE( symbol, refer ) \
+    template < typename _Right > \
+    void operator symbol ( _Right && ) refer \
+        { ::std::cout << FUNC_INFO << ::std::endl; } \
+
+#define DATA_BINARY_OPERATOR( symbol ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( symbol, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( symbol, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( symbol, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( symbol, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( symbol, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( symbol, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( symbol, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( symbol, const volatile & ) \
+
+#define DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, this_refer, other_refer ) \
+    void operator symbol ( ThisType other_refer ) this_refer \
+        { ::std::cout << FUNC_INFO << ::std::endl; } \
+
+#define DATA_BINARY_OPERATOR_FOR_THIS( symbol ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, const volatile & ) \
+
+#define GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( symbol, right_refer ) \
+    template < typename _Left, typename _Right > \
+    void operator symbol ( _Left && /*left*/, Data< _Right> right_refer ) \
+        { ::std::cout << FUNC_INFO << ::std::endl; } \
+
+#define GLOBAL_DATA_BINARY_OPERATOR( symbol ) \
+    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( symbol, && ) \
+    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( symbol, const && ) \
+    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( symbol, volatile && ) \
+    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( symbol, const volatile && ) \
+    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( symbol, & ) \
+    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( symbol, const & ) \
+    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( symbol, volatile & ) \
+    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( symbol, const volatile & ) \
+
+class Dummy {};
+
 template < typename _Type >
 class Data
 {
@@ -60,146 +190,6 @@ public:
         { ::std::cout << FUNC_INFO << ::std::endl; }
 
     ~Data ()
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-
-    template < typename _Argument >
-    decltype(auto) operator = ( _Argument && )
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-
-    void operator = ( ThisType && ) &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const ThisType && ) &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( volatile ThisType && ) &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const volatile ThisType && ) &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( ThisType & ) &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const ThisType & ) &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( volatile ThisType & ) &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const volatile ThisType & ) &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-
-    void operator = ( ThisType && ) const &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const ThisType && ) const &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( volatile ThisType && ) const &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const volatile ThisType && ) const &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( ThisType & ) const &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const ThisType & ) const &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( volatile ThisType & ) const &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const volatile ThisType & ) const &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-
-    void operator = ( ThisType && ) volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const ThisType && ) volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( volatile ThisType && ) volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const volatile ThisType && ) volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( ThisType & ) volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const ThisType & ) volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( volatile ThisType & ) volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const volatile ThisType & ) volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-
-    void operator = ( ThisType && ) const volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const ThisType && ) const volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( volatile ThisType && ) const volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const volatile ThisType && ) const volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( ThisType & ) const volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const ThisType & ) const volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( volatile ThisType & ) const volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const volatile ThisType & ) const volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-
-    void operator = ( ThisType && ) &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const ThisType && ) &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( volatile ThisType && ) &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const volatile ThisType && ) &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( ThisType & ) &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const ThisType & ) &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( volatile ThisType & ) &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const volatile ThisType & ) &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-
-    void operator = ( ThisType && ) const &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const ThisType && ) const &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( volatile ThisType && ) const &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const volatile ThisType && ) const &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( ThisType & ) const &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const ThisType & ) const &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( volatile ThisType & ) const &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const volatile ThisType & ) const &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-
-    void operator = ( ThisType && ) volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const ThisType && ) volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( volatile ThisType && ) volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const volatile ThisType && ) volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( ThisType & ) volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const ThisType & ) volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( volatile ThisType & ) volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const volatile ThisType & ) volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-
-    void operator = ( ThisType && ) const volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const ThisType && ) const volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( volatile ThisType && ) const volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const volatile ThisType && ) const volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( ThisType & ) const volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const ThisType & ) const volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( volatile ThisType & ) const volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator = ( const volatile ThisType & ) const volatile &
         { ::std::cout << FUNC_INFO << ::std::endl; }
 
     void valueMethod ()
@@ -263,145 +253,91 @@ public:
     template < typename ... _Arguments > void operator () ( _Arguments && ... ) const volatile &
         { ::std::cout << FUNC_INFO << ::std::endl; }
 
-    void operator + () &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator + () const &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator + () volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator + () const volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator + () &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator + () const &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator + () volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator + () const volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
+    DATA_BINARY_OPERATOR( = )
+    DATA_BINARY_OPERATOR_FOR_THIS( = )
 
-    void operator - () &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator - () const &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator - () volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator - () const volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator - () &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator - () const &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator - () volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator - () const volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
+    DATA_UNARY_OPERATOR( + )
+    DATA_UNARY_OPERATOR( - )
+    DATA_UNARY_OPERATOR( ++ )
+    DATA_UNARY_OPERATOR( -- )
+    DATA_UNARY_OPERATOR_INT( ++ )
+    DATA_UNARY_OPERATOR_INT( -- )
+    DATA_UNARY_OPERATOR( ~ )
+    DATA_UNARY_OPERATOR( ! )
 
-    void operator ++ () &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ++ () const &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ++ () volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ++ () const volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ++ () &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ++ () const &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ++ () volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ++ () const volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-
-    void operator -- () &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator -- () const &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator -- () volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator -- () const volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator -- () &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator -- () const &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator -- () volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator -- () const volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-
-    void operator ++ ( int ) &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ++ ( int ) const &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ++ ( int ) volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ++ ( int ) const volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ++ ( int ) &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ++ ( int ) const &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ++ ( int ) volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ++ ( int ) const volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-
-    void operator -- ( int ) &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator -- ( int ) const &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator -- ( int ) volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator -- ( int ) const volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator -- ( int ) &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator -- ( int ) const &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator -- ( int ) volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator -- ( int ) const volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-
-    void operator ~ () &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ~ () const &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ~ () volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ~ () const volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ~ () &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ~ () const &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ~ () volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ~ () const volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-
-    void operator ! () &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ! () const &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ! () volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ! () const volatile &&
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ! () &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ! () const &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ! () volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
-    void operator ! () const volatile &
-        { ::std::cout << FUNC_INFO << ::std::endl; }
+    DATA_BINARY_OPERATOR( * )
+    DATA_BINARY_OPERATOR( / )
+    DATA_BINARY_OPERATOR( % )
+    DATA_BINARY_OPERATOR( + )
+    DATA_BINARY_OPERATOR( - )
+    /* Compound assignment */
+    DATA_BINARY_OPERATOR( *= )
+    DATA_BINARY_OPERATOR( /= )
+    DATA_BINARY_OPERATOR( %= )
+    DATA_BINARY_OPERATOR( +=)
+    DATA_BINARY_OPERATOR( -= )
+    DATA_BINARY_OPERATOR( <<= )
+    DATA_BINARY_OPERATOR( >>= )
+    DATA_BINARY_OPERATOR( &= )
+    DATA_BINARY_OPERATOR( ^= )
+    DATA_BINARY_OPERATOR( |= )
+    /* Increment and decrement */
+    /* Relational and comparison operators */
+    DATA_BINARY_OPERATOR( == )
+    DATA_BINARY_OPERATOR( != )
+    DATA_BINARY_OPERATOR( < )
+    DATA_BINARY_OPERATOR( <= )
+    DATA_BINARY_OPERATOR( > )
+    DATA_BINARY_OPERATOR( >= )
+    /* Logical operators */
+    DATA_BINARY_OPERATOR( && )
+    DATA_BINARY_OPERATOR( || )
+    /* Bitwise operators */
+    DATA_BINARY_OPERATOR( & )
+    DATA_BINARY_OPERATOR( ^ )
+    DATA_BINARY_OPERATOR( | )
+    DATA_BINARY_OPERATOR( << )
+    DATA_BINARY_OPERATOR( >> )
 
     template < typename ... _Arguments >
     static ThisType make ( _Arguments && ... arguments ) { return Data( ::std::forward< _Arguments >( arguments ) ... ); }
 };
+
+/* RIGHT-SIDE INSTANCE OPERATORS */
+
+/* Arithmetic operators */
+GLOBAL_DATA_BINARY_OPERATOR( * )
+GLOBAL_DATA_BINARY_OPERATOR( / )
+GLOBAL_DATA_BINARY_OPERATOR( % )
+GLOBAL_DATA_BINARY_OPERATOR( + )
+GLOBAL_DATA_BINARY_OPERATOR( - )
+/* Compound assignment */
+GLOBAL_DATA_BINARY_OPERATOR( *= )
+GLOBAL_DATA_BINARY_OPERATOR( /= )
+GLOBAL_DATA_BINARY_OPERATOR( %= )
+GLOBAL_DATA_BINARY_OPERATOR( += )
+GLOBAL_DATA_BINARY_OPERATOR( -= )
+GLOBAL_DATA_BINARY_OPERATOR( <<= )
+GLOBAL_DATA_BINARY_OPERATOR( >>= )
+GLOBAL_DATA_BINARY_OPERATOR( &= )
+GLOBAL_DATA_BINARY_OPERATOR( ^= )
+GLOBAL_DATA_BINARY_OPERATOR( |= )
+/* Relational and comparison operators */
+GLOBAL_DATA_BINARY_OPERATOR( == )
+GLOBAL_DATA_BINARY_OPERATOR( != )
+GLOBAL_DATA_BINARY_OPERATOR( < )
+GLOBAL_DATA_BINARY_OPERATOR( <= )
+GLOBAL_DATA_BINARY_OPERATOR( > )
+GLOBAL_DATA_BINARY_OPERATOR( >= )
+/* Logical operators */
+GLOBAL_DATA_BINARY_OPERATOR( && )
+GLOBAL_DATA_BINARY_OPERATOR( || )
+/* Bitwise operators */
+GLOBAL_DATA_BINARY_OPERATOR( & )
+GLOBAL_DATA_BINARY_OPERATOR( ^ )
+GLOBAL_DATA_BINARY_OPERATOR( | )
+GLOBAL_DATA_BINARY_OPERATOR( << )
+GLOBAL_DATA_BINARY_OPERATOR( >> )
 
 void testConstructors ()
 {
@@ -501,27 +437,27 @@ void testAssignmentOperator ()
     Data data;
     Other other;
 
-    warnOff( data = other );
-    warnOff( data = asConst( other ) );
-    warnOff( data = asVolatile( other ) );
-    warnOff( data = asConstVolatile( other ) );
-    warnOff( data = ::std::move( other ) );
-    warnOff( data = asConst( ::std::move( other ) ) );
-    warnOff( data = asVolatile( ::std::move( other ) ) );
-    warnOff( data = asConstVolatile( ::std::move( other ) ) );
+    data = other;
+    data = asConst( other );
+    data = asVolatile( other );
+    data = asConstVolatile( other );
+    data = ::std::move( other );
+    data = asConst( ::std::move( other ) );
+    data = asVolatile( ::std::move( other ) );
+    data = asConstVolatile( ::std::move( other ) );
 
-    warnOff( ::std::move( data ) = other );
-    warnOff( ::std::move( data ) = asConst( other ) );
-    warnOff( ::std::move( data ) = asVolatile( other ) );
-    warnOff( ::std::move( data ) = asConstVolatile( other ) );
-    warnOff( ::std::move( data ) = ::std::move( other ) );
-    warnOff( ::std::move( data ) = asConst( ::std::move( other ) ) );
-    warnOff( ::std::move( data ) = asVolatile( ::std::move( other ) ) );
-    warnOff( ::std::move( data ) = asConstVolatile( ::std::move( other ) ) );
+    ::std::move( data ) = other;
+    ::std::move( data ) = asConst( other );
+    ::std::move( data ) = asVolatile( other );
+    ::std::move( data ) = asConstVolatile( other );
+    ::std::move( data ) = ::std::move( other );
+    ::std::move( data ) = asConst( ::std::move( other ) );
+    ::std::move( data ) = asVolatile( ::std::move( other ) );
+    ::std::move( data ) = asConstVolatile( ::std::move( other ) );
 }
 
 template < typename _Data >
-void testInstance ()
+void testInstanceUnaryOperators ()
 {
     using TestData = _Data;
 
@@ -631,12 +567,157 @@ void testInstance ()
     ~asConstVolatile( ::std::move( lvalue ) );
 }
 
+template < typename _Left, typename _Right >
+void testInstanceBinaryOperators ()
+{
+    _Left left;
+    _Right right;
+
+    // lvalue / lvalue
+    left + right;
+    left - right;
+    left * right;
+    left / right;
+    left % right;
+
+    left == right;
+    left != right;
+    left > right;
+    left < right;
+    left >= right;
+    left <= right;
+    left && right;
+    left || right;
+    left & right;
+    left | right;
+    left ^ right;
+    left >> right;
+    left << right;
+
+    left += right;
+    left -= right;
+    left *= right;
+    left /= right;
+    left %= right;
+    left &= right;
+    left |= right;
+    left ^= right;
+    left >>= right;
+    left <<= right;
+
+    // lvalue / rvalue
+    left + ::std::move( right );
+    left - ::std::move( right );
+    left * ::std::move( right );
+    left / ::std::move( right );
+    left % ::std::move( right );
+
+    left == ::std::move( right );
+    left != ::std::move( right );
+    left > ::std::move( right );
+    left < ::std::move( right );
+    left >= ::std::move( right );
+    left <= ::std::move( right );
+    left && ::std::move( right );
+    left || ::std::move( right );
+    left & ::std::move( right );
+    left | ::std::move( right );
+    left ^ ::std::move( right );
+    left >> ::std::move( right );
+    left << ::std::move( right );
+
+    left += ::std::move( right );
+    left -= ::std::move( right );
+    left *= ::std::move( right );
+    left /= ::std::move( right );
+    left %= ::std::move( right );
+    left &= ::std::move( right );
+    left |= ::std::move( right );
+    left ^= ::std::move( right );
+    left >>= ::std::move( right );
+    left <<= ::std::move( right );
+
+    // rvalue / lvalue
+    ::std::move( left ) + right;
+    ::std::move( left ) - right;
+    ::std::move( left ) * right;
+    ::std::move( left ) / right;
+    ::std::move( left ) % right;
+
+    ::std::move( left ) == right;
+    ::std::move( left ) != right;
+    ::std::move( left ) > right;
+    ::std::move( left ) < right;
+    ::std::move( left ) >= right;
+    ::std::move( left ) <= right;
+    ::std::move( left ) && right;
+    ::std::move( left ) || right;
+    ::std::move( left ) & right;
+    ::std::move( left ) | right;
+    ::std::move( left ) ^ right;
+    ::std::move( left ) >> right;
+    ::std::move( left ) << right;
+
+    ::std::move( left ) += right;
+    ::std::move( left ) -= right;
+    ::std::move( left ) *= right;
+    ::std::move( left ) /= right;
+    ::std::move( left ) %= right;
+    ::std::move( left ) &= right;
+    ::std::move( left ) |= right;
+    ::std::move( left ) ^= right;
+    ::std::move( left ) >>= right;
+    ::std::move( left ) <<= right;
+
+    // rvalue / rvalue
+    ::std::move( left ) + ::std::move( right );
+    ::std::move( left ) - ::std::move( right );
+    ::std::move( left ) * ::std::move( right );
+    ::std::move( left ) / ::std::move( right );
+    ::std::move( left ) % ::std::move( right );
+
+    ::std::move( left ) == ::std::move( right );
+    ::std::move( left ) != ::std::move( right );
+    ::std::move( left ) > ::std::move( right );
+    ::std::move( left ) < ::std::move( right );
+    ::std::move( left ) >= ::std::move( right );
+    ::std::move( left ) <= ::std::move( right );
+    ::std::move( left ) && ::std::move( right );
+    ::std::move( left ) || ::std::move( right );
+    ::std::move( left ) & ::std::move( right );
+    ::std::move( left ) | ::std::move( right );
+    ::std::move( left ) ^ ::std::move( right );
+    ::std::move( left ) >> ::std::move( right );
+    ::std::move( left ) << ::std::move( right );
+
+    ::std::move( left ) += ::std::move( right );
+    ::std::move( left ) -= ::std::move( right );
+    ::std::move( left ) *= ::std::move( right );
+    ::std::move( left ) /= ::std::move( right );
+    ::std::move( left ) %= ::std::move( right );
+    ::std::move( left ) &= ::std::move( right );
+    ::std::move( left ) |= ::std::move( right );
+    ::std::move( left ) ^= ::std::move( right );
+    ::std::move( left ) >>= ::std::move( right );
+    ::std::move( left ) <<= ::std::move( right );
+}
+
+
 template < typename _Data >
 void testAll ()
 {
+    using DData = Data< _Data >;
     testConstructors< _Data >();
     testAssignmentOperator< _Data, _Data >();
-    testInstance< _Data >();
+    testInstanceUnaryOperators< _Data >();
+    testInstanceBinaryOperators< _Data, DData >();
+    testInstanceBinaryOperators< _Data, const DData >();
+    testInstanceBinaryOperators< _Data, volatile DData >();
+    testInstanceBinaryOperators< _Data, const volatile DData >();
+    testInstanceBinaryOperators< Dummy, _Data >();
+//    testInstanceBinaryOperators< const Dummy, _Data >();
+//    testInstanceBinaryOperators< volatile Dummy, _Data >();
+//    testInstanceBinaryOperators< const volatile Dummy, _Data >();
 }
 
 void testFeaturing ()
@@ -654,139 +735,7 @@ void testFeaturing ()
 
 void testBinaryOperators ()
 {
-    using IntCpp = Instance< int, ::Inplace::DefaultTool >;
-    using IntImpl = Instance< int, ::Implicit::SharedTool >;
 
-    IntCpp cpp_int = 5;
-    IntImpl impl_int = 10;
-
-    // lvalue / lvalue
-    cpp_int + impl_int;
-    cpp_int - impl_int;
-    cpp_int * impl_int;
-    cpp_int / impl_int;
-    cpp_int % impl_int;
-
-    cpp_int == impl_int;
-    cpp_int != impl_int;
-    cpp_int > impl_int;
-    cpp_int < impl_int;
-    cpp_int >= impl_int;
-    cpp_int <= impl_int;
-    cpp_int && impl_int;
-    cpp_int || impl_int;
-    cpp_int & impl_int;
-    cpp_int | impl_int;
-    cpp_int ^ impl_int;
-    cpp_int >> impl_int;
-    cpp_int << impl_int;
-
-    cpp_int += impl_int;
-    cpp_int -= impl_int;
-    cpp_int *= impl_int;
-    cpp_int /= impl_int;
-    cpp_int %= impl_int;
-    cpp_int &= impl_int;
-    cpp_int |= impl_int;
-    cpp_int ^= impl_int;
-    cpp_int >>= impl_int;
-    cpp_int <<= impl_int;
-
-    // lvalue / rvalue
-    cpp_int + IntImpl();
-    cpp_int - IntImpl();
-    cpp_int * IntImpl();
-    cpp_int / IntImpl();
-    cpp_int % IntImpl();
-
-    cpp_int == IntImpl();
-    cpp_int != IntImpl();
-    cpp_int > IntImpl();
-    cpp_int < IntImpl();
-    cpp_int >= IntImpl();
-    cpp_int <= IntImpl();
-    cpp_int && IntImpl();
-    cpp_int || IntImpl();
-    cpp_int & IntImpl();
-    cpp_int | IntImpl();
-    cpp_int ^ IntImpl();
-    cpp_int >> IntImpl();
-    cpp_int << IntImpl();
-
-    cpp_int += IntImpl();
-    cpp_int -= IntImpl();
-    cpp_int *= IntImpl();
-    cpp_int /= IntImpl();
-    cpp_int %= IntImpl();
-    cpp_int &= IntImpl();
-    cpp_int |= IntImpl();
-    cpp_int ^= IntImpl();
-    cpp_int >>= IntImpl();
-    cpp_int <<= IntImpl();
-
-    // rvalue / lvalue
-    IntCpp() + impl_int;
-    IntCpp() - impl_int;
-    IntCpp() * impl_int;
-    IntCpp() / impl_int;
-    IntCpp() % impl_int;
-
-    IntCpp() == impl_int;
-    IntCpp() != impl_int;
-    IntCpp() > impl_int;
-    IntCpp() < impl_int;
-    IntCpp() >= impl_int;
-    IntCpp() <= impl_int;
-    IntCpp() && impl_int;
-    IntCpp() || impl_int;
-    IntCpp() & impl_int;
-    IntCpp() | impl_int;
-    IntCpp() ^ impl_int;
-    IntCpp() >> impl_int;
-    IntCpp() << impl_int;
-
-    IntCpp() += impl_int;
-    IntCpp() -= impl_int;
-    IntCpp() *= impl_int;
-    IntCpp() /= impl_int;
-    IntCpp() %= impl_int;
-    IntCpp() &= impl_int;
-    IntCpp() |= impl_int;
-    IntCpp() ^= impl_int;
-    IntCpp() >>= impl_int;
-    IntCpp() <<= impl_int;
-
-    // rvalue / rvalue
-    IntCpp() + IntImpl();
-    IntCpp() - IntImpl();
-    IntCpp() * IntImpl();
-    IntCpp() / IntImpl();
-    IntCpp() % IntImpl();
-
-    IntCpp() == IntImpl();
-    IntCpp() != IntImpl();
-    IntCpp() > IntImpl();
-    IntCpp() < IntImpl();
-    IntCpp() >= IntImpl();
-    IntCpp() <= IntImpl();
-    IntCpp() && IntImpl();
-    IntCpp() || IntImpl();
-    IntCpp() & IntImpl();
-    IntCpp() | IntImpl();
-    IntCpp() ^ IntImpl();
-    IntCpp() >> IntImpl();
-    IntCpp() << IntImpl();
-
-    IntCpp() += IntImpl();
-    IntCpp() -= IntImpl();
-    IntCpp() *= IntImpl();
-    IntCpp() /= IntImpl();
-    IntCpp() %= IntImpl();
-    IntCpp() &= IntImpl();
-    IntCpp() |= IntImpl();
-    IntCpp() ^= IntImpl();
-    IntCpp() >>= IntImpl();
-    IntCpp() <<= IntImpl();
 }
 
 //#include <vector>

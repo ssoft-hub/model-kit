@@ -115,6 +115,7 @@ extern void testInstanceContainer ();
 extern void testConstructors ();
 extern void testSameToolConstructors ();
 extern void testDiffToolConstructors ();
+extern void testBinaryOperators ();
 
 extern void testFeaturing ();
 
@@ -127,7 +128,7 @@ int main ( int /*argc*/, char ** /*argv*/ )
     compileTestInstanceTrancpatancy();
     //testResultOf();
     testInstanceContainer();
-
+    testBinaryOperators();
     testFeaturing();
 //    testMemberOperators();
 //    testConstructor();

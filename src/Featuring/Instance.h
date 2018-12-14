@@ -112,4 +112,42 @@ public:
     CAST_OPERATOR
 };
 
+/* RIGHT-SIDE INSTANCE OPERATORS */
+
+/*! NOTE: The 'operator =' cannot be implemented as global method. */
+
+/* Arithmetic operators */
+GLOBAL_BINARY_OPERATOR( *, ::Operator::Multiply )
+GLOBAL_BINARY_OPERATOR( /, ::Operator::Divide )
+GLOBAL_BINARY_OPERATOR( %, ::Operator::Modulo )
+GLOBAL_BINARY_OPERATOR( +, ::Operator::Addition )
+GLOBAL_BINARY_OPERATOR( -, ::Operator::Subtraction )
+/* Compound assignment */
+GLOBAL_BINARY_OPERATOR( *=, ::Operator::MultiplyAssignment )
+GLOBAL_BINARY_OPERATOR( /=, ::Operator::DivideAssignment )
+GLOBAL_BINARY_OPERATOR( %=, ::Operator::ModuloAssignment )
+GLOBAL_BINARY_OPERATOR( +=, ::Operator::AdditionAssignment )
+GLOBAL_BINARY_OPERATOR( -=, ::Operator::SubtractionAssignment )
+GLOBAL_BINARY_OPERATOR( <<=, ::Operator::ShiftLeftAssignment )
+GLOBAL_BINARY_OPERATOR( >>=, ::Operator::ShiftRightAssignment )
+GLOBAL_BINARY_OPERATOR( &=, ::Operator::BitwiseAndAssignment )
+GLOBAL_BINARY_OPERATOR( ^=, ::Operator::BitwiseXorAssignment )
+GLOBAL_BINARY_OPERATOR( |=, ::Operator::BitwiseOrAssignment )
+/* Relational and comparison operators */
+GLOBAL_BINARY_OPERATOR( ==, ::Operator::IsEqual )
+GLOBAL_BINARY_OPERATOR( !=, ::Operator::NotEqual )
+GLOBAL_BINARY_OPERATOR( <, ::Operator::Less )
+GLOBAL_BINARY_OPERATOR( <=, ::Operator::LessOrEqual )
+GLOBAL_BINARY_OPERATOR( >, ::Operator::Greater )
+GLOBAL_BINARY_OPERATOR( >=, ::Operator::GreaterOrEqual )
+/* Logical operators */
+GLOBAL_BINARY_OPERATOR( &&, ::Operator::LogicalAnd )
+GLOBAL_BINARY_OPERATOR( ||, ::Operator::LogicalOr )
+/* Bitwise operators */
+GLOBAL_BINARY_OPERATOR( &, ::Operator::BitwiseAnd )
+GLOBAL_BINARY_OPERATOR( ^, ::Operator::BitwiseXor )
+GLOBAL_BINARY_OPERATOR( |, ::Operator::BitwiseOr )
+GLOBAL_BINARY_OPERATOR( <<, ::Operator::ShiftLeft )
+GLOBAL_BINARY_OPERATOR( >>, ::Operator::ShiftRight )
+
 #endif

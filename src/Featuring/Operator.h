@@ -21,11 +21,11 @@ namespace Operator
         /*
          * Если результат воздействия оператора возвращает
          *      - значение не оборачиваемого типа (фундаментальный или перечисляемый), тогда возвращается само значение не оборачиваемого типа;
-         *      - значение оборачиваемого типа Type, тогда возвращается Instance< Type, DefaultTool >;
-         *      - ссылку на значение любого типа Type, тогда
-         *          - если Instance является и правым, и левым операндом, Instance< Type, BothOperandTool >
-         *          - если Instance является только правым операндом, Instance< Type, RightOperandTool >
-         *          - если Instance является только левым операндом, Instance< Type, LeftOperandTool >
+         *      - значение оборачиваемого типа Value, тогда возвращается Instance< Value, DefaultTool >;
+         *      - ссылку на значение любого типа Value, тогда
+         *          - если Instance является и правым, и левым операндом, Instance< Value, BothOperandTool >
+         *          - если Instance является только правым операндом, Instance< Value, RightOperandTool >
+         *          - если Instance является только левым операндом, Instance< Value, LeftOperandTool >
          */
 
         template < typename _Kind >
@@ -146,14 +146,14 @@ namespace Operator
         template < typename _Value > \
         struct Invokable \
         { \
-            using Type = _Value; \
-            static_assert( ::std::is_same< Type, ::std::decay_t< Type > >::value, \
+            using Value = _Value; \
+            static_assert( ::std::is_same< Value, ::std::decay_t< Value > >::value, \
                 "The template parameter _Value must be decayed." ); \
             template < typename _Refer, typename ... _Arguments > \
             constexpr decltype(auto) operator () ( _Refer && refer, _Arguments && ... arguments ) \
             { \
                 using Refer= ::std::add_rvalue_reference_t< _Refer >; \
-                static_assert( ::std::is_same< Type, ::std::decay_t< Refer > >::value, \
+                static_assert( ::std::is_same< Value, ::std::decay_t< Refer > >::value, \
                     "The template parameter _Refer must be a refer of template parameter _Value." ); \
                 return ::std::forward< Refer >( refer ). operator symbol ( ::std::forward< _Arguments >( arguments ) ... ); \
             } \
@@ -193,15 +193,15 @@ namespace Operator
             struct Invokable< _Holder< _Value > > \
             { \
                 using Holder = _Holder< _Value >; \
-                using Value = _Value; \
-                template < typename _Refer, typename ... _Arguments > \
-                constexpr decltype(auto) operator () ( _Refer && refer, _Arguments && ... arguments ) \
+                using Value = ::std::remove_cv_t< _Value >; \
+                template < typename _Refer > \
+                constexpr decltype(auto) operator () ( _Refer && refer ) \
                 { \
                     using HolderRefer= ::std::add_rvalue_reference_t< _Refer >; \
                     static_assert( ::std::is_same< Holder, ::std::decay_t< HolderRefer > >::value, \
                         "The template parameter _Refer must be a refer of template parameter Instance< _Value, _Tool >::Holder." ); \
                     using ValueRefer = ::SimilarRefer< Value, HolderRefer >; \
-                    return ::Operator::Invokable< Value >()( ::std::forward< ValueRefer >( Holder::value( ::std::forward< HolderRefer >( refer ) ) ), ::std::forward< _Arguments >( arguments ) ... ); \
+                    return ::Operator::Invokable< Value >()( ::std::forward< ValueRefer >( Holder::value( ::std::forward< HolderRefer >( refer ) ) ) ); \
                 } \
             };\
         } \
@@ -212,14 +212,14 @@ namespace Operator
         template < typename _Value > \
         struct Invokable \
         { \
-            using Type = _Value; \
-            static_assert( ::std::is_same< Type, ::std::decay_t< Type > >::value, \
+            using Value = _Value; \
+            static_assert( ::std::is_same< Value, ::std::decay_t< Value > >::value, \
                 "The template parameter _Value must be decayed." ); \
-            template < typename _Refer, typename ... _Arguments > \
-            constexpr decltype(auto) operator () ( _Refer && refer, _Arguments && ... arguments ) \
+            template < typename _Refer > \
+            constexpr decltype(auto) operator () ( _Refer && refer ) \
             { \
                 using Refer= ::std::add_rvalue_reference_t< _Refer >; \
-                static_assert( ::std::is_same< Type, ::std::decay_t< Refer > >::value, \
+                static_assert( ::std::is_same< Value, ::std::decay_t< Refer > >::value, \
                     "The template parameter _Refer must be a refer of template parameter _Value." ); \
                 return ::std::forward< Refer >( refer ) symbol; \
             } \
@@ -233,37 +233,216 @@ namespace Operator
         { \
             using Instance = ::Instance< _Value, _Tool >; \
             using Holder = typename Instance::Holder; \
-            template < typename _Refer, typename ... _Arguments > \
-            constexpr decltype(auto) operator () ( _Refer && refer, _Arguments && ... arguments ) \
+            template < typename _Refer > \
+            constexpr decltype(auto) operator () ( _Refer && refer ) \
             { \
                 using InstanceRefer= ::std::add_rvalue_reference_t< _Refer >; \
                 static_assert( ::std::is_same< Instance, ::std::decay_t< InstanceRefer > >::value, \
                     "The template parameter _Refer must be a refer of template parameter Instance< _Value, _Tool >." ); \
                 using HolderRefer = ::SimilarRefer< Holder, InstanceRefer >; \
                 /* TODO: вернуть Instance с заблокированным Holder, или Instance над значением, или фундаментальное значение */ \
-                return ::Operator::Spec::Invokable< Holder >()( ::std::forward< HolderRefer >( refer.m_holder ), ::std::forward< _Arguments >( arguments ) ... ); \
+                return ::Operator::Spec::Invokable< Holder >()( ::std::forward< HolderRefer >( refer.m_holder ) ); \
             } \
         };\
     } \
 
 #define BINARY_OPERATOR_IMPLEMENTAION( symbol, Invokable ) \
+    namespace Operator { template < typename, typename > struct Invokable; } \
+    namespace Operator { namespace LeftSpec { template < typename, typename > struct Invokable; } } \
+    namespace Operator { namespace RightSpec { template < typename, typename > struct Invokable; } } \
+    namespace Operator { namespace BothSpec { template < typename, typename > struct Invokable; } } \
+    \
+    namespace Operator \
+    { \
+        namespace LeftSpec \
+        { \
+            /* For unguarded Holder only */ \
+            template < typename _Left, template < typename > class _LeftHolder, typename _Right > \
+            struct Invokable< _LeftHolder< _Left >, _Right > \
+            { \
+                using Left = ::std::remove_cv_t< _Left >; \
+                using Right = ::std::remove_cv_t< _Right >; \
+                using LeftHolder = _LeftHolder< _Left >; \
+                template < typename _LeftRefer, typename _RightRefer > \
+                constexpr decltype(auto) operator () ( _LeftRefer && left, _RightRefer && right ) \
+                { \
+                    using LeftHolderRefer= ::std::add_rvalue_reference_t< _LeftRefer >; \
+                    using RightRefer= ::std::add_rvalue_reference_t< _RightRefer >; \
+                    using LeftValueRefer = ::SimilarRefer< Left, LeftHolderRefer >; \
+                    static_assert( ::std::is_same< LeftHolder, ::std::decay_t< LeftHolderRefer > >::value, \
+                        "The template parameter _LeftRefer must be a refer of template parameter _LeftHolder< _Left >." ); \
+                    return ::Operator::Invokable< Left, Right >()( \
+                        ::std::forward< LeftValueRefer >( LeftHolder::value( ::std::forward< LeftHolderRefer >( left ) ) ), \
+                        ::std::forward< RightRefer >( right ) ); \
+                } \
+            };\
+        } \
+    } \
+    \
+    namespace Operator \
+    { \
+        namespace RightSpec \
+        { \
+            /* For unguarded Holder only */ \
+            template < typename _Left, typename _Right, template < typename > class _RightHolder > \
+            struct Invokable< _Left, _RightHolder< _Right > > \
+            { \
+                using Left = ::std::remove_cv_t< _Left >; \
+                using Right = ::std::remove_cv_t< _Right >; \
+                using RightHolder = _RightHolder< _Right >; \
+                template < typename _LeftRefer, typename _RightRefer > \
+                constexpr decltype(auto) operator () ( _LeftRefer && left, _RightRefer && right ) \
+                { \
+                    using LeftRefer= ::std::add_rvalue_reference_t< _LeftRefer >; \
+                    using RightHolderRefer= ::std::add_rvalue_reference_t< _RightRefer >; \
+                    using RightValueRefer = ::SimilarRefer< Right, RightHolderRefer >; \
+                    static_assert( ::std::is_same< RightHolder, ::std::decay_t< RightHolderRefer > >::value, \
+                        "The template parameter _RightRefer must be a refer of template parameter _RightHolder< _Right >." ); \
+                    return ::Operator::Invokable< Left, Right >()( \
+                        ::std::forward< LeftRefer >( left ), \
+                        ::std::forward< RightValueRefer >( RightHolder::value( ::std::forward< RightHolderRefer >( right ) ) ) ); \
+                } \
+            };\
+        } \
+    } \
+    \
+    namespace Operator \
+    { \
+        namespace BothSpec \
+        { \
+            /* For unguarded Holder only */ \
+            template < typename _Left, template < typename > class _LeftHolder, typename _Right, template < typename > class _RightHolder > \
+            struct Invokable< _LeftHolder< _Left >, _RightHolder< _Right > > \
+            { \
+                using Left = ::std::remove_cv_t< _Left >; \
+                using Right = ::std::remove_cv_t< _Right >; \
+                using LeftHolder = _LeftHolder< _Left >; \
+                using RightHolder = _RightHolder< _Right >; \
+                template < typename _LeftRefer, typename _RightRefer > \
+                constexpr decltype(auto) operator () ( _LeftRefer && left, _RightRefer && right ) \
+                { \
+                    using LeftHolderRefer= ::std::add_rvalue_reference_t< _LeftRefer >; \
+                    using LeftValueRefer = ::SimilarRefer< Left, LeftHolderRefer >; \
+                    using RightHolderRefer= ::std::add_rvalue_reference_t< _RightRefer >; \
+                    using RightValueRefer = ::SimilarRefer< Right, RightHolderRefer >; \
+                    static_assert( ::std::is_same< LeftHolder, ::std::decay_t< LeftHolderRefer > >::value, \
+                        "The template parameter _LeftRefer must be a refer of template parameter _LeftHolder< _Left >." ); \
+                    static_assert( ::std::is_same< RightHolder, ::std::decay_t< RightHolderRefer > >::value, \
+                        "The template parameter _RightRefer must be a refer of template parameter _RightHolder< _Right >." ); \
+                    return ::Operator::Invokable< Left, Right >()( \
+                        ::std::forward< LeftValueRefer >( LeftHolder::value( ::std::forward< LeftHolderRefer >( left ) ) ), \
+                        ::std::forward< RightValueRefer >( RightHolder::value( ::std::forward< RightHolderRefer >( right ) ) ) ); \
+                } \
+            };\
+        } \
+    } \
+    \
     namespace Operator \
     { \
         template < typename _Left, typename _Right > \
         struct Invokable \
         { \
-            static_assert( ::std::is_same< _Left, ::std::decay_t< _Left > >::value, \
+            using Left = _Left; \
+            using Right = _Right; \
+            static_assert( ::std::is_same< Left, ::std::decay_t< Left > >::value, \
                 "The template parameter _Left must be decayed." ); \
-            static_assert( ::std::is_same< _Right, ::std::decay_t< _Right > >::value, \
+            static_assert( ::std::is_same< Right, ::std::decay_t< Right > >::value, \
                 "The template parameter _Right must be decayed." ); \
             template < typename _LeftRefer, typename _RightRefer > \
-            constexpr decltype(auto) operator () ( _LeftRefer && left, _RightRefer && /*right*/ ) \
+            constexpr decltype(auto) operator () ( _LeftRefer && left, _RightRefer && right ) \
             { \
-                return ::std::forward< _Left >( left )/* TODO: symbol ::std::forward< _Right >( right )*/; \
+                using LeftRefer= ::std::add_rvalue_reference_t< _LeftRefer >; \
+                using RightRefer= ::std::add_rvalue_reference_t< _RightRefer >; \
+                static_assert( ::std::is_same< Left, ::std::decay_t< LeftRefer > >::value, \
+                    "The template parameter _LeftRefer must be a refer of template parameter _Left." ); \
+                static_assert( ::std::is_same< Right, ::std::decay_t< RightRefer > >::value, \
+                    "The template parameter _RightRefer must be a refer of template parameter _Right." ); \
+                return ::std::forward< LeftRefer >( left ) symbol ::std::forward< RightRefer >( right ); \
             } \
         }; \
     } \
-
+    \
+    namespace Operator \
+    { \
+        template < typename _LeftValue, typename _LeftTool, typename _Right > \
+        struct Invokable< ::Instance< _LeftValue, _LeftTool >, _Right > \
+        { \
+            using LeftInstance = ::Instance< _LeftValue, _LeftTool >; \
+            using LeftHolder = typename LeftInstance::Holder; \
+            using Right = _Right; \
+            static_assert( ::std::is_same< Right, ::std::decay_t< Right > >::value, \
+                "The template parameter _Right must be decayed." ); \
+            template < typename _LeftRefer, typename _RightRefer > \
+            constexpr decltype(auto) operator () ( _LeftRefer && left, _RightRefer && right ) \
+            { \
+                using LeftInstanceRefer= ::std::add_rvalue_reference_t< _LeftRefer >; \
+                using LeftHolderRefer = ::SimilarRefer< LeftHolder, LeftInstanceRefer >; \
+                using RightRefer= ::std::add_rvalue_reference_t< _RightRefer >; \
+                static_assert( ::std::is_same< LeftInstance, ::std::decay_t< LeftInstanceRefer > >::value, \
+                    "The template parameter _LeftRefer must be a refer of template parameter Instance< _LeftValue, _LeftTool >." ); \
+                static_assert( ::std::is_same< Right, ::std::decay_t< RightRefer > >::value, \
+                    "The template parameter _RightRefer must be a refer of template parameter _Right." ); \
+    \
+                /* TODO: вернуть Instance с заблокированным Holder, или Instance над значением, или фундаментальное значение */ \
+                return ::Operator::LeftSpec::Invokable< LeftHolder, Right >()( ::std::forward< LeftHolderRefer >( left.m_holder ), ::std::forward< RightRefer >( right ) ); \
+            } \
+        };\
+    } \
+    \
+    namespace Operator \
+    { \
+        template < typename _Left, typename _RightValue, typename _RightTool > \
+        struct Invokable< _Left, ::Instance< _RightValue, _RightTool > > \
+        { \
+            using Left = _Left; \
+            using RightInstance = ::Instance< _RightValue, _RightTool >; \
+            using RightHolder = typename RightInstance::Holder; \
+            static_assert( ::std::is_same< Left, ::std::decay_t< Left > >::value, \
+                "The template parameter _Left must be decayed." ); \
+            template < typename _LeftRefer, typename _RightRefer > \
+            constexpr decltype(auto) operator () ( _LeftRefer && left, _RightRefer && right ) \
+            { \
+                using LeftRefer= ::std::add_rvalue_reference_t< _LeftRefer >; \
+                using RightInstanceRefer= ::std::add_rvalue_reference_t< _RightRefer >; \
+                using RightHolderRefer = ::SimilarRefer< RightHolder, RightInstanceRefer >; \
+                static_assert( ::std::is_same< Left, ::std::decay_t< LeftRefer > >::value, \
+                    "The template parameter _LeftRefer must be a refer of template parameter _Left." ); \
+                static_assert( ::std::is_same< RightInstance, ::std::decay_t< RightInstanceRefer > >::value, \
+                    "The template parameter _RightRefer must be a refer of template parameter Instance< _RightValue, _RightTool >." ); \
+    \
+                /* TODO: вернуть Instance с заблокированным Holder, или Instance над значением, или фундаментальное значение */ \
+                return ::Operator::RightSpec::Invokable< Left, RightHolder >()( ::std::forward< LeftRefer >( left ), ::std::forward< RightHolderRefer >( right.m_holder ) ); \
+            } \
+        };\
+    } \
+    \
+    namespace Operator \
+    { \
+        template < typename _LeftValue, typename _LeftTool, typename _RightValue, typename _RightTool > \
+        struct Invokable< ::Instance< _LeftValue, _LeftTool >, ::Instance< _RightValue, _RightTool > > \
+        { \
+            using LeftInstance = ::Instance< _LeftValue, _LeftTool >; \
+            using LeftHolder = typename LeftInstance::Holder; \
+            using RightInstance = ::Instance< _RightValue, _RightTool >; \
+            using RightHolder = typename RightInstance::Holder; \
+    \
+            template < typename _LeftRefer, typename _RightRefer > \
+            constexpr decltype(auto) operator () ( _LeftRefer && left, _RightRefer && right ) \
+            { \
+                using LeftInstanceRefer= ::std::add_rvalue_reference_t< _LeftRefer >; \
+                using LeftHolderRefer = ::SimilarRefer< LeftHolder, LeftInstanceRefer >; \
+                using RightInstanceRefer= ::std::add_rvalue_reference_t< _RightRefer >; \
+                using RightHolderRefer = ::SimilarRefer< RightHolder, RightInstanceRefer >; \
+                static_assert( ::std::is_same< LeftInstance, ::std::decay_t< LeftInstanceRefer > >::value, \
+                    "The template parameter _LeftRefer must be a refer of template parameter Instance< _LeftValue, _LeftTool >." ); \
+                static_assert( ::std::is_same< RightInstance, ::std::decay_t< RightInstanceRefer > >::value, \
+                    "The template parameter _RightRefer must be a refer of template parameter Instance< _RightValue, _RightTool >." ); \
+    \
+                /* TODO: вернуть Instance с заблокированным Holder, или Instance над значением, или фундаментальное значение */ \
+                return ::Operator::BothSpec::Invokable< LeftHolder, RightHolder >()( ::std::forward< LeftHolderRefer >( left.m_holder ), ::std::forward< RightHolderRefer >( right.m_holder ) ); \
+            } \
+        };\
+    } \
 
 UNARY_OPERATOR_IMPLEMENTAION( [], SquareBrackets )
 UNARY_OPERATOR_IMPLEMENTAION( (), RoundBrackets )
@@ -312,39 +491,15 @@ BINARY_OPERATOR_IMPLEMENTAION( &=, BitwiseAndAssignment )
 BINARY_OPERATOR_IMPLEMENTAION( |=, BitwiseOrAssignment )
 BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
 
-/*
-// Unary prefix operators
-#define INSTANCE_PREFIX_UNARY_OPERATOR( symbol, Invokable ) \
-    template < typename _Right, \
-        typename = ::std::enable_if_t< ::is_instance< ::std::decay_t< _Right > > > > \
-    inline decltype(auto) operator symbol ( _Right && value ) \
-    { \
-        using RightInstance = ::std::decay_t< _Right >; \
-        using RightInstanceRefer = ::std::add_rvalue_reference_t< _Right >; \
-        using RightValueRefer = ::SimilarRefer< typename RightInstance::Value, RightInstanceRefer >; \
-        return Operator::invoke< RightInstanceRefer >( ::std::forward< RightInstanceRefer >( value ), Invokable< RightValueRefer >() ); \
-    } \
-
-// Unary postfix operators
-#define INSTANCE_POSTFIX_UNARY_OPERATOR( symbol, Invokable ) \
-    template < typename _Left, \
-        typename = ::std::enable_if_t< ::is_instance< ::std::decay_t< _Left > > > > \
-    inline decltype(auto) operator symbol ( _Left && value, int ) \
-    { \
-        using LeftInstance = ::std::decay_t< _Left >; \
-        using LeftInstanceRefer = ::std::add_rvalue_reference_t< _Left >; \
-        using LeftValueRefer = ::SimilarRefer< typename LeftInstance::Value, LeftInstanceRefer >; \
-        return Operator::invoke< LeftInstanceRefer >( ::std::forward< LeftInstanceRefer >( value ), Invokable< LeftValueRefer >() ); \
-    } \
-*/
-
-// Binary operators
 #define GLOBAL_BINARY_OPERATOR_PROTOTYPE( symbol, right_refer, Invokable ) \
     template < typename _Left, typename _RightValue, typename _RightTool > \
-    constexpr decltype(auto) operator symbol ( _Left && /*left*/, Instance< _RightValue, _RightTool > right_refer right ) \
+    constexpr decltype(auto) operator symbol ( _Left && left, Instance< _RightValue, _RightTool > right_refer right ) \
     { \
         /* TODO: */ \
-        return ::std::forward< Instance< _RightValue, _RightTool > right_refer >( right ); \
+        using RightInstance = Instance< _RightValue, _RightTool >; \
+        return Invokable< ::std::decay_t< _Left >, RightInstance >()( \
+            ::std::forward< _Left >( left ), \
+            ::std::forward< RightInstance right_refer >( right ) ); \
     } \
 
 #define GLOBAL_BINARY_OPERATOR( symbol, Invokable ) \
@@ -361,8 +516,10 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
     constexpr decltype(auto) operator symbol ( ThisType other_refer other ) this_refer \
     { \
         /* TODO: */ \
-        ::std::forward< Holder this_refer >( m_holder ) symbol InstanceResolver< ThisType, ThisType other_refer >( ::std::forward< ThisType other_refer >( other ) ).resolve(); \
-        return ::std::forward< ThisType this_refer >( *this ); \
+        /*::std::forward< Holder this_refer >( m_holder ) symbol InstanceResolver< ThisType, ThisType other_refer >( ::std::forward< ThisType other_refer >( other ) ).resolve();*/ \
+        return Invokable< ThisType, ThisType >()( \
+            ::std::forward< ThisType this_refer >( *this ), \
+            ::std::forward< ThisType other_refer >( other ) ); \
     } \
 
 #define BINARY_OPERATOR_PROTOTYPE_FOR_ANY( symbol, this_refer, Invokable ) \
@@ -602,45 +759,5 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
     BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, const &, Invokable ) \
     BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, volatile &, Invokable ) \
     BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, const volatile &, Invokable ) \
-
-/* RIGHT-SIDE INSTANCE OPERATORS */
-
-/* Arithmetic operators */
-GLOBAL_BINARY_OPERATOR( *, ::Operator::Multiply )
-GLOBAL_BINARY_OPERATOR( /, ::Operator::Divide )
-GLOBAL_BINARY_OPERATOR( %, ::Operator::Modulo )
-GLOBAL_BINARY_OPERATOR( +, ::Operator::Addition )
-GLOBAL_BINARY_OPERATOR( -, ::Operator::Subtraction )
-/* Compound assignment */
-GLOBAL_BINARY_OPERATOR( *=, ::Operator::MultiplyAssignment )
-GLOBAL_BINARY_OPERATOR( /=, ::Operator::DivideAssignment )
-GLOBAL_BINARY_OPERATOR( %=, ::Operator::ModuloAssignment )
-GLOBAL_BINARY_OPERATOR( +=, ::Operator::AdditionAssignment )
-GLOBAL_BINARY_OPERATOR( -=, ::Operator::SubtractionAssignment )
-GLOBAL_BINARY_OPERATOR( <<=, ::Operator::ShiftLeftAssignment )
-GLOBAL_BINARY_OPERATOR( >>=, ::Operator::ShiftRightAssignment )
-GLOBAL_BINARY_OPERATOR( &=, ::Operator::BitwiseAndAssignment )
-GLOBAL_BINARY_OPERATOR( ^=, ::Operator::BitwiseXorAssignment )
-GLOBAL_BINARY_OPERATOR( |=, ::Operator::BitwiseOrAssignment )
-/* Relational and comparison operators */
-GLOBAL_BINARY_OPERATOR( ==, ::Operator::IsEqual )
-GLOBAL_BINARY_OPERATOR( !=, ::Operator::NotEqual )
-GLOBAL_BINARY_OPERATOR( <, ::Operator::Less )
-GLOBAL_BINARY_OPERATOR( <=, ::Operator::LessOrEqual )
-GLOBAL_BINARY_OPERATOR( >, ::Operator::Greater )
-GLOBAL_BINARY_OPERATOR( >=, ::Operator::GreaterOrEqual )
-/* Logical operators */
-GLOBAL_BINARY_OPERATOR( &&, ::Operator::LogicalAnd )
-GLOBAL_BINARY_OPERATOR( ||, ::Operator::LogicalOr )
-/* Bitwise operators */
-GLOBAL_BINARY_OPERATOR( &, ::Operator::BitwiseAnd )
-GLOBAL_BINARY_OPERATOR( ^, ::Operator::BitwiseXor )
-GLOBAL_BINARY_OPERATOR( |, ::Operator::BitwiseOr )
-GLOBAL_BINARY_OPERATOR( <<, ::Operator::ShiftLeft )
-GLOBAL_BINARY_OPERATOR( >>, ::Operator::ShiftRight )
-
-#undef INSTANCE_PREFIX_UNARY_OPERATOR
-#undef INSTANCE_POSTFIX_UNARY_OPERATOR
-#undef GLOBAL_BINARY_OPERATOR
 
 #endif
