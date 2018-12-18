@@ -5,7 +5,9 @@
 #include <atomic>
 #include <cassert>
 #include <memory>
+#include <ModelKit/Featuring/Access/Accessing.h>
 #include <ModelKit/Featuring/Access/HolderGuard.h>
+#include <ModelKit/Featuring/Traits.h>
 #include <utility>
 
 namespace Implicit
@@ -196,7 +198,7 @@ namespace Implicit
             void operator = ( Holder< _OtherValue > && other )
             {
                 static_assert( ::std::is_base_of< _Value, _OtherValue >::value,
-                    "_Value must be base of _OtherValue" );
+                    "_Value must to be base of _OtherValue" );
 
                 decrement();
                 m_pointer = other.m_pointer;
@@ -208,7 +210,7 @@ namespace Implicit
             void operator = ( const Holder< _OtherValue > && other )
             {
                 static_assert( ::std::is_base_of< _Value, _OtherValue >::value,
-                    "_Value must be base of _OtherValue" );
+                    "_Value must to be base of _OtherValue" );
 
                 if ( m_pointer != reinterpret_cast< CountedPointer >( other.m_pointer ) )
                 {
@@ -224,7 +226,7 @@ namespace Implicit
             void operator = ( Holder< _OtherValue > & other )
             {
                 static_assert( ::std::is_base_of< _Value, _OtherValue >::value,
-                    "_Value must be base of _OtherValue" );
+                    "_Value must to be base of _OtherValue" );
 
                 if ( m_pointer != reinterpret_cast< CountedPointer >( other.m_pointer ) )
                 {
@@ -239,7 +241,7 @@ namespace Implicit
             void operator = ( const Holder< _OtherValue > & other )
             {
                 static_assert( ::std::is_base_of< _Value, _OtherValue >::value,
-                    "_Value must be base of _OtherValue" );
+                    "_Value must to be base of _OtherValue" );
 
                 if ( m_pointer != reinterpret_cast< CountedPointer >( other.m_pointer ) )
                 {
@@ -271,24 +273,15 @@ namespace Implicit
                 // nothing to do
             }
 
-            static constexpr Value && value ( ThisType && holder )
+            /*!
+             * Access to internal value of Holder for any king of referencies.
+             */
+            template < typename _Refer >
+            static constexpr decltype(auto) value ( _Refer && holder )
             {
-                return ::std::forward< Value >( *holder.m_access );
-            }
-
-            static constexpr const Value && value ( const ThisType && holder )
-            {
-                return ::std::forward< const Value >( *holder.m_access );
-            }
-
-            static constexpr Value & value ( ThisType & holder )
-            {
-                return *holder.m_access;
-            }
-
-            static constexpr const Value & value ( const ThisType & holder )
-            {
-                return *holder.m_access;
+                using HolderRefer = _Refer &&;
+                using ValueRefer = ::SimilarRefer< Value, HolderRefer >;
+                return ::std::forward< ValueRefer >( *holder.m_access );
             }
         };
     };

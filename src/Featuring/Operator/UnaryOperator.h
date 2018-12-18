@@ -4,7 +4,7 @@
 
 #include <ModelKit/Featuring/Access/Accessing.h>
 #include "Resolver.h"
-#include "Trait.h"
+#include "Traits.h"
 
 #define _UNARY_OPERATOR_IMPLEMENTAION( symbol, Invokable ) \
     namespace Operator { template < typename > struct Invokable; } \
@@ -25,9 +25,9 @@
                 { \
                     using HolderRefer = _Refer &&; \
                     static_assert( ::std::is_same< Holder, ::std::decay_t< HolderRefer > >::value, \
-                        "The template parameter _Refer must be a refer of template parameter Instance< _Value, _Tool >::Holder." ); \
+                        "The template parameter _Refer must to be a refer of template parameter Instance< _Value, _Tool >::Holder." ); \
                     using ValueRefer = ::SimilarRefer< Value, HolderRefer >; \
-                    return ::Operator::Invokable< Value >()( ::std::forward< ValueRefer >( ::Access::value( ::std::forward< HolderRefer >( refer ) ) ), ::std::forward< _Arguments >( arguments ) ... ); \
+                    return ::Operator::Invokable< Value >()( ::std::forward< ValueRefer >( ::Access::value< ValueRefer, HolderRefer >( ::std::forward< HolderRefer >( refer ) ) ), ::std::forward< _Arguments >( arguments ) ... ); \
                 } \
             };\
         } \
@@ -45,7 +45,7 @@
             { \
                 using InstanceRefer = _Refer &&; \
                 static_assert( ::std::is_same< Instance, ::std::decay_t< InstanceRefer > >::value, \
-                    "The template parameter _Refer must be a refer of template parameter Instance< _Value, _Tool >." ); \
+                    "The template parameter _Refer must to be a refer of template parameter Instance< _Value, _Tool >." ); \
                 using HolderRefer = ::SimilarRefer< Holder, InstanceRefer >; \
                 /* TODO: вернуть Instance с заблокированным Holder, или Instance над значением, или фундаментальное значение */ \
                 return ::Operator::Spec::Invokable< Holder >()( ::std::forward< HolderRefer >( refer.m_holder ), ::std::forward< _Arguments >( arguments ) ... ); \
@@ -64,13 +64,13 @@
         { \
             using Value = _Value; \
             static_assert( ::std::is_same< Value, ::std::decay_t< Value > >::value, \
-                "The template parameter _Value must be decayed." ); \
+                "The template parameter _Value must to be decayed." ); \
             template < typename _Refer > \
             /*constexpr*/ decltype(auto) operator () ( _Refer && refer ) \
             { \
                 using Refer = _Refer &&; \
                 static_assert( ::std::is_same< Value, ::std::decay_t< Refer > >::value, \
-                    "The template parameter _Refer must be a refer of template parameter _Value." ); \
+                    "The template parameter _Refer must to be a refer of template parameter _Value." ); \
                 return ::std::forward< Refer >( refer ) symbol; \
             } \
         }; \
@@ -86,13 +86,13 @@
         { \
             using Value = _Value; \
             static_assert( ::std::is_same< Value, ::std::decay_t< Value > >::value, \
-                "The template parameter _Value must be decayed." ); \
+                "The template parameter _Value must to be decayed." ); \
             template < typename _Refer > \
             /*constexpr*/ decltype(auto) operator () ( _Refer && refer ) \
             { \
                 using Refer = _Refer &&; \
                 static_assert( ::std::is_same< Value, ::std::decay_t< Refer > >::value, \
-                    "The template parameter _Refer must be a refer of template parameter _Value." ); \
+                    "The template parameter _Refer must to be a refer of template parameter _Value." ); \
                 return symbol ::std::forward< Refer >( refer ); \
             } \
         }; \
@@ -108,13 +108,13 @@
         { \
             using Value = _Value; \
             static_assert( ::std::is_same< Value, ::std::decay_t< Value > >::value, \
-                "The template parameter _Value must be decayed." ); \
+                "The template parameter _Value must to be decayed." ); \
             template < typename _Refer, typename _Argument > \
             /*constexpr*/ decltype(auto) operator () ( _Refer && refer, _Argument && argument ) \
             { \
                 using Refer = _Refer &&; \
                 static_assert( ::std::is_same< Value, ::std::decay_t< Refer > >::value, \
-                    "The template parameter _Refer must be a refer of template parameter _Value." ); \
+                    "The template parameter _Refer must to be a refer of template parameter _Value." ); \
                 return ::std::forward< Refer >( refer ). operator symbol ( ::std::forward< _Argument >( argument ) ); \
             } \
         }; \
@@ -130,13 +130,13 @@
         { \
             using Value = _Value; \
             static_assert( ::std::is_same< Value, ::std::decay_t< Value > >::value, \
-                "The template parameter _Value must be decayed." ); \
+                "The template parameter _Value must to be decayed." ); \
             template < typename _Refer, typename ... _Arguments > \
             /*constexpr*/ decltype(auto) operator () ( _Refer && refer, _Arguments && ... arguments ) \
             { \
                 using Refer = _Refer &&; \
                 static_assert( ::std::is_same< Value, ::std::decay_t< Refer > >::value, \
-                    "The template parameter _Refer must be a refer of template parameter _Value." ); \
+                    "The template parameter _Refer must to be a refer of template parameter _Value." ); \
                 return ::std::forward< Refer >( refer ). operator symbol ( ::std::forward< _Arguments >( arguments ) ... ); \
             } \
         }; \

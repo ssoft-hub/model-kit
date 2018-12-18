@@ -138,7 +138,7 @@ class Dummy {};
 template < typename _Type >
 class Data
 {
-    static_assert( !::std::is_reference< _Type >::value, "_Type must be a not reference." );
+    static_assert( !::std::is_reference< _Type >::value, "_Type must to be a not reference." );
     using ThisType = Data< _Type >;
 
 public:

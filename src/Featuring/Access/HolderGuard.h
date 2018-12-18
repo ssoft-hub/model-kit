@@ -6,31 +6,35 @@
 #include <type_traits>
 #include <utility>
 
-template < typename _Refer >
+template < typename _HolderRefer >
 struct HolderGuard
 {
-    using Refer = _Refer;
-    using Holder = ::std::decay_t< Refer >;
+    using HolderRefer = _HolderRefer;
+    using Holder = ::std::decay_t< HolderRefer >;
 
-    static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must be a reference!" );
+    static_assert( ::std::is_reference< HolderRefer >::value, "The template parameter _HolderRefer must to be of reference type." );
 
-    Refer m_holder;
+    HolderRefer m_holder;
 
-    HolderGuard ( Refer holder )
-        : m_holder( ::std::forward< Refer >( holder ) )
+    HolderGuard ( HolderRefer holder )
+        : m_holder( ::std::forward< HolderRefer >( holder ) )
     {
-        ::Access::guarding( ::std::forward< Refer >( m_holder ) );
+        ::Access::guard< HolderRefer >( ::std::forward< HolderRefer >( m_holder ) );
     }
-
-    HolderGuard ( HolderGuard & holder ) = delete;
-    HolderGuard ( const HolderGuard & holder ) = delete;
-    HolderGuard ( HolderGuard && holder ) = delete;
-    HolderGuard ( const HolderGuard && holder ) = delete;
 
     ~HolderGuard ()
     {
-        ::Access::unguarding( ::std::forward< Refer >( m_holder ) );
+        ::Access::unguard< HolderRefer >( ::std::forward< HolderRefer >( m_holder ) );
     }
+
+    HolderGuard ( HolderGuard && ) = delete;
+    HolderGuard ( const HolderGuard && ) = delete;
+    HolderGuard ( volatile HolderGuard && ) = delete;
+    HolderGuard ( const volatile HolderGuard && ) = delete;
+    HolderGuard ( HolderGuard & ) = delete;
+    HolderGuard ( const HolderGuard & ) = delete;
+    HolderGuard ( volatile HolderGuard & ) = delete;
+    HolderGuard ( const volatile HolderGuard & ) = delete;
 };
 
 #endif

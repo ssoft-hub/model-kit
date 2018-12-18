@@ -4,81 +4,88 @@
 
 #include <type_traits>
 #include <memory>
+#include "Traits.h"
 
-template < typename _Refer > struct Guarding;
-template < typename _Refer > struct GuardingSpec;
-template < typename _Refer > struct Unuarding;
-template < typename _Refer > struct UnuardingSpec;
-template < typename _Refer > struct Accessing;
-template < typename _Refer > struct AccessingSpec;
+template < typename _HolderRefer, bool has_method >
+struct GuardHelper;
 
-template < typename _Refer >
-struct Guarding
+template < typename _HolderRefer >
+struct GuardHelper< _HolderRefer, false >
 {
-    static_assert( ::std::is_reference< _Refer >::value, "The _Refer type must be a reference." );
-    static constexpr void apply ( _Refer ) {}
+    static_assert( ::std::is_reference< _HolderRefer >::value, "The template parameter _HolderRefer type must to be of reference type." );
+    static constexpr void guard ( _HolderRefer ) {}
 };
 
-template < typename _Refer >
-struct GuardingSpec
+template < typename _HolderRefer >
+struct GuardHelper< _HolderRefer, true >
 {
-    static_assert( ::std::is_reference< _Refer >::value, "The _Refer type must be a reference." );
-    static constexpr void apply ( _Refer holder )
+    static_assert( ::std::is_reference< _HolderRefer >::value, "The template parameter _HolderRefer type must to be of reference type." );
+    using Holder = ::std::decay_t< _HolderRefer >;
+    static constexpr void guard ( _HolderRefer holder )
     {
-        return ::Guarding< _Refer >::apply( ::std::forward< _Refer >( holder ) );
+        Holder::guard( ::std::forward< _HolderRefer >( holder ) );
     }
 };
 
-template < typename _Refer >
-struct Unguarding
+template < typename _HolderRefer, bool has_method >
+struct UnguardHelper;
+
+template < typename _HolderRefer >
+struct UnguardHelper< _HolderRefer, false >
 {
-    static_assert( ::std::is_reference< _Refer >::value, "The _Refer type must be a reference." );
-    static constexpr void apply ( _Refer ) {}
+    static_assert( ::std::is_reference< _HolderRefer >::value, "The template parameter _HolderRefer type must to be of reference type." );
+    static constexpr void unguard ( _HolderRefer ) {}
 };
 
-template < typename _Refer >
-struct UnguardingSpec
+template < typename _HolderRefer >
+struct UnguardHelper< _HolderRefer, true >
 {
-    static_assert( ::std::is_reference< _Refer >::value, "The _Refer type must be a reference." );
-    static constexpr void apply ( _Refer holder )
+    static_assert( ::std::is_reference< _HolderRefer >::value, "The template parameter _HolderRefer type must to be of reference type." );
+    static constexpr void unguard ( _HolderRefer holder )
     {
-        return ::Unguarding< _Refer >::apply( ::std::forward< _Refer >( holder ) );
+        using Holder = ::std::decay_t< _HolderRefer >;
+        Holder::unguard( ::std::forward< _HolderRefer >( holder ) );
     }
 };
 
-template < typename _Refer >
-struct AccessingSpec
+template < typename _ValueRefer, typename _HolderRefer, bool has_method >
+struct ValueHelper;
+
+template < typename _ValueRefer, typename _HolderRefer >
+struct ValueHelper< _ValueRefer, _HolderRefer, true >
 {
-    static_assert( ::std::is_reference< _Refer >::value );
-    static constexpr decltype(auto) value ( _Refer && holder )
+    static_assert( ::std::is_reference< _ValueRefer >::value, "The template parameter _ValueRefer type must to be of reference type." );
+    static_assert( ::std::is_reference< _HolderRefer >::value, "The template parameter _HolderRefer type must to be of reference type." );
+    static constexpr _ValueRefer value ( _HolderRefer holder )
     {
-        using Holder = ::std::decay_t< _Refer >;
-        using HolderRefer = _Refer &&;
-        return ::Accessing< Holder >::template value< HolderRefer >( ::std::forward< HolderRefer >( holder ) );
+        using Holder = ::std::decay_t< _HolderRefer >;
+        return Holder::value( ::std::forward< _HolderRefer >( holder ) );
     }
 };
 
 struct Access
 {
-    template < typename _Holder >
-    static constexpr void guarding ( _Holder && holder )
+    template < typename _HolderRefer >
+    static constexpr void guard ( _HolderRefer holder )
     {
-        using HolderRefer = _Holder &&;
-        ::GuardingSpec< HolderRefer >::apply( ::std::forward< HolderRefer >( holder ) );
+        using Holder = ::std::decay_t< _HolderRefer >;
+        ::GuardHelper< _HolderRefer, ::has_guard_method< Holder, void( _HolderRefer ) > >::guard( ::std::forward< _HolderRefer >( holder ) );
     }
 
-    template < typename _Holder >
-    static constexpr void unguarding ( _Holder && holder )
+    template < typename _HolderRefer >
+    static constexpr void unguard ( _HolderRefer holder )
     {
-        using HolderRefer = _Holder &&;
-        ::UnguardingSpec< HolderRefer >::apply( ::std::forward< HolderRefer >( holder ) );
+        using Holder = ::std::decay_t< _HolderRefer >;
+        ::UnguardHelper< _HolderRefer, ::has_unguard_method< Holder, void( _HolderRefer ) > >::unguard( ::std::forward< _HolderRefer >( holder ) );
     }
 
-    template < typename _Holder >
-    static constexpr decltype(auto) value ( _Holder && holder )
+    template < typename _ValueRefer, typename _HolderRefer >
+    static constexpr _ValueRefer value ( _HolderRefer holder )
     {
-        using HolderRefer = _Holder &&;
-        return ::AccessingSpec< HolderRefer >::value( ::std::forward< HolderRefer >( holder ) );
+        using Holder = ::std::decay_t< _HolderRefer >;
+        static_assert( ::has_value_method< Holder, _ValueRefer( _HolderRefer ) >,
+            "The Holder type must to have static method '_ValueRefer value( _HolderRefer )'" );
+        return ::ValueHelper< _ValueRefer, _HolderRefer, ::has_value_method< Holder, _ValueRefer( _HolderRefer ) > >::value( ::std::forward< _HolderRefer >( holder ) );
     }
 };
 

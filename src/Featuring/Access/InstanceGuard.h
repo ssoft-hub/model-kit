@@ -38,8 +38,8 @@ namespace Private
         using Refer = _Refer;
         using Pointer = ReferPointer< Refer >;
 
-        static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must be a reference!" );
-        static_assert( !::is_instance< ::std::decay_t< Refer > >, "The template parameter _Refer must be a not Instance type reference!" );
+        static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must to be of reference type." );
+        static_assert( !::is_instance< ::std::decay_t< Refer > >, "The template parameter _Refer must to be a not Instance type reference!" );
 
     private:
         Pointer m_pointer;
@@ -99,10 +99,10 @@ namespace Private
         using Value = typename Instance::Value;
         using ValueRefer = ::SimilarRefer< Value, Refer >;
 
-        static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must be a reference!" );
-        static_assert( ::is_instance< Instance >, "The template parameter _Refer must be a Instance type reference!" );
-        static_assert( ::is_similar< ValueRefer, Refer >, "The Refer and ValueRefer must be similar types!" );
-        static_assert( ::is_similar< HolderRefer, Refer >, "The Refer and HolderRefer must be similar types!" );
+        static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must to be of reference type." );
+        static_assert( ::is_instance< Instance >, "The template parameter _Refer must to be a Instance type reference!" );
+        static_assert( ::is_similar< ValueRefer, Refer >, "The Refer and ValueRefer must to be similar types!" );
+        static_assert( ::is_similar< HolderRefer, Refer >, "The Refer and HolderRefer must to be similar types!" );
 
     private:
         Pointer m_pointer;
@@ -116,7 +116,7 @@ namespace Private
         SpecialInstanceGuard ( Refer refer )
             : m_pointer( ::std::forward< Refer >( refer ) )
         {
-            ::Access::guarding( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
+            ::Access::guard< HolderRefer >( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
         }
 
         SpecialInstanceGuard ( ThisType && other )
@@ -127,7 +127,7 @@ namespace Private
         ~SpecialInstanceGuard ()
         {
             if ( !!m_pointer )
-                ::Access::unguarding( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
+                ::Access::unguard< HolderRefer >( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
         }
 
         /*constexpr*/ bool operator ! () const
@@ -148,7 +148,7 @@ namespace Private
         /*constexpr*/ ValueRefer value () const
         {
             assert( m_pointer );
-            return ::Access::value( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
+            return ::Access::value< ValueRefer, HolderRefer >( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
         }
     };
 }

@@ -119,8 +119,8 @@ namespace Private
     template < typename _Type, typename _Refer >
     struct SimilarReferHelper
     {
-        static_assert( !::std::is_reference< _Type >::value, "The template parameter _Type must be a not reference." );
-        static_assert( ::std::is_reference< _Refer >::value, "The template parameter _Refer must be a reference." );
+        static_assert( !::std::is_reference< _Type >::value, "The template parameter _Type must to be a not reference." );
+        static_assert( ::std::is_reference< _Refer >::value, "The template parameter _Refer must to be of reference type." );
 
         using ValueFromRefer = ::std::remove_reference_t< _Refer >;
         static constexpr bool is_lvalue = ::std::is_lvalue_reference< _Refer >::value;
@@ -132,8 +132,41 @@ namespace Private
         using CVCheckedType =::std::conditional_t< is_const, ::std::add_const_t< VCheckedType >, VCheckedType >;
         using Type = ::std::conditional_t< is_rvalue, ::std::add_rvalue_reference_t< CVCheckedType >, ::std::add_lvalue_reference_t< CVCheckedType > >;
 
-        static_assert( ::is_similar< Type, _Refer >, "Result Type must be similar _Refer" );
+        static_assert( ::is_similar< Type, _Refer >, "Result Type must to be similar _Refer" );
     };
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
+#define SINGLE_ARG(...) __VA_ARGS__
+
+////////////////////////////////////////////////////////////////////////////////
+
+#define HAS_METHOD_TRAIT( method ) \
+    template < typename, typename _Method > \
+    struct Has_ ## method ## _Helper { \
+        static_assert( std::integral_constant< _Method, false >::value, \
+            "The template parameter _Method must to be of function type."); \
+    }; \
+    \
+    template < typename _Type, typename _Member, typename ... _Arguments > \
+    struct Has_ ## method ## _Helper< _Type, _Member( _Arguments... ) > \
+    { \
+    private: \
+        template < typename _Test > \
+        static constexpr std::is_same< decltype( std::declval< _Test >(). method ( std::declval< _Arguments >() ... ) ), _Member > __test ( int ); \
+    \
+        template< typename > \
+        static constexpr std::false_type __test( ... ); \
+    \
+    public: \
+        using Type = decltype( __test< _Type >( int() ) ); \
+    }; \
+    \
+    template < typename _Type, typename _Method > \
+    using Has_ ## method ## _Method = typename Has_ ## method ## _Helper< _Type, _Method >::Type; \
+    template < typename _Type, typename _Method > \
+    static constexpr bool has_ ## method ## _method = Has_ ## method ##_Method< _Type, _Method >::value; \
+
 
 #endif

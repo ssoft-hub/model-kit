@@ -201,30 +201,31 @@ namespace ThreadSafe
 //            }
 
 
-            template < typename _HolderRefer,
-                typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _HolderRefer > >::value > >
-            static constexpr void guard ( _HolderRefer && holder )
-            {
-                using HolderRefer = _HolderRefer &&;
-                ::std::forward< HolderRefer >( holder ).m_lock.lock();
-            }
+//            template < typename _HolderRefer,
+//                typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _HolderRefer > >::value > >
+//            static constexpr void guard ( _HolderRefer && holder )
+//            {
+//                using HolderRefer = _HolderRefer &&;
+//                ::std::forward< HolderRefer >( holder ).m_lock.lock();
+//            }
 
-            template < typename _HolderRefer,
-                typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _HolderRefer > >::value > >
-            static constexpr void unguard ( _HolderRefer && holder )
-            {
-                using HolderRefer = _HolderRefer &&;
-                ::std::forward< HolderRefer >( holder ).m_lock.unlock();
-            }
+//            template < typename _HolderRefer,
+//                typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _HolderRefer > >::value > >
+//            static constexpr void unguard ( _HolderRefer && holder )
+//            {
+//                using HolderRefer = _HolderRefer &&;
+//                ::std::forward< HolderRefer >( holder ).m_lock.unlock();
+//            }
 
-            // value proxying
-            template < typename _Refer,
-                typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _Refer > >::value > >
+            /*!
+             * Access to internal value of Holder for any king of referencies.
+             */
+            template < typename _Refer >
             static constexpr decltype(auto) value ( _Refer && holder )
             {
                 using HolderRefer = _Refer &&;
-                using ValueRefer = ::SimilarRefer< Value, HolderRefer >;
-                return ::std::forward< ValueRefer >( ::std::forward< HolderRefer >( holder ).m_value );
+                using ValueRefer = ::SimilarRefer< _Value, HolderRefer >;
+                return ::std::forward< ValueRefer >( holder.m_value );
             }
         };
     };

@@ -2,9 +2,7 @@
 #ifndef OPERATOR_TRAIT_H
 #define OPERATOR_TRAIT_H
 
-#include <type_traits>
-
-#define SINGLE_ARG(...) __VA_ARGS__
+#include <ModelKit/Featuring/Traits.h>
 
 #define RIGHT_INVOKABLE_TRAIT( symbol, Invokable ) \
     template < typename _Right > \

@@ -260,6 +260,17 @@ namespace ThreadSafe
             {
                 return holder.m_value;
             }
+
+            /*!
+             * Access to internal value of Holder for any king of referencies.
+             */
+            template < typename _Refer >
+            static constexpr decltype(auto) value ( _Refer && holder )
+            {
+                using HolderRefer = _Refer &&;
+                using ValueRefer = ::SimilarRefer< _Value, HolderRefer >;
+                return ::std::forward< ValueRefer >( holder.m_value );
+            }
         };
     };
 }

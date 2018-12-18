@@ -39,8 +39,8 @@ namespace Private
         using Guard = InstanceGuard< _Refer >;
         using AccessRefer = Refer;
 
-        static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must be a reference!" );
-        static_assert( !::is_instance< ::std::decay_t< Refer > >, "The template parameter _Refer must be a not Instance type reference!" );
+        static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must to be of reference type." );
+        static_assert( !::is_instance< ::std::decay_t< Refer > >, "The template parameter _Refer must to be a not Instance type reference!" );
 
     private:
         Guard m_instance_guard;
@@ -106,7 +106,6 @@ namespace Private
      */
     template < typename _Refer >
     class SpecialValueGuard
-
     {
         using ThisType = SpecialValueGuard< _Refer >;
 
@@ -123,10 +122,10 @@ namespace Private
         using ValueGuard = ::ValueGuard< ValueRefer >;
         using AccessRefer = typename ValueGuard::AccessRefer;
 
-        static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must be a reference!" );
-        static_assert( ::is_instance< Instance >, "The template parameter _Refer must be a Instance type reference!" );
-        static_assert( ::is_similar< ValueRefer, Refer >, "The Refer and ValueRefer must be similar types!" );
-        static_assert( ::is_similar< HolderRefer, Refer >, "The Refer and HolderRefer must be similar types!" );
+        static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must to be of reference type." );
+        static_assert( ::is_instance< Instance >, "The template parameter _Refer must to be a Instance type reference!" );
+        static_assert( ::is_similar< ValueRefer, Refer >, "The Refer and ValueRefer must to be similar types!" );
+        static_assert( ::is_similar< HolderRefer, Refer >, "The Refer and HolderRefer must to be similar types!" );
 
     private:
         InstanceGuard m_instance_guard;
@@ -141,13 +140,13 @@ namespace Private
 
         SpecialValueGuard ( _Refer refer )
             : m_instance_guard( ::std::forward< _Refer >( refer ) )
-            , m_value_guard( ::Access::value( ::std::forward< HolderRefer >( (*m_instance_guard).m_holder ) ) )
+            , m_value_guard( ::Access::value< ValueRefer, HolderRefer >( ::std::forward< HolderRefer >( (*m_instance_guard).m_holder ) ) )
         {
         }
 
         SpecialValueGuard ( InstanceGuard && other )
             : m_instance_guard( ::std::forward< InstanceGuard >( other ) )
-            , m_value_guard( ::Access::value( ::std::forward< HolderRefer >( (*m_instance_guard).m_holder ) ) )
+            , m_value_guard( ::Access::value< ValueRefer, HolderRefer >( ::std::forward< HolderRefer >( (*m_instance_guard).m_holder ) ) )
         {
         }
 

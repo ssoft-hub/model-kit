@@ -2,6 +2,8 @@
 #ifndef INSTANCE_TOOL_HEAP_UNIQUE_H
 #define INSTANCE_TOOL_HEAP_UNIQUE_H
 
+#include <ModelKit/Featuring/Access/Accessing.h>
+#include <ModelKit/Featuring/Traits.h>
 #include <cassert>
 #include <memory>
 #include <utility>
@@ -138,24 +140,15 @@ namespace Heap
                 // nothing to do
             }
 
-            static constexpr Value && value ( ThisType && holder )
+            /*!
+             * Access to internal value of Holder for any king of referencies.
+             */
+            template < typename _Refer >
+            static constexpr decltype(auto) value ( _Refer && holder )
             {
-                return ::std::forward< Value >( *holder.m_pointer.get() );
-            }
-
-            static constexpr const Value && value ( const ThisType && holder )
-            {
-                return ::std::forward< const Value >( *holder.m_pointer.get() );
-            }
-
-            static constexpr Value & value ( ThisType & holder )
-            {
-                return *holder.m_pointer.get();
-            }
-
-            static constexpr const Value & value ( const ThisType & holder )
-            {
-                return *holder.m_pointer.get();
+                using HolderRefer = _Refer &&;
+                using ValueRefer = ::SimilarRefer< _Value, HolderRefer >;
+                return ::std::forward< ValueRefer >( *holder.m_pointer.get() );
             }
         };
     };

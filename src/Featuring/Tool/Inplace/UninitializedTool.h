@@ -2,6 +2,8 @@
 #ifndef INSTANCE_TOOL_INPLACE_UNINITIALIZED_H
 #define INSTANCE_TOOL_INPLACE_UNINITIALIZED_H
 
+#include <ModelKit/Featuring/Access.h>
+#include <ModelKit/Featuring/Traits.h>
 #include <utility>
 
 namespace Inplace
@@ -12,11 +14,11 @@ namespace Inplace
      */
     struct UninitializedTool
     {
-        template < typename _Type >
+        template < typename _Value >
         struct Holder
         {
-            using ThisType = Holder< _Type >;
-            using Value = _Type;
+            using ThisType = Holder< _Value >;
+            using Value = _Value;
 
             Value m_value;
 
@@ -74,24 +76,15 @@ namespace Inplace
             {
             }
 
-            // nothing to do
-            template < typename _Refer,
-                typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _Refer > >::value > >
-            static constexpr void guard ( _Refer && ) {}
-
-            // nothing to do
-            template < typename _Refer,
-                typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _Refer > >::value > >
-            static constexpr void unguard ( _Refer && ) {}
-
-            // value proxying
-            template < typename _Refer,
-                typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _Refer > >::value > >
+            /*!
+             * Access to internal value of Holder for any king of referencies.
+             */
+            template < typename _Refer >
             static constexpr decltype(auto) value ( _Refer && holder )
             {
                 using HolderRefer = _Refer &&;
                 using ValueRefer = ::SimilarRefer< Value, HolderRefer >;
-                return ::std::forward< ValueRefer >( ::std::forward< HolderRefer >( holder ).m_value );
+                return ::std::forward< ValueRefer >( holder.m_value );
             }
         };
     };

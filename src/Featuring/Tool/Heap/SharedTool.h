@@ -2,6 +2,8 @@
 #ifndef INSTANCE_TOOL_HEAP_SHARED_H
 #define INSTANCE_TOOL_HEAP_SHARED_H
 
+#include <ModelKit/Featuring/Access/Accessing.h>
+#include <ModelKit/Featuring/Traits.h>
 #include <cassert>
 #include <memory>
 #include <utility>
@@ -143,64 +145,16 @@ namespace Heap
 //                *this = *other.m_pointer.get();
 //            }
 
-            // nothing to do
-            static constexpr void guard ( ThisType && ) {}
-            static constexpr void guard ( const ThisType && ) {}
-            static constexpr void guard ( volatile ThisType && ) {}
-            static constexpr void guard ( const volatile ThisType && ) {}
-            static constexpr void guard ( ThisType & ) {}
-            static constexpr void guard ( const ThisType & ) {}
-            static constexpr void guard ( volatile ThisType & ) {}
-            static constexpr void guard ( const volatile ThisType & ) {}
-
-            // nothing to do
-            static constexpr void unguard ( ThisType && ) {}
-            static constexpr void unguard ( const ThisType && ) {}
-            static constexpr void unguard ( volatile ThisType && ) {}
-            static constexpr void unguard ( const volatile ThisType && ) {}
-            static constexpr void unguard ( ThisType & ) {}
-            static constexpr void unguard ( const ThisType & ) {}
-            static constexpr void unguard ( volatile ThisType & ) {}
-            static constexpr void unguard ( const volatile ThisType & ) {}
-
-            static constexpr Value && value ( ThisType && holder )
+            /*!
+             * Access to internal value of Holder for any king of referencies.
+             */
+            template < typename _Refer >
+            static constexpr decltype(auto) value ( _Refer && holder )
             {
-                return ::std::forward< Value >( *holder.m_pointer.get() );
-            }
-
-            static constexpr const Value && value ( const ThisType && holder )
-            {
-                return ::std::forward< const Value >( *holder.m_pointer.get() );
-            }
-
-            static constexpr Value & value ( ThisType & holder )
-            {
-                return *holder.m_pointer.get();
-            }
-
-            static constexpr const Value & value ( const ThisType & holder )
-            {
-                return *holder.m_pointer.get();
-            }
-
-            static constexpr Value && value ( volatile ThisType && holder )
-            {
-                return ::std::forward< volatile Value >( *holder.m_pointer.get() );
-            }
-
-            static constexpr const Value && value ( const volatile ThisType && holder )
-            {
-                return ::std::forward< const volatile Value >( *holder.m_pointer.get() );
-            }
-
-            static constexpr Value & value ( volatile ThisType & holder )
-            {
-                return *holder.m_pointer.get();
-            }
-
-            static constexpr const Value & value ( const volatile ThisType & holder )
-            {
-                return *holder.m_pointer.get();
+                using HolderRefer = _Refer &&;
+                using ValueRefer = ::SimilarRefer< _Value, HolderRefer >;
+                // NOTE: Functionality ::std::shared_ptr has a limitation for volatile case.
+                return ::std::forward< ValueRefer >( *holder.m_pointer.get() );
             }
         };
     };
