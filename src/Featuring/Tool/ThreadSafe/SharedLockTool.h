@@ -201,69 +201,43 @@ namespace ThreadSafe
                 m_value = other.m_value;
             }
 
-            static constexpr void guard ( ThisType && holder )
+            //! Guard internal value of Holder for any king of mutable referencies.
+            template < typename _Holder,
+                typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _Holder > >::value > >
+            static constexpr void guard ( _Holder && holder )
             {
-                holder.m_lock.lock();
+                using HolderRefer = _Holder &&;
+                ::std::forward< HolderRefer >( holder ).m_lock.lock();
             }
 
-            static constexpr void guard ( const ThisType && holder )
+            //! Guard internal value of Holder for any king of constant referencies.
+            template < typename _Holder,
+                typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _Holder > >::value > >
+            static constexpr void guard ( const _Holder && holder )
             {
-                holder.m_lock.lock_shared();
+                using HolderRefer = _Holder &&;
+                ::std::forward< HolderRefer >( holder ).m_lock.lock_shared();
             }
 
-            static constexpr void guard ( ThisType & holder )
+            //! Unguard internal value of Holder for any king of mutable referencies.
+            template < typename _Holder,
+                typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _Holder > >::value > >
+            static constexpr void unguard ( _Holder && holder )
             {
-                holder.m_lock.lock();
+                using HolderRefer = _Holder &&;
+                ::std::forward< HolderRefer >( holder ).m_lock.unlock();
             }
 
-            static constexpr void guard ( const ThisType & holder )
+            //! Unguard internal value of Holder for any king of constant referencies.
+            template < typename _Holder,
+                typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _Holder > >::value > >
+            static constexpr void unguard ( const _Holder && holder )
             {
-                holder.m_lock.lock_shared();
+                using HolderRefer = _Holder &&;
+                ::std::forward< HolderRefer >( holder ).m_lock.unlock_shared();
             }
 
-            static constexpr void unguard ( ThisType && holder )
-            {
-                holder.m_lock.unlock();
-            }
-
-            static constexpr void unguard ( const ThisType && holder )
-            {
-                holder.m_lock.unlock_shared();
-            }
-
-            static constexpr void unguard ( ThisType & holder )
-            {
-                holder.m_lock.unlock();
-            }
-
-            static constexpr void unguard ( const ThisType & holder )
-            {
-                holder.m_lock.unlock_shared();
-            }
-
-            static constexpr Value && value ( ThisType && holder )
-            {
-                return ::std::forward< Value >( holder.m_value );
-            }
-
-            static constexpr const Value && value ( const ThisType && holder )
-            {
-                return ::std::forward< const Value >( holder.m_value );
-            }
-
-            static constexpr Value & value ( ThisType & holder )
-            {
-                return holder.m_value;
-            }
-
-            static constexpr const Value & value ( const ThisType & holder )
-            {
-                return holder.m_value;
-            }
-
-            /*!
-             * Access to internal value of Holder for any king of referencies.
-             */
+            //! Access to internal value of Holder for any king of referencies.
             template < typename _Refer >
             static constexpr decltype(auto) value ( _Refer && holder )
             {

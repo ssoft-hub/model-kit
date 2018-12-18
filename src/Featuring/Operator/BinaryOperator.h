@@ -2,6 +2,7 @@
 #ifndef BINARY_OPERATOR_H
 #define BINARY_OPERATOR_H
 
+#include <ModelKit/Utility/SingleArgument.h>
 #include "Resolver.h"
 #include "Traits.h"
 

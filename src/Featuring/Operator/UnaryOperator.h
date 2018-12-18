@@ -2,11 +2,12 @@
 #ifndef UNARY_OPERATOR_H
 #define UNARY_OPERATOR_H
 
-#include <ModelKit/Featuring/Access/Accessing.h>
+#include <ModelKit/Featuring/Access/HolderInternal.h>
+#include <ModelKit/Utility/SingleArgument.h>
 #include "Resolver.h"
 #include "Traits.h"
 
-#define _UNARY_OPERATOR_IMPLEMENTAION( symbol, Invokable ) \
+#define UNARY_OPERATOR_IMPLEMENTAION( symbol, Invokable ) \
     namespace Operator { template < typename > struct Invokable; } \
     namespace Operator { namespace Spec { template < typename > struct Invokable; } } \
     \
@@ -56,7 +57,7 @@
 
 #define LEFT_UNARY_OPERATOR_IMPLEMENTAION( symbol, Invokable ) \
     LEFT_INVOKABLE_TRAIT( SINGLE_ARG( symbol ), Invokable ) \
-    _UNARY_OPERATOR_IMPLEMENTAION( SINGLE_ARG( symbol ), Invokable ) \
+    UNARY_OPERATOR_IMPLEMENTAION( SINGLE_ARG( symbol ), Invokable ) \
     namespace Operator \
     { \
         template < typename _Value > \
@@ -78,7 +79,7 @@
 
 #define RIGHT_UNARY_OPERATOR_IMPLEMENTAION( symbol, Invokable ) \
     RIGHT_INVOKABLE_TRAIT( SINGLE_ARG( symbol ), Invokable ) \
-    _UNARY_OPERATOR_IMPLEMENTAION( SINGLE_ARG( symbol ), Invokable ) \
+    UNARY_OPERATOR_IMPLEMENTAION( SINGLE_ARG( symbol ), Invokable ) \
     namespace Operator \
     { \
         template < typename _Value > \
@@ -100,7 +101,7 @@
 
 #define ARGUMENT_UNARY_OPERATOR_IMPLEMENTAION( symbol, Invokable ) \
     ARGUMENT_INVOKABLE_TRAIT( SINGLE_ARG( symbol ), Invokable ) \
-    _UNARY_OPERATOR_IMPLEMENTAION( SINGLE_ARG( symbol ), Invokable ) \
+    UNARY_OPERATOR_IMPLEMENTAION( SINGLE_ARG( symbol ), Invokable ) \
     namespace Operator \
     { \
         template < typename _Value > \
@@ -122,7 +123,7 @@
 
 #define ARGUMENTS_UNARY_OPERATOR_IMPLEMENTAION( symbol, Invokable ) \
     ARGUMENTS_INVOKABLE_TRAIT( SINGLE_ARG( symbol ), Invokable ) \
-    _UNARY_OPERATOR_IMPLEMENTAION( SINGLE_ARG( symbol ), Invokable ) \
+    UNARY_OPERATOR_IMPLEMENTAION( SINGLE_ARG( symbol ), Invokable ) \
     namespace Operator \
     { \
         template < typename _Value > \

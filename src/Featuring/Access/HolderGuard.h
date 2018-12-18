@@ -2,7 +2,7 @@
 #ifndef GUARD_HOLDER_POINTER_H
 #define GUARD_HOLDER_POINTER_H
 
-#include <ModelKit/Featuring/Access/Accessing.h>
+#include <ModelKit/Featuring/Access/HolderInternal.h>
 #include <type_traits>
 #include <utility>
 

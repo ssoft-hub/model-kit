@@ -2,7 +2,7 @@
 #ifndef INSTANCE_TOOL_HEAP_SHARED_H
 #define INSTANCE_TOOL_HEAP_SHARED_H
 
-#include <ModelKit/Featuring/Access/Accessing.h>
+#include <ModelKit/Featuring/Access/HolderInternal.h>
 #include <ModelKit/Featuring/Traits.h>
 #include <cassert>
 #include <memory>
@@ -145,9 +145,7 @@ namespace Heap
 //                *this = *other.m_pointer.get();
 //            }
 
-            /*!
-             * Access to internal value of Holder for any king of referencies.
-             */
+            //! Access to internal value of Holder for any king of referencies.
             template < typename _Refer >
             static constexpr decltype(auto) value ( _Refer && holder )
             {

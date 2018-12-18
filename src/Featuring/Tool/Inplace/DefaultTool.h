@@ -117,9 +117,7 @@ namespace Inplace
             {
             }
 
-            /*!
-             * Access to internal value of Holder for any king of referencies.
-             */
+            //! Access to internal value of Holder for any king of referencies.
             template < typename _Refer >
             static constexpr decltype(auto) value ( _Refer && holder )
             {

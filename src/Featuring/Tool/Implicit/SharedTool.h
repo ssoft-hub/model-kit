@@ -4,7 +4,7 @@
 
 #include <cassert>
 #include <memory>
-#include <ModelKit/Featuring/Access/Accessing.h>
+#include <ModelKit/Featuring/Access/HolderInternal.h>
 #include <ModelKit/Featuring/Access/HolderGuard.h>
 #include <ModelKit/Featuring/Traits.h>
 #include <utility>
@@ -141,13 +141,17 @@ namespace Implicit
 
             static constexpr void guard ( ThisType & holder )
             {
-//                if ( !!holder.m_pointer && !holder.m_pointer.unique() )
-//                    holder = Holder< Value >( *holder.m_pointer.get() );
+                if ( !!holder.m_pointer && !holder.m_pointer.unique() )
+                    holder.m_pointer = ::std::make_shared< Value >( *holder.m_pointer.get() );
             }
 
-            /*!
-             * Access to internal value of Holder for any king of referencies.
-             */
+            static constexpr void guard ( volatile ThisType & holder )
+            {
+                if ( !!holder.m_pointer && !holder.m_pointer.unique() )
+                    holder.m_pointer = ::std::make_shared< Value >( *holder.m_pointer.get() );
+            }
+
+            //! Access to internal value of Holder for any king of referencies.
             template < typename _Refer >
             static constexpr decltype(auto) value ( _Refer && holder )
             {

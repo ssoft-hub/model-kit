@@ -201,29 +201,29 @@ namespace ThreadSafe
 //            }
 
 
-//            template < typename _HolderRefer,
-//                typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _HolderRefer > >::value > >
-//            static constexpr void guard ( _HolderRefer && holder )
-//            {
-//                using HolderRefer = _HolderRefer &&;
-//                ::std::forward< HolderRefer >( holder ).m_lock.lock();
-//            }
-
-//            template < typename _HolderRefer,
-//                typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _HolderRefer > >::value > >
-//            static constexpr void unguard ( _HolderRefer && holder )
-//            {
-//                using HolderRefer = _HolderRefer &&;
-//                ::std::forward< HolderRefer >( holder ).m_lock.unlock();
-//            }
-
-            /*!
-             * Access to internal value of Holder for any king of referencies.
-             */
-            template < typename _Refer >
-            static constexpr decltype(auto) value ( _Refer && holder )
+            //! Guard internal value of Holder for any king of referencies.
+            template < typename _Holder,
+                typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _Holder > >::value > >
+            static constexpr void guard ( _Holder && holder )
             {
-                using HolderRefer = _Refer &&;
+                using HolderRefer = _Holder &&;
+                ::std::forward< HolderRefer >( holder ).m_lock.lock();
+            }
+
+            //! Unguard internal value of Holder for any king of referencies.
+            template < typename _Holder,
+                typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _Holder > >::value > >
+            static constexpr void unguard ( _Holder && holder )
+            {
+                using HolderRefer = _Holder &&;
+                ::std::forward< HolderRefer >( holder ).m_lock.unlock();
+            }
+
+            //! Access to internal value of Holder for any king of referencies.
+            template < typename _Holder >
+            static constexpr decltype(auto) value ( _Holder && holder )
+            {
+                using HolderRefer = _Holder &&;
                 using ValueRefer = ::SimilarRefer< _Value, HolderRefer >;
                 return ::std::forward< ValueRefer >( holder.m_value );
             }

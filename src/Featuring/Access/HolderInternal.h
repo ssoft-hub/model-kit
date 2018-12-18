@@ -2,9 +2,13 @@
 #ifndef ACCESS_ACCESSING_POINTER_H
 #define ACCESS_ACCESSING_POINTER_H
 
-#include <type_traits>
 #include <memory>
-#include "Traits.h"
+#include <ModelKit/Utility/HasMethod.h>
+#include <type_traits>
+
+HAS_METHOD_TRAIT( guard )
+HAS_METHOD_TRAIT( unguard )
+HAS_METHOD_TRAIT( value )
 
 template < typename _HolderRefer, bool has_method >
 struct GuardHelper;
