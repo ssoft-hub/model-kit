@@ -252,8 +252,8 @@ namespace Implicit
 
             static constexpr void guard ( ThisType & holder )
             {
-                if ( !!holder.m_pointer && !!holder.m_pointer->m_counter )
-                    holder = Holder< Value >( *holder.m_access );
+//                if ( !!holder.m_pointer && !!holder.m_pointer->m_counter )
+//                    holder = Holder< Value >( *holder.m_access );
             }
 
             //static constexpr void guard ( ThisType && )

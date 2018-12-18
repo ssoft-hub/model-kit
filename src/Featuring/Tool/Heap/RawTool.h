@@ -80,79 +80,83 @@ namespace Heap
                 delete m_pointer;
             }
 
-            template < typename _Argument >
-            void operator = ( _Argument && argument )
-            {
-                assert( m_pointer );
-                *m_pointer = ::std::forward< _Argument >( argument );
-            }
+//            template < typename _Argument >
+//            void operator = ( _Argument && argument )
+//            {
+//                assert( m_pointer );
+//                *m_pointer = ::std::forward< _Argument >( argument );
+//            }
 
-            void operator = ( ThisType && other )
-            {
-                ::std::swap( m_pointer, other.m_pointer );
-                return *this;
-            }
+//            void operator = ( ThisType && other )
+//            {
+//                ::std::swap( m_pointer, other.m_pointer );
+//                return *this;
+//            }
 
-            void operator = ( const ThisType && other )
-            {
-                assert( other.m_pointer );
-                return *this = *other.m_pointer;
-            }
+//            void operator = ( const ThisType && other )
+//            {
+//                assert( other.m_pointer );
+//                return *this = *other.m_pointer;
+//            }
 
-            void operator = ( ThisType & other )
-            {
-                assert( other.m_pointer );
-                return *this = *other.m_pointer;
-            }
+//            void operator = ( ThisType & other )
+//            {
+//                assert( other.m_pointer );
+//                return *this = *other.m_pointer;
+//            }
 
-            void operator = ( const ThisType & other )
-            {
-                assert( other.m_pointer );
-                return *this = *other.m_pointer;
-            }
+//            void operator = ( const ThisType & other )
+//            {
+//                assert( other.m_pointer );
+//                return *this = *other.m_pointer;
+//            }
 
-            template < typename _OtherValue >
-            void operator = ( Holder< _OtherValue > && other )
-            {
-                ::std::swap< Pointer >( m_pointer, other.m_pointer );
-            }
+//            template < typename _OtherValue >
+//            void operator = ( Holder< _OtherValue > && other )
+//            {
+//                ::std::swap< Pointer >( m_pointer, other.m_pointer );
+//            }
 
-            template < typename _OtherValue >
-            void operator = ( const Holder< _OtherValue > && other )
-            {
-                assert( other.m_pointer );
-                *this = *other.m_pointer;
-            }
+//            template < typename _OtherValue >
+//            void operator = ( const Holder< _OtherValue > && other )
+//            {
+//                assert( other.m_pointer );
+//                *this = *other.m_pointer;
+//            }
 
-            template < typename _OtherValue >
-            void operator = ( Holder< _OtherValue > & other )
-            {
-                assert( other.m_pointer );
-                *this = *other.m_pointer;
-            }
+//            template < typename _OtherValue >
+//            void operator = ( Holder< _OtherValue > & other )
+//            {
+//                assert( other.m_pointer );
+//                *this = *other.m_pointer;
+//            }
 
-            template < typename _OtherValue >
-            void operator = ( const Holder< _OtherValue > & other )
-            {
-                assert( other.m_pointer );
-                *this = *other.m_pointer;
-            }
+//            template < typename _OtherValue >
+//            void operator = ( const Holder< _OtherValue > & other )
+//            {
+//                assert( other.m_pointer );
+//                *this = *other.m_pointer;
+//            }
 
-            //static constexpr void guard ( ThisType && )
-            //static constexpr void guard ( const ThisType && )
-            //static constexpr void guard ( ThisType & )
-            static constexpr void guard ( const ThisType & )
-            {
-                // nothing to do
-            }
+            // nothing to do
+            static constexpr void guard ( ThisType && ) {}
+            static constexpr void guard ( const ThisType && ) {}
+            static constexpr void guard ( volatile ThisType && ) {}
+            static constexpr void guard ( const volatile ThisType && ) {}
+            static constexpr void guard ( ThisType & ) {}
+            static constexpr void guard ( const ThisType & ) {}
+            static constexpr void guard ( volatile ThisType & ) {}
+            static constexpr void guard ( const volatile ThisType & ) {}
 
-            //static constexpr void unguard ( ThisType && )
-            //static constexpr void unguard ( const ThisType && )
-            //static constexpr void unguard ( ThisType & )
-            static constexpr void unguard ( const ThisType & )
-            {
-                // nothing to do
-            }
+            // nothing to do
+            static constexpr void unguard ( ThisType && ) {}
+            static constexpr void unguard ( const ThisType && ) {}
+            static constexpr void unguard ( volatile ThisType && ) {}
+            static constexpr void unguard ( const volatile ThisType && ) {}
+            static constexpr void unguard ( ThisType & ) {}
+            static constexpr void unguard ( const ThisType & ) {}
+            static constexpr void unguard ( volatile ThisType & ) {}
+            static constexpr void unguard ( const volatile ThisType & ) {}
 
             static constexpr Value && value ( ThisType && holder )
             {
@@ -164,12 +168,32 @@ namespace Heap
                 return ::std::forward< const Value >( *holder.m_pointer );
             }
 
+            static constexpr volatile Value && value ( volatile ThisType && holder )
+            {
+                return ::std::forward< volatile Value >( *holder.m_pointer );
+            }
+
+            static constexpr const volatile Value && value ( const volatile ThisType && holder )
+            {
+                return ::std::forward< const volatile Value >( *holder.m_pointer );
+            }
+
             static constexpr Value & value ( ThisType & holder )
             {
                 return *holder.m_pointer;
             }
 
             static constexpr const Value & value ( const ThisType & holder )
+            {
+                return *holder.m_pointer;
+            }
+
+            static constexpr volatile Value & value ( volatile ThisType & holder )
+            {
+                return *holder.m_pointer;
+            }
+
+            static constexpr const volatile Value & value ( const volatile ThisType & holder )
             {
                 return *holder.m_pointer;
             }

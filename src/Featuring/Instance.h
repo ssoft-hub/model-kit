@@ -41,7 +41,7 @@ private:
 public:
     /// Конструктор инициализации значения по заданным параметрам
     template < typename ... _Arguments >
-    constexpr Instance ( _Arguments && ... arguments )
+    /*constexpr*/ Instance ( _Arguments && ... arguments )
         : m_holder( ::std::forward< _Arguments >( arguments ) ... )
     {}
 
@@ -53,7 +53,7 @@ public:
     /* All kind of assignment operators for any type (including Instance< _OtherValue, _OtherTool >) */
     BINARY_OPERATOR_FOR_ANY( =, Assignment )
     /* All kind of assignment operators for ThisType */
-    BINARY_OPERATOR_FOR_THIS_INSTANCE( =, Assignment )
+    ASSIGNMENT_OPERATOR_FOR_THIS( =, Assignment )
 
     /* Member access */
     // NOTE: Используется доступ через оператор "->", но семантически необходим ".".
@@ -61,10 +61,10 @@ public:
     // а для оператора "->" использовать реализацию подобно другим.
     DEREFERENCE_OPERATOR( -> )
     ADDRESS_OF_OPERATOR( & )
-
-    PREFIX_UNARY_OPERATOR( *, Indirection )
+    //PREFIX_UNARY_OPERATOR( &, AddressOf )
+    //PREFIX_UNARY_OPERATOR( *, Indirection )
     POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT( ->*, MemberIndirection )
-    BINARY_OPERATOR_FOR_ANY( SINGLE_ARG( , ), Comma )
+    //BINARY_OPERATOR_FOR_ANY( SINGLE_ARG( , ), Comma )
     /* Subscript */
     POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT( [], SquareBrackets )
     /* Functional forms */

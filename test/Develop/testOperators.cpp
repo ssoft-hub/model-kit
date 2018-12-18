@@ -1,5 +1,7 @@
 #include "ModelKit.h"
 #include <iostream>
+#include <map>
+#include <string>
 
 #define FUNC_INFO __PRETTY_FUNCTION__
 
@@ -8,28 +10,28 @@
     { ::std::cout << FUNC_INFO << ::std::endl; } \
 
 #define DATA_UNARY_OPERATOR_INT( symbol ) \
-    DATA_UNARY_OPERATOR_INT_PROTOTYPE( symbol, && ) \
-    DATA_UNARY_OPERATOR_INT_PROTOTYPE( symbol, const && ) \
-    DATA_UNARY_OPERATOR_INT_PROTOTYPE( symbol, volatile && ) \
-    DATA_UNARY_OPERATOR_INT_PROTOTYPE( symbol, const volatile && ) \
-    DATA_UNARY_OPERATOR_INT_PROTOTYPE( symbol, & ) \
-    DATA_UNARY_OPERATOR_INT_PROTOTYPE( symbol, const & ) \
-    DATA_UNARY_OPERATOR_INT_PROTOTYPE( symbol, volatile & ) \
-    DATA_UNARY_OPERATOR_INT_PROTOTYPE( symbol, const volatile & ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( SINGLE_ARG( symbol ), && ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( SINGLE_ARG( symbol ), const && ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( SINGLE_ARG( symbol ), volatile && ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( SINGLE_ARG( symbol ), const volatile && ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( SINGLE_ARG( symbol ), & ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( SINGLE_ARG( symbol ), const & ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( SINGLE_ARG( symbol ), volatile & ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( SINGLE_ARG( symbol ), const volatile & ) \
 
 #define DATA_UNARY_OPERATOR_PROTOTYPE( symbol, refer ) \
     void operator symbol () refer \
     { ::std::cout << FUNC_INFO << ::std::endl; } \
 
 #define DATA_UNARY_OPERATOR( symbol ) \
-    DATA_UNARY_OPERATOR_PROTOTYPE( symbol, && ) \
-    DATA_UNARY_OPERATOR_PROTOTYPE( symbol, const && ) \
-    DATA_UNARY_OPERATOR_PROTOTYPE( symbol, volatile && ) \
-    DATA_UNARY_OPERATOR_PROTOTYPE( symbol, const volatile && ) \
-    DATA_UNARY_OPERATOR_PROTOTYPE( symbol, & ) \
-    DATA_UNARY_OPERATOR_PROTOTYPE( symbol, const & ) \
-    DATA_UNARY_OPERATOR_PROTOTYPE( symbol, volatile & ) \
-    DATA_UNARY_OPERATOR_PROTOTYPE( symbol, const volatile & ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), && ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const && ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), volatile && ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const volatile && ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), & ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const & ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), volatile & ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const volatile & ) \
 
 #define DATA_BINARY_OPERATOR_PROTOTYPE( symbol, refer ) \
     template < typename _Right > \
@@ -37,84 +39,84 @@
         { ::std::cout << FUNC_INFO << ::std::endl; } \
 
 #define DATA_BINARY_OPERATOR( symbol ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE( symbol, && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE( symbol, const && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE( symbol, volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE( symbol, const volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE( symbol, & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE( symbol, const & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE( symbol, volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE( symbol, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const volatile & ) \
 
 #define DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, this_refer, other_refer ) \
     void operator symbol ( ThisType other_refer ) this_refer \
         { ::std::cout << FUNC_INFO << ::std::endl; } \
 
 #define DATA_BINARY_OPERATOR_FOR_THIS( symbol ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, const && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, const volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, const & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &&, const volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, const && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, const volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, const & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &&, const volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, const && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, const volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, const & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &&, const volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, const && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, const volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, const & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &&, const volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, const && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, const volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, const & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, &, const volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, const && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, const volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, const & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const &, const volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, const && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, const volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, const & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, volatile &, const volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, const && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, const volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, const & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, const volatile &, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &&, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &&, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &&, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &&, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &&, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &&, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &&, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &&, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &&, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &&, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &&, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &&, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &&, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &&, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &&, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &&, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &&, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &&, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &&, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &&, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &&, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &&, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &&, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &&, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &&, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &&, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &&, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &&, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &&, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &&, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &&, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &&, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), &, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const &, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), volatile &, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SINGLE_ARG( symbol ), const volatile &, const volatile & ) \
 
 #define GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( symbol, right_refer ) \
     template < typename _Left, typename _Right > \
@@ -122,14 +124,14 @@
         { ::std::cout << FUNC_INFO << ::std::endl; } \
 
 #define GLOBAL_DATA_BINARY_OPERATOR( symbol ) \
-    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( symbol, && ) \
-    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( symbol, const && ) \
-    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( symbol, volatile && ) \
-    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( symbol, const volatile && ) \
-    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( symbol, & ) \
-    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( symbol, const & ) \
-    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( symbol, volatile & ) \
-    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( symbol, const volatile & ) \
+    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), && ) \
+    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const && ) \
+    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), volatile && ) \
+    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const volatile && ) \
+    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), & ) \
+    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const & ) \
+    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), volatile & ) \
+    GLOBAL_DATA_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const volatile & ) \
 
 class Dummy {};
 
@@ -255,6 +257,12 @@ public:
 
     DATA_BINARY_OPERATOR( = )
     DATA_BINARY_OPERATOR_FOR_THIS( = )
+
+    DATA_UNARY_OPERATOR( * )
+    DATA_UNARY_OPERATOR( & )
+    DATA_UNARY_OPERATOR( -> )
+    DATA_BINARY_OPERATOR( ->* )
+    DATA_BINARY_OPERATOR( SINGLE_ARG( , ) )
 
     DATA_UNARY_OPERATOR( + )
     DATA_UNARY_OPERATOR( - )
@@ -384,7 +392,7 @@ void testSameToolConstructors ()
 void testDiffToolConstructors ()
 {
     using TestData = Instance< Data< double > >;
-    using SameData = Instance< Data< int >, ::Implicit::SharedTool >;
+    using SameData = Instance< Data< int > >;//, ::Implicit::SharedTool >;
 
     SameData one;
     TestData four( one );
@@ -397,6 +405,16 @@ void testDiffToolConstructors ()
     (void) five;
     (void) six;
     (void) seven;
+}
+
+void testAccess ()
+{
+//    using Key = int;//Instance< int >;
+//    using Value = Instance< Data< int > >;
+//    using Map = ::std::map< Key, Value >;
+
+//    Instance< Map > value;
+//    *value;
 }
 
 template < typename _Data >
@@ -568,7 +586,7 @@ void testInstanceUnaryOperators ()
 }
 
 template < typename _Left, typename _Right >
-void testInstanceBinaryOperators ()
+void testInstanceBinaryOperatorsSpec ()
 {
     _Left left;
     _Right right;
@@ -702,34 +720,67 @@ void testInstanceBinaryOperators ()
     ::std::move( left ) <<= ::std::move( right );
 }
 
+template < typename _Left, typename _Right >
+void testInstanceBinaryOperators ()
+{
+    testInstanceBinaryOperatorsSpec< _Left, _Right >();
+    testInstanceBinaryOperatorsSpec< _Left, const _Right >();
+    testInstanceBinaryOperatorsSpec< _Left, volatile _Right >();
+    testInstanceBinaryOperatorsSpec< _Left, const volatile _Right >();
+    //testInstanceBinaryOperatorsSpec< const _Left, _Right >();
+    //testInstanceBinaryOperatorsSpec< const _Left, const _Right >();
+    //testInstanceBinaryOperatorsSpec< const _Left, volatile _Right >();
+    //testInstanceBinaryOperatorsSpec< const _Left, const volatile _Right >();
+    //testInstanceBinaryOperatorsSpec< volatile _Left, _Right >();
+    //testInstanceBinaryOperatorsSpec< volatile _Left, const _Right >();
+    //testInstanceBinaryOperatorsSpec< volatile _Left, volatile _Right >();
+    //testInstanceBinaryOperatorsSpec< volatile _Left, const volatile _Right >();
+    //testInstanceBinaryOperatorsSpec< const volatile _Left, _Right >();
+    //testInstanceBinaryOperatorsSpec< const volatile _Left, const _Right >();
+    //testInstanceBinaryOperatorsSpec< const volatile _Left, volatile _Right >();
+    //testInstanceBinaryOperatorsSpec< const volatile _Left, const volatile _Right >();
+
+    //testInstanceBinaryOperatorsSpec< _Right, _Left >();
+    //testInstanceBinaryOperatorsSpec< _Right, const _Left >();
+    //testInstanceBinaryOperatorsSpec< _Right, volatile _Left >();
+    //testInstanceBinaryOperatorsSpec< _Right, const volatile _Left >();
+    //testInstanceBinaryOperatorsSpec< const _Right, _Left >();
+    //testInstanceBinaryOperatorsSpec< const _Right, const _Left >();
+    //testInstanceBinaryOperatorsSpec< const _Right, volatile _Left >();
+    //testInstanceBinaryOperatorsSpec< const _Right, const volatile _Left >();
+    //testInstanceBinaryOperatorsSpec< volatile _Right, _Left >();
+    //testInstanceBinaryOperatorsSpec< volatile _Right, const _Left >();
+    //testInstanceBinaryOperatorsSpec< volatile _Right, volatile _Left >();
+    //testInstanceBinaryOperatorsSpec< volatile _Right, const volatile _Left >();
+    //testInstanceBinaryOperatorsSpec< const volatile _Right, _Left >();
+    //testInstanceBinaryOperatorsSpec< const volatile _Right, const _Left >();
+    //testInstanceBinaryOperatorsSpec< const volatile _Right, volatile _Left >();
+    //testInstanceBinaryOperatorsSpec< const volatile _Right, const volatile _Left >();
+}
+
+
 
 template < typename _Data >
 void testAll ()
 {
-    using DData = Data< _Data >;
+    using DData = Dummy;//Data< _Data >;
     testConstructors< _Data >();
     testAssignmentOperator< _Data, _Data >();
     testInstanceUnaryOperators< _Data >();
     testInstanceBinaryOperators< _Data, DData >();
-    testInstanceBinaryOperators< _Data, const DData >();
-    testInstanceBinaryOperators< _Data, volatile DData >();
-    testInstanceBinaryOperators< _Data, const volatile DData >();
-    testInstanceBinaryOperators< Dummy, _Data >();
-//    testInstanceBinaryOperators< const Dummy, _Data >();
-//    testInstanceBinaryOperators< volatile Dummy, _Data >();
-//    testInstanceBinaryOperators< const volatile Dummy, _Data >();
+    testAccess();
 }
 
 void testFeaturing ()
 {
     using TestData = Instance< Data< int > >;
-    using CTestData = const TestData;
-    using VTestData = volatile TestData;
+//    using CTestData = const TestData;
+//    using VTestData = volatile TestData;
     using CVTestData = const volatile TestData;
 
-    testAll< TestData >();
-    testAll< CTestData >();
-    testAll< VTestData >();
+//    testAll< TestData >();
+//    testAll< CTestData >();
+//    testAll< VTestData >();
     testAll< CVTestData  >();
 }
 

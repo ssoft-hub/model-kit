@@ -46,7 +46,7 @@ namespace Private
         Guard m_instance_guard;
 
     public:
-        constexpr DefaultValueGuard ()
+        /*constexpr*/ DefaultValueGuard ()
             : m_instance_guard()
         {
         }
@@ -66,22 +66,22 @@ namespace Private
         {
         }
 
-        constexpr bool operator ! () const
+        /*constexpr*/ bool operator ! () const
         {
             return !m_instance_guard;
         }
 
-        constexpr AccessRefer operator * () const
+        /*constexpr*/ AccessRefer operator * () const
         {
             return ::std::forward< AccessRefer >( *m_instance_guard );
         }
 
-        constexpr const Guard & operator -> () const &
+        /*constexpr*/ const Guard & operator -> () const &
         {
             return m_instance_guard;
         }
 
-        constexpr const Guard && operator -> () const &&
+        /*constexpr*/ const Guard && operator -> () const &&
         {
             return ::std::forward< const Guard >( m_instance_guard );
         }
@@ -133,7 +133,7 @@ namespace Private
         ValueGuard m_value_guard;
 
     public:
-        constexpr SpecialValueGuard ()
+        /*constexpr*/ SpecialValueGuard ()
             : m_instance_guard()
             , m_value_guard()
         {
@@ -141,13 +141,13 @@ namespace Private
 
         SpecialValueGuard ( _Refer refer )
             : m_instance_guard( ::std::forward< _Refer >( refer ) )
-            , m_value_guard( ::std::forward< ValueRefer >( Tool::value( ::std::forward< HolderRefer >( (*m_instance_guard).m_holder ) ) ) )
+            , m_value_guard( ::Access::value( ::std::forward< HolderRefer >( (*m_instance_guard).m_holder ) ) )
         {
         }
 
         SpecialValueGuard ( InstanceGuard && other )
             : m_instance_guard( ::std::forward< InstanceGuard >( other ) )
-            , m_value_guard( ::std::forward< ValueRefer >( Tool::value( ::std::forward< HolderRefer >( (*m_instance_guard).m_holder ) ) ) )
+            , m_value_guard( ::Access::value( ::std::forward< HolderRefer >( (*m_instance_guard).m_holder ) ) )
         {
         }
 
@@ -157,22 +157,22 @@ namespace Private
         {
         }
 
-        constexpr bool operator ! () const
+        /*constexpr*/ bool operator ! () const
         {
             return !m_value_guard;
         }
 
-        constexpr AccessRefer operator * () const
+        /*constexpr*/ AccessRefer operator * () const
         {
             return ::std::forward< AccessRefer >( *m_value_guard );
         }
 
-        constexpr const ValueGuard & operator -> () const &
+        /*constexpr*/ const ValueGuard & operator -> () const &
         {
             return m_value_guard;
         }
 
-        constexpr const ValueGuard && operator -> () const &&
+        /*constexpr*/ const ValueGuard && operator -> () const &&
         {
             return ::std::forward< const ValueGuard >( m_value_guard );
         }

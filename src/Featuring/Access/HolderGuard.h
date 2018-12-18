@@ -2,6 +2,7 @@
 #ifndef GUARD_HOLDER_POINTER_H
 #define GUARD_HOLDER_POINTER_H
 
+#include <ModelKit/Featuring/Access/Accessing.h>
 #include <type_traits>
 #include <utility>
 
@@ -18,7 +19,7 @@ struct HolderGuard
     HolderGuard ( Refer holder )
         : m_holder( ::std::forward< Refer >( holder ) )
     {
-        Holder::guard( ::std::forward< Refer >( m_holder ) );
+        ::Access::guarding( ::std::forward< Refer >( m_holder ) );
     }
 
     HolderGuard ( HolderGuard & holder ) = delete;
@@ -28,7 +29,7 @@ struct HolderGuard
 
     ~HolderGuard ()
     {
-        Holder::unguard( ::std::forward< Refer >( m_holder ) );
+        ::Access::unguarding( ::std::forward< Refer >( m_holder ) );
     }
 };
 

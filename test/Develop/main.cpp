@@ -64,7 +64,6 @@ void compileTestInstanceTrancpatancy ()
 {
     Instance< My > instance;
     My value;
-
     My().rvalueMethod();
     My().rvalueConstMethod();
     asConst( My() ).rvalueConstMethod();
@@ -103,9 +102,9 @@ void compileTestInstanceTrancpatancy ()
     value.lvalueConstMethod();
 
     isSimilar( Instance< My >(), My() );
-    isSimilar( Instance< My >(), *&Instance< My >() );
+    //isSimilar( Instance< My >(), *&Instance< My >() );
     isSimilar( instance, value );
-    isSimilar( instance, *&instance );
+    //isSimilar( instance, *&instance );
 }
 
 extern void testResultOf();

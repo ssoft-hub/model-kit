@@ -27,7 +27,7 @@ private:
     Refer m_refer;
 
 public:
-    constexpr ReferPointer ()
+    /*constexpr*/ ReferPointer ()
         : m_refer()
     {
     }
@@ -42,17 +42,17 @@ public:
     {
     }
 
-    constexpr bool operator ! () const
+    /*constexpr*/ bool operator ! () const
     {
         return !::std::addressof( m_refer );
     }
 
-    constexpr Refer operator * () const
+    /*constexpr*/ Refer operator * () const
     {
         return ::std::forward< Refer >( m_refer );
     }
 
-    constexpr RawPointer operator -> () const
+    /*constexpr*/ RawPointer operator -> () const
     {
 //        bool is_const = ::std::is_const< Value >::value;
 //        bool is_volatile = ::std::is_volatile< Value >::value;

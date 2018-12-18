@@ -78,49 +78,49 @@ namespace Heap
                 m_pointer.reset();
             }
 
-            template < typename _Argument >
-            void operator = ( _Argument && argument )
-            {
-                assert( m_pointer );
-                *m_pointer.get() = ::std::forward< _Argument >( argument );
-            }
+//            template < typename _Argument >
+//            void operator = ( _Argument && argument )
+//            {
+//                assert( m_pointer );
+//                *m_pointer.get() = ::std::forward< _Argument >( argument );
+//            }
 
-            void operator = ( ThisType && other )
-            {
-                m_pointer = ::std::forward< Pointer >( other.m_pointer );
-            }
+//            void operator = ( ThisType && other )
+//            {
+//                m_pointer = ::std::forward< Pointer >( other.m_pointer );
+//            }
 
-            void operator = ( const ThisType & other )
-            {
-                assert( other.m_pointer );
-                *this = *other.m_pointer.get();
-            }
+//            void operator = ( const ThisType & other )
+//            {
+//                assert( other.m_pointer );
+//                *this = *other.m_pointer.get();
+//            }
 
-            void operator = ( const ThisType && other )
-            {
-                assert( other.m_pointer );
-                *this = *other.m_pointer.get();
-            }
+//            void operator = ( const ThisType && other )
+//            {
+//                assert( other.m_pointer );
+//                *this = *other.m_pointer.get();
+//            }
 
-            void operator = ( ThisType & other )
-            {
-                assert( other.m_pointer );
-                *this = *other.m_pointer.get();
-            }
+//            void operator = ( ThisType & other )
+//            {
+//                assert( other.m_pointer );
+//                *this = *other.m_pointer.get();
+//            }
 
-            template < typename _OtherValue >
-            void operator = ( Holder< _OtherValue > && other )
-            {
-                using OtherPointer = typename Holder< _OtherValue >::Pointer;
-                m_pointer = ::std::forward< OtherPointer >( other.m_pointer );
-            }
+//            template < typename _OtherValue >
+//            void operator = ( Holder< _OtherValue > && other )
+//            {
+//                using OtherPointer = typename Holder< _OtherValue >::Pointer;
+//                m_pointer = ::std::forward< OtherPointer >( other.m_pointer );
+//            }
 
-            template < typename _OtherValue >
-            void operator = ( const Holder< _OtherValue > & other )
-            {
-                assert( other.m_pointer );
-                *this = *other.m_pointer.get();
-            }
+//            template < typename _OtherValue >
+//            void operator = ( const Holder< _OtherValue > & other )
+//            {
+//                assert( other.m_pointer );
+//                *this = *other.m_pointer.get();
+//            }
 
             //static constexpr void guard ( ThisType && )
             //static constexpr void guard ( const ThisType && )

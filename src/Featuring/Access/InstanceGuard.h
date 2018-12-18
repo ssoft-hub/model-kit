@@ -2,6 +2,7 @@
 #ifndef GUARD_FEATURE_POINTER_H
 #define GUARD_FEATURE_POINTER_H
 
+#include <ModelKit/Featuring/Access/Accessing.h>
 #include <ModelKit/Featuring/Traits.h>
 #include "ReferPointer.h"
 
@@ -44,7 +45,7 @@ namespace Private
         Pointer m_pointer;
 
     public:
-        constexpr DefaultInstanceGuard ()
+        /*constexpr*/ DefaultInstanceGuard ()
             : m_pointer()
         {
         }
@@ -59,17 +60,17 @@ namespace Private
         {
         }
 
-        constexpr bool operator ! () const
+        /*constexpr*/ bool operator ! () const
         {
             return !m_pointer;
         }
 
-        constexpr Refer operator * () const
+        /*constexpr*/ Refer operator * () const
         {
             return ::std::forward< Refer >( *m_pointer );
         }
 
-        constexpr const Pointer & operator -> () const
+        /*constexpr*/ const Pointer & operator -> () const
         {
             return m_pointer;
         }
@@ -107,7 +108,7 @@ namespace Private
         Pointer m_pointer;
 
     public:
-        constexpr SpecialInstanceGuard ()
+        /*constexpr*/ SpecialInstanceGuard ()
             : m_pointer()
         {
         }
@@ -115,7 +116,7 @@ namespace Private
         SpecialInstanceGuard ( Refer refer )
             : m_pointer( ::std::forward< Refer >( refer ) )
         {
-            Holder::guard( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
+            ::Access::guarding( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
         }
 
         SpecialInstanceGuard ( ThisType && other )
@@ -126,28 +127,28 @@ namespace Private
         ~SpecialInstanceGuard ()
         {
             if ( !!m_pointer )
-                Holder::unguard( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
+                ::Access::unguarding( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
         }
 
-        constexpr bool operator ! () const
+        /*constexpr*/ bool operator ! () const
         {
             return !m_pointer;
         }
 
-        constexpr Refer operator * () const
+        /*constexpr*/ Refer operator * () const
         {
             return ::std::forward< Refer >( *m_pointer );
         }
 
-        constexpr const Pointer & operator -> () const
+        /*constexpr*/ const Pointer & operator -> () const
         {
             return m_pointer;
         }
 
-        constexpr ValueRefer value () const
+        /*constexpr*/ ValueRefer value () const
         {
             assert( m_pointer );
-            return ::std::forward< ValueRefer >( Tool::value( ::std::forward< HolderRefer >( m_pointer->m_holder ) ) );
+            return ::Access::value( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
         }
     };
 }

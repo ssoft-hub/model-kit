@@ -74,90 +74,24 @@ namespace Inplace
             {
             }
 
-            template < typename _Argument >
-            void operator = ( _Argument && argument )
-            {
-                m_value = ::std::forward< _Argument >( argument );
-            }
+            // nothing to do
+            template < typename _Refer,
+                typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _Refer > >::value > >
+            static constexpr void guard ( _Refer && ) {}
 
-            void operator = ( ThisType && other )
-            {
-                m_value = ::std::forward< Value >( other.m_value );
-            }
+            // nothing to do
+            template < typename _Refer,
+                typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _Refer > >::value > >
+            static constexpr void unguard ( _Refer && ) {}
 
-            void operator = ( const ThisType && other )
+            // value proxying
+            template < typename _Refer,
+                typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _Refer > >::value > >
+            static constexpr decltype(auto) value ( _Refer && holder )
             {
-                m_value = ::std::forward< const Value >( other.m_value );
-            }
-
-            void operator = ( ThisType & other )
-            {
-                *this = other.m_value;
-            }
-
-            void operator = ( const ThisType & other )
-            {
-                return *this = other.m_value;
-            }
-
-            template < typename _OtherValue >
-            void operator = ( Holder< _OtherValue > && other )
-            {
-                *this = ::std::forward< typename Holder< _OtherValue >::Value >( other.m_value );
-            }
-
-            template < typename _OtherValue >
-            void operator = ( const Holder< _OtherValue > && other )
-            {
-                *this = ::std::forward< typename Holder< const _OtherValue >::Value >( other.m_value );
-            }
-
-            template < typename _OtherValue >
-            void operator = ( Holder< _OtherValue > & other )
-            {
-                *this = other.m_value;
-            }
-
-            template < typename _OtherValue >
-            void operator = ( const Holder< _OtherValue > & other )
-            {
-                *this = other.m_value;
-            }
-
-            //static constexpr void guard ( ThisType && )
-            //static constexpr void guard ( const ThisType && )
-            //static constexpr void guard ( ThisType & )
-            static constexpr void guard ( const ThisType & )
-            {
-                // nothing to do
-            }
-
-            //static constexpr void unguard ( ThisType && )
-            //static constexpr void unguard ( const ThisType && )
-            //static constexpr void unguard ( ThisType & )
-            static constexpr void unguard ( const ThisType & )
-            {
-                // nothing to do
-            }
-
-            static constexpr Value && value ( ThisType && holder )
-            {
-                return ::std::forward< Value >( holder.m_value );
-            }
-
-            static constexpr const Value && value ( const ThisType && holder )
-            {
-                return ::std::forward< const Value >( holder.m_value );
-            }
-
-            static constexpr Value & value ( ThisType & holder )
-            {
-                return holder.m_value;
-            }
-
-            static constexpr const Value & value ( const ThisType & holder )
-            {
-                return holder.m_value;
+                using HolderRefer = _Refer &&;
+                using ValueRefer = ::SimilarRefer< Value, HolderRefer >;
+                return ::std::forward< ValueRefer >( ::std::forward< HolderRefer >( holder ).m_value );
             }
         };
     };
