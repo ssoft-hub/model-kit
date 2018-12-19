@@ -1,6 +1,4 @@
-# Тип Holder
-
-## Введение
+# Описание Holder
 
 Каждый инструментарий содержит тип **Holder**, который имеет стандартизованный интерфейс для управления временем жизни, наделением дополнительными свойствами и предоставлением доступа к экземпляру агрегированного значения.
 
@@ -8,7 +6,7 @@
 
 В случае выполнения операции переноса (`std::move(..)`) тип **Holder** может находиться в некорректном состоянии.
 
-## Интерфейс
+# Интерфейс Holder
 
 Реализация **Holder** имеет стандартизованный интерфейс следующего вида
 
@@ -19,9 +17,11 @@ struct Holder
     using ThisType = Holder< _Value >;
     using Value = _Value;
 
+    // Required
     template < typename ... _Arguments >
     Holder ( _Arguments && ... arguments );
 
+    // Required
     Holder ( ThisType && other );
     Holder ( const ThisType && other );
     Holder ( volatile ThisType && other );
@@ -31,6 +31,7 @@ struct Holder
     Holder ( volatile ThisType & other );
     Holder ( const volatile ThisType & other );
 
+    // Required
     template < typename _OtherValue >
     Holder ( Holder< _OtherValue > && other );
     template < typename _OtherValue >
@@ -48,35 +49,7 @@ struct Holder
     template < typename _OtherValue >
     Holder ( const volatile Holder< _OtherValue > & other );
 
-    template < typename _Argument >
-    void operator = ( _Argument && argument );
-
-    void operator = ( ThisType && other );
-    void operator = ( const ThisType && other );
-    void operator = ( volatile ThisType && other );
-    void operator = ( const volatile ThisType && other );
-    void operator = ( ThisType & other );
-    void operator = ( const ThisType & other );
-    void operator = ( volatile ThisType & other );
-    void operator = ( const volatile ThisType & other );
-
-    template < typename _OtherValue >
-    void operator = ( Holder< _OtherValue > && other );
-    template < typename _OtherValue >
-    void operator = ( const Holder< _OtherValue > && other );
-    template < typename _OtherValue >
-    void operator = ( volatile Holder< _OtherValue > && other );
-    template < typename _OtherValue >
-    void operator = ( const volatile Holder< _OtherValue > && other );
-    template < typename _OtherValue >
-    void operator = ( Holder< _OtherValue > & other );
-    template < typename _OtherValue >
-    void operator = ( const Holder< _OtherValue > & other );
-    template < typename _OtherValue >
-    void operator = ( volatile Holder< _OtherValue > & other );
-    template < typename _OtherValue >
-    void operator = ( const volatile Holder< _OtherValue > & other );
-
+    // Optional
     static void guard ( ThisType && );
     static void guard ( const ThisType && );
     static void guard ( volatile ThisType && );
@@ -86,6 +59,7 @@ struct Holder
     static void guard ( volatile ThisType & );
     static void guard ( const volatile ThisType & );
 
+    // Optional
     static void unguard ( ThisType && );
     static void unguard ( const ThisType && );
     static void unguard ( volatile ThisType && );
@@ -95,22 +69,43 @@ struct Holder
     static void unguard ( volatile ThisType & );
     static void unguard ( const volatile ThisType & );
 
+    // Required
     static Value && value ( ThisType && holder );
     static const Value && value ( const ThisType && holder );
-    static Value && value ( volatile ThisType && holder );
-    static const Value && value ( const volatile ThisType && holder );
+    static volatile Value && value ( volatile ThisType && holder );
+    static const volatile Value && value ( const volatile ThisType && holder );
     static Value & value ( ThisType & holder );
     static const Value & value ( const ThisType & holder );
-    static Value & value ( volatile ThisType & holder );
-    static const Value & value ( const volatile ThisType & holder );
+    static volatile Value & value ( volatile ThisType & holder );
+    static const volatile Value & value ( const volatile ThisType & holder );
+
+    // Optional for any operator by [Name]
+    template < typename ... _Arguments >
+    static decltype(auto) operator[Name] ( ThisType && other, _Arguments && ... arguments );
+    template < typename ... _Arguments >
+    static decltype(auto) operator[Name] ( const ThisType && other, _Arguments && ... arguments );
+    template < typename ... _Arguments >
+    static decltype(auto) operator[Name] ( volatile ThisType && other, _Arguments && ... arguments );
+    template < typename ... _Arguments >
+    static decltype(auto) operator[Name] ( const volatile ThisType && other, _Arguments && ... arguments );
+    template < typename ... _Arguments >
+    static decltype(auto) operator[Name] ( ThisType & other, _Arguments && ... arguments );
+    template < typename ... _Arguments >
+    static decltype(auto) operator[Name] ( const ThisType & other, _Arguments && ... arguments );
+    template < typename ... _Arguments >
+    static decltype(auto) operator[Name] ( volatile ThisType & other, _Arguments && ... arguments );
+    template < typename ... _Arguments >
+    static decltype(auto) operator[Name] ( const volatile ThisType & other, _Arguments && ... arguments );
 };
 ```
 
-***Важно!*** *Необходимо явно реализовать все указанные методы. В противном случае компилятор может выбрать неверную интерпретацию методов, что может привести к ошибке компиляции.*
+***Важно!*** *Должны быть реализованы все конструкторы и методы там, где об этом явно написано. В противном случае, компилятор может выбрать неверную интерпретацию методов, что приведет к ошибке компиляции.*
 
-### Методы конструирования и операторы присвоения
+***Примечание:*** *Ранее и далее по тексту обязательные требования отражаются использованием глагола "должен", рекомендации - глаголом "следует", а разрешения - глаголом "может".*
 
-#### Конструктор инициализации
+## Конструкторы
+
+### Конструктор инициализации
 
 Конструктор инициализации агрегированного значения по заданным параметрам используется, если количество параметров не равно 1 или тип заданного параметра не является этим же или подобным **Holder**.
 
@@ -121,17 +116,7 @@ Holder ( _Arguments && ... arguments );
 
 Если для типа агрегированного значения не предусмотрен подходящий конструктор, то это приведет к ошибке компиляции.
 
-#### Оператор присвоения заданному параметру
-
-Оператор присвоения агрегированного значения заданному параметру используется, если тип заданного параметра не является этим же или совместимым **Holder**.
-
-```cpp
-template < typename _Argument >
-void operator = ( _Argument && argument );
-```
-Если для типа агрегированного значения не предусмотрен подходящий оператор присвоения, то это приведет к ошибке компиляции.
-
-#### Конструкторы копирования и перемещения для этого же типа Holder
+### Конструкторы копирования и перемещения для этого же типа Holder
 
 Конструкторы копирования и перемещения для этого же типа **Holder** используются при полном соответствии типа параметра данному типу **Holder**.
 
@@ -148,24 +133,9 @@ Holder ( const volatile ThisType & other );
 
 Для пользовательских типов **Holder** должна быть обязательно обеспечена реализация всех этих конструкторов, иначе вместо них на этапе компиляции будет использован конструктор инициализации агрегированного значения по заданным параметрам, что может привести к ошибке компиляции.
 
-#### Операторы присвоения для этого же типа Holder
+***Заметка:*** *Данный набор конструкторов не получается реализовать в виде шаблона, так как в этом случае компилятор считает данный вид конструкторов удаленными (= deleted).*
 
-Операторы присвоения для этого же типа **Holder** используются при полном соответствии типа параметра данному типу **Holder**.
-
-```cpp
-void operator = ( ThisType && other );
-void operator = ( const ThisType && other );
-void operator = ( volatile ThisType && other );
-void operator = ( const volatile ThisType && other );
-void operator = ( ThisType & other );
-void operator = ( const ThisType & other );
-void operator = ( volatile ThisType & other );
-void operator = ( const volatile ThisType & other );
-```
-
-Для пользовательских типов **Holder** должна быть обязательно обеспечена реализация всех этих операторов, иначе вместо них на этапе компиляции будет использован оператор присвоения заданному параметру, что может привести к ошибке компиляции.
-
-#### Конструкторы копирования и перемещения для совместимого типа Holder< _OtherValue >
+### Конструкторы копирования и перемещения для совместимого типа Holder< _OtherValue >
 
 Конструкторы копирования и перемещения для совместимого типа **Holder< _OtherValue >** используются при совместимости типа параметра данному типу **Holder**. Типы **Holder** являются совместимыми, если тип агрегированного экземпляра значения параметра **Holder< _OtherValue >** является тем же самым или наследником от типа экземпляра агрегированного значения этого **Holder**, с учетом cv модификаторов (const/volatile).
 
@@ -190,32 +160,7 @@ Holder ( const volatile Holder< _OtherValue > & other );
 
 Для пользовательских типов **Holder** должна быть обязательно обеспечена реализация всех этих конструкторов, иначе вместо них на этапе компиляции будет использован конструктор инициализации агрегированного значения по заданным параметрам, что может привести к ошибке компиляции.
 
-#### Операторы присвоения для совместимого типа Holder< _OtherValue >
-
-Операторы присвоения для совместимого типа **Holder< _OtherValue >** используются при совместимости типа параметра данному типу **Holder**. Типы **Holder** являются совместимыми, если тип агрегированного экземпляра значения параметра **Holder< _OtherValue >** является тем же самым или наследником от типа экземпляра агрегированного значения этого **Holder**, с учетом cv модификаторов (const/volatile).
-
-```cpp
-template < typename _OtherValue >
-void operator = ( Holder< _OtherValue > && other );
-template < typename _OtherValue >
-void operator = ( const Holder< _OtherValue > && other );
-template < typename _OtherValue >
-void operator = ( volatile Holder< _OtherValue > && other );
-template < typename _OtherValue >
-void operator = ( const volatile Holder< _OtherValue > && other );
-template < typename _OtherValue >
-void operator = ( Holder< _OtherValue > & other );
-template < typename _OtherValue >
-void operator = ( const Holder< _OtherValue > & other );
-template < typename _OtherValue >
-void operator = ( volatile Holder< _OtherValue > & other );
-template < typename _OtherValue >
-void operator = ( const volatile Holder< _OtherValue > & other );
-```
-
-Для пользовательских типов **Holder** должна быть обязательно обеспечена реализация всех этих операторов, иначе вместо них на этапе компиляции будет использован оператор присвоения заданному параметру, что может привести к ошибке компиляции.
-
-### Методы применения особенностей
+## Методы применения особенностей
 
 Данный набор методов предусматривает включение **guard()** и отключение **unguard()** дополнительных особенностей к внутреннему агрегированному экземпляру значения. В зависимости от типа ссылки на значение **Holder** (rvalue/lvalue) данные методы позволяют реализовать разные способы применения свойств.
 
@@ -240,21 +185,215 @@ static void unguard ( const volatile ThisType & );
 ```
 
 Обычно (но не обязательно) эти методы вызываются в совокупности с методом **value()**, в следующем порядке - **guard()**, **value()**, **unguard()**.
-Для пользовательских типов **Holder** должна быть обязательно обеспечена реализация всех этих методов, отсутвие хотя бы одного из них может привести к ошибке компиляции.
+Реализация данных методов является опциональной. В случае отсутствия их реализации применение дополнительных особенностей не происходит.
 
-### Доступ к экземпляру агрегированного значения
+При их реализации следует убедится, что применение дополнительных особенностей реализовано для всех необходимых вариантов использования (mutable/constant/volatile, rvalue/lvalue).
 
-Доступ к экземпляру агрегированного значения осуществляются с помощью методов **value()**.
+При необходимости, методы могут быть реализованы в виде шаблона, например, так:
+
+```cpp
+template < typename _HolderRefer >
+static void guard ( _HolderRefer && holder );
+template < typename _HolderRefer >
+static void unguard ( _HolderRefer && holder );
+```
+
+
+## Доступ к экземпляру агрегированного значения
+
+Доступ к экземпляру агрегированного значения осуществляется с помощью методов **value()**.
 
 ```cpp
 static Value && value ( ThisType && holder );
 static const Value && value ( const ThisType && holder );
-static Value && value ( volatile ThisType && holder );
-static const Value && value ( const volatile ThisType && holder );
+static volatile Value && value ( volatile ThisType && holder );
+static const volatile Value && value ( const volatile ThisType && holder );
 static Value & value ( ThisType & holder );
 static const Value & value ( const ThisType & holder );
-static Value & value ( volatile ThisType & holder );
-static const Value & value ( const volatile ThisType & holder );
+static volatile Value & value ( volatile ThisType & holder );
+static const volatile Value & value ( const volatile ThisType & holder );
 ```
 
-Для пользовательских типов **Holder** должна быть обязательно обеспечена реализация всех этих методов, отсутвие хотя бы одного из них может привести к ошибке компиляции.
+Для пользовательских типов **Holder** должна быть обязательно обеспечена реализация всех этих методов, отсутствие хотя бы одного из них может привести к ошибке компиляции.
+
+При необходимости, методы могут быть реализованы в виде шаблона, например, так:
+
+```cpp
+template < typename _HolderRefer >
+static decltype(auto) value ( _HolderRefer && holder );
+```
+
+## Операторы
+
+Опционально для **Holder** могут быть специализирована реализация любых операторов явно или в виде шаблона.
+Если методы явно не определены, то используется реализация по умолчанию, учитывающая результат операции между экземплярами агрегированных значений.
+
+Если результат воздействия оператора на экземпляры агрегированных значений является:
+* значением фундаментального или перечисляемого типа, тогда возвращается это значение;
+* значением типа **Value**, тогда возвращается **Instance< Value, DefaultTool >**;
+    * ссылкой на значение любого типа **Value**, тогда
+        * если **Instance** является и правым, и левым операндом, **Instance< Value, BothOperandTool >**
+        * если **Instance** является только правым операндом, **Instance< Value, RightOperandTool >**
+        * если **Instance** является только левым операндом, **Instance< Value, LeftOperandTool >**
+
+Значения типа **Instance< Value, BothOperandTool >**, **Instance< Value, RightOperandTool >**, **Instance< Value, LeftOperandTool >** включают применение дополнительных особенностей к участвующим в операции **Instance**, инициируют идентичную операцию между экземплярами агрегированных значений и отключают применение дополнительные особенностей только с вызовом своего деструктора.
+
+В случае специализации операторов в **Holder**, в качестве результата операции над **Instance** возвращается соответствующая ссылка на сам **Instance**.
+Вызов специализаций операторов в **Holder** прозводится без применения каких-либо дополнительных особенностей над операндами, поэтому сама реализация этих специализаций операторов должна предусматривать применения дополнительных особенностей при необходимости.
+
+Для унарных операторов без аргументов интерфейс методов должен выгладеть так:
+
+```cpp
+static void operator[Name] ( ThisType && other );
+static void operator[Name] ( const ThisType && other );
+static void operator[Name] ( volatile ThisType && other );
+static void operator[Name] ( const volatile ThisType && other );
+static void operator[Name] ( ThisType & other );
+static void operator[Name] ( const ThisType & other );
+static void operator[Name] ( volatile ThisType & other );
+static void operator[Name] ( const volatile ThisType & other );
+```
+
+где в качестве **[Name]** могут быть использованы
+
+* **AddressOf** - operator & ();
+* **Indirection** - operator * ();
+* **UnaryPrefixPlus** - operator + ();
+* **UnaryPrefixMinus** - operator - ();
+* **UnaryPrefixPlusPlus** - operator ++ ();
+* **UnaryPrefixMinusMinus** - operator -- ();
+* **UnaryPostfixPlusPlus** - operator ++ ( int );
+* **UnaryPostfixMinusMinus** - operator -- ( int );
+* **UnaryPrefixBitwiseNot** - operator ~ ();
+* **UnaryPrefixLogicalNot** - operator ! ();
+
+Для унарных операторов с одним аргументом интерфейс методов должен выгладеть так:
+
+```cpp
+template < typename _Argument >
+static void operator[Name] ( ThisType && other, _Argument && argument );
+template < typename _Argument >
+static void operator[Name] ( const ThisType && other, _Argument && argument );
+template < typename _Argument >
+static void operator[Name] ( volatile ThisType && other, _Argument && argument );
+template < typename _Argument >
+static void operator[Name] ( const volatile ThisType && other, _Argument && argument );
+template < typename _Argument >
+static void operator[Name] ( ThisType & other, _Argument && argument );
+template < typename _Argument >
+static void operator[Name] ( const ThisType & other, _Argument && argument );
+template < typename _Argument >
+static void operator[Name] ( volatile ThisType & other, _Argument && argument );
+template < typename _Argument >
+static void operator[Name] ( const volatile ThisType & other, _Argument && argument );
+```
+
+где в качестве **[Name]** могут быть использованы
+
+* **MemberIndirection** - operator ->* ( _Argument && );
+* **Comma** - operator , ( _Argument && );
+* **SquareBrackets** - operator [] ( _Argument && );
+
+Для унарных операторов с несколькими аргументами интерфейс методов должен выгладеть так:
+
+```cpp
+template < typename ... _Arguments >
+static void operator[Name] ( ThisType && other, _Arguments && ... arguments );
+template < typename ... _Arguments >
+static void operator[Name] ( const ThisType && other, _Arguments && ... arguments );
+template < typename ... _Arguments >
+static void operator[Name] ( volatile ThisType && other, _Arguments && ... arguments );
+template < typename ... _Arguments >
+static void operator[Name] ( const volatile ThisType && other, _Arguments && ... arguments );
+template < typename ... _Arguments >
+static void operator[Name] ( ThisType & other, _Arguments && ... arguments );
+template < typename ... _Arguments >
+static void operator[Name] ( const ThisType & other, _Arguments && ... arguments );
+template < typename ... _Arguments >
+static void operator[Name] ( volatile ThisType & other, _Arguments && ... arguments );
+template < typename ... _Arguments >
+static void operator[Name] ( const volatile ThisType & other, _Arguments && ... arguments );
+```
+
+где в качестве **[Name]** могут быть использованы
+
+* **RoundBrackets** - operator () ( _Argument && );
+
+Для бинарных операторов в случае, если экземпляр значения этого типа **Holder** находится слева, а справа находится экземпляр значения не являющийся никаким **Holder**, интерфейс методов должен выгладеть так:
+
+```cpp
+template < typename _Right >
+static void operator[Name]Left ( ThisType && left, _Right && right );
+template < typename _Right >
+static void operator[Name]Left ( const ThisType && left, _Right && right );
+template < typename _Right >
+static void operator[Name]Left ( volatile ThisType && left, _Right && right );
+template < typename _Right >
+static void operator[Name]Left ( const volatile ThisType && left, _Right && right );
+template < typename _Right >
+static void operator[Name]Left ( ThisType & left, _Right && right );
+template < typename _Right >
+static void operator[Name]Left ( const ThisType & left, _Right && right );
+template < typename _Right >
+static void operator[Name]Left ( volatile ThisType & left, _Right && right );
+template < typename _Right >
+static void operator[Name]Left ( const volatile ThisType & left, _Right && right );
+```
+
+```cpp
+template < typename _Left >
+static void operator[Name]Right ( _Left && left, ThisType && right );
+template < typename _Left >
+static void operator[Name]Right ( _Left && left, const ThisType && right );
+template < typename _Left >
+static void operator[Name]Right ( _Left && left, volatile ThisType && right );
+template < typename _Left >
+static void operator[Name]Right ( _Left && left, const volatile ThisType && right );
+template < typename _Left >
+static void operator[Name]Right ( _Left && left, ThisType & right );
+template < typename _Left >
+static void operator[Name]Right ( _Left && left, const ThisType & right );
+template < typename _Left >
+static void operator[Name]Right ( _Left && left, volatile ThisType & right );
+template < typename _Left >
+static void operator[Name]Right ( _Left && left, const volatile ThisType & right );
+```
+
+```cpp
+template < typename _Right >
+static void operator[Name]Both ( ThisType && left, Holder< _Right > && right );
+// ... и т.д. все возможные сочетания 
+```
+
+где в качестве **[Name]** могут быть использованы
+
+* **IsEqual** - operator == ( _Argument && );
+* **NotEqual** - operator != ( _Argument && );
+* **Less** - operator < ( _Argument && );
+* **LessOrEqual** - operator <= ( _Argument && );
+* **Greater** - operator > ( _Argument && );
+* **GreaterOrEqual** - operator >= ( _Argument && );
+* **Multiply** - operator * ( _Argument && );
+* **Divide** - operator / ( _Argument && );
+* **Modulo** - operator % ( _Argument && );
+* **Addition** - operator + ( _Argument && );
+* **Subtraction** - operator - ( _Argument && );
+* **ShiftLeft** - operator << ( _Argument && );
+* **ShiftRight** - operator >> ( _Argument && );
+* **BitwiseAnd** - operator & ( _Argument && );
+* **BitwiseOr** - operator | ( _Argument && );
+* **BitwiseXor** - operator ^ ( _Argument && );
+* **LogicalAnd** - operator && ( _Argument && );
+* **LogicalOr** - operator || ( _Argument && );
+* **Assignment** - operator = ( _Argument && );
+* **MultiplyAssignment** - operator *= ( _Argument && );
+* **DivideAssignment** - operator /= ( _Argument && );
+* **ModuloAssignment** - operator %= ( _Argument && );
+* **AdditionAssignment** - operator += ( _Argument && );
+* **SubtractionAssignment** - operator -= ( _Argument && );
+* **ShiftLeftAssignment** - operator <<= ( _Argument && );
+* **ShiftRightAssignment** - operator >>= ( _Argument && );
+* **BitwiseAndAssignment** - operator &= ( _Argument && );
+* **BitwiseOrAssignment** - operator |= ( _Argument && );
+* **BitwiseXorAssignment** - operator ^= ( _Argument && );
+
