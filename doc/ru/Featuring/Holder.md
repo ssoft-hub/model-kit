@@ -340,6 +340,8 @@ template < typename _Right >
 static void operator[Name]Left ( const volatile ThisType & left, _Right && right );
 ```
 
+Для бинарных операторов в случае, если экземпляр значения этого типа **Holder** находится справа, а слева находится экземпляр значения не являющийся никаким **Holder**, интерфейс методов должен выгладеть так:
+
 ```cpp
 template < typename _Left >
 static void operator[Name]Right ( _Left && left, ThisType && right );
@@ -358,6 +360,8 @@ static void operator[Name]Right ( _Left && left, volatile ThisType & right );
 template < typename _Left >
 static void operator[Name]Right ( _Left && left, const volatile ThisType & right );
 ```
+
+Для бинарных операторов в случае, если экземпляр значения этого типа **Holder** находится справа, а слева находится экземпляр значения являющийся подобным **Holder** (тем же самым или со значением производного типа), интерфейс методов должен выгладеть так:
 
 ```cpp
 template < typename _Right >
@@ -397,3 +401,4 @@ static void operator[Name]Both ( ThisType && left, Holder< _Right > && right );
 * **BitwiseOrAssignment** - operator |= ( _Argument && );
 * **BitwiseXorAssignment** - operator ^= ( _Argument && );
 
+Все другие вариации бинарных операторов разрешаются до использования вышеперечисленных.
