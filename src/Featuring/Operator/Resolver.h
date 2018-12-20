@@ -3,7 +3,7 @@
 #define OPERATOR_RESOLVER_H
 
 #include <ModelKit/Featuring/Tool/Inplace/DefaultTool.h>
-#include <ModelKit/Featuring/Tool/Member/FunctionTool.h>
+#include "../Tool/Member/FunctionTool.h"
 #include <ModelKit/Featuring/Traits.h>
 #include <type_traits>
 #include <utility>

@@ -10,7 +10,10 @@
 #include <ModelKit/Featuring/Resolver.h>
 #include <ModelKit/Featuring/Traits.h>
 
+#include "Operator/UnaryOperator.h"
+
 namespace Inplace { struct DefaultTool; }
+template < typename > struct InstanceAccess;
 
 /*!
  * Класс для формирования экземпляра значения _Value, наделенными дополнительными
@@ -19,14 +22,22 @@ namespace Inplace { struct DefaultTool; }
 template < typename _Value, typename _Tool = ::Inplace::DefaultTool >
 class Instance
 {
-    template < typename >
-    friend class Private::SpecialValueGuard;
+    static_assert( !::std::is_reference< _Value >::value,
+        "The template parameter _Value must to be a non reference type." );
+    static_assert( !::std::is_reference< _Tool >::value,
+        "The template parameter _Tool must to be a non reference type." );
 
     template < typename >
-    friend class Private::SpecialInstanceGuard;
+    friend struct InstanceAccess;
+
+    template < typename >
+    friend class Private::SpecialValueGuard; // TODO: To remove. To use InstanceAccess instead.
+
+    template < typename >
+    friend class Private::SpecialInstanceGuard; // TODO: To remove. To use InstanceAccess instead.
 
     template < typename, typename >
-    friend class Private::InstanceCompatibleResolver;
+    friend class Private::InstanceCompatibleResolver; // TODO: To remove. To use InstanceAccess instead.
 
     using ThisType = Instance< _Value, _Tool >;
 
@@ -41,7 +52,7 @@ private:
 public:
     /// Конструктор инициализации значения по заданным параметрам
     template < typename ... _Arguments >
-    /*constexpr*/ Instance ( _Arguments && ... arguments )
+    constexpr Instance ( _Arguments && ... arguments )
         : m_holder( ::std::forward< _Arguments >( arguments ) ... )
     {}
 
@@ -66,7 +77,82 @@ public:
     POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT( ->*, MemberIndirection )
     //BINARY_OPERATOR_FOR_ANY( SINGLE_ARG( , ), Comma )
     /* Subscript */
-    POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT( [], SquareBrackets )
+    //POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT_EXP( [], SquareBrackets )
+
+    template < typename _Argument,
+        typename = ::std::enable_if_t< ::Operator::Unary::is_SquareBrackets_operator_exists< Value &&, _Argument && > > >
+    /*constexpr*/ decltype(auto) operator [] ( _Argument && argument ) &&
+    {
+        using HolderRefer = Holder &&;
+        constexpr bool holder_has_method_for_operator = ::Operator::Unary::is_operatorSquareBrackets_method_exists< Holder, void( HolderRefer, _Argument ) >;
+        using OperatorCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Unary::HolderHasOperatorCase, ::Operator::Unary::HolderHasNoOperatorCase >;
+        return ::Operator::Unary::SquareBracketsSwitch< OperatorCase >::invoke( ::std::forward< ThisType && >( *this ), ::std::forward< _Argument >( argument ) );
+    }
+    template < typename _Argument /*,
+        typename = ::std::enable_if_t< ::Operator::Unary::is_ ## Invokable ## _operator_exists< Value this_refer, _Argument && > >*/ >
+    /*constexpr*/ decltype(auto) operator [] ( _Argument && argument ) const &&
+    {
+        using HolderRefer = Holder const &&;
+        constexpr bool holder_has_method_for_operator = ::Operator::Unary::is_operatorSquareBrackets_method_exists< Holder, void( HolderRefer, _Argument ) >;
+        using OperatorCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Unary::HolderHasOperatorCase, ::Operator::Unary::HolderHasNoOperatorCase >;
+        return ::Operator::Unary::SquareBracketsSwitch< OperatorCase >::invoke( ::std::forward< ThisType const && >( *this ), ::std::forward< _Argument >( argument ) );
+    }
+    template < typename _Argument /*,
+        typename = ::std::enable_if_t< ::Operator::Unary::is_ ## Invokable ## _operator_exists< Value this_refer, _Argument && > >*/ >
+    /*constexpr*/ decltype(auto) operator [] ( _Argument && argument ) volatile &&
+    {
+        using HolderRefer = Holder const volatile &&;
+        constexpr bool holder_has_method_for_operator = ::Operator::Unary::is_operatorSquareBrackets_method_exists< Holder, void( HolderRefer, _Argument ) >;
+        using OperatorCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Unary::HolderHasOperatorCase, ::Operator::Unary::HolderHasNoOperatorCase >;
+        return ::Operator::Unary::SquareBracketsSwitch< OperatorCase >::invoke( ::std::forward< ThisType volatile && >( *this ), ::std::forward< _Argument >( argument ) );
+    }
+    template < typename _Argument /*,
+        typename = ::std::enable_if_t< ::Operator::Unary::is_ ## Invokable ## _operator_exists< Value this_refer, _Argument && > >*/ >
+    /*constexpr*/ decltype(auto) operator [] ( _Argument && argument ) const volatile &&
+    {
+        using HolderRefer = Holder const volatile &&;
+        constexpr bool holder_has_method_for_operator = ::Operator::Unary::is_operatorSquareBrackets_method_exists< Holder, void( HolderRefer, _Argument ) >;
+        using OperatorCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Unary::HolderHasOperatorCase, ::Operator::Unary::HolderHasNoOperatorCase >;
+        return ::Operator::Unary::SquareBracketsSwitch< OperatorCase >::invoke( ::std::forward< ThisType const volatile && >( *this ), ::std::forward< _Argument >( argument ) );
+    }
+    template < typename _Argument,
+        typename = ::std::enable_if_t< ::Operator::Unary::is_SquareBrackets_operator_exists< Value &, _Argument > > >
+    /*constexpr*/ decltype(auto) operator [] ( _Argument && argument ) &
+    {
+        using HolderRefer = Holder &;
+        constexpr bool holder_has_method_for_operator = ::Operator::Unary::is_operatorSquareBrackets_method_exists< Holder, void( HolderRefer, _Argument ) >;
+        using OperatorCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Unary::HolderHasOperatorCase, ::Operator::Unary::HolderHasNoOperatorCase >;
+        return ::Operator::Unary::SquareBracketsSwitch< OperatorCase >::invoke( ::std::forward< ThisType & >( *this ), ::std::forward< _Argument >( argument ) );
+    }
+    template < typename _Argument /*,
+        typename = ::std::enable_if_t< ::Operator::Unary::is_ ## Invokable ## _operator_exists< Value this_refer, _Argument && > >*/ >
+    /*constexpr*/ decltype(auto) operator [] ( _Argument && argument ) const &
+    {
+        using HolderRefer = Holder const &;
+        constexpr bool holder_has_method_for_operator = ::Operator::Unary::is_operatorSquareBrackets_method_exists< Holder, void( HolderRefer, _Argument ) >;
+        using OperatorCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Unary::HolderHasOperatorCase, ::Operator::Unary::HolderHasNoOperatorCase >;
+        return ::Operator::Unary::SquareBracketsSwitch< OperatorCase >::invoke( ::std::forward< ThisType const & >( *this ), ::std::forward< _Argument >( argument ) );
+    }
+    template < typename _Argument /*,
+        typename = ::std::enable_if_t< ::Operator::Unary::is_ ## Invokable ## _operator_exists< Value this_refer, _Argument && > >*/ >
+    /*constexpr*/ decltype(auto) operator [] ( _Argument && argument ) volatile &
+    {
+        using HolderRefer = Holder const volatile &;
+        constexpr bool holder_has_method_for_operator = ::Operator::Unary::is_operatorSquareBrackets_method_exists< Holder, void( HolderRefer, _Argument ) >;
+        using OperatorCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Unary::HolderHasOperatorCase, ::Operator::Unary::HolderHasNoOperatorCase >;
+        return ::Operator::Unary::SquareBracketsSwitch< OperatorCase >::invoke( ::std::forward< ThisType volatile & >( *this ), ::std::forward< _Argument >( argument ) );
+    }
+    template < typename _Argument /*,
+        typename = ::std::enable_if_t< ::Operator::Unary::is_ ## Invokable ## _operator_exists< Value this_refer, _Argument && > >*/ >
+    /*constexpr*/ decltype(auto) operator [] ( _Argument && argument ) const volatile &
+    {
+        using HolderRefer = Holder const volatile &;
+        constexpr bool holder_has_method_for_operator = ::Operator::Unary::is_operatorSquareBrackets_method_exists< Holder, void( HolderRefer, _Argument ) >;
+        using OperatorCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Unary::HolderHasOperatorCase, ::Operator::Unary::HolderHasNoOperatorCase >;
+        return ::Operator::Unary::SquareBracketsSwitch< OperatorCase >::invoke( ::std::forward< ThisType const volatile & >( *this ), ::std::forward< _Argument >( argument ) );
+    }
+
+
     /* Functional forms */
     POSTFIX_UNARY_OPERATOR_WITH_ARGUMENTS( (), RoundBrackets )
     /* Arithmetic operators */

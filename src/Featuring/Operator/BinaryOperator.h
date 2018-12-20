@@ -2,12 +2,12 @@
 #ifndef BINARY_OPERATOR_H
 #define BINARY_OPERATOR_H
 
+#include <ModelKit/Utility/IsOperatorExists.h>
 #include <ModelKit/Utility/SingleArgument.h>
 #include "Resolver.h"
-#include "Traits.h"
 
 #define BINARY_OPERATOR_IMPLEMENTAION( symbol, Invokable ) \
-    BOTH_INVOKABLE_TRAIT( SINGLE_ARG( symbol ), Invokable ) \
+    IS_BINARY_OPERATOR_EXISTS_TRAIT( SINGLE_ARG( symbol ), Invokable ) \
     namespace Operator { template < typename, typename > struct Invokable; } \
     namespace Operator { namespace LeftSpec { template < typename, typename > struct Invokable; } } \
     namespace Operator { namespace RightSpec { template < typename, typename > struct Invokable; } } \
@@ -25,7 +25,7 @@
                 using Right = ::std::remove_cv_t< _Right >; \
                 using LeftHolder = _LeftHolder< _Left >; \
                 template < typename _LeftRefer, typename _RightRefer > \
-                /*constexpr*/ decltype(auto) operator () ( _LeftRefer && left, _RightRefer && right ) \
+                constexpr decltype(auto) operator () ( _LeftRefer && left, _RightRefer && right ) \
                 { \
                     using LeftHolderRefer = _LeftRefer &&; \
                     using RightRefer = _RightRefer &&; \
@@ -33,7 +33,7 @@
                     static_assert( ::std::is_same< LeftHolder, ::std::decay_t< LeftHolderRefer > >::value, \
                         "The template parameter _LeftRefer must to be a refer of template parameter _LeftHolder< _Left >." ); \
                     return ::Operator::Invokable< Left, Right >()( \
-                        ::std::forward< LeftValueRefer >( ::Access::value< LeftValueRefer, LeftHolderRefer >( ::std::forward< LeftHolderRefer >( left ) ) ), \
+                        ::std::forward< LeftValueRefer >( ::HolderInternal::value< LeftValueRefer, LeftHolderRefer >( ::std::forward< LeftHolderRefer >( left ) ) ), \
                         ::std::forward< RightRefer >( right ) ); \
                 } \
             };\
@@ -52,7 +52,7 @@
                 using Right = ::std::remove_cv_t< _Right >; \
                 using RightHolder = _RightHolder< _Right >; \
                 template < typename _LeftRefer, typename _RightRefer > \
-                /*constexpr*/ decltype(auto) operator () ( _LeftRefer && left, _RightRefer && right ) \
+                constexpr decltype(auto) operator () ( _LeftRefer && left, _RightRefer && right ) \
                 { \
                     using LeftRefer = _LeftRefer &&; \
                     using RightHolderRefer = _RightRefer &&; \
@@ -61,7 +61,7 @@
                         "The template parameter _RightRefer must to be a refer of template parameter _RightHolder< _Right >." ); \
                     return ::Operator::Invokable< Left, Right >()( \
                         ::std::forward< LeftRefer >( left ), \
-                        ::std::forward< RightValueRefer >( ::Access::value< RightValueRefer, RightHolderRefer >( ::std::forward< RightHolderRefer >( right ) ) ) ); \
+                        ::std::forward< RightValueRefer >( ::HolderInternal::value< RightValueRefer, RightHolderRefer >( ::std::forward< RightHolderRefer >( right ) ) ) ); \
                 } \
             };\
         } \
@@ -80,7 +80,7 @@
                 using LeftHolder = _LeftHolder< _Left >; \
                 using RightHolder = _RightHolder< _Right >; \
                 template < typename _LeftRefer, typename _RightRefer > \
-                /*constexpr*/ decltype(auto) operator () ( _LeftRefer && left, _RightRefer && right ) \
+                constexpr decltype(auto) operator () ( _LeftRefer && left, _RightRefer && right ) \
                 { \
                     using LeftHolderRefer = _LeftRefer &&; \
                     using LeftValueRefer = ::SimilarRefer< Left, LeftHolderRefer >; \
@@ -91,8 +91,8 @@
                     static_assert( ::std::is_same< RightHolder, ::std::decay_t< RightHolderRefer > >::value, \
                         "The template parameter _RightRefer must to be a refer of template parameter _RightHolder< _Right >." ); \
                     return ::Operator::Invokable< Left, Right >()( \
-                        ::std::forward< LeftValueRefer >( ::Access::value< LeftValueRefer, LeftHolderRefer >( ::std::forward< LeftHolderRefer >( left ) ) ), \
-                        ::std::forward< RightValueRefer >( ::Access::value< RightValueRefer, RightHolderRefer >( ::std::forward< RightHolderRefer >( right ) ) ) ); \
+                        ::std::forward< LeftValueRefer >( ::HolderInternal::value< LeftValueRefer, LeftHolderRefer >( ::std::forward< LeftHolderRefer >( left ) ) ), \
+                        ::std::forward< RightValueRefer >( ::HolderInternal::value< RightValueRefer, RightHolderRefer >( ::std::forward< RightHolderRefer >( right ) ) ) ); \
                 } \
             };\
         } \
@@ -110,7 +110,7 @@
             static_assert( ::std::is_same< Right, ::std::decay_t< Right > >::value, \
                 "The template parameter _Right must to be decayed." ); \
             template < typename _LeftRefer, typename _RightRefer > \
-            /*constexpr*/ decltype(auto) operator () ( _LeftRefer && left, _RightRefer && right ) \
+            constexpr decltype(auto) operator () ( _LeftRefer && left, _RightRefer && right ) \
             { \
                 using LeftRefer = _LeftRefer &&; \
                 using RightRefer = _RightRefer &&; \
@@ -134,7 +134,7 @@
             static_assert( ::std::is_same< Right, ::std::decay_t< Right > >::value, \
                 "The template parameter _Right must to be decayed." ); \
             template < typename _LeftRefer, typename _RightRefer > \
-            /*constexpr*/ decltype(auto) operator () ( _LeftRefer && left, _RightRefer && right ) \
+            constexpr decltype(auto) operator () ( _LeftRefer && left, _RightRefer && right ) \
             { \
                 using LeftInstanceRefer = _LeftRefer &&; \
                 using LeftHolderRefer = ::SimilarRefer< LeftHolder, LeftInstanceRefer >; \
@@ -161,7 +161,7 @@
             static_assert( ::std::is_same< Left, ::std::decay_t< Left > >::value, \
                 "The template parameter _Left must to be decayed." ); \
             template < typename _LeftRefer, typename _RightRefer > \
-            /*constexpr*/ decltype(auto) operator () ( _LeftRefer && left, _RightRefer && right ) \
+            constexpr decltype(auto) operator () ( _LeftRefer && left, _RightRefer && right ) \
             { \
                 using LeftRefer = _LeftRefer &&; \
                 using RightInstanceRefer = _RightRefer &&; \
@@ -188,7 +188,7 @@
             using RightHolder = typename RightInstance::Holder; \
     \
             template < typename _LeftRefer, typename _RightRefer > \
-            /*constexpr*/ decltype(auto) operator () ( _LeftRefer && left, _RightRefer && right ) \
+            constexpr decltype(auto) operator () ( _LeftRefer && left, _RightRefer && right ) \
             { \
                 using LeftInstanceRefer = _LeftRefer &&; \
                 using LeftHolderRefer = ::SimilarRefer< LeftHolder, LeftInstanceRefer >; \

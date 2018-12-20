@@ -1,14 +1,41 @@
 #pragma once
-#ifndef ACCESS_ACCESSING_POINTER_H
-#define ACCESS_ACCESSING_POINTER_H
+#ifndef ACCESS_HOLDER_INTERNAL_POINTER_H
+#define ACCESS_HOLDER_INTERNAL_POINTER_H
 
 #include <memory>
-#include <ModelKit/Utility/HasMethod.h>
-#include <type_traits>
+#include <ModelKit/Featuring/Traits.h>
+#include <ModelKit/Utility/IsMethodExists.h>
 
-HAS_METHOD_TRAIT( guard )
-HAS_METHOD_TRAIT( unguard )
-HAS_METHOD_TRAIT( value )
+// TODO: To move into private
+template < typename _InstanceRefer >
+struct InstanceAccess
+{
+    static_assert( ::std::is_reference< _InstanceRefer >::value,
+        "The template parameter _InstanceRefer must to be a reference type." );
+
+    using InstanceRefer = _InstanceRefer;
+    using Instance = ::std::decay_t< InstanceRefer >;
+
+    static_assert( ::is_instance< Instance >,
+        "The template parameter _InstanceRefer must to be a Instance reference type." );
+
+    using Holder = typename Instance::Holder;
+    using HolderRefer = ::SimilarRefer< Holder, InstanceRefer >;
+
+    static constexpr HolderRefer holderRefer ( InstanceRefer refer )
+    {
+        return ::std::forward< HolderRefer >( refer.m_holder );
+    }
+};
+
+template < typename _InstanceRefer,
+    typename = ::std::enable_if_t< ::is_instance< ::std::decay_t< _InstanceRefer > > > >
+constexpr ::SimilarRefer< typename ::std::decay_t< _InstanceRefer >::Holder, _InstanceRefer && > instanceHolder ( _InstanceRefer && refer )
+{
+    using InstanceRefer = _InstanceRefer &&;
+    return InstanceAccess< InstanceRefer >::holderRefer( ::std::forward< InstanceRefer >( refer ) );
+}
+
 
 template < typename _HolderRefer, bool has_method >
 struct GuardHelper;
@@ -67,29 +94,33 @@ struct ValueHelper< _ValueRefer, _HolderRefer, true >
     }
 };
 
-struct Access
+struct HolderInternal
 {
+    IS_METHOD_EXISTS_TRAIT( guard )
+    IS_METHOD_EXISTS_TRAIT( unguard )
+    IS_METHOD_EXISTS_TRAIT( value )
+
     template < typename _HolderRefer >
     static constexpr void guard ( _HolderRefer holder )
     {
         using Holder = ::std::decay_t< _HolderRefer >;
-        ::GuardHelper< _HolderRefer, ::has_guard_method< Holder, void( _HolderRefer ) > >::guard( ::std::forward< _HolderRefer >( holder ) );
+        ::GuardHelper< _HolderRefer, is_guard_method_exists< Holder, void( _HolderRefer ) > >::guard( ::std::forward< _HolderRefer >( holder ) );
     }
 
     template < typename _HolderRefer >
     static constexpr void unguard ( _HolderRefer holder )
     {
         using Holder = ::std::decay_t< _HolderRefer >;
-        ::UnguardHelper< _HolderRefer, ::has_unguard_method< Holder, void( _HolderRefer ) > >::unguard( ::std::forward< _HolderRefer >( holder ) );
+        ::UnguardHelper< _HolderRefer, is_unguard_method_exists< Holder, void( _HolderRefer ) > >::unguard( ::std::forward< _HolderRefer >( holder ) );
     }
 
     template < typename _ValueRefer, typename _HolderRefer >
     static constexpr _ValueRefer value ( _HolderRefer holder )
     {
         using Holder = ::std::decay_t< _HolderRefer >;
-        static_assert( ::has_value_method< Holder, _ValueRefer( _HolderRefer ) >,
+        static_assert( is_value_method_exists< Holder, _ValueRefer( _HolderRefer ) >,
             "The Holder type must to have static method '_ValueRefer value( _HolderRefer )'" );
-        return ::ValueHelper< _ValueRefer, _HolderRefer, ::has_value_method< Holder, _ValueRefer( _HolderRefer ) > >::value( ::std::forward< _HolderRefer >( holder ) );
+        return ::ValueHelper< _ValueRefer, _HolderRefer, is_value_method_exists< Holder, _ValueRefer( _HolderRefer ) > >::value( ::std::forward< _HolderRefer >( holder ) );
     }
 };
 

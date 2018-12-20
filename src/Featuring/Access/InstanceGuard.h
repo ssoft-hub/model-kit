@@ -116,7 +116,7 @@ namespace Private
         SpecialInstanceGuard ( Refer refer )
             : m_pointer( ::std::forward< Refer >( refer ) )
         {
-            ::Access::guard< HolderRefer >( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
+            ::HolderInternal::guard< HolderRefer >( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
         }
 
         SpecialInstanceGuard ( ThisType && other )
@@ -127,7 +127,7 @@ namespace Private
         ~SpecialInstanceGuard ()
         {
             if ( !!m_pointer )
-                ::Access::unguard< HolderRefer >( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
+                ::HolderInternal::unguard< HolderRefer >( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
         }
 
         /*constexpr*/ bool operator ! () const
@@ -148,7 +148,7 @@ namespace Private
         /*constexpr*/ ValueRefer value () const
         {
             assert( m_pointer );
-            return ::Access::value< ValueRefer, HolderRefer >( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
+            return ::HolderInternal::value< ValueRefer, HolderRefer >( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
         }
     };
 }

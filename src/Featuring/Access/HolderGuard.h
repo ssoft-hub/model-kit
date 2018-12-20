@@ -19,12 +19,12 @@ struct HolderGuard
     HolderGuard ( HolderRefer holder )
         : m_holder( ::std::forward< HolderRefer >( holder ) )
     {
-        ::Access::guard< HolderRefer >( ::std::forward< HolderRefer >( m_holder ) );
+        ::HolderInternal::guard< HolderRefer >( ::std::forward< HolderRefer >( m_holder ) );
     }
 
     ~HolderGuard ()
     {
-        ::Access::unguard< HolderRefer >( ::std::forward< HolderRefer >( m_holder ) );
+        ::HolderInternal::unguard< HolderRefer >( ::std::forward< HolderRefer >( m_holder ) );
     }
 
     HolderGuard ( HolderGuard && ) = delete;

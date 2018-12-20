@@ -117,11 +117,17 @@ namespace Inplace
             {
             }
 
+//            template < typename _HolderRefer, typename _Argument >
+//            static constexpr void operatorSquareBrackets ( _HolderRefer && , _Argument && )
+//            {
+//            }
+
             //! Access to internal value of Holder for any king of referencies.
-            template < typename _Refer >
-            static constexpr decltype(auto) value ( _Refer && holder )
+            template < typename _HolderRefer,
+                typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _HolderRefer > >::value > >
+            static constexpr decltype(auto) value ( _HolderRefer && holder )
             {
-                using HolderRefer = _Refer &&;
+                using HolderRefer = _HolderRefer &&;
                 using ValueRefer = ::SimilarRefer< Value, HolderRefer >;
                 return ::std::forward< ValueRefer >( holder.m_value );
             }

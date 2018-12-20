@@ -5,22 +5,22 @@
 #include "Operator/BinaryOperator.h"
 #include "Operator/UnaryOperator.h"
 
-RIGHT_UNARY_OPERATOR_IMPLEMENTAION( & , AddressOf )
-RIGHT_UNARY_OPERATOR_IMPLEMENTAION( * , Indirection )
-ARGUMENT_UNARY_OPERATOR_IMPLEMENTAION( ->*, MemberIndirection )
-ARGUMENT_UNARY_OPERATOR_IMPLEMENTAION( SINGLE_ARG( , ), Comma )
+PREFIX_OPERATOR_IMPLEMENTAION( & , AddressOf )
+PREFIX_OPERATOR_IMPLEMENTAION( * , Indirection )
+POSTFIX_OPERATOR_WITH_ARGUMENT_IMPLEMENTAION( ->*, MemberIndirection )
+POSTFIX_OPERATOR_WITH_ARGUMENT_IMPLEMENTAION( SINGLE_ARG( , ), Comma )
 
-ARGUMENT_UNARY_OPERATOR_IMPLEMENTAION( [], SquareBrackets )
-ARGUMENTS_UNARY_OPERATOR_IMPLEMENTAION( (), RoundBrackets )
-RIGHT_UNARY_OPERATOR_IMPLEMENTAION( +, UnaryPrefixPlus )
-RIGHT_UNARY_OPERATOR_IMPLEMENTAION( -, UnaryPrefixMinus )
-RIGHT_UNARY_OPERATOR_IMPLEMENTAION( ++, UnaryPrefixPlusPlus )
-RIGHT_UNARY_OPERATOR_IMPLEMENTAION( --, UnaryPrefixMinusMinus )
-RIGHT_UNARY_OPERATOR_IMPLEMENTAION( ~, UnaryPrefixBitwiseNot )
-RIGHT_UNARY_OPERATOR_IMPLEMENTAION( !, UnaryPrefixLogicalNot )
+POSTFIX_OPERATOR_WITH_ARGUMENT_IMPLEMENTAION( [], SquareBrackets )
+POSTFIX_OPERATOR_WITH_ARGUMENTS_IMPLEMENTAION( (), RoundBrackets )
+PREFIX_OPERATOR_IMPLEMENTAION( +, UnaryPrefixPlus )
+PREFIX_OPERATOR_IMPLEMENTAION( -, UnaryPrefixMinus )
+PREFIX_OPERATOR_IMPLEMENTAION( ++, UnaryPrefixPlusPlus )
+PREFIX_OPERATOR_IMPLEMENTAION( --, UnaryPrefixMinusMinus )
+PREFIX_OPERATOR_IMPLEMENTAION( ~, UnaryPrefixBitwiseNot )
+PREFIX_OPERATOR_IMPLEMENTAION( !, UnaryPrefixLogicalNot )
 
-LEFT_UNARY_OPERATOR_IMPLEMENTAION( ++, UnaryPostfixPlusPlus )
-LEFT_UNARY_OPERATOR_IMPLEMENTAION( --, UnaryPostfixMinusMinus )
+POSTFIX_OPERATOR_IMPLEMENTAION( ++, UnaryPostfixPlusPlus )
+POSTFIX_OPERATOR_IMPLEMENTAION( --, UnaryPostfixMinusMinus )
 
 BINARY_OPERATOR_IMPLEMENTAION( ==, IsEqual )
 BINARY_OPERATOR_IMPLEMENTAION( !=, NotEqual )
@@ -59,7 +59,7 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
 
 #define GLOBAL_BINARY_OPERATOR_PROTOTYPE( symbol, right_refer, Invokable ) \
     template < typename _Left, typename _RightValue, typename _RightTool, \
-        typename = ::std::enable_if_t< has_ ## Invokable< _Left &&, typename Instance< _RightValue, _RightTool >::Value right_refer > > > \
+        typename = ::std::enable_if_t< is_ ## Invokable ## _operator_exists< _Left &&, typename Instance< _RightValue, _RightTool >::Value right_refer > > > \
     /*constexpr*/ decltype(auto) operator symbol ( _Left && left, Instance< _RightValue, _RightTool > right_refer right ) \
     { \
         /* TODO: */ \
@@ -91,7 +91,7 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
 
 #define BINARY_OPERATOR_PROTOTYPE_FOR_ANY( symbol, this_refer, Invokable ) \
     template < typename _Other, \
-        typename = ::std::enable_if_t< has_ ## Invokable< Value this_refer, _Other && > > > \
+        typename = ::std::enable_if_t< is_ ## Invokable ## _operator_exists< Value this_refer, _Other && > > > \
     /*constexpr*/ decltype(auto) operator symbol ( _Other && other ) this_refer \
     { \
         /* TODO: */ \
@@ -100,9 +100,20 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
             ::std::forward< _Other && >( other ) ); \
     } \
 
+#define POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT_EXP( symbol, this_refer, Invokable ) \
+    template < typename _Argument, \
+        typename = ::std::enable_if_t< is_ ## Invokable ## _operator_exists< Value this_refer, _Argument && > > > \
+    /*constexpr*/ decltype(auto) operator symbol ( _Argument && argument ) this_refer \
+    { \
+        using HolderRefer = ::SimilarRefer< Holder, ThisType this_refer >; \
+        constexpr bool holder_has_method_for_operator = ::Operator::Unary::is_ ## Invokable ## _operator_exists< Holder, void( HolderRefer ) >; \
+        using OperatorCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Unary::HolderHasOperatorCase, ::Operator::Unary::HolderHasNoOperatorCase >; \
+        return ::Operator::Unary::OperatorSwitch< OperatorCase >::invoke( ::std::forward< ThisType this_refer >( *this ), Invokable(), ::std::forward< _Argument >( argument ) ); \
+    } \
+
 #define POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT( symbol, this_refer, Invokable ) \
     template < typename _Argument, \
-        typename = ::std::enable_if_t< has_ ## Invokable< Value this_refer, _Argument && > > > \
+        typename = ::std::enable_if_t< is_ ## Invokable ## _operator_exists< Value this_refer, _Argument && > > > \
     /*constexpr*/ decltype(auto) operator symbol ( _Argument && argument ) this_refer \
     { \
         return ::Operator::Invokable< ThisType >()( \
@@ -112,7 +123,7 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
 
 #define POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENTS( symbol, this_refer, Invokable ) \
     template < typename ... _Arguments, \
-        typename = ::std::enable_if_t< has_ ## Invokable< Value this_refer, _Arguments && ... > > > \
+        typename = ::std::enable_if_t< is_ ## Invokable ## _operator_exists< Value this_refer, _Arguments && ... > > > \
     /*constexpr*/ decltype(auto) operator symbol ( _Arguments && ... arguments ) this_refer \
     { \
         return ::Operator::Invokable< ThisType >()( \
@@ -122,7 +133,7 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
 
 #define PREFIX_OPERATOR_PROTOTYPE( symbol, this_refer, Invokable ) \
     template < typename ... _Arguments, \
-        typename = ::std::enable_if_t< has_ ## Invokable< Value this_refer, _Arguments && ... > > > \
+        typename = ::std::enable_if_t< is_ ## Invokable ## _operator_exists< Value this_refer, _Arguments && ... > > > \
     /*constexpr*/ decltype(auto) operator symbol () this_refer \
     { \
         return ::Operator::Invokable< ThisType >()( \
@@ -131,7 +142,7 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
 
 #define POSTFIX_OPERATOR_PROTOTYPE_WITH_INT( symbol, this_refer, Invokable ) \
     template < typename ... _Arguments, \
-        typename = ::std::enable_if_t< has_ ## Invokable< Value this_refer, _Arguments && ... > > > \
+        typename = ::std::enable_if_t< is_ ## Invokable ## _operator_exists< Value this_refer, _Arguments && ... > > > \
     /*constexpr*/ decltype(auto) operator symbol ( int ) this_refer \
     { \
         return ::Operator::Invokable< ThisType >()( \
@@ -238,6 +249,17 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
     PREFIX_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const &, Invokable ) \
     PREFIX_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), volatile &, Invokable ) \
     PREFIX_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const volatile &, Invokable ) \
+
+#define POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT_EXP( symbol, Invokable ) \
+    FRIEND_OPERATOR_ACCESS( Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT_EXP( SINGLE_ARG( symbol ), &&, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT_EXP( SINGLE_ARG( symbol ), const &&, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT_EXP( SINGLE_ARG( symbol ), volatile &&, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT_EXP( SINGLE_ARG( symbol ), const volatile &&, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT_EXP( SINGLE_ARG( symbol ), &, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT_EXP( SINGLE_ARG( symbol ), const &, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT_EXP( SINGLE_ARG( symbol ), volatile &, Invokable ) \
+    POSTFIX_OPERATOR_PROTOTYPE_WITH_ARGUMENT_EXP( SINGLE_ARG( symbol ), const volatile &, Invokable ) \
 
 #define POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT( symbol, Invokable ) \
     FRIEND_OPERATOR_ACCESS( Invokable ) \

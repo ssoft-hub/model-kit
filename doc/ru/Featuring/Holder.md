@@ -219,7 +219,8 @@ static const volatile Value & value ( const volatile ThisType & holder );
 При необходимости, методы могут быть реализованы в виде шаблона, например, так:
 
 ```cpp
-template < typename _HolderRefer >
+template < typename _HolderRefer,
+    typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _HolderRefer > >::value > >
 static decltype(auto) value ( _HolderRefer && holder );
 ```
 
@@ -254,7 +255,15 @@ static void operator[Name] ( volatile ThisType & other );
 static void operator[Name] ( const volatile ThisType & other );
 ```
 
-где в качестве **[Name]** могут быть использованы
+или в виде шаблона:
+
+```cpp
+template < typename _HolderRefer,
+    typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _HolderRefer > >::value > >
+static void operator[Name] ( _HolderRefer && holder );
+```
+
+где в качестве **[Name]** могут быть использованы:
 
 * **AddressOf** - operator & ();
 * **Indirection** - operator * ();
@@ -288,7 +297,15 @@ template < typename _Argument >
 static void operator[Name] ( const volatile ThisType & other, _Argument && argument );
 ```
 
-где в качестве **[Name]** могут быть использованы
+или в виде шаблона:
+
+```cpp
+template < typename _HolderRefer, typename _Argument,
+    typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _HolderRefer > >::value > >
+static void operator[Name] ( _HolderRefer && holder, _Argument && argument );
+```
+
+где в качестве **[Name]** могут быть использованы:
 
 * **MemberIndirection** - operator ->* ( _Argument && );
 * **Comma** - operator , ( _Argument && );
@@ -315,9 +332,17 @@ template < typename ... _Arguments >
 static void operator[Name] ( const volatile ThisType & other, _Arguments && ... arguments );
 ```
 
-где в качестве **[Name]** могут быть использованы
+или в виде шаблона:
 
-* **RoundBrackets** - operator () ( _Argument && );
+```cpp
+template < typename _HolderRefer, typename ... _Arguments,
+    typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _HolderRefer > >::value > >
+static void operator[Name] ( _HolderRefer && holder, _Arguments && ... arguments );
+```
+
+где в качестве **[Name]** могут быть использованы:
+
+* **RoundBrackets** - operator () ( _Arguments && ... );
 
 Для бинарных операторов в случае, если экземпляр значения этого типа **Holder** находится слева, а справа находится экземпляр значения не являющийся никаким **Holder**, интерфейс методов должен выгладеть так:
 
@@ -338,6 +363,14 @@ template < typename _Right >
 static void operator[Name]Left ( volatile ThisType & left, _Right && right );
 template < typename _Right >
 static void operator[Name]Left ( const volatile ThisType & left, _Right && right );
+```
+
+или в виде шаблона:
+
+```cpp
+template < typename _HolderLeftRefer, typename _Right,
+    typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _HolderLeftRefer > >::value > >
+static void operator[Name]Left ( _HolderLeftRefer && left, _Right && right );
 ```
 
 Для бинарных операторов в случае, если экземпляр значения этого типа **Holder** находится справа, а слева находится экземпляр значения не являющийся никаким **Holder**, интерфейс методов должен выгладеть так:
@@ -361,6 +394,14 @@ template < typename _Left >
 static void operator[Name]Right ( _Left && left, const volatile ThisType & right );
 ```
 
+или в виде шаблона:
+
+```cpp
+template < typename _Left, typename _HolderRightRefer,
+    typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _HolderRightRefer > >::value > >
+static void operator[Name]Left ( _Left && left, _HolderRightRefer && right );
+```
+
 Для бинарных операторов в случае, если экземпляр значения этого типа **Holder** находится справа, а слева находится экземпляр значения являющийся подобным **Holder** (тем же самым или со значением производного типа), интерфейс методов должен выгладеть так:
 
 ```cpp
@@ -369,7 +410,15 @@ static void operator[Name]Both ( ThisType && left, Holder< _Right > && right );
 // ... и т.д. все возможные сочетания 
 ```
 
-где в качестве **[Name]** могут быть использованы
+или в виде шаблона:
+
+```cpp
+template < typename _HolderLeftRefer, typename _HolderRightRefer,
+    typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _HolderLeftRefer > >::value > >
+static void operator[Name]Both ( _HolderLeftRefer && left, _HolderRightRefer && right );
+```
+
+где в качестве **[Name]** могут быть использованы:
 
 * **IsEqual** - operator == ( _Argument && );
 * **NotEqual** - operator != ( _Argument && );
