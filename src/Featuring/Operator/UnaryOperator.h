@@ -18,24 +18,28 @@ namespace Operator
 
         /* Cases for operator result type */
         struct FundamentalCase {};
+        struct ThisInstanceCase {};
         struct DefaultInstanceCase {};
         struct BlockedInstanceCase {};
 
-        template < typename _Returned, typename _Value >
+        template < typename _Returned, typename _Refer >
         struct ResultCaseHelper
         {
             using Returned = _Returned;
-            using Value = ::std::decay_t< _Value >;
+            using Value = ::std::decay_t< _Refer >;
 
             static constexpr bool returned_is_not_wrappable = ::std::is_fundamental< Returned >::value || ::std::is_enum< Returned >::value;
             static constexpr bool returned_is_reference = ::std::is_reference< Returned >::value;
             static constexpr bool value_is_instance = ::is_instance< Value >;
+            static constexpr bool returned_and_refer_are_same = ::std::is_same< _Returned, _Refer >::value;
 
             using Type = ::std::conditional_t< returned_is_not_wrappable,
                 FundamentalCase,
-                ::std::conditional_t< returned_is_reference,
-                    BlockedInstanceCase,
-                    DefaultInstanceCase > >;
+                ::std::conditional_t< returned_and_refer_are_same,
+                    ThisInstanceCase,
+                    ::std::conditional_t< returned_is_reference,
+                        BlockedInstanceCase,
+                        DefaultInstanceCase > > >;
         };
 
         template < typename _Returned, typename _Value >
@@ -50,6 +54,19 @@ namespace Operator
                 using InstanceRefer = _Instance &&;
                 using ValueRefer = SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >;
                 return invokable( ::std::forward< ValueRefer >( InstanceGuard< InstanceRefer >( ::std::forward< InstanceRefer >( instance ) ).value() ), ::std::forward< _Arguments >( arguments ) ... );
+            }
+        };
+
+        template <>
+        struct ResultSwitch< ThisInstanceCase >
+        {
+            template < typename _Instance, typename _Invokable, typename ... _Arguments >
+            static constexpr decltype(auto) invoke ( _Instance && instance, _Invokable && invokable, _Arguments && ... arguments )
+            {
+                using InstanceRefer = _Instance &&;
+                using ValueRefer = SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >;
+                invokable( ::std::forward< ValueRefer >( InstanceGuard< InstanceRefer >( ::std::forward< InstanceRefer >( instance ) ).value() ), ::std::forward< _Arguments >( arguments ) ... );
+                return ::std::forward< InstanceRefer >( instance );
             }
         };
 
