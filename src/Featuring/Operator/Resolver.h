@@ -64,7 +64,7 @@ namespace Operator
             template < typename _InstanceRefer, typename _Invokable, typename ... _Arguments >
             static decltype(auto) invoke ( _InstanceRefer instance, _Invokable invokable, _Arguments && ... arguments )
             {
-                using ValueRefer = SimilarRefer< typename ::std::decay_t< _InstanceRefer >::Value, _InstanceRefer >;
+                using ValueRefer = ::SimilarRefer< typename ::std::decay_t< _InstanceRefer >::Value, _InstanceRefer >;
                 return Invokable( ::std::forward< ValueRefer >( InstanceGuard< _InstanceRefer >( ::std::forward< _InstanceRefer >( instance ) ).value() ), ::std::forward< _Arguments >( arguments ) ... );
             }
         };
@@ -75,7 +75,7 @@ namespace Operator
             template < typename _InstanceRefer, typename _Invokable, typename ... _Arguments >
             static decltype(auto) invoke ( _InstanceRefer instance, _Invokable invokable, _Arguments && ... arguments )
             {
-                using ValueRefer = SimilarRefer< typename ::std::decay_t< _InstanceRefer >::Value, _InstanceRefer >;
+                using ValueRefer = ::SimilarRefer< typename ::std::decay_t< _InstanceRefer >::Value, _InstanceRefer >;
                 using Returned = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
                 using Result = ::std::remove_reference_t< Returned >;
                 using Tool = ::_Invokable::FunctionTool< _InstanceRefer, _Invokable, _Arguments ... >;
@@ -89,7 +89,7 @@ namespace Operator
             template < typename _InstanceRefer, typename _Invokable, typename ... _Arguments >
             static decltype(auto) invoke ( _InstanceRefer instance, _Invokable invokable, _Arguments && ... arguments )
             {
-                using ValueRefer = SimilarRefer< typename ::std::decay_t< _InstanceRefer >::Value, _InstanceRefer >;
+                using ValueRefer = ::SimilarRefer< typename ::std::decay_t< _InstanceRefer >::Value, _InstanceRefer >;
                 using Returned = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
                 using Result = ::std::remove_reference_t< Returned >;
                 using Tool = ::Inplace::DefaultTool;
@@ -104,7 +104,7 @@ namespace Operator
     template < typename _InstanceRefer, typename _Invokable, typename ... _Arguments >
     static decltype(auto) invoke ( _InstanceRefer instance, _Invokable invokable, _Arguments && ... arguments )
     {
-        using ValueRefer = SimilarRefer< typename ::std::remove_reference_t< _InstanceRefer >::Value, _InstanceRefer >;
+        using ValueRefer = ::SimilarRefer< typename ::std::remove_reference_t< _InstanceRefer >::Value, _InstanceRefer >;
         using Returned = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
         //using Returned = decltype( ::std::declval< _Invokable >().operator () ( ::std::declval< ValueRefer >(), ::std::declval< _Arguments >() ... ) );
         return Private::InvokeHelper< OperatorKind< Returned, ValueRefer, void > >:: template invoke< _InstanceRefer >(

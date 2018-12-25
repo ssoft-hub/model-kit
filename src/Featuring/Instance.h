@@ -59,7 +59,7 @@ public:
     /* All kind of constructors for ThisType */
     CONSTRUCTOR_FOR_THIS_INSTANCE
     /* All kind of constructors for Instance< _OtherValue, _OtherTool > */
-    CONSTRUCTOR_FOR_OTHER_INSTANCE
+    CONSTRUCTOR_FOR_OTHER_INSTANCE // TODO: to remove
 
     /* All kind of assignment operators for any type (including Instance< _OtherValue, _OtherTool >) */
     BINARY_OPERATOR_FOR_ANY( =, Assignment )
@@ -75,83 +75,9 @@ public:
     //PREFIX_UNARY_OPERATOR( &, AddressOf )
     //PREFIX_UNARY_OPERATOR( *, Indirection )
     POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT( ->*, MemberIndirection )
-    //BINARY_OPERATOR_FOR_ANY( SINGLE_ARG( , ), Comma )
+    BINARY_OPERATOR_FOR_ANY( SINGLE_ARG( , ), Comma )
     /* Subscript */
-    //POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT_EXP( [], SquareBrackets )
-
-    template < typename _Argument,
-        typename = ::std::enable_if_t< ::Operator::Unary::is_SquareBrackets_operator_exists< Value &&, _Argument && > > >
-    /*constexpr*/ decltype(auto) operator [] ( _Argument && argument ) &&
-    {
-        using HolderRefer = Holder &&;
-        constexpr bool holder_has_method_for_operator = ::Operator::Unary::is_operatorSquareBrackets_method_exists< Holder, void( HolderRefer, _Argument ) >;
-        using OperatorCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Unary::HolderHasOperatorCase, ::Operator::Unary::HolderHasNoOperatorCase >;
-        return ::Operator::Unary::SquareBracketsSwitch< OperatorCase >::invoke( ::std::forward< ThisType && >( *this ), ::std::forward< _Argument >( argument ) );
-    }
-    template < typename _Argument /*,
-        typename = ::std::enable_if_t< ::Operator::Unary::is_ ## Invokable ## _operator_exists< Value this_refer, _Argument && > >*/ >
-    /*constexpr*/ decltype(auto) operator [] ( _Argument && argument ) const &&
-    {
-        using HolderRefer = Holder const &&;
-        constexpr bool holder_has_method_for_operator = ::Operator::Unary::is_operatorSquareBrackets_method_exists< Holder, void( HolderRefer, _Argument ) >;
-        using OperatorCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Unary::HolderHasOperatorCase, ::Operator::Unary::HolderHasNoOperatorCase >;
-        return ::Operator::Unary::SquareBracketsSwitch< OperatorCase >::invoke( ::std::forward< ThisType const && >( *this ), ::std::forward< _Argument >( argument ) );
-    }
-    template < typename _Argument /*,
-        typename = ::std::enable_if_t< ::Operator::Unary::is_ ## Invokable ## _operator_exists< Value this_refer, _Argument && > >*/ >
-    /*constexpr*/ decltype(auto) operator [] ( _Argument && argument ) volatile &&
-    {
-        using HolderRefer = Holder const volatile &&;
-        constexpr bool holder_has_method_for_operator = ::Operator::Unary::is_operatorSquareBrackets_method_exists< Holder, void( HolderRefer, _Argument ) >;
-        using OperatorCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Unary::HolderHasOperatorCase, ::Operator::Unary::HolderHasNoOperatorCase >;
-        return ::Operator::Unary::SquareBracketsSwitch< OperatorCase >::invoke( ::std::forward< ThisType volatile && >( *this ), ::std::forward< _Argument >( argument ) );
-    }
-    template < typename _Argument /*,
-        typename = ::std::enable_if_t< ::Operator::Unary::is_ ## Invokable ## _operator_exists< Value this_refer, _Argument && > >*/ >
-    /*constexpr*/ decltype(auto) operator [] ( _Argument && argument ) const volatile &&
-    {
-        using HolderRefer = Holder const volatile &&;
-        constexpr bool holder_has_method_for_operator = ::Operator::Unary::is_operatorSquareBrackets_method_exists< Holder, void( HolderRefer, _Argument ) >;
-        using OperatorCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Unary::HolderHasOperatorCase, ::Operator::Unary::HolderHasNoOperatorCase >;
-        return ::Operator::Unary::SquareBracketsSwitch< OperatorCase >::invoke( ::std::forward< ThisType const volatile && >( *this ), ::std::forward< _Argument >( argument ) );
-    }
-    template < typename _Argument,
-        typename = ::std::enable_if_t< ::Operator::Unary::is_SquareBrackets_operator_exists< Value &, _Argument > > >
-    /*constexpr*/ decltype(auto) operator [] ( _Argument && argument ) &
-    {
-        using HolderRefer = Holder &;
-        constexpr bool holder_has_method_for_operator = ::Operator::Unary::is_operatorSquareBrackets_method_exists< Holder, void( HolderRefer, _Argument ) >;
-        using OperatorCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Unary::HolderHasOperatorCase, ::Operator::Unary::HolderHasNoOperatorCase >;
-        return ::Operator::Unary::SquareBracketsSwitch< OperatorCase >::invoke( ::std::forward< ThisType & >( *this ), ::std::forward< _Argument >( argument ) );
-    }
-    template < typename _Argument /*,
-        typename = ::std::enable_if_t< ::Operator::Unary::is_ ## Invokable ## _operator_exists< Value this_refer, _Argument && > >*/ >
-    /*constexpr*/ decltype(auto) operator [] ( _Argument && argument ) const &
-    {
-        using HolderRefer = Holder const &;
-        constexpr bool holder_has_method_for_operator = ::Operator::Unary::is_operatorSquareBrackets_method_exists< Holder, void( HolderRefer, _Argument ) >;
-        using OperatorCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Unary::HolderHasOperatorCase, ::Operator::Unary::HolderHasNoOperatorCase >;
-        return ::Operator::Unary::SquareBracketsSwitch< OperatorCase >::invoke( ::std::forward< ThisType const & >( *this ), ::std::forward< _Argument >( argument ) );
-    }
-    template < typename _Argument /*,
-        typename = ::std::enable_if_t< ::Operator::Unary::is_ ## Invokable ## _operator_exists< Value this_refer, _Argument && > >*/ >
-    /*constexpr*/ decltype(auto) operator [] ( _Argument && argument ) volatile &
-    {
-        using HolderRefer = Holder const volatile &;
-        constexpr bool holder_has_method_for_operator = ::Operator::Unary::is_operatorSquareBrackets_method_exists< Holder, void( HolderRefer, _Argument ) >;
-        using OperatorCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Unary::HolderHasOperatorCase, ::Operator::Unary::HolderHasNoOperatorCase >;
-        return ::Operator::Unary::SquareBracketsSwitch< OperatorCase >::invoke( ::std::forward< ThisType volatile & >( *this ), ::std::forward< _Argument >( argument ) );
-    }
-    template < typename _Argument /*,
-        typename = ::std::enable_if_t< ::Operator::Unary::is_ ## Invokable ## _operator_exists< Value this_refer, _Argument && > >*/ >
-    /*constexpr*/ decltype(auto) operator [] ( _Argument && argument ) const volatile &
-    {
-        using HolderRefer = Holder const volatile &;
-        constexpr bool holder_has_method_for_operator = ::Operator::Unary::is_operatorSquareBrackets_method_exists< Holder, void( HolderRefer, _Argument ) >;
-        using OperatorCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Unary::HolderHasOperatorCase, ::Operator::Unary::HolderHasNoOperatorCase >;
-        return ::Operator::Unary::SquareBracketsSwitch< OperatorCase >::invoke( ::std::forward< ThisType const volatile & >( *this ), ::std::forward< _Argument >( argument ) );
-    }
-
+    POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT( [], SquareBrackets )
 
     /* Functional forms */
     POSTFIX_UNARY_OPERATOR_WITH_ARGUMENTS( (), RoundBrackets )
@@ -206,37 +132,37 @@ public:
 /*! NOTE: The 'operator =' cannot be implemented as global method. */
 
 /* Arithmetic operators */
-GLOBAL_BINARY_OPERATOR( *, Multiply )
-GLOBAL_BINARY_OPERATOR( /, Divide )
-GLOBAL_BINARY_OPERATOR( %, Modulo )
-GLOBAL_BINARY_OPERATOR( +, Addition )
-GLOBAL_BINARY_OPERATOR( -, Subtraction )
-/* Compound assignment */
-GLOBAL_BINARY_OPERATOR( *=, MultiplyAssignment )
-GLOBAL_BINARY_OPERATOR( /=, DivideAssignment )
-GLOBAL_BINARY_OPERATOR( %=, ModuloAssignment )
-GLOBAL_BINARY_OPERATOR( +=, AdditionAssignment )
-GLOBAL_BINARY_OPERATOR( -=, SubtractionAssignment )
-GLOBAL_BINARY_OPERATOR( <<=, ShiftLeftAssignment )
-GLOBAL_BINARY_OPERATOR( >>=, ShiftRightAssignment )
-GLOBAL_BINARY_OPERATOR( &=, BitwiseAndAssignment )
-GLOBAL_BINARY_OPERATOR( ^=, BitwiseXorAssignment )
-GLOBAL_BINARY_OPERATOR( |=, BitwiseOrAssignment )
-/* Relational and comparison operators */
-GLOBAL_BINARY_OPERATOR( ==, IsEqual )
-GLOBAL_BINARY_OPERATOR( !=, NotEqual )
-GLOBAL_BINARY_OPERATOR( <, Less )
-GLOBAL_BINARY_OPERATOR( <=, LessOrEqual )
-GLOBAL_BINARY_OPERATOR( >, Greater )
-GLOBAL_BINARY_OPERATOR( >=, GreaterOrEqual )
-/* Logical operators */
-GLOBAL_BINARY_OPERATOR( &&, LogicalAnd )
-GLOBAL_BINARY_OPERATOR( ||, LogicalOr )
-/* Bitwise operators */
-GLOBAL_BINARY_OPERATOR( &, BitwiseAnd )
-GLOBAL_BINARY_OPERATOR( ^, BitwiseXor )
-GLOBAL_BINARY_OPERATOR( |, BitwiseOr )
-GLOBAL_BINARY_OPERATOR( <<, ShiftLeft )
-GLOBAL_BINARY_OPERATOR( >>, ShiftRight )
+//GLOBAL_BINARY_OPERATOR( *, Multiply )
+//GLOBAL_BINARY_OPERATOR( /, Divide )
+//GLOBAL_BINARY_OPERATOR( %, Modulo )
+//GLOBAL_BINARY_OPERATOR( +, Addition )
+//GLOBAL_BINARY_OPERATOR( -, Subtraction )
+///* Compound assignment */
+//GLOBAL_BINARY_OPERATOR( *=, MultiplyAssignment )
+//GLOBAL_BINARY_OPERATOR( /=, DivideAssignment )
+//GLOBAL_BINARY_OPERATOR( %=, ModuloAssignment )
+//GLOBAL_BINARY_OPERATOR( +=, AdditionAssignment )
+//GLOBAL_BINARY_OPERATOR( -=, SubtractionAssignment )
+//GLOBAL_BINARY_OPERATOR( <<=, ShiftLeftAssignment )
+//GLOBAL_BINARY_OPERATOR( >>=, ShiftRightAssignment )
+//GLOBAL_BINARY_OPERATOR( &=, BitwiseAndAssignment )
+//GLOBAL_BINARY_OPERATOR( ^=, BitwiseXorAssignment )
+//GLOBAL_BINARY_OPERATOR( |=, BitwiseOrAssignment )
+///* Relational and comparison operators */
+////GLOBAL_BINARY_OPERATOR( ==, IsEqual )
+//GLOBAL_BINARY_OPERATOR( !=, NotEqual )
+//GLOBAL_BINARY_OPERATOR( <, Less )
+//GLOBAL_BINARY_OPERATOR( <=, LessOrEqual )
+//GLOBAL_BINARY_OPERATOR( >, Greater )
+//GLOBAL_BINARY_OPERATOR( >=, GreaterOrEqual )
+///* Logical operators */
+//GLOBAL_BINARY_OPERATOR( &&, LogicalAnd )
+//GLOBAL_BINARY_OPERATOR( ||, LogicalOr )
+///* Bitwise operators */
+//GLOBAL_BINARY_OPERATOR( &, BitwiseAnd )
+//GLOBAL_BINARY_OPERATOR( ^, BitwiseXor )
+//GLOBAL_BINARY_OPERATOR( |, BitwiseOr )
+//GLOBAL_BINARY_OPERATOR( <<, ShiftLeft )
+//GLOBAL_BINARY_OPERATOR( >>, ShiftRight )
 
 #endif

@@ -4,7 +4,7 @@
 
 #include <type_traits>
 
-#define IS_PREFIX_OPERATOR_EXISTS_TRAIT( symbol, Invokable ) \
+#define IS_PREFIX_UNARY_OPERATOR_EXISTS_TRAIT( symbol, Invokable ) \
     template < typename _Right > \
     class Is ## Invokable ## OperatorExistsHelper \
     { \
@@ -26,7 +26,7 @@
     template < typename _Type > \
     static constexpr bool is_ ## Invokable ## _operator_exists = Is ## Invokable ## OperatorExists< _Type >::value; \
 
-#define IS_POSTFIX_OPERATOR_EXISTS_TRAIT( symbol, Invokable ) \
+#define IS_POSTFIX_UNARY_OPERATOR_EXISTS_TRAIT( symbol, Invokable ) \
     template < typename _Left > \
     class Is ## Invokable ## OperatorExistsHelper \
     { \
@@ -72,7 +72,7 @@
     template < typename _Left, typename _Right > \
     static constexpr bool is_ ## Invokable ## _operator_exists = Is ## Invokable ## OperatorExists< _Left, _Right >::value; \
 
-#define IS_POSTFIX_OPERATOR_WITH_ARGUMENT_EXISTS_TRAIT( symbol, Invokable ) \
+#define IS_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT_EXISTS_TRAIT( symbol, Invokable ) \
     template < typename _Type, typename _Argument > \
     class Is ## Invokable ## OperatorExistsHelper \
     { \
@@ -92,7 +92,7 @@
     template < typename _Type, typename _Argument > \
     static constexpr bool is_ ## Invokable ## _operator_exists = Is ## Invokable ## OperatorExists< _Type, _Argument >::value; \
 
-#define IS_POSTFIX_OPERATOR_WITH_ARGUMENTS_EXISTS_TRAIT( symbol, Invokable ) \
+#define IS_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENTS_EXISTS_TRAIT( symbol, Invokable ) \
     template < typename _Type, typename ... _Arguments > \
     class Is ## Invokable ## OperatorExistsHelper \
     { \

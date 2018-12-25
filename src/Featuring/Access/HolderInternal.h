@@ -114,13 +114,12 @@ struct HolderInternal
         ::UnguardHelper< _HolderRefer, is_unguard_method_exists< Holder, void( _HolderRefer ) > >::unguard( ::std::forward< _HolderRefer >( holder ) );
     }
 
-    template < typename _ValueRefer, typename _HolderRefer >
+    template < typename _ValueRefer, typename _HolderRefer,
+        typename = ::std::enable_if_t< is_value_method_exists< ::std::decay_t< _HolderRefer >, _ValueRefer( _HolderRefer ) > > >
     static constexpr _ValueRefer value ( _HolderRefer holder )
     {
-        using Holder = ::std::decay_t< _HolderRefer >;
-        static_assert( is_value_method_exists< Holder, _ValueRefer( _HolderRefer ) >,
-            "The Holder type must to have static method '_ValueRefer value( _HolderRefer )'" );
-        return ::ValueHelper< _ValueRefer, _HolderRefer, is_value_method_exists< Holder, _ValueRefer( _HolderRefer ) > >::value( ::std::forward< _HolderRefer >( holder ) );
+        //using Holder = ::std::decay_t< _HolderRefer >;
+        return ::ValueHelper< _ValueRefer, _HolderRefer, true >::value( ::std::forward< _HolderRefer >( holder ) );
     }
 };
 

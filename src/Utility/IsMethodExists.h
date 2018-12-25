@@ -23,8 +23,9 @@
     struct Is_ ## method ## _MethodExistsHelper< _Type, _Member( _Arguments ... ) > \
     { \
     private: \
-        template < typename _Test > \
-        static constexpr ::std::is_same< decltype( ::std::declval< _Test >(). method ( ::std::declval< _Arguments >() ... ) ), _Member > __test ( int ); \
+        template < typename _Test, \
+            typename = ::std::enable_if_t< ::std::is_same< decltype( ::std::declval< _Test >().method( ::std::declval< _Arguments >() ... ) ), _Member >::value > > \
+        static constexpr ::std::true_type __test ( int ); \
     \
         template< typename > \
         static constexpr ::std::false_type __test( ... ); \

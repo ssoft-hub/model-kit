@@ -45,7 +45,7 @@ static constexpr bool is_similar = IsSimilar< _Type, _Other >::value;
  * Наделение типа свойствами ссылки.
  */
 template < typename _Type, typename _Refer >
-using SimilarRefer = typename Private::SimilarReferHelper< _Type, _Refer >::Type;
+using SimilarRefer = typename ::Private::SimilarReferHelper< _Type, _Refer >::Type;
 
 template < typename _Type, typename _Other >
 struct IsSimilar

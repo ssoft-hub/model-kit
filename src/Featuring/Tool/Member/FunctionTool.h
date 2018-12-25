@@ -15,7 +15,7 @@ namespace _Invokable
         {
             using ThisType = Holder;
             using InstanceGuard = ::InstanceGuard< _InstanceRefer >;
-            using ValueRefer = SimilarRefer< typename ::std::decay_t< _InstanceRefer >::Value, _InstanceRefer >;
+            using ValueRefer = ::SimilarRefer< typename ::std::decay_t< _InstanceRefer >::Value, _InstanceRefer >;
             using ResultRefer = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
 
             InstanceGuard m_feature_guard;

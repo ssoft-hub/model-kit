@@ -255,18 +255,24 @@ namespace Implicit
 
             static constexpr void guard ( ThisType & holder )
             {
-                if ( !!holder.m_pointer && !!holder.m_pointer->m_counter )
+                if ( !!holder.m_pointer && holder.m_pointer->m_counter > 1 )
                 {
+                    CountedPointer pointer = new CountedValue( *holder.m_access );
                     holder.decrement();
-                    holder.m_pointer = new CountedValue( *holder.m_access );
+                    holder.m_pointer = pointer;
                     holder.m_access = ::std::addressof( static_cast< CountedValue * >( holder.m_pointer )->m_value );
                 }
             }
 
             static constexpr void guard ( volatile ThisType & holder )
             {
-                if ( !!holder.m_pointer && !!holder.m_pointer->m_counter )
-                    holder = Holder< Value >( *holder.m_access );
+                if ( !!holder.m_pointer && holder.m_pointer->m_counter > 1 )
+                {
+                    CountedPointer pointer = new CountedValue( *holder.m_access );
+                    holder.decrement();
+                    holder.m_pointer = pointer;
+                    holder.m_access = ::std::addressof( static_cast< CountedValue * >( holder.m_pointer )->m_value );
+                }
             }
 
             //! Access to internal value of Holder for any king of referencies.

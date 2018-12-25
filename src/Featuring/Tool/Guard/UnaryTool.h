@@ -18,7 +18,7 @@ namespace Guard
         {
             using ThisType = Holder;
             using InstanceGuard = ::InstanceGuard< _InstanceRefer >;
-            using ValueRefer = SimilarRefer< typename ::std::decay_t< _InstanceRefer >::Value, _InstanceRefer >;
+            using ValueRefer = ::SimilarRefer< typename ::std::decay_t< _InstanceRefer >::Value, _InstanceRefer >;
             using ResultRefer = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
             using Result = ::std::remove_reference_t< ResultRefer >;
 
