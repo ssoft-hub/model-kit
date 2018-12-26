@@ -11,6 +11,7 @@
 #include <ModelKit/Featuring/Traits.h>
 
 #include "Operator/UnaryOperator.h"
+#include "Operator/BinaryOperator.h"
 
 namespace Inplace { struct DefaultTool; }
 template < typename > struct InstanceAccess;

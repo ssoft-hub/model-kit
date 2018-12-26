@@ -1,6 +1,6 @@
 #pragma once
-#ifndef GUARD_VALUE_POINTER_H
-#define GUARD_VALUE_POINTER_H
+#ifndef FEATURING_ACCESS_VALUE_GUARD_H
+#define FEATURING_ACCESS_VALUE_GUARD_H
 
 #include <ModelKit/Featuring/Access/InstanceGuard.h>
 #include <ModelKit/Featuring/Traits.h>
@@ -20,11 +20,11 @@ namespace Private
  * все особенности, реализуемые посредством используемых Instance.
  */
 template < typename _Refer >
-using ValueGuard = typename Private::ValueGuardHelper< _Refer >::Type;
+using ValueGuard = typename ::Private::ValueGuardHelper< _Refer >::Type;
 
 namespace Private
 {
-    /*
+    /*!
      * Указатель на экземпляр вложенного в Instance базового значения, к которому применены
      * все особенности, реализуемые посредством используемых Instance. Данный указатель применяется, если
      * тип вложенного экземпляра значения сам не является Instance.
@@ -36,54 +36,41 @@ namespace Private
 
     public:
         using Refer = _Refer;
-        using Guard = InstanceGuard< _Refer >;
-        using AccessRefer = Refer;
+        using InstanceGuard = ::InstanceGuard< _Refer >;
+
+        using ValueAccess = typename InstanceGuard::ValueAccess;
+        using PointerAccess = typename InstanceGuard::PointerAccess;
 
         static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must to be of reference type." );
         static_assert( !::is_instance< ::std::decay_t< Refer > >, "The template parameter _Refer must to be a not Instance type reference!" );
 
     private:
-        Guard m_instance_guard;
+        InstanceGuard m_instance_guard;
 
     public:
-        /*constexpr*/ DefaultValueGuard ()
-            : m_instance_guard()
-        {
-        }
-
         DefaultValueGuard ( Refer refer )
             : m_instance_guard( ::std::forward< Refer >( refer ) )
         {
         }
 
-        DefaultValueGuard ( Guard && other )
-            : m_instance_guard( ::std::forward< Guard >( other ) )
+        DefaultValueGuard ( InstanceGuard && other )
+            : m_instance_guard( ::std::forward< InstanceGuard >( other ) )
         {
         }
 
         DefaultValueGuard ( ThisType && other )
-            : m_instance_guard( ::std::forward< Guard >( other.m_instance_guard ) )
+            : m_instance_guard( ::std::forward< InstanceGuard >( other.m_instance_guard ) )
         {
         }
 
-        /*constexpr*/ bool operator ! () const
+        ValueAccess valueAccess () const
         {
-            return !m_instance_guard;
+            return m_instance_guard.valueAccess();
         }
 
-        /*constexpr*/ AccessRefer operator * () const
+        PointerAccess pointerAccess () const
         {
-            return ::std::forward< AccessRefer >( *m_instance_guard );
-        }
-
-        /*constexpr*/ const Guard & operator -> () const &
-        {
-            return m_instance_guard;
-        }
-
-        /*constexpr*/ const Guard && operator -> () const &&
-        {
-            return ::std::forward< const Guard >( m_instance_guard );
+            return m_instance_guard.pointerAccess();
         }
     };
 }
@@ -110,43 +97,39 @@ namespace Private
         using ThisType = SpecialValueGuard< _Refer >;
 
     public:
-        using Refer = _Refer;
-        using Instance = ::std::decay_t< Refer >;
-        using Tool = typename Instance::Holder;
-
+        using InstanceRefer = _Refer;
+        using Instance = ::std::decay_t< InstanceRefer >;
         using Value = typename Instance::Value;
-        using ValueRefer = ::SimilarRefer< Value, Refer >;
+        using ValueRefer = ::SimilarRefer< Value, InstanceRefer >;
         using Holder = typename Instance::Holder;
-        using HolderRefer = ::SimilarRefer< Holder, Refer >;
-        using InstanceGuard = ::InstanceGuard< Refer >;
-        using ValueGuard = ::ValueGuard< ValueRefer >;
-        using AccessRefer = typename ValueGuard::AccessRefer;
+        using HolderRefer = ::SimilarRefer< Holder, InstanceRefer >;
 
-        static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must to be of reference type." );
+        using InstanceGuard = ::InstanceGuard< InstanceRefer >;
+        using ValueGuard = ::ValueGuard< ValueRefer >;
+
+        using InstanceAccess = typename InstanceGuard::InstanceAccess;
+        using ValueAccess =  typename ValueGuard::ValueAccess;
+        using PointerAccess = typename ValueGuard::PointerAccess;
+
+        static_assert( ::std::is_reference< InstanceRefer >::value, "The template parameter _Refer must to be of reference type." );
         static_assert( ::is_instance< Instance >, "The template parameter _Refer must to be a Instance type reference!" );
-        static_assert( ::is_similar< ValueRefer, Refer >, "The Refer and ValueRefer must to be similar types!" );
-        static_assert( ::is_similar< HolderRefer, Refer >, "The Refer and HolderRefer must to be similar types!" );
+        static_assert( ::is_similar< ValueRefer, InstanceRefer >, "The Refer and ValueRefer must to be similar types!" );
+        static_assert( ::is_similar< HolderRefer, InstanceRefer >, "The Refer and HolderRefer must to be similar types!" );
 
     private:
         InstanceGuard m_instance_guard;
         ValueGuard m_value_guard;
 
     public:
-        /*constexpr*/ SpecialValueGuard ()
-            : m_instance_guard()
-            , m_value_guard()
-        {
-        }
-
-        SpecialValueGuard ( _Refer refer )
-            : m_instance_guard( ::std::forward< _Refer >( refer ) )
-            , m_value_guard( ::HolderInternal::value< ValueRefer, HolderRefer >( ::std::forward< HolderRefer >( (*m_instance_guard).m_holder ) ) )
+        SpecialValueGuard ( InstanceRefer refer )
+            : m_instance_guard( ::std::forward< InstanceRefer >( refer ) )
+            , m_value_guard( ::HolderInternal::value< ValueRefer, HolderRefer >( m_instance_guard.holderAccess() ) )
         {
         }
 
         SpecialValueGuard ( InstanceGuard && other )
             : m_instance_guard( ::std::forward< InstanceGuard >( other ) )
-            , m_value_guard( ::HolderInternal::value< ValueRefer, HolderRefer >( ::std::forward< HolderRefer >( (*m_instance_guard).m_holder ) ) )
+            , m_value_guard( ::HolderInternal::value< ValueRefer, HolderRefer >( m_instance_guard.holderAccess() ) )
         {
         }
 
@@ -156,24 +139,19 @@ namespace Private
         {
         }
 
-        /*constexpr*/ bool operator ! () const
+        InstanceAccess instanceAccess () const
         {
-            return !m_value_guard;
+            return m_instance_guard.instanceAccess();
         }
 
-        /*constexpr*/ AccessRefer operator * () const
+        ValueAccess valueAccess () const
         {
-            return ::std::forward< AccessRefer >( *m_value_guard );
+            return m_value_guard.valueAccess();
         }
 
-        /*constexpr*/ const ValueGuard & operator -> () const &
+        PointerAccess pointerAccess () const
         {
-            return m_value_guard;
-        }
-
-        /*constexpr*/ const ValueGuard && operator -> () const &&
-        {
-            return ::std::forward< const ValueGuard >( m_value_guard );
+            return m_value_guard.pointerAccess();
         }
     };
 }

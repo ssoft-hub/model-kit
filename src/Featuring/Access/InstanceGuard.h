@@ -24,7 +24,7 @@ using InstanceGuard = typename Private::InstanceGuardHelper< _Refer >::Type;
 
 namespace Private
 {
-    /*
+    /*!
      * Указатель на экземпляр вложенного в Instance значения, к которому применена
      * особенность, реализуемая данным Instance. Данный указатель применяется, если
      * тип вложенного экземпляра значения сам не является Instance.
@@ -36,43 +36,36 @@ namespace Private
 
     public:
         using Refer = _Refer;
-        using Pointer = ReferPointer< Refer >;
+        using ReferPointer = ::ReferPointer< Refer >;
+
+        using ValueAccess = Refer;
+        using PointerAccess = ReferPointer const &;
 
         static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must to be of reference type." );
         static_assert( !::is_instance< ::std::decay_t< Refer > >, "The template parameter _Refer must to be a not Instance type reference!" );
 
     private:
-        Pointer m_pointer;
+        ReferPointer m_refer_pointer;
 
     public:
-        /*constexpr*/ DefaultInstanceGuard ()
-            : m_pointer()
-        {
-        }
-
         DefaultInstanceGuard ( Refer refer )
-            : m_pointer( ::std::forward< Refer >( refer ) )
+            : m_refer_pointer( ::std::forward< Refer >( refer ) )
         {
         }
 
         DefaultInstanceGuard ( ThisType && other )
-            : m_pointer( ::std::forward< Pointer >( other.m_pointer ) )
+            : m_refer_pointer( ::std::forward< ReferPointer >( other.m_refer_pointer ) )
         {
         }
 
-        /*constexpr*/ bool operator ! () const
+        ValueAccess valueAccess () const
         {
-            return !m_pointer;
+            return ::std::forward< ValueAccess >( *m_refer_pointer );
         }
 
-        /*constexpr*/ Refer operator * () const
+        PointerAccess pointerAccess () const
         {
-            return ::std::forward< Refer >( *m_pointer );
-        }
-
-        /*constexpr*/ const Pointer & operator -> () const
-        {
-            return m_pointer;
+            return m_refer_pointer;
         }
     };
 }
@@ -80,9 +73,8 @@ namespace Private
 namespace Private
 {
     /*!
-     * Указатель на экземпляр вложенного в Instance значения, к которому применена
-     * особенность, реализуемая данным Instance. Данный указатель применяется, если
-     * тип вложенного экземпляра значения сам является Instance.
+     * Гарант применения особенностей к экземпляру вложенного в Instance значения.
+     * Данный вариант применяется, если тип вложенного экземпляра значения сам является Instance.
      */
     template < typename _Refer >
     class SpecialInstanceGuard
@@ -90,137 +82,97 @@ namespace Private
         using ThisType = SpecialInstanceGuard< _Refer >;
 
     public:
-        using Refer = _Refer;
-        using Pointer = ReferPointer< Refer >;
-        using Instance = ::std::decay_t< Refer >;
-        using Tool = typename Instance::Holder;
-        using Holder = typename Instance::Holder;
-        using HolderRefer = ::SimilarRefer< Holder, Refer >;
+        using InstanceRefer = _Refer;
+        using Instance = ::std::decay_t< InstanceRefer >;
         using Value = typename Instance::Value;
-        using ValueRefer = ::SimilarRefer< Value, Refer >;
+        using ValueRefer = ::SimilarRefer< Value, InstanceRefer >;
+        using Holder = typename Instance::Holder;
+        using HolderRefer = ::SimilarRefer< Holder, InstanceRefer >;
+        using ReferPointer = ::ReferPointer< InstanceRefer >;
 
-        static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must to be of reference type." );
+        using InstanceAccess = ValueRefer;
+        using HolderAccess = HolderRefer;
+
+        static_assert( ::std::is_reference< InstanceRefer >::value, "The template parameter _Refer must to be of reference type." );
         static_assert( ::is_instance< Instance >, "The template parameter _Refer must to be a Instance type reference!" );
-        static_assert( ::is_similar< ValueRefer, Refer >, "The Refer and ValueRefer must to be similar types!" );
-        static_assert( ::is_similar< HolderRefer, Refer >, "The Refer and HolderRefer must to be similar types!" );
+        static_assert( ::is_similar< ValueRefer, InstanceRefer >, "The Refer and ValueRefer must to be similar types!" );
+        static_assert( ::is_similar< HolderRefer, InstanceRefer >, "The Refer and HolderRefer must to be similar types!" );
 
     private:
-        Pointer m_pointer;
+        ReferPointer m_refer_pointer;
+
+    private:
+        SpecialInstanceGuard ( const ThisType & other ) = delete;
 
     public:
-        /*constexpr*/ SpecialInstanceGuard ()
-            : m_pointer()
+        SpecialInstanceGuard ( InstanceRefer refer )
+            : m_refer_pointer( ::std::forward< InstanceRefer >( refer ) )
         {
+            ::HolderInternal::guard< HolderRefer >( ::std::forward< HolderRefer >( m_refer_pointer->m_holder ) );
         }
 
-        SpecialInstanceGuard ( Refer refer )
-            : m_pointer( ::std::forward< Refer >( refer ) )
-        {
-            ::HolderInternal::guard< HolderRefer >( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
-        }
-
-        SpecialInstanceGuard ( ThisType && other )
-            : m_pointer( ::std::forward< Pointer >( other.m_pointer ) )
+        SpecialInstanceGuard ( ThisType && other )// = delete;
+            : m_refer_pointer( ::std::forward< ReferPointer >( other.m_refer_pointer ) )
         {
         }
 
         ~SpecialInstanceGuard ()
         {
-            if ( !!m_pointer )
-                ::HolderInternal::unguard< HolderRefer >( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
+            if ( !!m_refer_pointer )
+                ::HolderInternal::unguard< HolderRefer >( ::std::forward< HolderRefer >( m_refer_pointer->m_holder ) );
         }
 
-        /*constexpr*/ bool operator ! () const
+        InstanceAccess instanceAccess () const
         {
-            return !m_pointer;
+            assert( m_refer_pointer );
+            return ::HolderInternal::value< ValueRefer, HolderRefer >( ::std::forward< HolderRefer >( m_refer_pointer->m_holder ) );
         }
 
-        /*constexpr*/ Refer operator * () const
+        HolderAccess holderAccess () const
         {
-            return ::std::forward< Refer >( *m_pointer );
-        }
-
-        /*constexpr*/ const Pointer & operator -> () const
-        {
-            return m_pointer;
-        }
-
-        /*constexpr*/ ValueRefer value () const
-        {
-            assert( m_pointer );
-            return ::HolderInternal::value< ValueRefer, HolderRefer >( ::std::forward< HolderRefer >( m_pointer->m_holder ) );
+            assert( m_refer_pointer );
+            return ::std::forward< HolderAccess >( m_refer_pointer->m_holder );
         }
     };
 }
 
 namespace Private
 {
+    struct ValueCase;
+    struct InstanceCase;
+
+    template < typename _Refer >
+    struct InstanceGuardCaseHelper
+    {
+        using Type = ::std::conditional_t< ::is_instance< ::std::decay_t< _Refer > >,
+            InstanceCase,
+            ValueCase >;
+    };
+
+    template < typename _Refer >
+    using InstanceGuardCase = typename InstanceGuardCaseHelper< _Refer >::Type;
+
+    template < typename, typename >
+    struct InstanceSwith;
+
+    template < typename _Refer >
+    struct InstanceSwith< ValueCase, _Refer >
+    {
+        using Type = ::Private::DefaultInstanceGuard< _Refer >;
+    };
+
+    template < typename _Refer >
+    struct InstanceSwith< InstanceCase, _Refer >
+    {
+        using Type = ::Private::SpecialInstanceGuard< _Refer >;
+    };
+
     template < typename _Refer >
     struct InstanceGuardHelper
     {
-        using Type = Private::DefaultInstanceGuard< _Refer >;
+        static_assert( ::std::is_reference< _Refer >::value, "The template parameter _Refer must to be of reference type." );
+        using Type = typename InstanceSwith< InstanceGuardCase< _Refer >, _Refer >::Type;
     };
-
-    template < typename _Value, typename _Tool >
-    struct InstanceGuardHelper< Instance< _Value, _Tool > && >
-    {
-        using Type = Private::SpecialInstanceGuard< Instance< _Value, _Tool > && >;
-    };
-
-    template < typename _Value, typename _Tool >
-    struct InstanceGuardHelper< Instance< _Value, _Tool > & >
-    {
-        using Type = Private::SpecialInstanceGuard< Instance< _Value, _Tool > & >;
-    };
-
-    template < typename _Value, typename _Tool >
-    struct InstanceGuardHelper< const Instance< _Value, _Tool > && >
-    {
-        using Type = Private::SpecialInstanceGuard< const Instance< _Value, _Tool > && >;
-    };
-
-    template < typename _Value, typename _Tool >
-    struct InstanceGuardHelper< const Instance< _Value, _Tool > & >
-    {
-        using Type = Private::SpecialInstanceGuard< const Instance< _Value, _Tool > & >;
-    };
-
-    template < typename _Value, typename _Tool >
-    struct InstanceGuardHelper< volatile Instance< _Value, _Tool > && >
-    {
-        using Type = Private::SpecialInstanceGuard< volatile Instance< _Value, _Tool > && >;
-    };
-
-    template < typename _Value, typename _Tool >
-    struct InstanceGuardHelper< volatile Instance< _Value, _Tool > & >
-    {
-        using Type = Private::SpecialInstanceGuard< volatile Instance< _Value, _Tool > & >;
-    };
-
-    template < typename _Value, typename _Tool >
-    struct InstanceGuardHelper< const volatile Instance< _Value, _Tool > && >
-    {
-        using Type = Private::SpecialInstanceGuard< const volatile Instance< _Value, _Tool > && >;
-    };
-
-    template < typename _Value, typename _Tool >
-    struct InstanceGuardHelper< const volatile Instance< _Value, _Tool > & >
-    {
-        using Type = Private::SpecialInstanceGuard< const volatile Instance< _Value, _Tool > & >;
-    };
-
-    // disabled
-    template < typename _Value, typename _Tool >
-    struct InstanceGuardHelper< Instance< _Value, _Tool > > {};
-
-    template < typename _Value, typename _Tool >
-    struct InstanceGuardHelper< const Instance< _Value, _Tool > > {};
-
-    template < typename _Value, typename _Tool >
-    struct InstanceGuardHelper< volatile Instance< _Value, _Tool > > {};
-
-    template < typename _Value, typename _Tool >
-    struct InstanceGuardHelper< const volatile Instance< _Value, _Tool > > {};
 }
 
 #endif

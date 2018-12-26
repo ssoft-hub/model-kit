@@ -3,3 +3,4 @@
 #include "Access/HolderInternal.h"
 #include "Access/ReferPointer.h"
 #include "Access/ValueGuard.h"
+#include "Access/ValuePointer.h"

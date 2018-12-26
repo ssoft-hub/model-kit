@@ -7,15 +7,30 @@
 #include <utility>
 
 template < typename _HolderRefer >
-struct HolderGuard
+class HolderGuard
 {
+    using ThisType = HolderGuard< _HolderRefer >;
+
+public:
     using HolderRefer = _HolderRefer;
     using Holder = ::std::decay_t< HolderRefer >;
 
     static_assert( ::std::is_reference< HolderRefer >::value, "The template parameter _HolderRefer must to be of reference type." );
 
+private:
     HolderRefer m_holder;
 
+private:
+    HolderGuard ( ThisType && ) = delete;
+    HolderGuard ( const ThisType && ) = delete;
+    HolderGuard ( volatile ThisType && ) = delete;
+    HolderGuard ( const volatile ThisType && ) = delete;
+    HolderGuard ( ThisType & ) = delete;
+    HolderGuard ( const ThisType & ) = delete;
+    HolderGuard ( volatile ThisType & ) = delete;
+    HolderGuard ( const volatile ThisType & ) = delete;
+
+public:
     HolderGuard ( HolderRefer holder )
         : m_holder( ::std::forward< HolderRefer >( holder ) )
     {
@@ -26,15 +41,6 @@ struct HolderGuard
     {
         ::HolderInternal::unguard< HolderRefer >( ::std::forward< HolderRefer >( m_holder ) );
     }
-
-    HolderGuard ( HolderGuard && ) = delete;
-    HolderGuard ( const HolderGuard && ) = delete;
-    HolderGuard ( volatile HolderGuard && ) = delete;
-    HolderGuard ( const volatile HolderGuard && ) = delete;
-    HolderGuard ( HolderGuard & ) = delete;
-    HolderGuard ( const HolderGuard & ) = delete;
-    HolderGuard ( volatile HolderGuard & ) = delete;
-    HolderGuard ( const volatile HolderGuard & ) = delete;
 };
 
 #endif

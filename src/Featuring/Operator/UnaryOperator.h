@@ -51,7 +51,7 @@ namespace Operator
             static constexpr decltype(auto) invoke ( _Instance && instance, _Invokable && invokable, _Arguments && ... arguments )
             {
                 using InstanceRefer = _Instance &&;
-                return invokable( InstanceGuard< InstanceRefer >( ::std::forward< InstanceRefer >( instance ) ).value(), ::std::forward< _Arguments >( arguments ) ... );
+                return invokable( InstanceGuard< InstanceRefer >( ::std::forward< InstanceRefer >( instance ) ).instanceAccess(), ::std::forward< _Arguments >( arguments ) ... );
             }
         };
 
@@ -62,7 +62,7 @@ namespace Operator
             static constexpr decltype(auto) invoke ( _Instance && instance, _Invokable && invokable, _Arguments && ... arguments )
             {
                 using InstanceRefer = _Instance &&;
-                invokable( InstanceGuard< InstanceRefer >( ::std::forward< InstanceRefer >( instance ) ).value(), ::std::forward< _Arguments >( arguments ) ... );
+                invokable( InstanceGuard< InstanceRefer >( ::std::forward< InstanceRefer >( instance ) ).instanceAccess(), ::std::forward< _Arguments >( arguments ) ... );
                 return ::std::forward< InstanceRefer >( instance );
             }
         };
@@ -79,7 +79,7 @@ namespace Operator
                 static_assert( !::std::is_reference< Returned >::value,
                     "The type of return parameter must to be a non reference type." );
                 using Tool = ::Inplace::DefaultTool;
-                return Instance< Returned, Tool >( invokable( InstanceGuard< InstanceRefer >( ::std::forward< InstanceRefer >( instance ) ).value(), ::std::forward< _Arguments >( arguments ) ... ) );
+                return Instance< Returned, Tool >( invokable( InstanceGuard< InstanceRefer >( ::std::forward< InstanceRefer >( instance ) ).instanceAccess(), ::std::forward< _Arguments >( arguments ) ... ) );
             }
         };
 

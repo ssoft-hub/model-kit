@@ -155,13 +155,13 @@ namespace Private
         static_assert( ::is_similar< OtherRefer, OtherValueRefer >, "The OtherRefer and OtherValueRefer must to be similar types!" );
 
     private:
-        OtherInstanceGuard m_instance_pointer;
+        OtherInstanceGuard m_instance_guard;
         NextResolver m_next_resolver;
 
     public:
         InstanceThisPathOfOtherResolver ( OtherRefer other )
-            : m_instance_pointer( ::std::forward< OtherRefer >( other ) )
-            , m_next_resolver( ::std::forward< OtherValueRefer >( m_instance_pointer.value() ) )
+            : m_instance_guard( ::std::forward< OtherRefer >( other ) )
+            , m_next_resolver( ::std::forward< OtherValueRefer >( m_instance_guard.instanceAccess() ) )
         {
         }
 
@@ -184,7 +184,7 @@ namespace Private
         using Instance = _Instance;
         using OtherRefer = _OtherRefer;
         using OtherValueGuard = ValueGuard< OtherRefer >;
-        using AccessRefer = typename OtherValueGuard::AccessRefer;
+        using AccessRefer = typename OtherValueGuard::ValueRefer;
 
         static_assert( ::is_instance< Instance >, "The template parameter _Instance must to be a instance!" );
         static_assert( ::std::is_reference< OtherRefer >::value, "The template parameter _OtherRefer must to be of reference type." );
@@ -200,7 +200,7 @@ namespace Private
 
         AccessRefer resolve () const
         {
-            return ::std::forward< AccessRefer >( *m_value_guard );
+            return ::std::forward< AccessRefer >( m_value_guard.valueAccess() );
         }
     };
 }

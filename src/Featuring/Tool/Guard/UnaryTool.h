@@ -30,7 +30,7 @@ namespace Guard
 
             Holder ( _InstanceRefer instance, _Invokable && invokable, _Arguments && ... arguments )
                 : m_feature_guard( ::std::forward< _InstanceRefer >( instance ) )
-                , m_result_refer( ::std::forward< ResultRefer >( invokable( ::std::forward< ValueRefer >( m_feature_guard.value() ), ::std::forward< _Arguments >( arguments ) ...  ) ) )
+                , m_result_refer( ::std::forward< ResultRefer >( invokable( ::std::forward< ValueRefer >( m_feature_guard.instanceAccess() ), ::std::forward< _Arguments >( arguments ) ...  ) ) )
             {
             }
 
@@ -38,6 +38,7 @@ namespace Guard
                 : m_feature_guard( ::std::forward< InstanceGuard >( other.m_feature_guard ) )
                 , m_result_refer( ::std::forward< ResultRefer >( other.m_result_refer ) )
             {
+                assert( false ); // Restructed functionality
             }
 
             Holder ( const ThisType & other ) = delete;

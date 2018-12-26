@@ -26,36 +26,33 @@ public:
 private:
     Refer m_refer;
 
-public:
-    /*constexpr*/ ReferPointer ()
-        : m_refer()
-    {
-    }
+private:
+    ReferPointer ( const ThisType & other ) = delete;
 
-    ReferPointer ( Refer refer )
+public:
+    constexpr ReferPointer ( Refer refer )
         : m_refer( ::std::forward< Refer >( refer ) )
     {
     }
 
-    ReferPointer ( ThisType && other )
+    constexpr ReferPointer ( ThisType && other )
         : m_refer( ::std::forward< Refer >( other.m_refer ) )
     {
+        assert( true ); // Used resrticted constuctor.
     }
 
-    /*constexpr*/ bool operator ! () const
+    constexpr bool operator ! () const
     {
         return !::std::addressof( m_refer );
     }
 
-    /*constexpr*/ Refer operator * () const
+    constexpr Refer operator * () const
     {
         return ::std::forward< Refer >( m_refer );
     }
 
-    /*constexpr*/ RawPointer operator -> () const
+    constexpr RawPointer operator -> () const
     {
-//        bool is_const = ::std::is_const< Value >::value;
-//        bool is_volatile = ::std::is_volatile< Value >::value;
         return ::std::addressof( m_refer );
     }
 };

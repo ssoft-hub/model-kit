@@ -2,6 +2,7 @@
 #ifndef OPERATOR_BLA_H
 #define OPERATOR_BLA_H
 
+#include <ModelKit/Featuring/Access/ValuePointer.h>
 #include "Operator/BinaryOperator.h"
 #include "Operator/UnaryOperator.h"
 
@@ -143,15 +144,15 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
     } \
 
 #define ADDRESS_OF_OPERATOR_PROTOTYPE( symbol, this_refer ) \
-    /*constexpr*/ ValueGuard< ThisType this_refer > operator symbol () this_refer \
+    /*constexpr*/ ValuePointer< ThisType this_refer > operator symbol () this_refer \
     { \
-        return ::std::forward< ThisType this_refer >( *this ); \
+        return ValuePointer< ThisType this_refer >( ::std::forward< ThisType this_refer >( *this ) ); \
     } \
 
 #define DEREFERENCE_OPERATOR_PROTOTYPE( symbol, this_refer ) \
-    /*constexpr*/ ValueGuard< ThisType this_refer > operator symbol () this_refer \
+    /*constexpr*/ ValuePointer< ThisType this_refer > operator symbol () this_refer \
     { \
-        return ::std::forward< ThisType this_refer >( *this ); \
+        return ValuePointer< ThisType this_refer >( ::std::forward< ThisType this_refer >( *this ) ); \
     } \
 
 #define CONSTRUCTOR_FOR_THIS_INSTANCE_PROTOTYPE( other_refer ) \
