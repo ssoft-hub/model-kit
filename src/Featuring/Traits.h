@@ -81,18 +81,18 @@ struct IsInstance< Instance< _Test, _Tool > >
  */
 template < typename _Test, typename _Other >
 struct IsCompatible
-    : public ::std::integral_constant< bool,
-           ::std::is_same< _Test, _Other >::value
-        || ::std::is_base_of< _Test, _Other >::value >
+    : public ::std::integral_constant< bool, ::is_similar< _Test, _Other >
+        && ( ::std::is_same< ::std::decay_t< _Test >, ::std::decay_t< _Other > >::value
+           || ::std::is_base_of< ::std::decay_t< _Test >, ::std::decay_t< _Other > >::value ) >
 {};
 
 /*!
  * Типы Instance являются совместимыми, если в них используется идентичный
  * инструмент _Tool, и вложенные типы также являются совместимыми.
  */
-template < typename _This, typename _Other, typename _Tool >
-struct IsCompatible< Instance< _This, _Tool >, Instance< _Other, _Tool > >
-    : public ::std::integral_constant< bool, is_compatible< _This, _Other > >
+template < typename _Test, typename _Other, typename _Tool >
+struct IsCompatible< Instance< _Test, _Tool >, Instance< _Other, _Tool > >
+    : public ::std::integral_constant< bool, is_compatible< _Test, _Other > >
 {};
 
 /*!
@@ -107,11 +107,11 @@ struct IsThisPartOfOther
  * Один тип Instance является частью другого, если он совместим с любой
  * вложенной частью другого.
  */
-template < typename _Test, typename _Tool, typename _Other, typename _OtherTool >
-struct IsThisPartOfOther< Instance< _Test, _Tool >, Instance< _Other, _OtherTool > >
+template < typename _Test, typename _TestTool, typename _Other, typename _OtherTool >
+struct IsThisPartOfOther< Instance< _Test, _TestTool >, Instance< _Other, _OtherTool > >
     : public ::std::integral_constant< bool,
-           is_compatible< Instance< _Test, _Tool >, _Other >
-        || is_this_part_of_other< Instance< _Test, _Tool >, _Other > >
+           is_compatible< Instance< _Test, _TestTool >, _Other >
+        || is_this_part_of_other< Instance< _Test, _TestTool >, _Other > >
 {};
 
 namespace Private

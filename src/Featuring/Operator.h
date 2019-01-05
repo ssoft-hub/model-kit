@@ -30,7 +30,7 @@ BINARY_OPERATOR_IMPLEMENTAION( <=, LessOrEqual )
 BINARY_OPERATOR_IMPLEMENTAION( >, Greater )
 BINARY_OPERATOR_IMPLEMENTAION( >=, GreaterOrEqual )
 
-BINARY_OPERATOR_IMPLEMENTAION( *, Multiply )
+//BINARY_OPERATOR_IMPLEMENTAION( *, Multiply )
 BINARY_OPERATOR_IMPLEMENTAION( /, Divide )
 BINARY_OPERATOR_IMPLEMENTAION( %, Modulo )
 BINARY_OPERATOR_IMPLEMENTAION( +, Addition )
@@ -91,13 +91,12 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
     } \
 
 #define BINARY_OPERATOR_PROTOTYPE_FOR_ANY( symbol, this_refer, Invokable ) \
-    template < typename _Right, \
-        typename = ::std::enable_if_t< ::Operator::Binary::is_ ## Invokable ## _operator_exists< Value this_refer, _Right && > > > \
+    template < typename _Right/*, \
+        typename = ::std::enable_if_t< ::Operator::Binary::is_ ## Invokable ## _operator_exists< Value this_refer, _Right && > >*/ > \
     constexpr decltype(auto) operator symbol ( _Right && right ) this_refer \
     { \
         return ::Operator::Binary::Invokable ## Helper< ThisType this_refer, _Right && >::invoke( ::std::forward< ThisType this_refer >( *this ), ::std::forward< _Right && >( right ) ); \
     } \
-
 
 #define POSTFIX_UNARY_OPERATOR_PROTOTYPE_WITH_ARGUMENT( symbol, this_refer, Invokable ) \
     template < typename _Argument, \
@@ -292,7 +291,6 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
 
 #define FRIEND_OPERATOR_ACCESS( Invokable ) \
     template < typename > friend struct ::Operator::Invokable; \
-
 
 /*
  * NOTE: Закомментирована реализация из-за проблем со сборкой ::std::map< Instance, Value >

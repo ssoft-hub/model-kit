@@ -4,10 +4,10 @@
 
 #include <ModelKit/Featuring/Access/HolderInternal.h>
 #include <ModelKit/Featuring/Tool/Guard/UnaryTool.h>
+#include <ModelKit/Featuring/Tool/Inplace/DefaultTool.h>
 #include <ModelKit/Utility/IsMethodExists.h>
 #include <ModelKit/Utility/IsOperatorExists.h>
 #include <ModelKit/Utility/SingleArgument.h>
-#include "Resolver.h"
 
 namespace Operator
 {
@@ -47,8 +47,8 @@ namespace Operator
         template <>
         struct ResultSwitch< FundamentalCase >
         {
-            template < typename _Instance, typename _Invokable, typename ... _Arguments >
-            static constexpr decltype(auto) invoke ( _Instance && instance, _Invokable && invokable, _Arguments && ... arguments )
+            template < typename _Invokable, typename _Instance, typename ... _Arguments >
+            static constexpr decltype(auto) invoke ( _Invokable && invokable, _Instance && instance, _Arguments && ... arguments )
             {
                 using InstanceRefer = _Instance &&;
                 return invokable( InstanceGuard< InstanceRefer >( ::std::forward< InstanceRefer >( instance ) ).instanceAccess(), ::std::forward< _Arguments >( arguments ) ... );
@@ -58,8 +58,8 @@ namespace Operator
         template <>
         struct ResultSwitch< ThisCase >
         {
-            template < typename _Instance, typename _Invokable, typename ... _Arguments >
-            static constexpr decltype(auto) invoke ( _Instance && instance, _Invokable && invokable, _Arguments && ... arguments )
+            template < typename _Invokable, typename _Instance, typename ... _Arguments >
+            static constexpr decltype(auto) invoke ( _Invokable && invokable, _Instance && instance, _Arguments && ... arguments )
             {
                 using InstanceRefer = _Instance &&;
                 invokable( InstanceGuard< InstanceRefer >( ::std::forward< InstanceRefer >( instance ) ).instanceAccess(), ::std::forward< _Arguments >( arguments ) ... );
@@ -70,33 +70,41 @@ namespace Operator
         template <>
         struct ResultSwitch< DefaultCase >
         {
-            template < typename _Instance, typename _Invokable, typename ... _Arguments >
-            static constexpr decltype(auto) invoke ( _Instance && instance, _Invokable && invokable, _Arguments && ... arguments )
+            template < typename _Invokable, typename _Instance, typename ... _Arguments >
+            static constexpr decltype(auto) invoke ( _Invokable && invokable, _Instance && instance, _Arguments && ... arguments )
             {
                 using InstanceRefer = _Instance &&;
                 using ValueRefer = ::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >;
-                using Returned = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
+                using Invokable = _Invokable;
+                using Returned = ::std::result_of_t< Invokable( ValueRefer, _Arguments && ... ) >;
+
                 static_assert( !::std::is_reference< Returned >::value,
                     "The type of return parameter must to be a non reference type." );
-                using Tool = ::Inplace::DefaultTool;
-                return Instance< Returned, Tool >( invokable( InstanceGuard< InstanceRefer >( ::std::forward< InstanceRefer >( instance ) ).instanceAccess(), ::std::forward< _Arguments >( arguments ) ... ) );
+
+                using InstanceGuard = ::InstanceGuard< InstanceRefer >;
+                using DefaultTool = ::Inplace::DefaultTool;
+                return ::Instance< Returned, DefaultTool >( invokable( InstanceGuard( ::std::forward< InstanceRefer >( instance ) ).instanceAccess(), ::std::forward< _Arguments >( arguments ) ... ) );
             }
         };
 
         template <>
         struct ResultSwitch< BlockedCase >
         {
-            template < typename _Instance, typename _Invokable, typename ... _Arguments >
-            static constexpr decltype(auto) invoke ( _Instance && instance, _Invokable && invokable, _Arguments && ... arguments )
+            template < typename _Invokable, typename _Instance, typename ... _Arguments >
+            static constexpr decltype(auto) invoke ( _Invokable && invokable, _Instance && instance, _Arguments && ... arguments )
             {
                 using InstanceRefer = _Instance &&;
                 using ValueRefer = ::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >;
-                using Returned = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
+                using Invokable = _Invokable;
+                using InvokableRefer = _Invokable &&;
+                using Returned = ::std::result_of_t< Invokable( ValueRefer, _Arguments && ... ) >;
+
                 static_assert( ::std::is_reference< Returned >::value,
                     "The type of return parameter must to be a reference type." );
-                using Tool = ::Guard::UnaryTool< InstanceRefer, _Invokable, _Arguments ... >;
+
+                using GuardTool = ::Guard::UnaryTool< Invokable, InstanceRefer, _Arguments ... >;
                 using Result = ::std::remove_reference_t< Returned >;
-                return Instance< Result, Tool >( ::std::forward< InstanceRefer >( instance ), ::std::forward< _Invokable >( invokable ), ::std::forward< _Arguments >( arguments ) ... );
+                return ::Instance< Result, GuardTool >( ::std::forward< InvokableRefer >( invokable ), ::std::forward< InstanceRefer >( instance ), ::std::forward< _Arguments >( arguments ) ... );
             }
         };
     }
@@ -151,8 +159,8 @@ namespace Operator
                     using InstanceRefer = _Instance &&; \
                     using ValueRefer = ::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >; \
                     using Returned = ::std::result_of_t< Invokable( ValueRefer ) >; \
-                    return ResultSwitch< ResultCase< Returned, ValueRefer > >::invoke( \
-                        ::std::forward< InstanceRefer >( instance ), Invokable() ); \
+                    return ::Operator::Unary::ResultSwitch< ::Operator::Unary::ResultCase< Returned, ValueRefer > > \
+                        ::invoke( ::Operator::Unary::Invokable(), ::std::forward< InstanceRefer >( instance ) ); \
                 } \
             }; \
         } \
@@ -206,8 +214,8 @@ namespace Operator
                     using InstanceRefer = _Instance &&; \
                     using ValueRefer = ::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >; \
                     using Returned = ::std::result_of_t< Invokable( ValueRefer ) >; \
-                    return ResultSwitch< ResultCase< Returned, ValueRefer > >::invoke( \
-                        ::std::forward< InstanceRefer >( instance ), Invokable() ); \
+                    return ::Operator::Unary::ResultSwitch< ::Operator::Unary::ResultCase< Returned, ValueRefer > > \
+                        ::invoke( ::Operator::Unary::Invokable(), ::std::forward< InstanceRefer >( instance ) ); \
                 } \
             }; \
         } \
@@ -261,8 +269,8 @@ namespace Operator
                     using InstanceRefer = _Instance &&; \
                     using ValueRefer = ::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >; \
                     using Returned = ::std::result_of_t< Invokable( ValueRefer, _Argument && ) >; \
-                    return ResultSwitch< ResultCase< Returned, ValueRefer > >::invoke( \
-                        ::std::forward< InstanceRefer >( instance ), Invokable(), ::std::forward< _Argument >( argument ) ); \
+                    return ::Operator::Unary::ResultSwitch< ::Operator::Unary::ResultCase< Returned, ValueRefer > > \
+                        ::invoke( ::Operator::Unary::Invokable(), ::std::forward< InstanceRefer >( instance ), ::std::forward< _Argument >( argument ) ); \
                 } \
             }; \
         } \
@@ -316,8 +324,8 @@ namespace Operator
                     using InstanceRefer = _Instance &&; \
                     using ValueRefer = ::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >; \
                     using Returned = ::std::result_of_t< Invokable( ValueRefer, _Arguments && ... ) >; \
-                    return ResultSwitch< ResultCase< Returned, ValueRefer > >::invoke( \
-                        ::std::forward< InstanceRefer >( instance ), Invokable(), ::std::forward< _Arguments >( arguments ) ... ); \
+                    return ::Operator::Unary::ResultSwitch< ::Operator::Unary::ResultCase< Returned, ValueRefer > > \
+                        ::invoke( ::Operator::Unary::Invokable(), ::std::forward< InstanceRefer >( instance ), ::std::forward< _Arguments >( arguments ) ... ); \
                 } \
             }; \
         } \

@@ -74,7 +74,7 @@ public:
     DEREFERENCE_OPERATOR( -> )
     ADDRESS_OF_OPERATOR( & )
     //PREFIX_UNARY_OPERATOR( &, AddressOf )
-    //PREFIX_UNARY_OPERATOR( *, Indirection )
+    PREFIX_UNARY_OPERATOR( *, Indirection )
     POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT( ->*, MemberIndirection )
     BINARY_OPERATOR_FOR_ANY( SINGLE_ARG( , ), Comma )
     /* Subscript */

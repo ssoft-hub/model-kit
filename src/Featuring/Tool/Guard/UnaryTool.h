@@ -7,19 +7,21 @@
 
 namespace Guard
 {
-    template < typename _InstanceRefer, typename _Invokable, typename ... _Arguments >
+    template < typename _Invokable, typename _InstanceRefer, typename ... _Arguments >
     struct UnaryTool
     {
-        static_assert( ::std::is_reference< _InstanceRefer >::value,
+        using InstanceRefer = _InstanceRefer;
+        using Invokable = _Invokable;
+        static_assert( ::std::is_reference< InstanceRefer >::value,
             "The template parameter _InstanceRefer must to be a reference type." );
 
         template < typename _Type >
         struct Holder
         {
             using ThisType = Holder;
-            using InstanceGuard = ::InstanceGuard< _InstanceRefer >;
-            using ValueRefer = ::SimilarRefer< typename ::std::decay_t< _InstanceRefer >::Value, _InstanceRefer >;
-            using ResultRefer = ::std::result_of_t< _Invokable( ValueRefer, _Arguments && ... ) >;
+            using InstanceGuard = ::InstanceGuard< InstanceRefer >;
+            using ValueRefer = ::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >;
+            using ResultRefer = ::std::result_of_t< Invokable( ValueRefer, _Arguments && ... ) >;
             using Result = ::std::remove_reference_t< ResultRefer >;
 
             static_assert( ::std::is_reference< ResultRefer >::value,
@@ -28,8 +30,8 @@ namespace Guard
             InstanceGuard m_feature_guard;
             ResultRefer m_result_refer;
 
-            Holder ( _InstanceRefer instance, _Invokable && invokable, _Arguments && ... arguments )
-                : m_feature_guard( ::std::forward< _InstanceRefer >( instance ) )
+            Holder (  Invokable && invokable, InstanceRefer instance, _Arguments && ... arguments )
+                : m_feature_guard( ::std::forward< InstanceRefer >( instance ) )
                 , m_result_refer( ::std::forward< ResultRefer >( invokable( ::std::forward< ValueRefer >( m_feature_guard.instanceAccess() ), ::std::forward< _Arguments >( arguments ) ...  ) ) )
             {
             }
@@ -38,7 +40,7 @@ namespace Guard
                 : m_feature_guard( ::std::forward< InstanceGuard >( other.m_feature_guard ) )
                 , m_result_refer( ::std::forward< ResultRefer >( other.m_result_refer ) )
             {
-                assert( false ); // Restructed functionality
+                assert( false ); // Restricted functionality
             }
 
             Holder ( const ThisType & other ) = delete;

@@ -72,6 +72,11 @@ namespace Private
         {
             return m_instance_guard.pointerAccess();
         }
+
+        operator ValueAccess () const
+        {
+            return valueAccess();
+        }
     };
 }
 
@@ -152,6 +157,11 @@ namespace Private
         PointerAccess pointerAccess () const
         {
             return m_value_guard.pointerAccess();
+        }
+
+        operator ValueAccess () const
+        {
+            return valueAccess();
         }
     };
 }
