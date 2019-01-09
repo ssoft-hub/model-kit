@@ -109,7 +109,7 @@ namespace Operator
             using Returned = ::std::result_of_t< Invokable( ValueRefer, _Arguments && ... ) >;
 
             static_assert( !::std::is_reference< Returned >::value,
-                "The type of return parameter must to be a non reference type." );
+                "The type of return parameter must to be not a reference type." );
 
             using InstanceGuard = ::InstanceGuard< InstanceRefer >;
             using ResultInstance = ::Instance< Returned, ::Inplace::DefaultTool >;
@@ -133,7 +133,7 @@ namespace Operator
                 "The type of return parameter must to be a reference type." );
 
             using GuardTool = ::Guard::LeftTool< Invokable, InstanceRefer, _Arguments && ... >;
-            using ResultInstance = ::Instance< ::std::remove_reference_t< Returned >, GuardTool >;
+            using ResultInstance = ::Instance< Returned, GuardTool >;
             return ResultInstance( ::std::forward< InvokableRefer >( invokable ), ::std::forward< InstanceRefer >( instance ), ::std::forward< _Arguments && >( arguments ) ... );
         }
     };
@@ -178,7 +178,7 @@ namespace Operator
             using Returned = ::std::result_of_t< Invokable( LeftRefer, ValueRefer ) >;
 
             static_assert( !::std::is_reference< Returned >::value,
-                "The type of return parameter must to be a non reference type." );
+                "The type of return parameter must to be not a reference type." );
 
             using InstanceGuard = ::InstanceGuard< InstanceRefer >;
             using ResultInstance = ::Instance< Returned, ::Inplace::DefaultTool >;
@@ -203,7 +203,7 @@ namespace Operator
                 "The type of return parameter must to be a reference type." );
 
             using GuardTool = ::Guard::RightTool< Invokable, LeftRefer, InstanceRefer >;
-            using ResultInstance = ::Instance< ::std::remove_reference_t< Returned >, GuardTool >;
+            using ResultInstance = ::Instance< Returned, GuardTool >;
             return ResultInstance( ::std::forward< InvokableRefer >( invokable ), ::std::forward< LeftRefer >( left ), ::std::forward< InstanceRefer >( instance ) );
         }
     };
@@ -255,7 +255,7 @@ namespace Operator
             using Returned = ::std::result_of_t< Invokable( LeftValueRefer, RightValueRefer ) >;
 
             static_assert( !::std::is_reference< Returned >::value,
-                "The type of return parameter must to be a non reference type." );
+                "The type of return parameter must to be not a reference type." );
 
             // TODO: check - this part of
             using LeftInstanceGuard = ::InstanceGuard< LeftInstanceRefer >;

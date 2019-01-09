@@ -39,7 +39,9 @@ namespace Operator
                 template < typename _Left, typename _Right > \
                 decltype(auto) operator () ( _Left && left, _Right && right ) \
                 { \
-                    return ::std::forward< _Left && >( left ) symbol ::std::forward< _Right && >( right ); \
+                    using LeftRefer = _Left &&; \
+                    using RightRefer = _Right &&; \
+                    return ::std::forward< LeftRefer >( left ) symbol ::std::forward< RightRefer >( right ); \
                 } \
             }; \
         } \

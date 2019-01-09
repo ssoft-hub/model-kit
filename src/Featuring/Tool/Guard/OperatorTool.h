@@ -21,11 +21,12 @@ namespace Guard
             using ThisType = Holder;
             using InstanceGuard = ::InstanceGuard< InstanceRefer >;
             using ValueRefer = ::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >;
-            using ResultRefer = ::std::result_of_t< Invokable( ValueRefer, _Arguments && ... ) >;
-            using Result = ::std::remove_reference_t< ResultRefer >;
+            using ResultRefer = _Type;
 
-            static_assert( ::std::is_reference< ResultRefer >::value,
-                "The result of _Invokable( ValueRefer, _Arguments && ... ) must to be a reference type." );
+            static_assert( ::std::is_reference< _Type >::value,
+                "The template parameter _Type must to be a reference type." );
+            static_assert( ::std::is_same< ResultRefer, ::std::result_of_t< Invokable( ValueRefer, _Arguments && ... ) > >::value,
+                "The result of _Invokable( _LeftRefer, _InstanceRefer ) must to be a _Type" );
 
             InstanceGuard m_feature_guard;
             ResultRefer m_result_refer;
@@ -47,9 +48,9 @@ namespace Guard
 
             template < typename _HolderRefer,
                 typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _HolderRefer > >::value > >
-            static constexpr ::SimilarRefer< Result, _HolderRefer && > value ( _HolderRefer && holder )
+            static constexpr ::SimilarRefer< ResultRefer, _HolderRefer && > value ( _HolderRefer && holder )
             {
-                return ::std::forward< ::SimilarRefer< Result, _HolderRefer && > >( holder.m_result_refer );
+                return ::std::forward< ::SimilarRefer< ResultRefer, _HolderRefer && > >( holder.m_result_refer );
             }
         };
     };
@@ -75,11 +76,12 @@ namespace Guard
             using ThisType = Holder;
             using InstanceGuard = ::InstanceGuard< InstanceRefer >;
             using ValueRefer = ::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >;
-            using ResultRefer = ::std::result_of_t< Invokable( LeftRefer, ValueRefer ) >;
-            using Result = ::std::remove_reference_t< ResultRefer >;
+            using ResultRefer = _Type;
 
-            static_assert( ::std::is_reference< ResultRefer >::value,
-                "The result of _Invokable( _LeftRefer, _RightRefer ) must to be a reference type." );
+            static_assert( ::std::is_reference< _Type >::value,
+                "The template parameter _Type must to be a reference type." );
+            static_assert( ::std::is_same< ResultRefer, ::std::result_of_t< Invokable( LeftRefer, ValueRefer ) > >::value,
+                "The result of _Invokable( _LeftRefer, _InstanceRefer ) must to be a _Type" );
 
             InstanceGuard m_feature_guard;
             ResultRefer m_result_refer;
@@ -101,9 +103,9 @@ namespace Guard
 
             template < typename _HolderRefer,
                 typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _HolderRefer > >::value > >
-            static constexpr ::SimilarRefer< Result, _HolderRefer && > value ( _HolderRefer && holder )
+            static constexpr ::SimilarRefer< ResultRefer, _HolderRefer && > value ( _HolderRefer && holder )
             {
-                return ::std::forward< ::SimilarRefer< Result, _HolderRefer && > >( holder.m_result_refer );
+                return ::std::forward< ::SimilarRefer< ResultRefer, _HolderRefer && > >( holder.m_result_refer );
             }
         };
     };
@@ -130,9 +132,12 @@ namespace Guard
             using RightInstanceGuard = ::InstanceGuard< RightInstanceRefer >;
             using LeftValueRefer = ::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >;
             using RightValueRefer = ::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >;
-            using ResultRefer = ::std::result_of_t< Invokable( LeftValueRefer, RightValueRefer ) >;
-            using Result = ::std::remove_reference_t< ResultRefer >;
+            using ResultRefer = _Type;
 
+            static_assert( ::std::is_reference< _Type >::value,
+                "The template parameter _Type must to be a reference type." );
+            static_assert( ::std::is_same< ResultRefer, ::std::result_of_t< Invokable( LeftValueRefer, RightValueRefer ) > >::value,
+                "The result of _Invokable( _LeftRefer, _InstanceRefer ) must to be a _Type" );
             static_assert( ::std::is_reference< ResultRefer >::value,
                 "The result of _Invokable( LeftValueRefer, RightValueRefer ) must to be a reference type." );
 
@@ -159,9 +164,9 @@ namespace Guard
 
             template < typename _HolderRefer,
                 typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _HolderRefer > >::value > >
-            static constexpr ::SimilarRefer< Result, _HolderRefer && > value ( _HolderRefer && holder )
+            static constexpr ::SimilarRefer< ResultRefer, _HolderRefer && > value ( _HolderRefer && holder )
             {
-                return ::std::forward< ::SimilarRefer< Result, _HolderRefer && > >( holder.m_result_refer );
+                return ::std::forward< ::SimilarRefer< ResultRefer, _HolderRefer && > >( holder.m_result_refer );
             }
         };
     };

@@ -41,7 +41,7 @@ namespace Private
         using ValueAccess = typename InstanceGuard::ValueAccess;
         using PointerAccess = typename InstanceGuard::PointerAccess;
 
-        static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must to be of reference type." );
+        static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must to be a reference type." );
         static_assert( !::is_instance< ::std::decay_t< Refer > >, "The template parameter _Refer must to be a not Instance type reference!" );
 
     private:
@@ -116,9 +116,9 @@ namespace Private
         using ValueAccess =  typename ValueGuard::ValueAccess;
         using PointerAccess = typename ValueGuard::PointerAccess;
 
-        static_assert( ::std::is_reference< InstanceRefer >::value, "The template parameter _Refer must to be of reference type." );
+        static_assert( ::std::is_reference< InstanceRefer >::value, "The template parameter _Refer must to be a reference type." );
         static_assert( ::is_instance< Instance >, "The template parameter _Refer must to be a Instance type reference!" );
-        static_assert( ::is_similar< ValueRefer, InstanceRefer >, "The Refer and ValueRefer must to be similar types!" );
+        //static_assert( ::is_similar< ValueRefer, InstanceRefer >, "The Refer and ValueRefer must to be similar types!" );
         static_assert( ::is_similar< HolderRefer, InstanceRefer >, "The Refer and HolderRefer must to be similar types!" );
 
     private:

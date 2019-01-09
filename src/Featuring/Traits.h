@@ -119,8 +119,8 @@ namespace Private
     template < typename _Type, typename _Refer >
     struct SimilarReferHelper
     {
-        static_assert( !::std::is_reference< _Type >::value, "The template parameter _Type must to be a not reference." );
-        static_assert( ::std::is_reference< _Refer >::value, "The template parameter _Refer must to be of reference type." );
+        //static_assert( !::std::is_reference< _Type >::value, "The template parameter _Type must to be a not reference." );
+        static_assert( ::std::is_reference< _Refer >::value, "The template parameter _Refer must to be a reference type." );
 
         using ValueFromRefer = ::std::remove_reference_t< _Refer >;
         static constexpr bool is_lvalue = ::std::is_lvalue_reference< _Refer >::value;
@@ -132,7 +132,7 @@ namespace Private
         using CVCheckedType =::std::conditional_t< is_const, ::std::add_const_t< VCheckedType >, VCheckedType >;
         using Type = ::std::conditional_t< is_rvalue, ::std::add_rvalue_reference_t< CVCheckedType >, ::std::add_lvalue_reference_t< CVCheckedType > >;
 
-        static_assert( ::is_similar< Type, _Refer >, "Result Type must to be similar _Refer" );
+        //static_assert( ::is_similar< Type, _Refer >, "Result Type must to be similar _Refer" );
     };
 }
 

@@ -23,10 +23,10 @@ template < typename > struct InstanceAccess;
 template < typename _Value, typename _Tool = ::Inplace::DefaultTool >
 class Instance
 {
-    static_assert( !::std::is_reference< _Value >::value,
-        "The template parameter _Value must to be a non reference type." );
+    //static_assert( !::std::is_reference< _Value >::value,
+    //    "The template parameter _Value must to be not a reference type." );
     static_assert( !::std::is_reference< _Tool >::value,
-        "The template parameter _Tool must to be a non reference type." );
+        "The template parameter _Tool must to be not a reference type." );
 
     template < typename >
     friend struct InstanceAccess;

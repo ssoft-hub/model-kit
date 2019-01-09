@@ -21,7 +21,7 @@ public:
     using Value = ::std::remove_reference_t< Refer >;
     using RawPointer = ::std::add_pointer_t< Value >;
 
-    static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must to be of reference type." );
+    static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must to be a reference type." );
 
 private:
     Refer m_refer;

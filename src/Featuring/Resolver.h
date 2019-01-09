@@ -149,8 +149,8 @@ namespace Private
         using NextResolver = InstanceResolver< Instance, OtherValueRefer >;
         using AccessRefer = typename NextResolver::AccessRefer;
 
-        static_assert( ::is_instance< Instance >, "The template parameter _Instance must to be a instance!" );
-        static_assert( ::std::is_reference< OtherRefer >::value, "The template parameter _OtherRefer must to be of reference type." );
+        static_assert( ::is_instance< Instance >, "The template parameter _Instance must to be a Instance type!" );
+        static_assert( ::std::is_reference< OtherRefer >::value, "The template parameter _OtherRefer must to be a reference type." );
         static_assert( ::is_instance< OtherInstance >, "The template parameter _OtherRefer must to be a Instance type reference!" );
         static_assert( ::is_similar< OtherRefer, OtherValueRefer >, "The OtherRefer and OtherValueRefer must to be similar types!" );
 
@@ -187,7 +187,7 @@ namespace Private
         using AccessRefer = typename OtherValueGuard::ValueRefer;
 
         static_assert( ::is_instance< Instance >, "The template parameter _Instance must to be a instance!" );
-        static_assert( ::std::is_reference< OtherRefer >::value, "The template parameter _OtherRefer must to be of reference type." );
+        static_assert( ::std::is_reference< OtherRefer >::value, "The template parameter _OtherRefer must to be a reference type." );
 
     private:
         OtherValueGuard m_value_guard;
