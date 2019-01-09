@@ -399,7 +399,7 @@ static void operator[Name]Right ( _Left && left, const volatile ThisType & right
 ```cpp
 template < typename _Left, typename _HolderRightRefer,
     typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _HolderRightRefer > >::value > >
-static void operator[Name]Left ( _Left && left, _HolderRightRefer && right );
+static void operator[Name]Right ( _Left && left, _HolderRightRefer && right );
 ```
 
 Для бинарных операторов в случае, если экземпляр значения этого типа **Holder** находится справа, а слева находится экземпляр значения являющийся подобным **Holder** (тем же самым или со значением производного типа), интерфейс методов должен выгладеть так:

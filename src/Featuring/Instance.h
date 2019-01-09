@@ -133,37 +133,37 @@ public:
 /*! NOTE: The 'operator =' cannot be implemented as global method. */
 
 /* Arithmetic operators */
-//GLOBAL_BINARY_OPERATOR( *, Multiply )
-//GLOBAL_BINARY_OPERATOR( /, Divide )
-//GLOBAL_BINARY_OPERATOR( %, Modulo )
-//GLOBAL_BINARY_OPERATOR( +, Addition )
-//GLOBAL_BINARY_OPERATOR( -, Subtraction )
-///* Compound assignment */
-//GLOBAL_BINARY_OPERATOR( *=, MultiplyAssignment )
-//GLOBAL_BINARY_OPERATOR( /=, DivideAssignment )
-//GLOBAL_BINARY_OPERATOR( %=, ModuloAssignment )
-//GLOBAL_BINARY_OPERATOR( +=, AdditionAssignment )
-//GLOBAL_BINARY_OPERATOR( -=, SubtractionAssignment )
-//GLOBAL_BINARY_OPERATOR( <<=, ShiftLeftAssignment )
-//GLOBAL_BINARY_OPERATOR( >>=, ShiftRightAssignment )
-//GLOBAL_BINARY_OPERATOR( &=, BitwiseAndAssignment )
-//GLOBAL_BINARY_OPERATOR( ^=, BitwiseXorAssignment )
-//GLOBAL_BINARY_OPERATOR( |=, BitwiseOrAssignment )
-///* Relational and comparison operators */
-////GLOBAL_BINARY_OPERATOR( ==, IsEqual )
-//GLOBAL_BINARY_OPERATOR( !=, NotEqual )
-//GLOBAL_BINARY_OPERATOR( <, Less )
-//GLOBAL_BINARY_OPERATOR( <=, LessOrEqual )
-//GLOBAL_BINARY_OPERATOR( >, Greater )
-//GLOBAL_BINARY_OPERATOR( >=, GreaterOrEqual )
-///* Logical operators */
-//GLOBAL_BINARY_OPERATOR( &&, LogicalAnd )
-//GLOBAL_BINARY_OPERATOR( ||, LogicalOr )
-///* Bitwise operators */
-//GLOBAL_BINARY_OPERATOR( &, BitwiseAnd )
-//GLOBAL_BINARY_OPERATOR( ^, BitwiseXor )
-//GLOBAL_BINARY_OPERATOR( |, BitwiseOr )
-//GLOBAL_BINARY_OPERATOR( <<, ShiftLeft )
-//GLOBAL_BINARY_OPERATOR( >>, ShiftRight )
+GLOBAL_BINARY_OPERATOR( *, Multiply )
+GLOBAL_BINARY_OPERATOR( /, Divide )
+GLOBAL_BINARY_OPERATOR( %, Modulo )
+GLOBAL_BINARY_OPERATOR( +, Addition )
+GLOBAL_BINARY_OPERATOR( -, Subtraction )
+/* Compound assignment */
+GLOBAL_BINARY_OPERATOR( *=, MultiplyAssignment )
+GLOBAL_BINARY_OPERATOR( /=, DivideAssignment )
+GLOBAL_BINARY_OPERATOR( %=, ModuloAssignment )
+GLOBAL_BINARY_OPERATOR( +=, AdditionAssignment )
+GLOBAL_BINARY_OPERATOR( -=, SubtractionAssignment )
+GLOBAL_BINARY_OPERATOR( <<=, ShiftLeftAssignment )
+GLOBAL_BINARY_OPERATOR( >>=, ShiftRightAssignment )
+GLOBAL_BINARY_OPERATOR( &=, BitwiseAndAssignment )
+GLOBAL_BINARY_OPERATOR( ^=, BitwiseXorAssignment )
+GLOBAL_BINARY_OPERATOR( |=, BitwiseOrAssignment )
+/* Relational and comparison operators */
+GLOBAL_BINARY_OPERATOR( ==, IsEqual )
+GLOBAL_BINARY_OPERATOR( !=, NotEqual )
+GLOBAL_BINARY_OPERATOR( <, Less )
+GLOBAL_BINARY_OPERATOR( <=, LessOrEqual )
+GLOBAL_BINARY_OPERATOR( >, Greater )
+GLOBAL_BINARY_OPERATOR( >=, GreaterOrEqual )
+/* Logical operators */
+GLOBAL_BINARY_OPERATOR( &&, LogicalAnd )
+GLOBAL_BINARY_OPERATOR( ||, LogicalOr )
+/* Bitwise operators */
+GLOBAL_BINARY_OPERATOR( &, BitwiseAnd )
+GLOBAL_BINARY_OPERATOR( ^, BitwiseXor )
+GLOBAL_BINARY_OPERATOR( |, BitwiseOr )
+GLOBAL_BINARY_OPERATOR( <<, ShiftLeft )
+GLOBAL_BINARY_OPERATOR( >>, ShiftRight )
 
 #endif

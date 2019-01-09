@@ -3,6 +3,7 @@
 #define OPERATOR_BLA_H
 
 #include <ModelKit/Featuring/Access/ValuePointer.h>
+#include <ModelKit/Utility/SingleArgument.h>
 #include "Operator/BinaryOperator.h"
 #include "Operator/UnaryOperator.h"
 
@@ -30,7 +31,7 @@ BINARY_OPERATOR_IMPLEMENTAION( <=, LessOrEqual )
 BINARY_OPERATOR_IMPLEMENTAION( >, Greater )
 BINARY_OPERATOR_IMPLEMENTAION( >=, GreaterOrEqual )
 
-//BINARY_OPERATOR_IMPLEMENTAION( *, Multiply )
+BINARY_OPERATOR_IMPLEMENTAION( *, Multiply )
 BINARY_OPERATOR_IMPLEMENTAION( /, Divide )
 BINARY_OPERATOR_IMPLEMENTAION( %, Modulo )
 BINARY_OPERATOR_IMPLEMENTAION( +, Addition )
@@ -59,15 +60,13 @@ BINARY_OPERATOR_IMPLEMENTAION( |=, BitwiseOrAssignment )
 BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
 
 #define GLOBAL_BINARY_OPERATOR_PROTOTYPE( symbol, right_refer, Invokable ) \
-    template < typename _Left, typename _RightValue, typename _RightTool, \
-        typename = ::std::enable_if_t< is_ ## Invokable ## _operator_exists< _Left &&, typename Instance< _RightValue, _RightTool >::Value right_refer > > > \
-    /*constexpr*/ decltype(auto) operator symbol ( _Left && left, Instance< _RightValue, _RightTool > right_refer right ) \
+    template < typename _Left, typename _RightValue, typename _RightTool/*, \
+        typename = ::std::enable_if_t< is_ ## Invokable ## _operator_exists< _Left &&, typename Instance< _RightValue, _RightTool >::Value right_refer > >*/ > \
+    constexpr decltype(auto) operator symbol ( _Left && left, Instance< _RightValue, _RightTool > right_refer right ) \
     { \
-        /* TODO: */ \
-        using RightInstance = Instance< _RightValue, _RightTool >; \
-        return ::Operator::Invokable< ::std::decay_t< _Left >, RightInstance >()( \
-            ::std::forward< _Left >( left ), \
-            ::std::forward< RightInstance right_refer >( right ) ); \
+        using LeftRefer = _Left &&; \
+        using RightRefer = Instance< _RightValue, _RightTool > right_refer; \
+        return ::Operator::Binary::Invokable ## Helper< LeftRefer, RightRefer >::invoke( ::std::forward< LeftRefer >( left ), ::std::forward< RightRefer >( right ) ); \
     } \
 
 #define GLOBAL_BINARY_OPERATOR( symbol, Invokable ) \
@@ -95,7 +94,9 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
         typename = ::std::enable_if_t< ::Operator::Binary::is_ ## Invokable ## _operator_exists< Value this_refer, _Right && > >*/ > \
     constexpr decltype(auto) operator symbol ( _Right && right ) this_refer \
     { \
-        return ::Operator::Binary::Invokable ## Helper< ThisType this_refer, _Right && >::invoke( ::std::forward< ThisType this_refer >( *this ), ::std::forward< _Right && >( right ) ); \
+        using LeftRefer = ThisType this_refer; \
+        using RightRefer = _Right &&; \
+        return ::Operator::Binary::Invokable ## Helper< LeftRefer, RightRefer >::invoke( ::std::forward< LeftRefer >( *this ), ::std::forward< RightRefer >( right ) ); \
     } \
 
 #define POSTFIX_UNARY_OPERATOR_PROTOTYPE_WITH_ARGUMENT( symbol, this_refer, Invokable ) \
