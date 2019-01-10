@@ -216,7 +216,9 @@ namespace Operator
         {
             using LeftInstanceRefer = _Left &&;
             using RightInstanceRefer = _Right &&;
+
             // TODO: check - this part of
+
             using LeftInstanceGuard = ::InstanceGuard< LeftInstanceRefer >;
             using RightInstanceGuard = ::InstanceGuard< RightInstanceRefer >;
             return invokable( LeftInstanceGuard( ::std::forward< LeftInstanceRefer >( left ) ).instanceAccess(),
@@ -232,7 +234,9 @@ namespace Operator
         {
             using LeftInstanceRefer = _Left &&;
             using RightInstanceRefer = _Right &&;
+
             // TODO: check - this part of
+
             using LeftInstanceGuard = ::InstanceGuard< LeftInstanceRefer >;
             using RightInstanceGuard = ::InstanceGuard< RightInstanceRefer >;
             invokable( LeftInstanceGuard( ::std::forward< LeftInstanceRefer >( left ) ).instanceAccess(),
@@ -258,10 +262,11 @@ namespace Operator
                 "The type of return parameter must to be not a reference type." );
 
             // TODO: check - this part of
+
             using LeftInstanceGuard = ::InstanceGuard< LeftInstanceRefer >;
             using RightInstanceGuard = ::InstanceGuard< RightInstanceRefer >;
-            using DefaultTool = ::Inplace::DefaultTool;
-            return ::Instance< Returned, DefaultTool >(invokable( LeftInstanceGuard( ::std::forward< LeftInstanceRefer >( left ) ).instanceAccess(),
+            using ResultInstance = ::Instance< Returned, ::Inplace::DefaultTool >;
+            return ResultInstance( invokable( LeftInstanceGuard( ::std::forward< LeftInstanceRefer >( left ) ).instanceAccess(),
                 RightInstanceGuard( ::std::forward< RightInstanceRefer >( right ) ).instanceAccess() ) );
         }
     };
@@ -283,9 +288,11 @@ namespace Operator
             static_assert( ::std::is_reference< Returned >::value,
                 "The type of return parameter must to be a reference type." );
 
+            // TODO: check - this part of
+
             using GuardTool = ::Guard::BothTool< Invokable, LeftInstanceRefer, RightInstanceRefer >;
-            using Result = ::std::remove_reference_t< Returned >;
-            return ::Instance< Result, GuardTool >( ::std::forward< InvokableRefer >( invokable ), ::std::forward< LeftInstanceRefer >( left ), ::std::forward< RightInstanceRefer >( right ) );
+            using ResultInstance = ::Instance< Returned, GuardTool >;
+            return ResultInstance( ::std::forward< InvokableRefer >( invokable ), ::std::forward< LeftInstanceRefer >( left ), ::std::forward< RightInstanceRefer >( right ) );
         }
     };
 }
