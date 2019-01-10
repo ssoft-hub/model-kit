@@ -17,6 +17,97 @@ namespace Operator
     }
 }
 
+#define IS_BINARY_OPERATOR_EXISTS_TEST_TRAIT( Invokable ) \
+    template < typename _Kind, typename _LeftRefer, typename _RightRefer > \
+    struct Is ## Invokable ## OperatorExistsTestHelper; \
+     \
+    template < typename _LeftRefer, typename _RightRefer > \
+    using Is ## Invokable ## OperatorExistsTest = Is ## Invokable ## OperatorExistsTestHelper< ::Operator::InstanceCase< _LeftRefer, _RightRefer >, _LeftRefer, _RightRefer >; \
+     \
+    template < typename _LeftRefer, typename _RightRefer > \
+    static constexpr bool is_ ## Invokable ## _operator_exists_test = Is ## Invokable ## OperatorExistsTest< _LeftRefer, _RightRefer >::value; \
+     \
+     \
+    template < typename _LeftRefer, typename _RightRefer > \
+    struct Is ## Invokable ## OperatorExistsTestHelper< ::Operator::NoneInstanceCase, _LeftRefer, _RightRefer > \
+    { \
+        static_assert( ::std::is_reference< _LeftRefer >::value, "The template parameter _LeftRefer must to be a reference type." ); \
+        static_assert( ::std::is_reference< _RightRefer >::value, "The template parameter _RightRefer must to be a reference type." ); \
+     \
+        static const bool value = ::Operator::Binary::is_ ## Invokable ## _operator_exists< _LeftRefer, _RightRefer >; \
+    }; \
+     \
+    template < typename _LeftRefer, typename _RightRefer > \
+    struct Is ## Invokable ## OperatorExistsTestHelper< ::Operator::LeftInstanceCase, _LeftRefer, _RightRefer > \
+    { \
+        static_assert( ::std::is_reference< _LeftRefer >::value, "The template parameter _LeftRefer must to be a reference type." ); \
+        static_assert( ::std::is_reference< _RightRefer >::value, "The template parameter _RightRefer must to be a reference type." ); \
+        using LeftInstanceRefer = _LeftRefer; \
+        using LeftInstance = ::std::decay_t< LeftInstanceRefer >; \
+        using LeftHolder = typename LeftInstance::Holder; \
+        using LeftHolderRefer = ::SimilarRefer< LeftHolder, LeftInstanceRefer >; \
+        using LeftValue = typename LeftInstance::Value; \
+        using LeftValueRefer = ::SimilarRefer< LeftValue, LeftInstanceRefer >; \
+        using RightRefer = _RightRefer; \
+     \
+        static const bool value = ::Operator::Binary::is_operator ## Invokable ## Left_method_exists< LeftHolder, void(LeftHolderRefer,RightRefer) > \
+            || ::Operator::Binary::is_ ## Invokable ## _operator_exists< LeftValueRefer, RightRefer >; \
+    }; \
+     \
+    template < typename _LeftRefer, typename _RightRefer > \
+    struct Is ## Invokable ## OperatorExistsTestHelper< ::Operator::RightInstanceCase, _LeftRefer, _RightRefer > \
+    { \
+        static_assert( ::std::is_reference< _LeftRefer >::value, "The template parameter _LeftRefer must to be a reference type." ); \
+        static_assert( ::std::is_reference< _RightRefer >::value, "The template parameter _RightRefer must to be a reference type." ); \
+        using LeftRefer = _LeftRefer; \
+        using RightInstanceRefer = _RightRefer; \
+        using RightInstance = ::std::decay_t< RightInstanceRefer >; \
+        using RightHolder = typename RightInstance::Holder; \
+        using RightHolderRefer = ::SimilarRefer< RightHolder, RightInstanceRefer >; \
+        using RightValue = typename RightInstance::Value; \
+        using RightValueRefer = ::SimilarRefer< RightValue, RightInstanceRefer >; \
+     \
+        static const bool value = ::Operator::Binary::is_operator ## Invokable ## Right_method_exists< RightHolder, void(LeftRefer,RightHolderRefer) > \
+            || ::Operator::Binary::is_ ## Invokable ## _operator_exists< LeftRefer, RightValueRefer >; \
+    }; \
+     \
+    template < typename _LeftRefer, typename _RightRefer > \
+    struct Is ## Invokable ## OperatorExistsTestHelper< ::Operator::BothInstanceCase, _LeftRefer, _RightRefer > \
+    { \
+        static_assert( ::std::is_reference< _LeftRefer >::value, "The template parameter _LeftRefer must to be a reference type." ); \
+        static_assert( ::std::is_reference< _RightRefer >::value, "The template parameter _RightRefer must to be a reference type." ); \
+        using LeftInstanceRefer = _LeftRefer; \
+        using LeftInstance = ::std::decay_t< LeftInstanceRefer >; \
+        using LeftHolder = typename LeftInstance::Holder; \
+        using LeftHolderRefer = ::SimilarRefer< LeftHolder, LeftInstanceRefer >; \
+        using LeftValue = typename LeftInstance::Value; \
+        using LeftValueRefer = ::SimilarRefer< LeftValue, LeftInstanceRefer >; \
+        using RightInstanceRefer = _RightRefer; \
+        using RightInstance = ::std::decay_t< RightInstanceRefer >; \
+        using RightHolder = typename RightInstance::Holder; \
+        using RightHolderRefer = ::SimilarRefer< RightHolder, RightInstanceRefer >; \
+        using RightValue = typename RightInstance::Value; \
+        using RightValueRefer = ::SimilarRefer< RightValue, RightInstanceRefer >; \
+     \
+        static const bool is_compatible_value = ::is_compatible< LeftInstance, RightInstance > \
+            && ( ::Operator::Binary::is_operator ## Invokable ## Both_method_exists< LeftHolder, void(LeftHolderRefer,RightHolderRefer) > \
+                || is_ ## Invokable ## _operator_exists_test< LeftValueRefer, LeftValueRefer > ); \
+     \
+        static const bool is_left_path_of_right_value = ::is_this_part_of_other< LeftInstance, RightInstance > \
+            && is_ ## Invokable ## _operator_exists_test< LeftInstanceRefer, RightValueRefer >; \
+     \
+        static const bool is_right_path_of_left_value = ::is_this_part_of_other< RightInstance, LeftInstance > \
+            && is_ ## Invokable ## _operator_exists_test< LeftValueRefer, RightInstanceRefer >; \
+     \
+        static const bool is_not_compatible_value = !::is_compatible< LeftInstance, RightInstance > \
+            && is_ ## Invokable ## _operator_exists_test< LeftValueRefer, LeftValueRefer >; \
+     \
+        static const bool value = is_compatible_value \
+            || is_left_path_of_right_value \
+            || is_right_path_of_left_value \
+            || is_not_compatible_value; \
+    }; \
+
 #define BINARY_OPERATOR_IMPLEMENTAION( symbol, Invokable ) \
     namespace Operator \
     { \
@@ -27,6 +118,7 @@ namespace Operator
             IS_METHOD_EXISTS_TRAIT( operator ## Invokable ## Left ) \
             IS_METHOD_EXISTS_TRAIT( operator ## Invokable ## Right ) \
             IS_METHOD_EXISTS_TRAIT( operator ## Invokable ## Both ) \
+            IS_BINARY_OPERATOR_EXISTS_TEST_TRAIT( Invokable ) \
         } \
     } \
      \

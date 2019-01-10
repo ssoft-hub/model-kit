@@ -90,8 +90,8 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
     } \
 
 #define BINARY_OPERATOR_PROTOTYPE_FOR_ANY( symbol, this_refer, Invokable ) \
-    template < typename _Right/*, \
-        typename = ::std::enable_if_t< ::Operator::Binary::is_ ## Invokable ## _operator_exists< Value this_refer, _Right && > >*/ > \
+    template < typename _Right, \
+        typename = ::std::enable_if_t< ::Operator::Binary::is_ ## Invokable ## _operator_exists_test< ThisType this_refer, _Right && > > > \
     constexpr decltype(auto) operator symbol ( _Right && right ) this_refer \
     { \
         using LeftRefer = ThisType this_refer; \
