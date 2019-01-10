@@ -138,8 +138,6 @@ namespace Guard
                 "The template parameter _Type must to be a reference type." );
             static_assert( ::std::is_same< ResultRefer, ::std::result_of_t< Invokable( LeftValueRefer, RightValueRefer ) > >::value,
                 "The result of _Invokable( _LeftRefer, _InstanceRefer ) must to be a _Type" );
-            static_assert( ::std::is_reference< ResultRefer >::value,
-                "The result of _Invokable( LeftValueRefer, RightValueRefer ) must to be a reference type." );
 
             LeftInstanceGuard m_left_feature_guard;
             RightInstanceGuard m_right_feature_guard;
