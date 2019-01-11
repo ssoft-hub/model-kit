@@ -19,12 +19,12 @@
         using Type = decltype( __test< _Type >( ::std::declval< int >() ) ); \
     }; \
     \
-    template < typename _Type, typename _Member, typename ... _Arguments > \
-    struct Is_ ## method ## _MethodExistsHelper< _Type, _Member( _Arguments ... ) > \
+    template < typename _Type, typename _Result, typename ... _Arguments > \
+    struct Is_ ## method ## _MethodExistsHelper< _Type, _Result( _Arguments ... ) > \
     { \
     private: \
         template < typename _Test, \
-            typename = ::std::enable_if_t< ::std::is_same< decltype( ::std::declval< _Test >().method( ::std::declval< _Arguments >() ... ) ), _Member >::value > > \
+            typename = ::std::enable_if_t< ::std::is_same< decltype( ::std::declval< _Test >().method( ::std::declval< _Arguments >() ... ) ), _Result >::value > > \
         static constexpr ::std::true_type __test ( int ); \
     \
         template< typename > \
