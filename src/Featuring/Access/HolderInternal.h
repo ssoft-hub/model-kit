@@ -100,14 +100,16 @@ struct HolderInternal
     IS_METHOD_EXISTS_TRAIT( unguard )
     IS_METHOD_EXISTS_TRAIT( value )
 
-    template < typename _HolderRefer >
+    template < typename _HolderRefer,
+        typename = ::std::enable_if_t< is_value_method_exists< ::std::decay_t< _HolderRefer >, _HolderRefer > > >
     static constexpr void guard ( _HolderRefer holder )
     {
         using Holder = ::std::decay_t< _HolderRefer >;
         ::GuardHelper< _HolderRefer, is_guard_method_exists< Holder, void( _HolderRefer ) > >::guard( ::std::forward< _HolderRefer >( holder ) );
     }
 
-    template < typename _HolderRefer >
+    template < typename _HolderRefer,
+        typename = ::std::enable_if_t< is_value_method_exists< ::std::decay_t< _HolderRefer >, _HolderRefer > > >
     static constexpr void unguard ( _HolderRefer holder )
     {
         using Holder = ::std::decay_t< _HolderRefer >;
