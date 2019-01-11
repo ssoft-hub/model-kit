@@ -108,6 +108,8 @@ namespace Private
         SpecialInstanceGuard ( InstanceRefer refer )
             : m_refer_pointer( ::std::forward< InstanceRefer >( refer ) )
         {
+            static_assert( ::HolderInternal::is_value_method_exists< Holder, ValueRefer(HolderRefer) >,
+                "There are no appropriate access methods for Holder." );
             ::HolderInternal::guard< HolderRefer >( ::std::forward< HolderRefer >( m_refer_pointer->m_holder ) );
         }
 
@@ -150,7 +152,7 @@ namespace Private
     };
 
     template < typename _Refer >
-    using InstanceGuardCase = typename InstanceGuardCaseHelper< _Refer >::Type;
+    using InstanceGuardSwitchCase = typename InstanceGuardCaseHelper< _Refer >::Type;
 
     template < typename, typename >
     struct InstanceSwith;
@@ -171,7 +173,7 @@ namespace Private
     struct InstanceGuardHelper
     {
         static_assert( ::std::is_reference< _Refer >::value, "The template parameter _Refer must to be a reference type." );
-        using Type = typename InstanceSwith< InstanceGuardCase< _Refer >, _Refer >::Type;
+        using Type = typename InstanceSwith< InstanceGuardSwitchCase< _Refer >, _Refer >::Type;
     };
 }
 

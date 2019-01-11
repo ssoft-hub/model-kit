@@ -10,13 +10,15 @@
 
 namespace Operator
 {
-    template < typename >
-    struct InstanceSwitch;
-
     struct NoneInstanceCase {};
     struct LeftInstanceCase {};
     struct RightInstanceCase {};
     struct BothInstanceCase {};
+    struct BothExposingCase;
+    struct RightExposingCase;
+    struct LeftExposingCase;
+
+    using UnaryInstanceCase = LeftInstanceCase;
 
     template < typename _Left, typename _Right >
     struct InstanceCaseHelper
@@ -32,8 +34,23 @@ namespace Operator
                     NoneInstanceCase > > >;
     };
 
+    template < typename _Left, typename _Right = void >
+    using InstanceSwitchCase = typename InstanceCaseHelper< _Left, _Right >::Type;
+
     template < typename _Left, typename _Right >
-    using InstanceCase = typename InstanceCaseHelper< _Left, _Right >::Type;
+    struct ExposingCaseHelper
+    {
+        using Left = ::std::decay_t< _Left >;
+        using Right = ::std::decay_t< _Right >;
+        using Type = ::std::conditional_t< ::is_this_part_of_other< Left, Right >,
+                RightExposingCase,
+                ::std::conditional_t< ::is_this_part_of_other< Right, Left >,
+                    LeftExposingCase,
+                    BothExposingCase > >;
+    };
+
+    template < typename _Left, typename _Right >
+    using ExposingSwitchCase = typename ExposingCaseHelper< _Left, _Right >::Type;
 }
 
 namespace Operator
@@ -64,7 +81,7 @@ namespace Operator
     };
 
     template < typename _Returned, typename _Value >
-    using ResultCase = typename ResultCaseHelper< _Returned, _Value >::Type;
+    using ResultSwitchCase = typename ResultCaseHelper< _Returned, _Value >::Type;
 }
 
 namespace Operator
@@ -208,17 +225,28 @@ namespace Operator
         }
     };
 
+    template < typename _ResultCase >
+    struct ResultSwitch< BothInstanceCase, _ResultCase >
+    {
+        template < typename _Invokable, typename _Left, typename _Right >
+        static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
+        {
+            using InvokableRefer = _Invokable &&;
+            using LeftInstanceRefer = _Left &&;
+            using RightInstanceRefer = _Right &&;
+            return ::Operator::ResultSwitch< ::Operator::ExposingSwitchCase< LeftInstanceRefer, RightInstanceRefer >, _ResultCase >
+                ::invoke( ::std::forward< InvokableRefer >( invokable ), ::std::forward< LeftInstanceRefer >( left ), ::std::forward< RightInstanceRefer >( right ) );
+        }
+    };
+
     template <>
-    struct ResultSwitch< BothInstanceCase, FundamentalCase >
+    struct ResultSwitch< BothExposingCase, FundamentalCase >
     {
         template < typename _Invokable, typename _Left, typename _Right >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
         {
             using LeftInstanceRefer = _Left &&;
             using RightInstanceRefer = _Right &&;
-
-            // TODO: check - this part of
-
             using LeftInstanceGuard = ::InstanceGuard< LeftInstanceRefer >;
             using RightInstanceGuard = ::InstanceGuard< RightInstanceRefer >;
             return invokable( LeftInstanceGuard( ::std::forward< LeftInstanceRefer >( left ) ).instanceAccess(),
@@ -227,16 +255,41 @@ namespace Operator
     };
 
     template <>
-    struct ResultSwitch< BothInstanceCase, ThisCase >
+    struct ResultSwitch< RightExposingCase, FundamentalCase >
     {
         template < typename _Invokable, typename _Left, typename _Right >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
         {
             using LeftInstanceRefer = _Left &&;
             using RightInstanceRefer = _Right &&;
+            using RightInstanceGuard = ::InstanceGuard< RightInstanceRefer >;
+            return invokable( ::std::forward< LeftInstanceRefer >( left ),
+                RightInstanceGuard( ::std::forward< RightInstanceRefer >( right ) ).instanceAccess() );
+        }
+    };
 
-            // TODO: check - this part of
+    template <>
+    struct ResultSwitch< LeftExposingCase, FundamentalCase >
+    {
+        template < typename _Invokable, typename _Left, typename _Right >
+        static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
+        {
+            using LeftInstanceRefer = _Left &&;
+            using RightInstanceRefer = _Right &&;
+            using LeftInstanceGuard = ::InstanceGuard< LeftInstanceRefer >;
+            return invokable( LeftInstanceGuard( ::std::forward< LeftInstanceRefer >( left ) ).instanceAccess(),
+                ::std::forward< RightInstanceRefer >( right ) );
+        }
+    };
 
+    template <>
+    struct ResultSwitch< BothExposingCase, ThisCase >
+    {
+        template < typename _Invokable, typename _Left, typename _Right >
+        static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
+        {
+            using LeftInstanceRefer = _Left &&;
+            using RightInstanceRefer = _Right &&;
             using LeftInstanceGuard = ::InstanceGuard< LeftInstanceRefer >;
             using RightInstanceGuard = ::InstanceGuard< RightInstanceRefer >;
             invokable( LeftInstanceGuard( ::std::forward< LeftInstanceRefer >( left ) ).instanceAccess(),
@@ -246,7 +299,37 @@ namespace Operator
     };
 
     template <>
-    struct ResultSwitch< BothInstanceCase, DefaultCase >
+    struct ResultSwitch< RightExposingCase, ThisCase >
+    {
+        template < typename _Invokable, typename _Left, typename _Right >
+        static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
+        {
+            using LeftInstanceRefer = _Left &&;
+            using RightInstanceRefer = _Right &&;
+            using RightInstanceGuard = ::InstanceGuard< RightInstanceRefer >;
+            invokable( ::std::forward< LeftInstanceRefer >( left ),
+                RightInstanceGuard( ::std::forward< RightInstanceRefer >( right ) ).instanceAccess() );
+            return ::std::forward< LeftInstanceRefer >( left );
+        }
+    };
+
+    template <>
+    struct ResultSwitch< LeftExposingCase, ThisCase >
+    {
+        template < typename _Invokable, typename _Left, typename _Right >
+        static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
+        {
+            using LeftInstanceRefer = _Left &&;
+            using RightInstanceRefer = _Right &&;
+            using LeftInstanceGuard = ::InstanceGuard< LeftInstanceRefer >;
+            invokable( LeftInstanceGuard( ::std::forward< LeftInstanceRefer >( left ) ).instanceAccess(),
+                ::std::forward< RightInstanceRefer >( right ) );
+            return ::std::forward< LeftInstanceRefer >( left );
+        }
+    };
+
+    template <>
+    struct ResultSwitch< BothExposingCase, DefaultCase >
     {
         template < typename _Invokable, typename _Left, typename _Right >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
@@ -261,8 +344,6 @@ namespace Operator
             static_assert( !::std::is_reference< Returned >::value,
                 "The type of return parameter must to be not a reference type." );
 
-            // TODO: check - this part of
-
             using LeftInstanceGuard = ::InstanceGuard< LeftInstanceRefer >;
             using RightInstanceGuard = ::InstanceGuard< RightInstanceRefer >;
             using ResultInstance = ::Instance< Returned, ::Inplace::DefaultTool >;
@@ -272,7 +353,53 @@ namespace Operator
     };
 
     template <>
-    struct ResultSwitch< BothInstanceCase, BlockedCase >
+    struct ResultSwitch< RightExposingCase, DefaultCase >
+    {
+        template < typename _Invokable, typename _Left, typename _Right >
+        static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
+        {
+            using LeftInstanceRefer = _Left &&;
+            using LeftValueRefer = ::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >;
+            using RightInstanceRefer = _Right &&;
+            using RightValueRefer = ::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >;
+            using Invokable = _Invokable;
+            using Returned = ::std::result_of_t< Invokable( LeftValueRefer, RightValueRefer ) >;
+
+            static_assert( !::std::is_reference< Returned >::value,
+                "The type of return parameter must to be not a reference type." );
+
+            using RightInstanceGuard = ::InstanceGuard< RightInstanceRefer >;
+            using ResultInstance = ::Instance< Returned, ::Inplace::DefaultTool >;
+            return ResultInstance( invokable( ::std::forward< LeftInstanceRefer >( left ),
+                RightInstanceGuard( ::std::forward< RightInstanceRefer >( right ) ).instanceAccess() ) );
+        }
+    };
+
+    template <>
+    struct ResultSwitch< LeftExposingCase, DefaultCase >
+    {
+        template < typename _Invokable, typename _Left, typename _Right >
+        static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
+        {
+            using LeftInstanceRefer = _Left &&;
+            using LeftValueRefer = ::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >;
+            using RightInstanceRefer = _Right &&;
+            using RightValueRefer = ::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >;
+            using Invokable = _Invokable;
+            using Returned = ::std::result_of_t< Invokable( LeftValueRefer, RightValueRefer ) >;
+
+            static_assert( !::std::is_reference< Returned >::value,
+                "The type of return parameter must to be not a reference type." );
+
+            using LeftInstanceGuard = ::InstanceGuard< LeftInstanceRefer >;
+            using ResultInstance = ::Instance< Returned, ::Inplace::DefaultTool >;
+            return ResultInstance( invokable( LeftInstanceGuard( ::std::forward< LeftInstanceRefer >( left ) ).instanceAccess(),
+                ::std::forward< RightInstanceRefer >( right ) ) );
+        }
+    };
+
+    template <>
+    struct ResultSwitch< BothExposingCase, BlockedCase >
     {
         template < typename _Invokable, typename _Left, typename _Right >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
@@ -288,9 +415,53 @@ namespace Operator
             static_assert( ::std::is_reference< Returned >::value,
                 "The type of return parameter must to be a reference type." );
 
-            // TODO: check - this part of
-
             using GuardTool = ::Guard::BothTool< Invokable, LeftInstanceRefer, RightInstanceRefer >;
+            using ResultInstance = ::Instance< Returned, GuardTool >;
+            return ResultInstance( ::std::forward< InvokableRefer >( invokable ), ::std::forward< LeftInstanceRefer >( left ), ::std::forward< RightInstanceRefer >( right ) );
+        }
+    };
+
+    template <>
+    struct ResultSwitch< RightExposingCase, BlockedCase >
+    {
+        template < typename _Invokable, typename _Left, typename _Right >
+        static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
+        {
+            using LeftInstanceRefer = _Left &&;
+            using LeftValueRefer = ::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >;
+            using RightInstanceRefer = _Right &&;
+            using RightValueRefer = ::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >;
+            using Invokable = _Invokable;
+            using InvokableRefer = _Invokable &&;
+            using Returned = ::std::result_of_t< Invokable( LeftValueRefer, RightValueRefer ) >;
+
+            static_assert( ::std::is_reference< Returned >::value,
+                "The type of return parameter must to be a reference type." );
+
+            using GuardTool = ::Guard::RightTool< Invokable, LeftInstanceRefer, RightInstanceRefer >;
+            using ResultInstance = ::Instance< Returned, GuardTool >;
+            return ResultInstance( ::std::forward< InvokableRefer >( invokable ), ::std::forward< LeftInstanceRefer >( left ), ::std::forward< RightInstanceRefer >( right ) );
+        }
+    };
+
+    template <>
+    struct ResultSwitch< LeftExposingCase, BlockedCase >
+    {
+        template < typename _Invokable, typename _Left, typename _Right >
+        static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
+        {
+            using LeftInstanceRefer = _Left &&;
+            using LeftValueRefer = ::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >;
+            using RightInstanceRefer = _Right &&;
+            using RightValueRefer = ::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >;
+            using Invokable = _Invokable;
+            using InvokableRefer = _Invokable &&;
+            using Returned = ::std::result_of_t< Invokable( LeftValueRefer, RightValueRefer ) >;
+
+            static_assert( ::std::is_reference< Returned >::value,
+                "The type of return parameter must to be a reference type." );
+
+            using GuardTool = ::Guard::LeftTool< Invokable, LeftInstanceRefer, RightInstanceRefer >;
             using ResultInstance = ::Instance< Returned, GuardTool >;
             return ResultInstance( ::std::forward< InvokableRefer >( invokable ), ::std::forward< LeftInstanceRefer >( left ), ::std::forward< RightInstanceRefer >( right ) );
         }

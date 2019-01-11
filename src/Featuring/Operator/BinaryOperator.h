@@ -17,16 +17,23 @@ namespace Operator
     }
 }
 
+namespace Operator
+{
+    namespace Global
+    {
+        struct DefaultCase;
+    }
+}
+
 #define IS_BINARY_OPERATOR_EXISTS_TEST_TRAIT( Invokable ) \
     template < typename _Kind, typename _LeftRefer, typename _RightRefer > \
     struct Is ## Invokable ## OperatorExistsTestHelper; \
      \
     template < typename _LeftRefer, typename _RightRefer > \
-    using Is ## Invokable ## OperatorExistsTest = Is ## Invokable ## OperatorExistsTestHelper< ::Operator::InstanceCase< _LeftRefer, _RightRefer >, _LeftRefer, _RightRefer >; \
+    using Is ## Invokable ## OperatorExistsTest = Is ## Invokable ## OperatorExistsTestHelper< ::Operator::InstanceSwitchCase< _LeftRefer, _RightRefer >, _LeftRefer, _RightRefer >; \
      \
     template < typename _LeftRefer, typename _RightRefer > \
     static constexpr bool is_ ## Invokable ## _operator_exists_test = Is ## Invokable ## OperatorExistsTest< _LeftRefer, _RightRefer >::value; \
-     \
      \
     template < typename _LeftRefer, typename _RightRefer > \
     struct Is ## Invokable ## OperatorExistsTestHelper< ::Operator::NoneInstanceCase, _LeftRefer, _RightRefer > \
@@ -124,8 +131,31 @@ namespace Operator
      \
     namespace Operator \
     { \
+        namespace Global \
+        { \
+            struct Invokable ## Case; \
+        } \
+    } \
+     \
+    namespace Operator \
+    { \
         namespace Binary \
         { \
+            template < typename > \
+            struct Invokable ## Operator; \
+             \
+            template <> \
+            struct Invokable ## Operator< ::Operator::Global::DefaultCase > \
+            { \
+                template < typename _Left, typename _Right > \
+                static decltype(auto) invoke ( _Left && left, _Right && right ) \
+                { \
+                    using LeftRefer = _Left &&; \
+                    using RightRefer = _Right &&; \
+                    return ::std::forward< LeftRefer >( left ) symbol ::std::forward< RightRefer >( right ); \
+                } \
+            }; \
+             \
             struct Invokable \
             { \
                 template < typename _Left, typename _Right > \
@@ -133,7 +163,11 @@ namespace Operator
                 { \
                     using LeftRefer = _Left &&; \
                     using RightRefer = _Right &&; \
-                    return ::std::forward< LeftRefer >( left ) symbol ::std::forward< RightRefer >( right ); \
+                    using Invokable ## OperatorSwitchCase = ::std::conditional_t< \
+                        ::is_instance< ::std::decay_t< RightRefer > >, \
+                            ::Operator::Global::Invokable ## Case, \
+                            ::Operator::Global::DefaultCase >; \
+                    return ::Operator::Binary::Invokable ## Operator< Invokable ## OperatorSwitchCase >::invoke( ::std::forward< LeftRefer >( left ), ::std::forward< RightRefer >( right ) ); \
                 } \
             }; \
         } \
@@ -147,7 +181,7 @@ namespace Operator
             struct Invokable ## Switch; \
      \
             template <> \
-            struct Invokable ## Switch< LeftInstanceCase, HolderHasOperatorCase > \
+            struct Invokable ## Switch< ::Operator::LeftInstanceCase, ::Operator::Binary::HolderHasOperatorCase > \
             { \
                 template < typename _Left, typename _Right > \
                 static decltype(auto) invoke ( _Left && left, _Right && right ) \
@@ -161,7 +195,7 @@ namespace Operator
             }; \
      \
             template <> \
-            struct Invokable ## Switch< LeftInstanceCase, HolderHasNoOperatorCase > \
+            struct Invokable ## Switch< ::Operator::LeftInstanceCase, ::Operator::Binary::HolderHasNoOperatorCase > \
             { \
                 template < typename _Left, typename _Right > \
                 static decltype(auto) invoke ( _Left && left, _Right && right ) \
@@ -170,13 +204,13 @@ namespace Operator
                     using LeftValueRefer = ::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >; \
                     using RightRefer = _Right &&; \
                     using Returned = ::std::result_of_t< ::Operator::Binary::Invokable( LeftValueRefer, RightRefer ) >; \
-                    return ::Operator::ResultSwitch< ::Operator::LeftInstanceCase, ::Operator::ResultCase< Returned, LeftValueRefer > > \
+                    return ::Operator::ResultSwitch< ::Operator::LeftInstanceCase, ::Operator::ResultSwitchCase< Returned, LeftValueRefer > > \
                         ::invoke( ::Operator::Binary::Invokable(), ::std::forward< LeftInstanceRefer >( left ), ::std::forward< RightRefer >( right ) ); \
                 } \
             }; \
      \
             template <> \
-            struct Invokable ## Switch< RightInstanceCase, HolderHasOperatorCase > \
+            struct Invokable ## Switch< ::Operator::RightInstanceCase, ::Operator::Binary::HolderHasOperatorCase > \
             { \
                 template < typename _Left, typename _Right > \
                 static decltype(auto) invoke ( _Left && left, _Right && right ) \
@@ -190,7 +224,7 @@ namespace Operator
             }; \
      \
             template <> \
-            struct Invokable ## Switch< RightInstanceCase, HolderHasNoOperatorCase > \
+            struct Invokable ## Switch< ::Operator::RightInstanceCase, ::Operator::Binary::HolderHasNoOperatorCase > \
             { \
                 template < typename _Left, typename _Right > \
                 static decltype(auto) invoke ( _Left && left, _Right && right ) \
@@ -199,13 +233,13 @@ namespace Operator
                     using RightInstanceRefer = _Right &&; \
                     using RightValueRefer = ::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >; \
                     using Returned = ::std::result_of_t< ::Operator::Binary::Invokable( LeftRefer, RightValueRefer ) >; \
-                    return ::Operator::ResultSwitch< ::Operator::RightInstanceCase, ::Operator::ResultCase< Returned, RightValueRefer > > \
+                    return ::Operator::ResultSwitch< ::Operator::RightInstanceCase, ::Operator::ResultSwitchCase< Returned, RightValueRefer > > \
                         ::invoke( ::Operator::Binary::Invokable(), ::std::forward< LeftRefer >( left ), ::std::forward< RightInstanceRefer >( right ) ); \
                 } \
             }; \
      \
             template <> \
-            struct Invokable ## Switch< BothInstanceCase, HolderHasOperatorCase > \
+            struct Invokable ## Switch< ::Operator::BothInstanceCase, ::Operator::Binary::HolderHasOperatorCase > \
             { \
                 template < typename _Left, typename _Right > \
                 static decltype(auto) invoke ( _Left && left, _Right && right ) \
@@ -219,7 +253,7 @@ namespace Operator
             }; \
      \
             template <> \
-            struct Invokable ## Switch< BothInstanceCase, HolderHasNoOperatorCase > \
+            struct Invokable ## Switch< ::Operator::BothInstanceCase, ::Operator::Binary::HolderHasNoOperatorCase > \
             { \
                 template < typename _Left, typename _Right > \
                 static decltype(auto) invoke ( _Left && left, _Right && right ) \
@@ -229,7 +263,7 @@ namespace Operator
                     using RightInstanceRefer = _Right &&; \
                     using RightValueRefer = ::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >; \
                     using Returned = ::std::result_of_t< ::Operator::Binary::Invokable( LeftValueRefer, RightValueRefer ) >; \
-                    return ::Operator::ResultSwitch< ::Operator::BothInstanceCase, ::Operator::ResultCase< Returned, LeftValueRefer > > \
+                    return ::Operator::ResultSwitch< ::Operator::BothInstanceCase, ::Operator::ResultSwitchCase< Returned, LeftValueRefer > > \
                         ::invoke( ::Operator::Binary::Invokable(), ::std::forward< LeftInstanceRefer >( left ), ::std::forward< RightInstanceRefer >( right ) ); \
                 } \
             }; \
@@ -244,7 +278,7 @@ namespace Operator
             struct Invokable ## InstanceSwitch; \
      \
             template <> \
-            struct Invokable ## InstanceSwitch < LeftInstanceCase > \
+            struct Invokable ## InstanceSwitch < ::Operator::LeftInstanceCase > \
             { \
                 template < typename _Left, typename _Right > \
                 static constexpr decltype(auto) invoke ( _Left && left, _Right && right ) \
@@ -256,13 +290,13 @@ namespace Operator
                     using RightRefer = _Right &&; \
      \
                     constexpr bool holder_has_method_for_operator = ::Operator::Binary::is_operator ## Invokable ## Left_method_exists< LeftHolder, void( LeftHolderRefer, RightRefer ) >; \
-                    using OperatorCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Binary::HolderHasOperatorCase, ::Operator::Binary::HolderHasNoOperatorCase >; \
-                    return ::Operator::Binary::Invokable ## Switch< LeftInstanceCase, OperatorCase >::invoke( ::std::forward< LeftInstanceRefer >( left ), ::std::forward< RightRefer >( right ) ); \
+                    using OperatorSwitchCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Binary::HolderHasOperatorCase, ::Operator::Binary::HolderHasNoOperatorCase >; \
+                    return ::Operator::Binary::Invokable ## Switch< LeftInstanceCase, OperatorSwitchCase >::invoke( ::std::forward< LeftInstanceRefer >( left ), ::std::forward< RightRefer >( right ) ); \
                 } \
             }; \
      \
             template <> \
-            struct Invokable ## InstanceSwitch < RightInstanceCase > \
+            struct Invokable ## InstanceSwitch < ::Operator::RightInstanceCase > \
             { \
                 template < typename _Left, typename _Right > \
                 static constexpr decltype(auto) invoke ( _Left && left, _Right && right ) \
@@ -274,13 +308,13 @@ namespace Operator
                     using LeftRefer = _Left &&; \
      \
                     constexpr bool holder_has_method_for_operator = ::Operator::Binary::is_operator ## Invokable ## Right_method_exists< RightHolder, void( LeftRefer, RightHolderRefer ) >; \
-                    using OperatorCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Binary::HolderHasOperatorCase, ::Operator::Binary::HolderHasNoOperatorCase >; \
-                    return ::Operator::Binary::Invokable ## Switch< RightInstanceCase, OperatorCase >::invoke( ::std::forward< LeftRefer >( left ), ::std::forward< RightInstanceRefer >( right ) ); \
+                    using OperatorSwitchCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Binary::HolderHasOperatorCase, ::Operator::Binary::HolderHasNoOperatorCase >; \
+                    return ::Operator::Binary::Invokable ## Switch< RightInstanceCase, OperatorSwitchCase >::invoke( ::std::forward< LeftRefer >( left ), ::std::forward< RightInstanceRefer >( right ) ); \
                 } \
             }; \
      \
             template <> \
-            struct Invokable ## InstanceSwitch < BothInstanceCase > \
+            struct Invokable ## InstanceSwitch < ::Operator::BothInstanceCase > \
             { \
                 template < typename _Left, typename _Right > \
                 static constexpr decltype(auto) invoke ( _Left && left, _Right && right ) \
@@ -296,8 +330,8 @@ namespace Operator
      \
                     constexpr bool is_left_compatible_to_right = ::is_compatible< LeftHolder, RightHolder >; \
                     constexpr bool holder_has_method_for_operator = ::Operator::Binary::is_operator ## Invokable ## Both_method_exists< LeftHolder, void( LeftHolderRefer, RightHolderRefer ) >; \
-                    using OperatorCase = ::std::conditional_t< is_left_compatible_to_right && holder_has_method_for_operator, ::Operator::Binary::HolderHasOperatorCase, ::Operator::Binary::HolderHasNoOperatorCase >; \
-                    return ::Operator::Binary::Invokable ## Switch< BothInstanceCase, OperatorCase >::invoke( ::std::forward< LeftInstanceRefer >( left ), ::std::forward< RightInstanceRefer >( right ) ); \
+                    using OperatorSwitchCase = ::std::conditional_t< is_left_compatible_to_right && holder_has_method_for_operator, ::Operator::Binary::HolderHasOperatorCase, ::Operator::Binary::HolderHasNoOperatorCase >; \
+                    return ::Operator::Binary::Invokable ## Switch< BothInstanceCase, OperatorSwitchCase >::invoke( ::std::forward< LeftInstanceRefer >( left ), ::std::forward< RightInstanceRefer >( right ) ); \
                 } \
             }; \
         } \
@@ -318,7 +352,7 @@ namespace Operator
      \
                 static constexpr decltype(auto) invoke( LeftRefer left, RightRefer right ) \
                 { \
-                    return ::Operator::Binary::Invokable ## InstanceSwitch< InstanceCase< LeftRefer, RightRefer > > \
+                    return ::Operator::Binary::Invokable ## InstanceSwitch< ::Operator::InstanceSwitchCase< LeftRefer, RightRefer > > \
                         ::invoke( ::std::forward< LeftRefer >( left ), ::std::forward< RightRefer >( right ) ); \
                 } \
             }; \

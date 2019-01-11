@@ -130,8 +130,6 @@ public:
 
 /* RIGHT-SIDE INSTANCE OPERATORS */
 
-/*! NOTE: The 'operator =' cannot be implemented as global method. */
-
 /* Arithmetic operators */
 GLOBAL_BINARY_OPERATOR( *, Multiply )
 GLOBAL_BINARY_OPERATOR( /, Divide )
@@ -139,6 +137,7 @@ GLOBAL_BINARY_OPERATOR( %, Modulo )
 GLOBAL_BINARY_OPERATOR( +, Addition )
 GLOBAL_BINARY_OPERATOR( -, Subtraction )
 /* Compound assignment */
+GLOBAL_BINARY_OPERATOR_SPECIALIZATION( Assignment ) // NOTE: The 'operator =' cannot be implemented as global method.
 GLOBAL_BINARY_OPERATOR( *=, MultiplyAssignment )
 GLOBAL_BINARY_OPERATOR( /=, DivideAssignment )
 GLOBAL_BINARY_OPERATOR( %=, ModuloAssignment )

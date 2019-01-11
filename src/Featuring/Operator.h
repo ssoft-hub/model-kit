@@ -60,8 +60,9 @@ BINARY_OPERATOR_IMPLEMENTAION( |=, BitwiseOrAssignment )
 BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
 
 #define GLOBAL_BINARY_OPERATOR_PROTOTYPE( symbol, right_refer, Invokable ) \
-    template < typename _Left, typename _RightValue, typename _RightTool/*, \
-        typename = ::std::enable_if_t< is_ ## Invokable ## _operator_exists< _Left &&, typename Instance< _RightValue, _RightTool >::Value right_refer > >*/ > \
+    template < typename _Left, typename _RightValue, typename _RightTool, \
+        typename = ::std::enable_if_t< !::is_instance< ::std::decay_t< _Left > > \
+            && ::Operator::Binary::is_ ## Invokable ## _operator_exists_test< _Left &&, Instance< _RightValue, _RightTool > right_refer > > > \
     constexpr decltype(auto) operator symbol ( _Left && left, Instance< _RightValue, _RightTool > right_refer right ) \
     { \
         using LeftRefer = _Left &&; \
@@ -69,7 +70,28 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
         return ::Operator::Binary::Invokable ## Helper< LeftRefer, RightRefer >::invoke( ::std::forward< LeftRefer >( left ), ::std::forward< RightRefer >( right ) ); \
     } \
 
+#define GLOBAL_BINARY_OPERATOR_SPECIALIZATION( Invokable ) \
+    namespace Operator \
+    { \
+        namespace Binary \
+        { \
+            template <> \
+            struct Invokable ## Operator< ::Operator::Global::Invokable ## Case > \
+            { \
+                template < typename _Left, typename _Right > \
+                static decltype(auto) invoke ( _Left && left, _Right && right ) \
+                { \
+                    using LeftRefer = _Left &&; \
+                    using RightRefer = _Right &&; \
+                    return ::Operator::Binary::Invokable ## Helper< LeftRefer, RightRefer >::invoke( ::std::forward< LeftRefer >( left ), ::std::forward< RightRefer >( right ) ); \
+                } \
+            }; \
+             \
+        } \
+    } \
+
 #define GLOBAL_BINARY_OPERATOR( symbol, Invokable ) \
+    GLOBAL_BINARY_OPERATOR_SPECIALIZATION( Invokable ) \
     GLOBAL_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), &&, Invokable ) \
     GLOBAL_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const &&, Invokable ) \
     GLOBAL_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), volatile &&, Invokable ) \
@@ -101,62 +123,54 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
 
 #define POSTFIX_UNARY_OPERATOR_PROTOTYPE_WITH_ARGUMENT( symbol, this_refer, Invokable ) \
     template < typename _Argument, \
-        typename = ::std::enable_if_t< ::Operator::Unary::is_ ## Invokable ## _operator_exists< Value this_refer, _Argument && > > > \
+        typename = ::std::enable_if_t< ::Operator::Unary::is_ ## Invokable ## _operator_exists_test< Value this_refer, _Argument && > > > \
     constexpr decltype(auto) operator symbol ( _Argument && argument ) this_refer \
     { \
-        using HolderRefer = Holder this_refer; \
-        constexpr bool holder_has_method_for_operator = ::Operator::Unary::is_operator ## Invokable ## _method_exists< Holder, void( HolderRefer, _Argument ) >; \
-        using OperatorCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Unary::HolderHasOperatorCase, ::Operator::Unary::HolderHasNoOperatorCase >; \
-        return ::Operator::Unary::Invokable ## Switch< OperatorCase >::invoke( ::std::forward< ThisType this_refer >( *this ), ::std::forward< _Argument >( argument ) ); \
+        using ThisRefer = ThisType this_refer; \
+        return ::Operator::Unary::Invokable ## Helper< ThisRefer, _Argument && >::invoke( ::std::forward< ThisRefer >( *this ), ::std::forward< _Argument && >( argument ) ); \
     } \
 
 #define POSTFIX_UNARY_OPERATOR_PROTOTYPE_WITH_ARGUMENTS( symbol, this_refer, Invokable ) \
     template < typename ... _Arguments, \
-        typename = ::std::enable_if_t< ::Operator::Unary::is_ ## Invokable ## _operator_exists< Value this_refer, _Arguments && ... > > > \
+        typename = ::std::enable_if_t< ::Operator::Unary::is_ ## Invokable ## _operator_exists_test< Value this_refer, _Arguments && ... > > > \
     constexpr decltype(auto) operator symbol ( _Arguments && ... arguments ) this_refer \
     { \
-        using HolderRefer = Holder this_refer; \
-        constexpr bool holder_has_method_for_operator = ::Operator::Unary::is_operator ## Invokable ## _method_exists< Holder, void( HolderRefer, _Arguments ... ) >; \
-        using OperatorCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Unary::HolderHasOperatorCase, ::Operator::Unary::HolderHasNoOperatorCase >; \
-        return ::Operator::Unary::Invokable ## Switch< OperatorCase >::invoke( ::std::forward< ThisType this_refer >( *this ), ::std::forward< _Arguments >( arguments ) ... ); \
+        using ThisRefer = ThisType this_refer; \
+        return ::Operator::Unary::Invokable ## Helper< ThisRefer, _Arguments && ... >::invoke( ::std::forward< ThisRefer >( *this ), ::std::forward< _Arguments && >( arguments ) ... ); \
     } \
 
 #define PREFIX_UNARY_OPERATOR_PROTOTYPE( symbol, this_refer, Invokable ) \
     template < typename ... _Arguments, \
-        typename = ::std::enable_if_t< ::Operator::Unary::is_ ## Invokable ## _operator_exists< Value this_refer, _Arguments && ... > > > \
+        typename = ::std::enable_if_t< sizeof...( _Arguments ) == 0 && ::Operator::Unary::is_ ## Invokable ## _operator_exists_test< Value this_refer, _Arguments && ... > > > \
     constexpr decltype(auto) operator symbol () this_refer \
     { \
-        using HolderRefer = Holder this_refer; \
-        constexpr bool holder_has_method_for_operator = ::Operator::Unary::is_operator ## Invokable ## _method_exists< Holder, void( HolderRefer, _Arguments ... ) >; \
-        using OperatorCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Unary::HolderHasOperatorCase, ::Operator::Unary::HolderHasNoOperatorCase >; \
-        return ::Operator::Unary::Invokable ## Switch< OperatorCase >::invoke( ::std::forward< ThisType this_refer >( *this ) ); \
+        using ThisRefer = ThisType this_refer; \
+        return ::Operator::Unary::Invokable ## Helper< ThisRefer >::invoke( ::std::forward< ThisRefer >( *this ) ); \
     } \
 
 #define POSTFIX_UNARY_OPERATOR_PROTOTYPE_WITH_INT( symbol, this_refer, Invokable ) \
     template < typename ... _Arguments, \
-        typename = ::std::enable_if_t< ::Operator::Unary::is_ ## Invokable ## _operator_exists< Value this_refer, _Arguments && ... > > > \
+        typename = ::std::enable_if_t< sizeof...( _Arguments ) == 0 && ::Operator::Unary::is_ ## Invokable ## _operator_exists_test< Value this_refer, _Arguments && ... > > > \
     constexpr decltype(auto) operator symbol ( int ) this_refer \
     { \
-        using HolderRefer = Holder this_refer; \
-        constexpr bool holder_has_method_for_operator = ::Operator::Unary::is_operator ## Invokable ## _method_exists< Holder, void( HolderRefer, _Arguments ... ) >; \
-        using OperatorCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Unary::HolderHasOperatorCase, ::Operator::Unary::HolderHasNoOperatorCase >; \
-        return ::Operator::Unary::Invokable ## Switch< OperatorCase >::invoke( ::std::forward< ThisType this_refer >( *this ) ); \
+        using ThisRefer = ThisType this_refer; \
+        return ::Operator::Unary::Invokable ## Helper< ThisRefer >::invoke( ::std::forward< ThisRefer >( *this ) ); \
     } \
 
 #define ADDRESS_OF_OPERATOR_PROTOTYPE( symbol, this_refer ) \
-    /*constexpr*/ ValuePointer< ThisType this_refer > operator symbol () this_refer \
+    constexpr ValuePointer< ThisType this_refer > operator symbol () this_refer \
     { \
         return ValuePointer< ThisType this_refer >( ::std::forward< ThisType this_refer >( *this ) ); \
     } \
 
 #define DEREFERENCE_OPERATOR_PROTOTYPE( symbol, this_refer ) \
-    /*constexpr*/ ValuePointer< ThisType this_refer > operator symbol () this_refer \
+    constexpr ValuePointer< ThisType this_refer > operator symbol () this_refer \
     { \
         return ValuePointer< ThisType this_refer >( ::std::forward< ThisType this_refer >( *this ) ); \
     } \
 
 #define CONSTRUCTOR_FOR_THIS_INSTANCE_PROTOTYPE( other_refer ) \
-    /*constexpr*/ Instance ( ThisType other_refer other ) \
+    constexpr Instance ( ThisType other_refer other ) \
         : m_holder( InstanceResolver< ThisType, ThisType other_refer >( \
             ::std::forward< ThisType other_refer >( other ) ).resolve() ) \
     { \
@@ -166,7 +180,7 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
     template < typename ... _Arguments, \
         typename = ::std::enable_if_t< ::std::is_constructible< ThisType, ThisType other_refer >::value && \
             sizeof...( _Arguments ) == 0 > > \
-    /*constexpr*/ Instance ( ThisType other_refer other ) \
+    constexpr Instance ( ThisType other_refer other ) \
         : m_holder( InstanceResolver< ThisType, ThisType other_refer >( \
             ::std::forward< ThisType other_refer >( other ) ).resolve() ) \
     { \
@@ -174,7 +188,7 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
 
 #define CONSTRUCTOR_FOR_OTHER_INSTANCE_PROTOTYPE( other_refer ) \
     template < typename _OtherValue, typename _OtherTool > \
-    /*constexpr*/ Instance ( Instance< _OtherValue, _OtherTool > other_refer other ) \
+    constexpr Instance ( Instance< _OtherValue, _OtherTool > other_refer other ) \
         : m_holder( InstanceResolver< ThisType, Instance< _OtherValue, _OtherTool > other_refer >( \
             ::std::forward< Instance< _OtherValue, _OtherTool > other_refer >( other ) ).resolve() ) \
     { \
@@ -203,12 +217,12 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
 #define CONSTRUCTOR_FOR_OTHER_INSTANCE \
     CONSTRUCTOR_FOR_OTHER_INSTANCE_PROTOTYPE( && ) \
     CONSTRUCTOR_FOR_OTHER_INSTANCE_PROTOTYPE( const && ) \
-    /*CONSTRUCTOR_FOR_OTHER_INSTANCE_PROTOTYPE( volatile && ) \
-    CONSTRUCTOR_FOR_OTHER_INSTANCE_PROTOTYPE( const volatile && )*/ \
+    CONSTRUCTOR_FOR_OTHER_INSTANCE_PROTOTYPE( volatile && ) \
+    CONSTRUCTOR_FOR_OTHER_INSTANCE_PROTOTYPE( const volatile && ) \
     CONSTRUCTOR_FOR_OTHER_INSTANCE_PROTOTYPE( & ) \
     CONSTRUCTOR_FOR_OTHER_INSTANCE_PROTOTYPE( const & ) \
-    /*CONSTRUCTOR_FOR_OTHER_INSTANCE_PROTOTYPE( volatile & ) \
-    CONSTRUCTOR_FOR_OTHER_INSTANCE_PROTOTYPE( const volatile & )*/ \
+    CONSTRUCTOR_FOR_OTHER_INSTANCE_PROTOTYPE( volatile & ) \
+    CONSTRUCTOR_FOR_OTHER_INSTANCE_PROTOTYPE( const volatile & ) \
 
 #define CAST_OPERATOR \
     CAST_OPERATOR_PROTOTYPE( && ) \

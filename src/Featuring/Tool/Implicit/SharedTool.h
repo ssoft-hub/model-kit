@@ -147,8 +147,8 @@ namespace Implicit
 
             static constexpr void guard ( volatile ThisType & holder )
             {
-                if ( !!holder.m_pointer && !holder.m_pointer.unique() )
-                    holder.m_pointer = ::std::make_shared< Value >( *holder.m_pointer.get() );
+//                if ( !!holder.m_pointer && !holder.m_pointer.unique() )
+//                    holder.m_pointer = ::std::make_shared< Value >( *holder.m_pointer.get() );
             }
 
             //! Access to internal value of Holder for any king of referencies.
