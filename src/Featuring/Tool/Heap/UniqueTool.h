@@ -125,7 +125,8 @@ namespace Heap
 //            }
 
             //! Access to internal value of Holder for any king of referencies.
-            template < typename _Refer >
+            template < typename _Refer,
+                typename = ::std::enable_if_t< !::std::is_volatile< ::std::remove_reference_t< _Refer > >::value > >
             static constexpr decltype(auto) value ( _Refer && holder )
             {
                 using HolderRefer = _Refer &&;

@@ -259,11 +259,57 @@ namespace Operator
                 static decltype(auto) invoke ( _Left && left, _Right && right ) \
                 { \
                     using LeftInstanceRefer = _Left &&; \
+                    using RightInstanceRefer = _Right &&; \
+                    return ::Operator::Binary::Invokable ## Switch< ::Operator::ExposingSwitchCase< LeftInstanceRefer, RightInstanceRefer >, ::Operator::Binary::HolderHasNoOperatorCase > \
+                        ::invoke( ::std::forward< LeftInstanceRefer >( left ), ::std::forward< RightInstanceRefer >( right ) ); \
+                } \
+            }; \
+     \
+            template <> \
+            struct Invokable ## Switch< ::Operator::BothExposingCase, ::Operator::Binary::HolderHasNoOperatorCase > \
+            { \
+                template < typename _Left, typename _Right > \
+                static decltype(auto) invoke ( _Left && left, _Right && right ) \
+                { \
+                    using LeftInstanceRefer = _Left &&; \
                     using LeftValueRefer = ::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >; \
                     using RightInstanceRefer = _Right &&; \
                     using RightValueRefer = ::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >; \
+     \
                     using Returned = ::std::result_of_t< ::Operator::Binary::Invokable( LeftValueRefer, RightValueRefer ) >; \
-                    return ::Operator::ResultSwitch< ::Operator::BothInstanceCase, ::Operator::ResultSwitchCase< Returned, LeftValueRefer > > \
+                    return ::Operator::ResultSwitch< ::Operator::BothExposingCase, ::Operator::ResultSwitchCase< Returned, LeftValueRefer > > \
+                        ::invoke( ::Operator::Binary::Invokable(), ::std::forward< LeftInstanceRefer >( left ), ::std::forward< RightInstanceRefer >( right ) ); \
+                } \
+            }; \
+     \
+            template <> \
+            struct Invokable ## Switch< ::Operator::LeftExposingCase, ::Operator::Binary::HolderHasNoOperatorCase > \
+            { \
+                template < typename _Left, typename _Right > \
+                static decltype(auto) invoke ( _Left && left, _Right && right ) \
+                { \
+                    using LeftInstanceRefer = _Left &&; \
+                    using LeftValueRefer = ::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >; \
+                    using RightInstanceRefer = _Right &&; \
+     \
+                    using Returned = ::std::result_of_t< ::Operator::Binary::Invokable( LeftValueRefer, RightInstanceRefer ) >; \
+                    return ::Operator::ResultSwitch< ::Operator::LeftExposingCase, ::Operator::ResultSwitchCase< Returned, LeftValueRefer > > \
+                        ::invoke( ::Operator::Binary::Invokable(), ::std::forward< LeftInstanceRefer >( left ), ::std::forward< RightInstanceRefer >( right ) ); \
+                } \
+            }; \
+     \
+            template <> \
+            struct Invokable ## Switch< ::Operator::RightExposingCase, ::Operator::Binary::HolderHasNoOperatorCase > \
+            { \
+                template < typename _Left, typename _Right > \
+                static decltype(auto) invoke ( _Left && left, _Right && right ) \
+                { \
+                    using LeftInstanceRefer = _Left &&; \
+                    using RightInstanceRefer = _Right &&; \
+                    using RightValueRefer = ::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >; \
+     \
+                    using Returned = ::std::result_of_t< ::Operator::Binary::Invokable( LeftInstanceRefer, RightValueRefer ) >; \
+                    return ::Operator::ResultSwitch< ::Operator::RightExposingCase, ::Operator::ResultSwitchCase< Returned, LeftInstanceRefer > > \
                         ::invoke( ::Operator::Binary::Invokable(), ::std::forward< LeftInstanceRefer >( left ), ::std::forward< RightInstanceRefer >( right ) ); \
                 } \
             }; \

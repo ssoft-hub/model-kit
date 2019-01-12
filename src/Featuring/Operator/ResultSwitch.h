@@ -61,8 +61,24 @@ namespace Operator
     struct DefaultCase {};
     struct BlockedCase {};
 
+    template < bool, typename _Returned, typename _Refer >
+    struct ResultCaseInstanceHelper;
+
     template < typename _Returned, typename _Refer >
-    struct ResultCaseHelper
+    struct ResultCaseInstanceHelper< true, _Returned, _Refer >
+    {
+        using Returned = _Returned;
+        using Instance = ::std::decay_t< Returned >;
+        static_assert( ::is_instance< Instance >, "Bla" );
+        using Value = typename Instance::Value;
+
+        using Type = ::std::conditional_t< ::std::is_reference< Value >::value,
+            ::Operator::BlockedCase,
+            ::Operator::DefaultCase >;
+    };
+
+    template < typename _Returned, typename _Refer >
+    struct ResultCaseInstanceHelper< false, _Returned, _Refer >
     {
         using Returned = _Returned;
         using Value = ::std::decay_t< _Refer >;
@@ -72,12 +88,18 @@ namespace Operator
         static constexpr bool returned_is_same_value = ::std::is_same< _Returned, _Refer >::value;
 
         using Type = ::std::conditional_t< returned_is_not_wrappable,
-            FundamentalCase,
+            ::Operator::FundamentalCase,
             ::std::conditional_t< returned_is_same_value,
-                ThisCase,
+                ::Operator::ThisCase,
                 ::std::conditional_t< returned_is_reference,
-                    BlockedCase,
-                    DefaultCase > > >;
+                    ::Operator::BlockedCase,
+                    ::Operator::DefaultCase > > >;
+    };
+
+    template < typename _Returned, typename _Refer >
+    struct ResultCaseHelper
+    {
+        using Type = typename ResultCaseInstanceHelper< ::is_instance< _Returned >, _Returned, _Refer >::Type;
     };
 
     template < typename _Returned, typename _Value >
@@ -87,10 +109,10 @@ namespace Operator
 namespace Operator
 {
     template < typename, typename >
-    struct ResultSwitch {};
+    struct ResultSwitch;
 
     template <>
-    struct ResultSwitch< LeftInstanceCase, FundamentalCase >
+    struct ResultSwitch< ::Operator::LeftInstanceCase, ::Operator::FundamentalCase >
     {
         template < typename _Invokable, typename _Instance, typename ... _Arguments >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Instance && instance, _Arguments && ... arguments )
@@ -102,7 +124,7 @@ namespace Operator
     };
 
     template <>
-    struct ResultSwitch< LeftInstanceCase, ThisCase >
+    struct ResultSwitch< ::Operator::LeftInstanceCase, ::Operator::ThisCase >
     {
         template < typename _Invokable, typename _Instance, typename ... _Arguments >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Instance && instance, _Arguments && ... arguments )
@@ -115,7 +137,7 @@ namespace Operator
     };
 
     template <>
-    struct ResultSwitch< LeftInstanceCase, DefaultCase >
+    struct ResultSwitch< ::Operator::LeftInstanceCase, ::Operator::DefaultCase >
     {
         template < typename _Invokable, typename _Instance, typename ... _Arguments >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Instance && instance, _Arguments && ... arguments )
@@ -135,7 +157,7 @@ namespace Operator
     };
 
     template <>
-    struct ResultSwitch< LeftInstanceCase, BlockedCase >
+    struct ResultSwitch< ::Operator::LeftInstanceCase, ::Operator::BlockedCase >
     {
         template < typename _Invokable, typename _Instance, typename ... _Arguments >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Instance && instance, _Arguments && ... arguments )
@@ -156,7 +178,7 @@ namespace Operator
     };
 
     template <>
-    struct ResultSwitch< RightInstanceCase, FundamentalCase >
+    struct ResultSwitch< ::Operator::RightInstanceCase, ::Operator::FundamentalCase >
     {
         template < typename _Invokable, typename _Left, typename _Instance >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Instance && instance )
@@ -169,7 +191,7 @@ namespace Operator
     };
 
     template <>
-    struct ResultSwitch< RightInstanceCase, ThisCase >
+    struct ResultSwitch< ::Operator::RightInstanceCase, ::Operator::ThisCase >
     {
         template < typename _Invokable, typename _Left, typename _Instance >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Instance && instance )
@@ -183,7 +205,7 @@ namespace Operator
     };
 
     template <>
-    struct ResultSwitch< RightInstanceCase, DefaultCase >
+    struct ResultSwitch< ::Operator::RightInstanceCase, ::Operator::DefaultCase >
     {
         template < typename _Invokable, typename _Left, typename _Instance >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Instance && instance )
@@ -204,7 +226,7 @@ namespace Operator
     };
 
     template <>
-    struct ResultSwitch< RightInstanceCase, BlockedCase >
+    struct ResultSwitch< ::Operator::RightInstanceCase, ::Operator::BlockedCase >
     {
         template < typename _Invokable, typename _Left, typename _Instance >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Instance && instance )
@@ -225,22 +247,8 @@ namespace Operator
         }
     };
 
-    template < typename _ResultCase >
-    struct ResultSwitch< BothInstanceCase, _ResultCase >
-    {
-        template < typename _Invokable, typename _Left, typename _Right >
-        static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
-        {
-            using InvokableRefer = _Invokable &&;
-            using LeftInstanceRefer = _Left &&;
-            using RightInstanceRefer = _Right &&;
-            return ::Operator::ResultSwitch< ::Operator::ExposingSwitchCase< LeftInstanceRefer, RightInstanceRefer >, _ResultCase >
-                ::invoke( ::std::forward< InvokableRefer >( invokable ), ::std::forward< LeftInstanceRefer >( left ), ::std::forward< RightInstanceRefer >( right ) );
-        }
-    };
-
     template <>
-    struct ResultSwitch< BothExposingCase, FundamentalCase >
+    struct ResultSwitch< ::Operator::BothExposingCase, ::Operator::FundamentalCase >
     {
         template < typename _Invokable, typename _Left, typename _Right >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
@@ -255,7 +263,7 @@ namespace Operator
     };
 
     template <>
-    struct ResultSwitch< RightExposingCase, FundamentalCase >
+    struct ResultSwitch< ::Operator::RightExposingCase, ::Operator::FundamentalCase >
     {
         template < typename _Invokable, typename _Left, typename _Right >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
@@ -269,7 +277,7 @@ namespace Operator
     };
 
     template <>
-    struct ResultSwitch< LeftExposingCase, FundamentalCase >
+    struct ResultSwitch< ::Operator::LeftExposingCase, ::Operator::FundamentalCase >
     {
         template < typename _Invokable, typename _Left, typename _Right >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
@@ -283,7 +291,7 @@ namespace Operator
     };
 
     template <>
-    struct ResultSwitch< BothExposingCase, ThisCase >
+    struct ResultSwitch< ::Operator::BothExposingCase, ::Operator::ThisCase >
     {
         template < typename _Invokable, typename _Left, typename _Right >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
@@ -299,7 +307,7 @@ namespace Operator
     };
 
     template <>
-    struct ResultSwitch< RightExposingCase, ThisCase >
+    struct ResultSwitch< ::Operator::RightExposingCase, ::Operator::ThisCase >
     {
         template < typename _Invokable, typename _Left, typename _Right >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
@@ -314,7 +322,7 @@ namespace Operator
     };
 
     template <>
-    struct ResultSwitch< LeftExposingCase, ThisCase >
+    struct ResultSwitch< ::Operator::LeftExposingCase, ::Operator::ThisCase >
     {
         template < typename _Invokable, typename _Left, typename _Right >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
@@ -329,7 +337,7 @@ namespace Operator
     };
 
     template <>
-    struct ResultSwitch< BothExposingCase, DefaultCase >
+    struct ResultSwitch< ::Operator::BothExposingCase, ::Operator::DefaultCase >
     {
         template < typename _Invokable, typename _Left, typename _Right >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
@@ -353,7 +361,7 @@ namespace Operator
     };
 
     template <>
-    struct ResultSwitch< RightExposingCase, DefaultCase >
+    struct ResultSwitch< ::Operator::RightExposingCase, ::Operator::DefaultCase >
     {
         template < typename _Invokable, typename _Left, typename _Right >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
@@ -376,7 +384,7 @@ namespace Operator
     };
 
     template <>
-    struct ResultSwitch< LeftExposingCase, DefaultCase >
+    struct ResultSwitch< ::Operator::LeftExposingCase, ::Operator::DefaultCase >
     {
         template < typename _Invokable, typename _Left, typename _Right >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
@@ -399,7 +407,7 @@ namespace Operator
     };
 
     template <>
-    struct ResultSwitch< BothExposingCase, BlockedCase >
+    struct ResultSwitch< ::Operator::BothExposingCase, ::Operator::BlockedCase >
     {
         template < typename _Invokable, typename _Left, typename _Right >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
@@ -411,9 +419,6 @@ namespace Operator
             using Invokable = _Invokable;
             using InvokableRefer = _Invokable &&;
             using Returned = ::std::result_of_t< Invokable( LeftValueRefer, RightValueRefer ) >;
-
-            static_assert( ::std::is_reference< Returned >::value,
-                "The type of return parameter must to be a reference type." );
 
             using GuardTool = ::Guard::BothTool< Invokable, LeftInstanceRefer, RightInstanceRefer >;
             using ResultInstance = ::Instance< Returned, GuardTool >;
@@ -422,7 +427,7 @@ namespace Operator
     };
 
     template <>
-    struct ResultSwitch< RightExposingCase, BlockedCase >
+    struct ResultSwitch< ::Operator::RightExposingCase, ::Operator::BlockedCase >
     {
         template < typename _Invokable, typename _Left, typename _Right >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
@@ -434,9 +439,6 @@ namespace Operator
             using Invokable = _Invokable;
             using InvokableRefer = _Invokable &&;
             using Returned = ::std::result_of_t< Invokable( LeftValueRefer, RightValueRefer ) >;
-
-            static_assert( ::std::is_reference< Returned >::value,
-                "The type of return parameter must to be a reference type." );
 
             using GuardTool = ::Guard::RightTool< Invokable, LeftInstanceRefer, RightInstanceRefer >;
             using ResultInstance = ::Instance< Returned, GuardTool >;
@@ -445,7 +447,7 @@ namespace Operator
     };
 
     template <>
-    struct ResultSwitch< LeftExposingCase, BlockedCase >
+    struct ResultSwitch< ::Operator::LeftExposingCase, ::Operator::BlockedCase >
     {
         template < typename _Invokable, typename _Left, typename _Right >
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
@@ -457,9 +459,6 @@ namespace Operator
             using Invokable = _Invokable;
             using InvokableRefer = _Invokable &&;
             using Returned = ::std::result_of_t< Invokable( LeftValueRefer, RightValueRefer ) >;
-
-            static_assert( ::std::is_reference< Returned >::value,
-                "The type of return parameter must to be a reference type." );
 
             using GuardTool = ::Guard::LeftTool< Invokable, LeftInstanceRefer, RightInstanceRefer >;
             using ResultInstance = ::Instance< Returned, GuardTool >;

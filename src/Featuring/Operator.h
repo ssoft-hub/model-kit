@@ -102,18 +102,21 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
     GLOBAL_BINARY_OPERATOR_PROTOTYPE( SINGLE_ARG( symbol ), const volatile &, Invokable ) \
 
 #define BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, this_refer, other_refer, Invokable ) \
-    /*constexpr*/ decltype(auto) operator symbol ( ThisType other_refer /*other*/ ) this_refer \
+    /*template < typename ... _Arguments, \
+        typename = ::std::enable_if_t< sizeof...( _Arguments ) == 0 \
+            && ::HolderInternal::is_value_method_exists< Holder, Holder this_refer > \
+            && ::Operator::Binary::is_ ## Invokable ## _operator_exists_test< ThisType this_refer, ThisType other_refer > > >*/ \
+    constexpr decltype(auto) operator symbol ( ThisType other_refer right ) this_refer \
     { \
-        /* TODO: */ \
-        /*::std::forward< Holder this_refer >( m_holder ) symbol InstanceResolver< ThisType, ThisType other_refer >( ::std::forward< ThisType other_refer >( other ) ).resolve();*/ \
-        /*return ::Operator::Invokable< ThisType, ThisType >()( \
-            ::std::forward< ThisType this_refer >( *this ), \
-            ::std::forward< ThisType other_refer >( other ) );*/ \
+        using LeftRefer = ThisType this_refer; \
+        using RightRefer = ThisType other_refer; \
+        return ::Operator::Binary::Invokable ## Helper< LeftRefer, RightRefer >::invoke( ::std::forward< LeftRefer >( *this ), ::std::forward< RightRefer >( right ) ); \
     } \
 
 #define BINARY_OPERATOR_PROTOTYPE_FOR_ANY( symbol, this_refer, Invokable ) \
     template < typename _Right, \
-        typename = ::std::enable_if_t< ::Operator::Binary::is_ ## Invokable ## _operator_exists_test< ThisType this_refer, _Right && > > > \
+        typename = ::std::enable_if_t< ::HolderInternal::is_value_method_exists< Holder, Holder this_refer > \
+            && ::Operator::Binary::is_ ## Invokable ## _operator_exists_test< ThisType this_refer, _Right && > > > \
     constexpr decltype(auto) operator symbol ( _Right && right ) this_refer \
     { \
         using LeftRefer = ThisType this_refer; \
@@ -123,7 +126,8 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
 
 #define POSTFIX_UNARY_OPERATOR_PROTOTYPE_WITH_ARGUMENT( symbol, this_refer, Invokable ) \
     template < typename _Argument, \
-        typename = ::std::enable_if_t< ::Operator::Unary::is_ ## Invokable ## _operator_exists_test< Value this_refer, _Argument && > > > \
+        typename = ::std::enable_if_t< ::HolderInternal::is_value_method_exists< Holder, Holder this_refer > \
+            && ::Operator::Unary::is_ ## Invokable ## _operator_exists_test< Value this_refer, _Argument && > > > \
     constexpr decltype(auto) operator symbol ( _Argument && argument ) this_refer \
     { \
         using ThisRefer = ThisType this_refer; \
@@ -132,7 +136,8 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
 
 #define POSTFIX_UNARY_OPERATOR_PROTOTYPE_WITH_ARGUMENTS( symbol, this_refer, Invokable ) \
     template < typename ... _Arguments, \
-        typename = ::std::enable_if_t< ::Operator::Unary::is_ ## Invokable ## _operator_exists_test< Value this_refer, _Arguments && ... > > > \
+        typename = ::std::enable_if_t< ::HolderInternal::is_value_method_exists< Holder, Holder this_refer > \
+            && ::Operator::Unary::is_ ## Invokable ## _operator_exists_test< Value this_refer, _Arguments && ... > > > \
     constexpr decltype(auto) operator symbol ( _Arguments && ... arguments ) this_refer \
     { \
         using ThisRefer = ThisType this_refer; \
@@ -141,7 +146,9 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
 
 #define PREFIX_UNARY_OPERATOR_PROTOTYPE( symbol, this_refer, Invokable ) \
     template < typename ... _Arguments, \
-        typename = ::std::enable_if_t< sizeof...( _Arguments ) == 0 && ::Operator::Unary::is_ ## Invokable ## _operator_exists_test< Value this_refer, _Arguments && ... > > > \
+        typename = ::std::enable_if_t< sizeof...( _Arguments ) == 0 \
+            && ::HolderInternal::is_value_method_exists< Holder, Holder this_refer > \
+            && ::Operator::Unary::is_ ## Invokable ## _operator_exists_test< Value this_refer, _Arguments && ... > > > \
     constexpr decltype(auto) operator symbol () this_refer \
     { \
         using ThisRefer = ThisType this_refer; \
@@ -150,7 +157,9 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
 
 #define POSTFIX_UNARY_OPERATOR_PROTOTYPE_WITH_INT( symbol, this_refer, Invokable ) \
     template < typename ... _Arguments, \
-        typename = ::std::enable_if_t< sizeof...( _Arguments ) == 0 && ::Operator::Unary::is_ ## Invokable ## _operator_exists_test< Value this_refer, _Arguments && ... > > > \
+        typename = ::std::enable_if_t< sizeof...( _Arguments ) == 0 \
+            && ::HolderInternal::is_value_method_exists< Holder, Holder this_refer > \
+            && ::Operator::Unary::is_ ## Invokable ## _operator_exists_test< Value this_refer, _Arguments && ... > > > \
     constexpr decltype(auto) operator symbol ( int ) this_refer \
     { \
         using ThisRefer = ThisType this_refer; \
@@ -158,12 +167,18 @@ BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
     } \
 
 #define ADDRESS_OF_OPERATOR_PROTOTYPE( symbol, this_refer ) \
+    template < typename ... _Arguments, \
+        typename = ::std::enable_if_t< sizeof...( _Arguments ) == 0 \
+            && ::HolderInternal::is_value_method_exists< Holder, Holder this_refer > > > \
     constexpr ValuePointer< ThisType this_refer > operator symbol () this_refer \
     { \
         return ValuePointer< ThisType this_refer >( ::std::forward< ThisType this_refer >( *this ) ); \
     } \
 
 #define DEREFERENCE_OPERATOR_PROTOTYPE( symbol, this_refer ) \
+    template < typename ... _Arguments, \
+        typename = ::std::enable_if_t< sizeof...( _Arguments ) == 0 \
+            && ::HolderInternal::is_value_method_exists< Holder, Holder this_refer > > > \
     constexpr ValuePointer< ThisType this_refer > operator symbol () this_refer \
     { \
         return ValuePointer< ThisType this_refer >( ::std::forward< ThisType this_refer >( *this ) ); \

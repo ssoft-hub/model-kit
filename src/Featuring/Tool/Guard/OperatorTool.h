@@ -23,8 +23,6 @@ namespace Guard
             using ValueRefer = ::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >;
             using ResultRefer = _Type;
 
-            static_assert( ::std::is_reference< _Type >::value,
-                "The template parameter _Type must to be a reference type." );
             static_assert( ::std::is_same< ResultRefer, ::std::result_of_t< Invokable( ValueRefer, _Arguments && ... ) > >::value,
                 "The result of _Invokable( _LeftRefer, _InstanceRefer ) must to be a _Type" );
 
@@ -78,8 +76,6 @@ namespace Guard
             using ValueRefer = ::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >;
             using ResultRefer = _Type;
 
-            static_assert( ::std::is_reference< _Type >::value,
-                "The template parameter _Type must to be a reference type." );
             static_assert( ::std::is_same< ResultRefer, ::std::result_of_t< Invokable( LeftRefer, ValueRefer ) > >::value,
                 "The result of _Invokable( _LeftRefer, _InstanceRefer ) must to be a _Type" );
 
@@ -134,8 +130,6 @@ namespace Guard
             using RightValueRefer = ::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >;
             using ResultRefer = _Type;
 
-            static_assert( ::std::is_reference< _Type >::value,
-                "The template parameter _Type must to be a reference type." );
             static_assert( ::std::is_same< ResultRefer, ::std::result_of_t< Invokable( LeftValueRefer, RightValueRefer ) > >::value,
                 "The result of _Invokable( _LeftRefer, _InstanceRefer ) must to be a _Type" );
 
@@ -151,8 +145,8 @@ namespace Guard
             }
 
             Holder ( ThisType && other )
-                : m_left_feature_guard( ::std::forward< InstanceGuard >( other.m_left_feature_guard ) )
-                , m_right_feature_guard( ::std::forward< InstanceGuard >( other.m_right_feature_guard ) )
+                : m_left_feature_guard( ::std::forward< LeftInstanceGuard >( other.m_left_feature_guard ) )
+                , m_right_feature_guard( ::std::forward< RightInstanceGuard >( other.m_right_feature_guard ) )
                 , m_result_refer( ::std::forward< ResultRefer >( other.m_result_refer ) )
             {
                 assert( false ); // Restricted functionality
