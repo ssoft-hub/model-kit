@@ -97,7 +97,7 @@ namespace Operator
         using RightValueRefer = ::SimilarRefer< RightValue, RightInstanceRefer >; \
      \
         static const bool is_compatible_value = ::is_compatible< LeftInstance, RightInstance > \
-            && ( ::Operator::Binary::is_operator ## Invokable ## Both_method_exists< LeftHolder, void(LeftHolderRefer,RightHolderRefer) > \
+            && ( ::Operator::Binary::is_operator ## Invokable ## _method_exists< LeftHolder, void(LeftHolderRefer,RightHolderRefer) > \
                 || is_ ## Invokable ## _operator_exists_test< LeftValueRefer, LeftValueRefer > ); \
      \
         static const bool is_left_path_of_right_value = ::is_this_part_of_other< LeftInstance, RightInstance > \
@@ -124,7 +124,6 @@ namespace Operator
             IS_METHOD_EXISTS_TRAIT( operator ## Invokable ) \
             IS_METHOD_EXISTS_TRAIT( operator ## Invokable ## Left ) \
             IS_METHOD_EXISTS_TRAIT( operator ## Invokable ## Right ) \
-            IS_METHOD_EXISTS_TRAIT( operator ## Invokable ## Both ) \
             IS_BINARY_OPERATOR_EXISTS_TEST_TRAIT( Invokable ) \
         } \
     } \
@@ -247,7 +246,7 @@ namespace Operator
                     using LeftInstanceRefer = _Left &&; \
                     using LeftHolder = typename ::std::decay_t< LeftInstanceRefer >::Holder; \
                     using RightInstanceRefer = _Right &&; \
-                    LeftHolder::operator ## Invokable ## Both( ::instanceHolder( ::std::forward< LeftInstanceRefer >( left ), ::std::forward< RightInstanceRefer >( right ) ) ); \
+                    LeftHolder::operator ## Invokable ( ::instanceHolder( ::std::forward< LeftInstanceRefer >( left ) ), ::instanceHolder( ::std::forward< RightInstanceRefer >( right ) ) ); \
                     return ::std::forward< RightInstanceRefer >( right ); \
                 } \
             }; \
@@ -375,7 +374,7 @@ namespace Operator
                     using RightHolderRefer = ::SimilarRefer< RightHolder, RightInstanceRefer >; \
      \
                     constexpr bool is_left_compatible_to_right = ::is_compatible< LeftHolder, RightHolder >; \
-                    constexpr bool holder_has_method_for_operator = ::Operator::Binary::is_operator ## Invokable ## Both_method_exists< LeftHolder, void( LeftHolderRefer, RightHolderRefer ) >; \
+                    constexpr bool holder_has_method_for_operator = ::Operator::Binary::is_operator ## Invokable ## _method_exists< LeftHolder, void( LeftHolderRefer, RightHolderRefer ) >; \
                     using OperatorSwitchCase = ::std::conditional_t< is_left_compatible_to_right && holder_has_method_for_operator, ::Operator::Binary::HolderHasOperatorCase, ::Operator::Binary::HolderHasNoOperatorCase >; \
                     return ::Operator::Binary::Invokable ## Switch< BothInstanceCase, OperatorSwitchCase >::invoke( ::std::forward< LeftInstanceRefer >( left ), ::std::forward< RightInstanceRefer >( right ) ); \
                 } \

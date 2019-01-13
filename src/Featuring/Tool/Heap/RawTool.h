@@ -38,7 +38,18 @@ namespace Heap
             }
 
             Holder ( const ThisType && other )
-                : Holder( ::std::forward< const Pointer >( *other.m_pointer ) )
+                : Holder( ::std::forward< const Value >( *other.m_pointer ) )
+            {
+            }
+
+            Holder ( volatile ThisType && other )
+                : m_pointer( ::std::forward< volatile Pointer >( other.m_pointer ) )
+            {
+                other.m_pointer = nullptr;
+            }
+
+            Holder ( const volatile ThisType && other )
+                : Holder( ::std::forward< const volatile Value >( *other.m_pointer ) )
             {
             }
 
@@ -48,6 +59,16 @@ namespace Heap
             }
 
             Holder ( const ThisType & other )
+                : Holder( *other.m_pointer )
+            {
+            }
+
+            Holder ( volatile ThisType & other )
+                : Holder( *other.m_pointer )
+            {
+            }
+
+            Holder ( const volatile ThisType & other )
                 : Holder( *other.m_pointer )
             {
             }
@@ -66,6 +87,19 @@ namespace Heap
             }
 
             template < typename _OtherValue >
+            Holder ( volatile Holder< _OtherValue > && other )
+                : m_pointer( ::std::forward< volatile typename Holder< _OtherValue >::Pointer >( other.m_pointer ) )
+            {
+                other.m_pointer = nullptr;
+            }
+
+            template < typename _OtherValue >
+            Holder ( const volatile Holder< _OtherValue > && other )
+                : Holder( *other.m_pointer )
+            {
+            }
+
+            template < typename _OtherValue >
             Holder ( Holder< _OtherValue > & other )
                 : Holder( *other.m_pointer )
             {
@@ -77,70 +111,55 @@ namespace Heap
             {
             }
 
-            ~Holder ()
+            template < typename _OtherValue >
+            Holder ( volatile Holder< _OtherValue > & other )
+                : Holder( *other.m_pointer )
             {
-                delete m_pointer;
             }
 
-//            template < typename _Argument >
-//            void operator = ( _Argument && argument )
-//            {
-//                assert( m_pointer );
-//                *m_pointer = ::std::forward< _Argument >( argument );
-//            }
+            template < typename _OtherValue >
+            Holder ( const volatile Holder< _OtherValue > & other )
+                : Holder( *other.m_pointer )
+            {
+            }
 
-//            void operator = ( ThisType && other )
-//            {
-//                ::std::swap( m_pointer, other.m_pointer );
-//                return *this;
-//            }
+            ~Holder ()
+            {
+                if ( m_pointer != nullptr )
+                    delete m_pointer;
+            }
 
-//            void operator = ( const ThisType && other )
-//            {
-//                assert( other.m_pointer );
-//                return *this = *other.m_pointer;
-//            }
+            template < typename _Refer >
+            static void operatorAssignment ( _Refer && holder, ThisType && other )
+            {
+                ::std::swap( holder.m_pointer, other.m_pointer );
+            }
 
-//            void operator = ( ThisType & other )
-//            {
-//                assert( other.m_pointer );
-//                return *this = *other.m_pointer;
-//            }
+            template < typename _Refer >
+            static void operatorAssignment ( _Refer && holder, volatile ThisType && other )
+            {
+                delete holder.m_pointer;
+                holder.m_pointer = other.m_pointer;
+                other.m_pointer = nullptr;
+            }
 
-//            void operator = ( const ThisType & other )
-//            {
-//                assert( other.m_pointer );
-//                return *this = *other.m_pointer;
-//            }
-
-//            template < typename _OtherValue >
-//            void operator = ( Holder< _OtherValue > && other )
-//            {
-//                ::std::swap< Pointer >( m_pointer, other.m_pointer );
-//            }
-
-//            template < typename _OtherValue >
-//            void operator = ( const Holder< _OtherValue > && other )
-//            {
-//                assert( other.m_pointer );
-//                *this = *other.m_pointer;
-//            }
-
-//            template < typename _OtherValue >
-//            void operator = ( Holder< _OtherValue > & other )
-//            {
-//                assert( other.m_pointer );
-//                *this = *other.m_pointer;
-//            }
-
-//            template < typename _OtherValue >
-//            void operator = ( const Holder< _OtherValue > & other )
-//            {
-//                assert( other.m_pointer );
-//                *this = *other.m_pointer;
-//            }
+            template < typename _Refer, typename _OtherValue >
+            static void operatorAssignment ( _Refer && holder, Holder< _OtherValue > && other )
+            {
+                delete holder.m_pointer;
+                holder.m_pointer = other.m_pointer;
+                other.m_pointer = nullptr;
+            }
 
             //! Access to internal value of Holder for any king of referencies.
+            template < typename _Refer, typename _OtherValue >
+            static void operatorAssignment ( _Refer && holder, volatile Holder< _OtherValue > && other )
+            {
+                delete holder.m_pointer;
+                holder.m_pointer = other.m_pointer;
+                other.m_pointer = nullptr;
+            }
+
             template < typename _Refer >
             static constexpr decltype(auto) value ( _Refer && holder )
             {

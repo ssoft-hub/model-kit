@@ -406,7 +406,7 @@ static void operator[Name]Right ( _Left && left, _HolderRightRefer && right );
 
 ```cpp
 template < typename _Right >
-static void operator[Name]Both ( ThisType && left, Holder< _Right > && right );
+static void operator[Name] ( ThisType && left, Holder< _Right > && right );
 // ... и т.д. все возможные сочетания 
 ```
 
@@ -415,7 +415,7 @@ static void operator[Name]Both ( ThisType && left, Holder< _Right > && right );
 ```cpp
 template < typename _HolderLeftRefer, typename _HolderRightRefer,
     typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _HolderLeftRefer > >::value > >
-static void operator[Name]Both ( _HolderLeftRefer && left, _HolderRightRefer && right );
+static void operator[Name] ( _HolderLeftRefer && left, _HolderRightRefer && right );
 ```
 
 где в качестве **[Name]** могут быть использованы:
