@@ -1,6 +1,6 @@
 #pragma once
-#ifndef ACCESS_HOLDER_INTERNAL_POINTER_H
-#define ACCESS_HOLDER_INTERNAL_POINTER_H
+#ifndef MDK_ACCESS_HOLDER_INTERNAL_POINTER_H
+#define MDK_ACCESS_HOLDER_INTERNAL_POINTER_H
 
 #include <memory>
 #include <ModelKit/Featuring/Traits.h>
@@ -96,9 +96,9 @@ struct ValueHelper< _ValueRefer, _HolderRefer, true >
 
 struct HolderInternal
 {
-    IS_METHOD_EXISTS_TRAIT( guard )
-    IS_METHOD_EXISTS_TRAIT( unguard )
-    IS_METHOD_EXISTS_TRAIT( value )
+    MDK_IS_METHOD_EXISTS_TRAIT( guard )
+    MDK_IS_METHOD_EXISTS_TRAIT( unguard )
+    MDK_IS_METHOD_EXISTS_TRAIT( value )
 
     template < typename _HolderRefer,
         typename = ::std::enable_if_t< is_value_method_exists< ::std::decay_t< _HolderRefer >, _HolderRefer > > >

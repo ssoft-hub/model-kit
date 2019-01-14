@@ -1,6 +1,6 @@
 #pragma once
-#ifndef INSTANCE_TOOL_INPLACE_UNINITIALIZED_H
-#define INSTANCE_TOOL_INPLACE_UNINITIALIZED_H
+#ifndef MDK_INSTANCE_TOOL_INPLACE_UNINITIALIZED_H
+#define MDK_INSTANCE_TOOL_INPLACE_UNINITIALIZED_H
 
 #include <ModelKit/Featuring/Access.h>
 #include <ModelKit/Featuring/Traits.h>

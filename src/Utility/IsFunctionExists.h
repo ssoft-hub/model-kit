@@ -1,10 +1,10 @@
 #pragma once
-#ifndef UTILITY_IS_FUNCTION_EXISTS_H
-#define UTILITY_IS_FUNCTION_EXISTS_H
+#ifndef MDK_UTILITY_IS_FUNCTION_EXISTS_H
+#define MDK_UTILITY_IS_FUNCTION_EXISTS_H
 
 #include <type_traits>
 
-#define IS_FUNCTION_EXISTS_TRAIT( function, shortname ) \
+#define MDK_IS_FUNCTION_EXISTS_TRAIT( function, shortname ) \
     template < typename _Type, typename ... _Arguments > \
     struct Is_ ## shortname ## _FunctionExistsHelper { \
     private: \

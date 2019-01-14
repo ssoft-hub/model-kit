@@ -1,6 +1,6 @@
 #pragma once
-#ifndef FEATURED_TRAITS_H
-#define FEATURED_TRAITS_H
+#ifndef MDK_FEATURED_TRAITS_H
+#define MDK_FEATURED_TRAITS_H
 
 #include <type_traits>
 

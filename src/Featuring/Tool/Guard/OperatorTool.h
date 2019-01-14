@@ -1,6 +1,6 @@
 #pragma once
-#ifndef FEATURING_TOOL_GUARD_OPERATOR_TOOL_H
-#define FEATURING_TOOL_GUARD_OPERATOR_TOOL_H
+#ifndef MDK_FEATURING_TOOL_GUARD_OPERATOR_TOOL_H
+#define MDK_FEATURING_TOOL_GUARD_OPERATOR_TOOL_H
 
 #include <ModelKit/Featuring/Access/InstanceGuard.h>
 #include <ModelKit/Featuring/Traits.h>

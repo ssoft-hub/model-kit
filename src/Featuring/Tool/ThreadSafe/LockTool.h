@@ -1,6 +1,6 @@
 #pragma once
-#ifndef INSTANCE_TOOL_THREAD_SAFE_LOCK_H
-#define INSTANCE_TOOL_THREAD_SAFE_LOCK_H
+#ifndef MDK_INSTANCE_TOOL_THREAD_SAFE_LOCK_H
+#define MDK_INSTANCE_TOOL_THREAD_SAFE_LOCK_H
 
 #include <ModelKit/Featuring/Access/HolderGuard.h>
 #include <ModelKit/Featuring/Traits.h>

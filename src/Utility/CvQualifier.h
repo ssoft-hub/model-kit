@@ -1,6 +1,6 @@
 #pragma once
-#ifndef UTILITY_AS_CONST_H
-#define UTILITY_AS_CONST_H
+#ifndef MDK_UTILITY_AS_CONST_H
+#define MDK_UTILITY_AS_CONST_H
 
 #include <memory>
 #include <type_traits>

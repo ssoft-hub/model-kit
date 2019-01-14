@@ -5,11 +5,11 @@
 Для проверки существования операторов определены следующие макроопределения:
 
 ```cpp
-#define IS_PREFIX_UNARY_OPERATOR_EXISTS_TRAIT( symbol, Invokable )
-#define IS_POSTFIX_UNARY_OPERATOR_EXISTS_TRAIT( symbol, Invokable )
-#define IS_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT_EXISTS_TRAIT( symbol, Invokable )
-#define IS_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENTS_EXISTS_TRAIT( symbol, Invokable )
-#define IS_BINARY_OPERATOR_EXISTS_TRAIT( symbol, Invokable )
+#define MDK_IS_PREFIX_UNARY_OPERATOR_EXISTS_TRAIT( symbol, Invokable )
+#define MDK_IS_POSTFIX_UNARY_OPERATOR_EXISTS_TRAIT( symbol, Invokable )
+#define MDK_IS_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT_EXISTS_TRAIT( symbol, Invokable )
+#define MDK_IS_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENTS_EXISTS_TRAIT( symbol, Invokable )
+#define MDK_IS_BINARY_OPERATOR_EXISTS_TRAIT( symbol, Invokable )
 ```
 
 Все эти макроопределения позволяют свормировать структуры и переменные для возможности проверки наличия подходящего оператора. В качестве параметра передается символ оператора и его желаемое наименование.
@@ -21,9 +21,9 @@
 ```cpp
 namespace Test // struct, class, etc.
 {
-    IS_PREFIX_UNARY_OPERATOR_EXISTS_TRAIT( ++, UnaryPrefixPlusPlus )
-    IS_POSTFIX_UNARY_OPERATOR_EXISTS_TRAIT( ++, UnaryPostfixPlusPlus )
-    IS_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT_EXISTS_TRAIT( [], SquareBrackets )
+    MDK_IS_PREFIX_UNARY_OPERATOR_EXISTS_TRAIT( ++, UnaryPrefixPlusPlus )
+    MDK_IS_POSTFIX_UNARY_OPERATOR_EXISTS_TRAIT( ++, UnaryPostfixPlusPlus )
+    MDK_IS_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT_EXISTS_TRAIT( [], SquareBrackets )
 }
 
 static constexpr bool a1 = ::Test::is_UnaryPrefixPlusPlus_operator_exists< int >; // true

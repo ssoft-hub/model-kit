@@ -1,6 +1,6 @@
 #pragma once
-#ifndef FEATURING_OPERATOR_RESULT_SWITCH_H
-#define FEATURING_OPERATOR_RESULT_SWITCH_H
+#ifndef MDK_FEATURING_OPERATOR_RESULT_SWITCH_H
+#define MDK_FEATURING_OPERATOR_RESULT_SWITCH_H
 
 #include <ModelKit/Featuring/Tool/Guard/OperatorTool.h>
 #include <ModelKit/Featuring/Tool/Inplace/DefaultTool.h>

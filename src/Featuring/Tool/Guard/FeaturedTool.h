@@ -1,6 +1,6 @@
 #pragma once
-#ifndef GUARD_FEATURED_TOOL_H
-#define GUARD_FEATURED_TOOL_H
+#ifndef MDK_GUARD_FEATURED_TOOL_H
+#define MDK_GUARD_FEATURED_TOOL_H
 
 #include <ModelKit/Featuring/Access/ValueGuard.h>
 

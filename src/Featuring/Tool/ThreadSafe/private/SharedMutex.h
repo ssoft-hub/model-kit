@@ -1,6 +1,6 @@
 #pragma once
-#ifndef TOOL_PRIVATE_SHATED_MUTEX_H
-#define TOOL_PRIVATE_SHATED_MUTEX_H
+#ifndef MDK_TOOL_PRIVATE_SHATED_MUTEX_H
+#define MDK_TOOL_PRIVATE_SHATED_MUTEX_H
 
 #   include <atomic>
 #   include <condition_variable>

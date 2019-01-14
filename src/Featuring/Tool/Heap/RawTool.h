@@ -1,6 +1,6 @@
 #pragma once
-#ifndef INSTANCE_TOOL_HEAP_RAW_H
-#define INSTANCE_TOOL_HEAP_RAW_H
+#ifndef MDK_INSTANCE_TOOL_HEAP_RAW_H
+#define MDK_INSTANCE_TOOL_HEAP_RAW_H
 
 #include <ModelKit/Featuring/Access/HolderInternal.h>
 #include <ModelKit/Featuring/Traits.h>

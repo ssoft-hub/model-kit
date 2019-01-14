@@ -1,6 +1,6 @@
 #pragma once
-#ifndef INSTANCE_RESOLVER_H
-#define INSTANCE_RESOLVER_H
+#ifndef MDK_INSTANCE_RESOLVER_H
+#define MDK_INSTANCE_RESOLVER_H
 
 #include "Access/InstanceGuard.h"
 #include "Access/ValueGuard.h"
