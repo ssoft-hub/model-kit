@@ -5,6 +5,8 @@
 #include <thread>
 #include <vector>
 
+using namespace ::Mdk;
+
 using Map = ::std::map< ::std::string, ::std::pair< ::std::string, int > >;
 
 using RecursiveMutexMap = Instance< Map, ThreadSafe::RecursiveMutexTool >;
@@ -27,7 +29,7 @@ void func ()
         test_map->find( "potato" )->second.second++;
     }
 
-    auto read_ptr = &asConst( test_map );
+    auto read_ptr = &castConst( test_map );
     ::std::cout
         << "potato is " << read_ptr->at( "potato" ).first
         << " " << read_ptr->at( "potato" ).second

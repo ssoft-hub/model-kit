@@ -9,6 +9,8 @@
 #include <cxxabi.h>
 #include <memory>
 
+using namespace ::Mdk;
+
 template < typename _Type >
 void printTypeOf ()
 {
@@ -66,7 +68,7 @@ void compileTestInstanceTrancpatancy ()
     My value;
     My().rvalueMethod();
     My().rvalueConstMethod();
-    asConst( My() ).rvalueConstMethod();
+    castConst( My() ).rvalueConstMethod();
 
     ::std::make_shared< My >()->lvalueMethod();
 
@@ -76,25 +78,25 @@ void compileTestInstanceTrancpatancy ()
     // не иметь адреса.
     //(*&My()).rvalueMethod();
     //(*&My()).rvalueConstMethod();
-    //(*&asConst( My() ) ).rvalueConstMethod();
+    //(*&castConst( My() ) ).rvalueConstMethod();
 
     // по похожим причинам нельзя через operator -> вызвать rvalue методы
     //ReferPointer< My && >( My() )->rvalueMethod();
     //ReferPointer< My && >( My() )->rvalueConstMethod();
-    //asConst( ReferPointer< My && >( My() ) )->rvalueConstMethod();
+    //castConst( ReferPointer< My && >( My() ) )->rvalueConstMethod();
 
     // как следствие, не работает
     //Instance< My >()->rvalueMethod();
     //Instance< My >()->rvalueConstMethod();
-    //asConst( Instance< My >() )->rvalueConstMethod();
+    //castConst( Instance< My >() )->rvalueConstMethod();
 
     //My().lvalueMethod(); // почему-то T&& не преобразуется к T&
     My().lvalueConstMethod();
-    asConst( My() ).lvalueConstMethod();
+    castConst( My() ).lvalueConstMethod();
 
     Instance< My >()->lvalueMethod();
     Instance< My >()->lvalueConstMethod();
-    asConst( Instance< My >() )->lvalueConstMethod();
+    castConst( Instance< My >() )->lvalueConstMethod();
 
     instance->lvalueMethod();
     instance->lvalueConstMethod();
@@ -158,7 +160,7 @@ int main ( int /*argc*/, char ** /*argv*/ )
 ////    Instance< SharedEnd< const int, ToolType > > int_value; // ERROR
 
 //    (*&int_value) += 12345;
-//    *&asConst(int_value);
+//    *&castConst(int_value);
 
 //    Instance< ::std::string > name;
 //    name = "Hello";
@@ -171,26 +173,26 @@ int main ( int /*argc*/, char ** /*argv*/ )
 //    item->m_refer_string = "Change refer string";
 
 //    ::std::cout
-//        << asConst(int_value) << ::std::endl
-//        << asConst(name) << ::std::endl
-//        << asConst(item)->m_int << ::std::endl
-//        << asConst(item)->m_string << ::std::endl
-//        << asConst(item)->m_unique_string << ::std::endl
-//        << asConst(item)->m_shared_string << ::std::endl
-//        << asConst(item)->m_refer_string << ::std::endl
+//        << castConst(int_value) << ::std::endl
+//        << castConst(name) << ::std::endl
+//        << castConst(item)->m_int << ::std::endl
+//        << castConst(item)->m_string << ::std::endl
+//        << castConst(item)->m_unique_string << ::std::endl
+//        << castConst(item)->m_shared_string << ::std::endl
+//        << castConst(item)->m_refer_string << ::std::endl
 //    ;
 
 //    Instance< Instance< Item, Tool >, ImplicitTool > other_item;// = item;
-////    (*&other_item ).m_refer = (*&asConst(item ).m_string;
+////    (*&other_item ).m_refer = (*&castConst(item ).m_string;
 //    other_item = item;
 
 //    other_item->m_int = 1;
 //    other_item->m_string = "Word";
 
 //    ::std::cout
-//        << asConst(other_item)->m_int << ::std::endl
-//        << asConst(other_item)->m_string << ::std::endl
-////        << asConst(other_item)->m_string_refer << ::std::endl
+//        << castConst(other_item)->m_int << ::std::endl
+//        << castConst(other_item)->m_string << ::std::endl
+////        << castConst(other_item)->m_string_refer << ::std::endl
 //    ;
 
     return 0;
@@ -215,7 +217,7 @@ int main ( int /*argc*/, char ** /*argv*/ )
 //    (*&value);  // совместим с типом отличным от Instance
 
 //    // Доступ к константному внутреннему значению
-//    (*&asConst(value)); // совместим с типом отличным от Instance
+//    (*&castConst(value)); // совместим с типом отличным от Instance
 
 //    // Доступ к неконстантному члену класса
 //    value->m_member;    // не совместим с типом отличным от Instance
@@ -223,9 +225,9 @@ int main ( int /*argc*/, char ** /*argv*/ )
 //    (*&value).m_member; // совместим с типом отличным от Instance
 
 //    // Доступ к константному члену класса
-//    asConst(value)->m_member;      // не совместим с типом отличным от Instance
-//    (&asConst(value))->m_member;   // совместим с типом отличным от Instance
-//    (*&asConst(value)).m_member;   // совместим с типом отличным от Instance
+//    castConst(value)->m_member;      // не совместим с типом отличным от Instance
+//    (&castConst(value))->m_member;   // совместим с типом отличным от Instance
+//    (*&castConst(value)).m_member;   // совместим с типом отличным от Instance
 //}
 
 //void operatorExample ()
@@ -365,8 +367,8 @@ struct Foo {
     }
 };
 
-//template <typename TOwner, void(TOwner::*func)()>
-template <typename _Refer, typename _Function >
+//template < typename TOwner, void(TOwner::*func)()>
+template < typename _Refer, typename _Function >
 void Call( _Refer p, _Function func ) {
     (p.*func)();
 }
@@ -458,8 +460,8 @@ void testInstanceContainer ()
             container->push_back( i );
 
         auto v0 = container[5];
-        auto v1 = asConst( container )[5];
-        auto v2 = &(asConst( container )[5]);
+        auto v1 = castConst( container )[5];
+        auto v2 = &(castConst( container )[5]);
         auto v3 = *v2;
 
         printTypeOf( v0 );
@@ -468,10 +470,10 @@ void testInstanceContainer ()
         printTypeOf( v3 );
 
         for ( int i = 0; i < 10; ++i )
-            container[ i ] = asConst( container )[ 9 - i ];
+            container[ i ] = castConst( container )[ 9 - i ];
 
         Instance< Container >()[0];
-        asConst( Instance< Container >() )[0];
+        castConst( Instance< Container >() )[0];
     }
 }
 

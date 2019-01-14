@@ -15,8 +15,8 @@ struct BaseType
     BaseType (
         Int int_value = Int(),
         String string_value = String() )
-        : m_int( int_value )
-    , m_string( string_value )
+            : m_int( int_value )
+            , m_string( string_value )
     {
     }
 

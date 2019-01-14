@@ -3,6 +3,8 @@
 #include <map>
 #include <string>
 
+using namespace ::Mdk;
+
 #define FUNC_INFO __PRETTY_FUNCTION__
 
 #define DATA_UNARY_OPERATOR_INT_PROTOTYPE( symbol, refer ) \
@@ -355,9 +357,9 @@ void testConstructors ()
     TestData two( 1 );
     TestData three( 0.1 );
     TestData four( one );
-    TestData five( asConst( one ) );
+    TestData five( castConst( one ) );
     TestData six( TestData::Value::make() );
-    TestData seven( asConst( TestData::Value::make() ) );
+    TestData seven( castConst( TestData::Value::make() ) );
 
     TestData() = 10;
     one = 10;
@@ -378,9 +380,9 @@ void testSameToolConstructors ()
 
     SameData one;
     TestData four( one );
-    TestData five( asConst( one ) );
+    TestData five( castConst( one ) );
     TestData six( SameData::Value::make() );
-    TestData seven( asConst( SameData::Value::make() ) );
+    TestData seven( castConst( SameData::Value::make() ) );
 
     (void) one;
     (void) four;
@@ -396,9 +398,9 @@ void testDiffToolConstructors ()
 
     SameData one;
     TestData four( one );
-    TestData five( asConst( one ) );
+    TestData five( castConst( one ) );
     TestData six( SameData::Value::make() );
-    TestData seven( asConst( SameData::Value::make() ) );
+    TestData seven( castConst( SameData::Value::make() ) );
 
     (void) one;
     (void) four;
@@ -409,12 +411,15 @@ void testDiffToolConstructors ()
 
 void testAccess ()
 {
-//    using Key = int;//Instance< int >;
-//    using Value = Instance< Data< int > >;
-//    using Map = ::std::map< Key, Value >;
+    //using Key = int;//Instance< int >;
+    using Key = Instance< ::std::string, ::Implicit::RawTool >;
+    using Value = Instance< Data< int > >;
+    using Map = ::std::map< Key, Value >;
 
-//    Instance< Map > value;
-//    *value;
+    Instance< Map > map;
+    //Instance< Key > key;
+    Key key;
+    (*&map)[ *&key ];
 }
 
 template < typename _Data >
@@ -456,22 +461,22 @@ void testAssignmentOperator ()
     Other other;
 
     data = other;
-    data = asConst( other );
-    data = asVolatile( other );
-    data = asConstVolatile( other );
+    data = castConst( other );
+    data = castVolatile( other );
+    data = castConstVolatile( other );
     data = ::std::move( other );
-    data = asConst( ::std::move( other ) );
-    data = asVolatile( ::std::move( other ) );
-    data = asConstVolatile( ::std::move( other ) );
+    data = castConst( ::std::move( other ) );
+    data = castVolatile( ::std::move( other ) );
+    data = castConstVolatile( ::std::move( other ) );
 
     ::std::move( data ) = other;
-    ::std::move( data ) = asConst( other );
-    ::std::move( data ) = asVolatile( other );
-    ::std::move( data ) = asConstVolatile( other );
+    ::std::move( data ) = castConst( other );
+    ::std::move( data ) = castVolatile( other );
+    ::std::move( data ) = castConstVolatile( other );
     ::std::move( data ) = ::std::move( other );
-    ::std::move( data ) = asConst( ::std::move( other ) );
-    ::std::move( data ) = asVolatile( ::std::move( other ) );
-    ::std::move( data ) = asConstVolatile( ::std::move( other ) );
+    ::std::move( data ) = castConst( ::std::move( other ) );
+    ::std::move( data ) = castVolatile( ::std::move( other ) );
+    ::std::move( data ) = castConstVolatile( ::std::move( other ) );
 }
 
 template < typename _Data >
@@ -484,105 +489,105 @@ void testInstanceUnaryOperators ()
 
     // lvalue
     lvalue[0];
-    asConst(lvalue)[0];
-    asVolatile(lvalue)[0];
-    asConstVolatile(lvalue)[0];
+    castConst(lvalue)[0];
+    castVolatile(lvalue)[0];
+    castConstVolatile(lvalue)[0];
 
     lvalue(0, 1);
-    asConst(lvalue)(0, 1);
-    asVolatile(lvalue)(0, 1);
-    asConstVolatile(lvalue)(0, 1);
+    castConst(lvalue)(0, 1);
+    castVolatile(lvalue)(0, 1);
+    castConstVolatile(lvalue)(0, 1);
 
     +lvalue;
-    +asConst(lvalue);
-    +asVolatile(lvalue);
-    +asConstVolatile(lvalue);
+    +castConst(lvalue);
+    +Mdk::castVolatile(lvalue);
+    +castConstVolatile(lvalue);
 
     -lvalue;
-    -asConst(lvalue);
-    -asVolatile(lvalue);
-    -asConstVolatile(lvalue);
+    -castConst(lvalue);
+    -Mdk::castVolatile(lvalue);
+    -castConstVolatile(lvalue);
 
     ++lvalue;
-    ++asConst(lvalue);
-    ++asVolatile(lvalue);
-    ++asConstVolatile(lvalue);
+    ++castConst(lvalue);
+    ++Mdk::castVolatile(lvalue);
+    ++castConstVolatile(lvalue);
 
     --lvalue;
-    --asConst(lvalue);
-    --asVolatile(lvalue);
-    --asConstVolatile(lvalue);
+    --castConst(lvalue);
+    --Mdk::castVolatile(lvalue);
+    --castConstVolatile(lvalue);
 
     lvalue++;
-    asConst(lvalue)++;
-    asVolatile(lvalue)++;
-    asConstVolatile(lvalue)++;
+    castConst(lvalue)++;
+    castVolatile(lvalue)++;
+    castConstVolatile(lvalue)++;
 
     lvalue--;
-    asConst(lvalue)--;
-    asVolatile(lvalue)--;
-    asConstVolatile(lvalue)--;
+    castConst(lvalue)--;
+    castVolatile(lvalue)--;
+    castConstVolatile(lvalue)--;
 
     !lvalue;
-    !asConst(lvalue);
-    !asVolatile(lvalue);
-    !asConstVolatile(lvalue);
+    !castConst(lvalue);
+    !Mdk::castVolatile(lvalue);
+    !castConstVolatile(lvalue);
 
     ~lvalue;
-    ~asConst(lvalue);
-    ~asVolatile(lvalue);
-    ~asConstVolatile(lvalue);
+    ~castConst(lvalue);
+    ~Mdk::castVolatile(lvalue);
+    ~castConstVolatile(lvalue);
 
     // rvalue
     ::std::move( lvalue )[0];
-    asConst( ::std::move( lvalue ) )[0];
-    asVolatile( ::std::move( lvalue ) )[0];
-    asConstVolatile( ::std::move( lvalue ) )[0];
+    castConst( ::std::move( lvalue ) )[0];
+    castVolatile( ::std::move( lvalue ) )[0];
+    castConstVolatile( ::std::move( lvalue ) )[0];
 
     ::std::move( lvalue )(0, 1);
-    asConst( ::std::move( lvalue ) )(0, 1);
-    asVolatile( ::std::move( lvalue ) )(0, 1);
-    asConstVolatile( ::std::move( lvalue ) )(0, 1);
+    castConst( ::std::move( lvalue ) )(0, 1);
+    castVolatile( ::std::move( lvalue ) )(0, 1);
+    castConstVolatile( ::std::move( lvalue ) )(0, 1);
 
     +::std::move( lvalue );
-    +asConst( ::std::move( lvalue ) );
-    +asVolatile( ::std::move( lvalue ) );
-    +asConstVolatile( ::std::move( lvalue ) );
+    +castConst( ::std::move( lvalue ) );
+    +Mdk::castVolatile( ::std::move( lvalue ) );
+    +castConstVolatile( ::std::move( lvalue ) );
 
     -::std::move( lvalue );
-    -asConst( ::std::move( lvalue ) );
-    -asVolatile( ::std::move( lvalue ) );
-    -asConstVolatile( ::std::move( lvalue ) );
+    -castConst( ::std::move( lvalue ) );
+    -Mdk::castVolatile( ::std::move( lvalue ) );
+    -castConstVolatile( ::std::move( lvalue ) );
 
     ++::std::move( lvalue );
-    ++asConst( ::std::move( lvalue ) );
-    ++asVolatile( ::std::move( lvalue ) );
-    ++asConstVolatile( ::std::move( lvalue ) );
+    ++castConst( ::std::move( lvalue ) );
+    ++Mdk::castVolatile( ::std::move( lvalue ) );
+    ++castConstVolatile( ::std::move( lvalue ) );
 
     --::std::move( lvalue );
-    --asConst( ::std::move( lvalue ) );
-    --asVolatile( ::std::move( lvalue ) );
-    --asConstVolatile( ::std::move( lvalue ) );
+    --castConst( ::std::move( lvalue ) );
+    --Mdk::castVolatile( ::std::move( lvalue ) );
+    --castConstVolatile( ::std::move( lvalue ) );
 
     ::std::move( lvalue )++;
-    asConst( ::std::move( lvalue ) )++;
-    asVolatile( ::std::move( lvalue ) )++;
-    asConstVolatile( ::std::move( lvalue ) )++;
+    castConst( ::std::move( lvalue ) )++;
+    castVolatile( ::std::move( lvalue ) )++;
+    castConstVolatile( ::std::move( lvalue ) )++;
 
     ::std::move( lvalue )--;
-    asConst( ::std::move( lvalue ) )--;
-    asVolatile( ::std::move( lvalue ) )--;
-    asConstVolatile( ::std::move( lvalue ) )--;
+    castConst( ::std::move( lvalue ) )--;
+    castVolatile( ::std::move( lvalue ) )--;
+    castConstVolatile( ::std::move( lvalue ) )--;
 
     !::std::move( lvalue );
-    !asConst( ::std::move( lvalue ) );
-    !asVolatile( ::std::move( lvalue ) );
-    !asConstVolatile( ::std::move( lvalue ) );
+    !castConst( ::std::move( lvalue ) );
+    !Mdk::castVolatile( ::std::move( lvalue ) );
+    !castConstVolatile( ::std::move( lvalue ) );
 
     ~::std::move( lvalue );
-    ~asConst( ::std::move( lvalue ) );
-    ~asVolatile( ::std::move( lvalue ) );
-    ~asConstVolatile( ::std::move( lvalue ) );
+    ~castConst( ::std::move( lvalue ) );
+    ~Mdk::castVolatile( ::std::move( lvalue ) );
+    ~castConstVolatile( ::std::move( lvalue ) );
 }
 
 template < typename _Left, typename _Right >
@@ -724,21 +729,21 @@ template < typename _Left, typename _Right >
 void testInstanceBinaryOperators ()
 {
     testInstanceBinaryOperatorsSpec< _Left, _Right >();
-    testInstanceBinaryOperatorsSpec< _Left, const _Right >();
-    testInstanceBinaryOperatorsSpec< _Left, volatile _Right >();
-    testInstanceBinaryOperatorsSpec< _Left, const volatile _Right >();
-    //testInstanceBinaryOperatorsSpec< const _Left, _Right >();
-    //testInstanceBinaryOperatorsSpec< const _Left, const _Right >();
-    //testInstanceBinaryOperatorsSpec< const _Left, volatile _Right >();
-    //testInstanceBinaryOperatorsSpec< const _Left, const volatile _Right >();
-    //testInstanceBinaryOperatorsSpec< volatile _Left, _Right >();
-    //testInstanceBinaryOperatorsSpec< volatile _Left, const _Right >();
-    //testInstanceBinaryOperatorsSpec< volatile _Left, volatile _Right >();
-    //testInstanceBinaryOperatorsSpec< volatile _Left, const volatile _Right >();
-    //testInstanceBinaryOperatorsSpec< const volatile _Left, _Right >();
-    //testInstanceBinaryOperatorsSpec< const volatile _Left, const _Right >();
-    //testInstanceBinaryOperatorsSpec< const volatile _Left, volatile _Right >();
-    //testInstanceBinaryOperatorsSpec< const volatile _Left, const volatile _Right >();
+//    testInstanceBinaryOperatorsSpec< _Left, const _Right >();
+//    testInstanceBinaryOperatorsSpec< _Left, volatile _Right >();
+//    testInstanceBinaryOperatorsSpec< _Left, const volatile _Right >();
+//    testInstanceBinaryOperatorsSpec< const _Left, _Right >();
+//    testInstanceBinaryOperatorsSpec< const _Left, const _Right >();
+//    testInstanceBinaryOperatorsSpec< const _Left, volatile _Right >();
+//    testInstanceBinaryOperatorsSpec< const _Left, const volatile _Right >();
+//    testInstanceBinaryOperatorsSpec< volatile _Left, _Right >();
+//    testInstanceBinaryOperatorsSpec< volatile _Left, const _Right >();
+//    testInstanceBinaryOperatorsSpec< volatile _Left, volatile _Right >();
+//    testInstanceBinaryOperatorsSpec< volatile _Left, const volatile _Right >();
+//    testInstanceBinaryOperatorsSpec< const volatile _Left, _Right >();
+//    testInstanceBinaryOperatorsSpec< const volatile _Left, const _Right >();
+//    testInstanceBinaryOperatorsSpec< const volatile _Left, volatile _Right >();
+//    testInstanceBinaryOperatorsSpec< const volatile _Left, const volatile _Right >();
 
     //testInstanceBinaryOperatorsSpec< _Right, _Left >();
     //testInstanceBinaryOperatorsSpec< _Right, const _Left >();
@@ -767,21 +772,23 @@ void testAll ()
     testConstructors< _Data >();
     testAssignmentOperator< _Data, _Data >();
     testInstanceUnaryOperators< _Data >();
+    testInstanceBinaryOperators< DData, _Data >();
     testInstanceBinaryOperators< _Data, DData >();
+    testInstanceBinaryOperators< _Data, _Data >();
     testAccess();
 }
 
 void testFeaturing ()
 {
-    using TestData = Instance< Data< int > >;
+    using TestData = Instance< Data< int >, ::Heap::RawTool >;
 //    using CTestData = const TestData;
 //    using VTestData = volatile TestData;
-    using CVTestData = const volatile TestData;
+//    using CVTestData = const volatile TestData;
 
-//    testAll< TestData >();
+    testAll< TestData >();
 //    testAll< CTestData >();
 //    testAll< VTestData >();
-    testAll< CVTestData  >();
+//    testAll< CVTestData  >();
 }
 
 void testBinaryOperators ()

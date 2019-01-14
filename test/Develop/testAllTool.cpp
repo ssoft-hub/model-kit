@@ -3,6 +3,8 @@
 //#include "MyType.h"
 //#include <ModelKit.h>
 
+// using namespace ::Mdk;
+
 //template < typename _TestType >
 //void testTool ()
 //{
@@ -24,7 +26,7 @@
 //    // (например, системные блокировки и т.п.)
 
 //    // Гарант свойств для применения константного значения value
-//    auto cvalue_ptr = &asConst( value );
+//    auto cvalue_ptr = &castConst( value );
 
 //    // value
 //    ::std::cout

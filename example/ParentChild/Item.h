@@ -32,7 +32,7 @@ private:
 public:
     Item ()
         : m_parent_end()
-    , m_child_ends()
+        , m_child_ends()
     {
     }
 
