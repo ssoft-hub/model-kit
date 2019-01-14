@@ -11,8 +11,9 @@
 namespace Heap
 {
     /*!
-     * Инструмент для формирования значения в "куче" на основе
-     * умного указателя ::std::unique_ptr.
+     * Инструмент для формирования значения в "куче" на основе умного указателя
+     * ::std::unique_ptr. Не поддерживает использование volatile Instance из-за
+     * ограничений ::std::unique_ptr.
      */
     struct UniqueTool
     {
@@ -80,57 +81,32 @@ namespace Heap
                 m_pointer.reset();
             }
 
-//            template < typename _Argument >
-//            void operator = ( _Argument && argument )
-//            {
-//                assert( m_pointer );
-//                *m_pointer.get() = ::std::forward< _Argument >( argument );
-//            }
-
-//            void operator = ( ThisType && other )
-//            {
-//                m_pointer = ::std::forward< Pointer >( other.m_pointer );
-//            }
-
-//            void operator = ( const ThisType & other )
-//            {
-//                assert( other.m_pointer );
-//                *this = *other.m_pointer.get();
-//            }
-
-//            void operator = ( const ThisType && other )
-//            {
-//                assert( other.m_pointer );
-//                *this = *other.m_pointer.get();
-//            }
-
-//            void operator = ( ThisType & other )
-//            {
-//                assert( other.m_pointer );
-//                *this = *other.m_pointer.get();
-//            }
-
-//            template < typename _OtherValue >
-//            void operator = ( Holder< _OtherValue > && other )
-//            {
-//                using OtherPointer = typename Holder< _OtherValue >::Pointer;
-//                m_pointer = ::std::forward< OtherPointer >( other.m_pointer );
-//            }
-
-//            template < typename _OtherValue >
-//            void operator = ( const Holder< _OtherValue > & other )
-//            {
-//                assert( other.m_pointer );
-//                *this = *other.m_pointer.get();
-//            }
-
-            //! Access to internal value of Holder for any king of referencies.
-            template < typename _Refer,
-                typename = ::std::enable_if_t< !::std::is_volatile< ::std::remove_reference_t< _Refer > >::value > >
-            static constexpr decltype(auto) value ( _Refer && holder )
+            /*!
+             * Assignment operation between compatible Holders. Specialization
+             * of operation enabled if left is not constant any reference and
+             * right is not constant rvalue reference.
+             */
+            template < typename _LeftHolderRefer, typename _RightHolderRefer,
+                typename = ::std::enable_if_t<
+                       !::std::is_const< ::std::remove_reference_t< _LeftHolderRefer > >::value
+                    && !::std::is_const< ::std::remove_reference_t< _RightHolderRefer > >::value
+                    && !::std::is_rvalue_reference< _RightHolderRefer && >::value > >
+            static void operatorAssignment ( _LeftHolderRefer && left, _RightHolderRefer && right )
             {
-                using HolderRefer = _Refer &&;
+                ::std::forward< _LeftHolderRefer >( left ).m_pointer = ::std::forward< _RightHolderRefer >( right ).m_pointer;
+            }
+
+            /*!
+             * Access to internal value of Holder for any king of referencies
+             * (except volatile).
+             */
+            template < typename _HolderRefer,
+                typename = ::std::enable_if_t< !::std::is_volatile< ::std::remove_reference_t< _HolderRefer > >::value > >
+            static constexpr decltype(auto) value ( _HolderRefer && holder )
+            {
+                using HolderRefer = _HolderRefer &&;
                 using ValueRefer = ::SimilarRefer< _Value, HolderRefer >;
+                // NOTE: Functionality ::std::unique_ptr has a limitation for volatile case.
                 return ::std::forward< ValueRefer >( *holder.m_pointer.get() );
             }
         };

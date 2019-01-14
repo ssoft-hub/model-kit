@@ -26,61 +26,13 @@ namespace Inplace
             {
             }
 
-            template < typename ... _Arguments >
-            constexpr Holder ( _Arguments && ... arguments )
-                : m_value( ::std::forward< _Arguments >( arguments ) ... )
+            /*!
+             * Access to internal value of Holder for any king of referencies.
+             */
+            template < typename _HolderRefer >
+            static constexpr decltype(auto) value ( _HolderRefer && holder )
             {
-            }
-
-            Holder ( ThisType && other )
-                : m_value( ::std::forward< Value >( other.m_value ) )
-            {
-            }
-
-            Holder ( const ThisType && other )
-                : m_value( ::std::forward< const Value >( other.m_value ) )
-            {
-            }
-
-            Holder ( ThisType & other )
-                : m_value( other.m_value )
-            {
-            }
-
-            Holder ( const ThisType & other )
-                : m_value( other.m_value )
-            {
-            }
-
-            template < typename _OtherValue >
-            Holder ( Holder< _OtherValue > && other )
-                : m_value( ::std::forward< typename Holder< _OtherValue >::Value >( other.m_value ) )
-            {
-            }
-
-            template < typename _OtherValue >
-            Holder ( const Holder< _OtherValue > && other )
-                : m_value( ::std::forward< typename Holder< const _OtherValue >::Value >( other.m_value ) )
-            {
-            }
-
-            template < typename _OtherValue >
-            Holder ( Holder< _OtherValue > & other )
-                : m_value( other.m_value )
-            {
-            }
-
-            template < typename _OtherValue >
-            Holder ( const Holder< _OtherValue > & other )
-                : m_value( other.m_value )
-            {
-            }
-
-            //! Access to internal value of Holder for any king of referencies.
-            template < typename _Refer >
-            static constexpr decltype(auto) value ( _Refer && holder )
-            {
-                using HolderRefer = _Refer &&;
+                using HolderRefer = _HolderRefer &&;
                 using ValueRefer = ::SimilarRefer< Value, HolderRefer >;
                 return ::std::forward< ValueRefer >( holder.m_value );
             }

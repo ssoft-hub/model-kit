@@ -13,8 +13,10 @@
 namespace Implicit
 {
     /*!
-     * Инструмент для формирования значения в "куче" на основе
-     * "голого" raw указателя.
+     * Инструмент для формирования значения в "куче" на основе raw указателя.
+     * Реализует технику ленивых вычислений, когда копирование
+     * экземпляра значения происходит только в момент доступа к неконстантному
+     * экземпляру.
      */
     template < typename _Counter >
     struct CountedRawTool
@@ -80,6 +82,20 @@ namespace Implicit
                 increment();
             }
 
+            Holder ( volatile ThisType && other )
+                : m_pointer( ::std::forward< volatile CountedPointer >( other.m_pointer ) )
+                , m_access( ::std::forward< volatile Access >( other.m_access ) )
+            {
+                other.m_pointer = nullptr;
+            }
+
+            Holder ( const volatile ThisType && other )
+                : m_pointer( other.m_pointer )
+                , m_access( other.m_access )
+            {
+                increment();
+            }
+
             Holder ( ThisType & other )
                 : m_pointer( other.m_pointer )
                 , m_access( other.m_access )
@@ -88,6 +104,20 @@ namespace Implicit
             }
 
             Holder ( const ThisType & other )
+                : m_pointer( other.m_pointer )
+                , m_access( other.m_access )
+            {
+                increment();
+            }
+
+            Holder ( volatile ThisType & other )
+                : m_pointer( other.m_pointer )
+                , m_access( other.m_access )
+            {
+                increment();
+            }
+
+            Holder ( const volatile ThisType & other )
                 : m_pointer( other.m_pointer )
                 , m_access( other.m_access )
             {
@@ -111,6 +141,22 @@ namespace Implicit
             }
 
             template < typename _OtherValue >
+            Holder ( volatile Holder< _OtherValue > && other )
+                : m_pointer( ::std::forward< volatile typename Holder< _OtherValue >::CountedPointer >( other.m_pointer ) )
+                , m_access( ::std::forward< volatile typename Holder< _OtherValue >::Access >( other.m_access ) )
+            {
+                other.m_pointer = nullptr;
+            }
+
+            template < typename _OtherValue >
+            Holder ( const volatile Holder< _OtherValue > && other )
+                : m_pointer( other.m_pointer )
+                , m_access( other.m_access )
+            {
+                increment();
+            }
+
+            template < typename _OtherValue >
             Holder ( Holder< _OtherValue > & other )
                 : m_pointer( other.m_pointer )
                 , m_access( other.m_access )
@@ -120,6 +166,22 @@ namespace Implicit
 
             template < typename _OtherValue >
             Holder ( const Holder< _OtherValue > & other )
+                : m_pointer( other.m_pointer )
+                , m_access( other.m_access )
+            {
+                increment();
+            }
+
+            template < typename _OtherValue >
+            Holder ( volatile Holder< _OtherValue > & other )
+                : m_pointer( other.m_pointer )
+                , m_access( other.m_access )
+            {
+                increment();
+            }
+
+            template < typename _OtherValue >
+            Holder ( const volatile Holder< _OtherValue > & other )
                 : m_pointer( other.m_pointer )
                 , m_access( other.m_access )
             {
@@ -146,114 +208,32 @@ namespace Implicit
                 }
             }
 
-//            template < typename _Argument >
-//            void operator = ( _Argument && argument )
-//            {
-//                assert( m_pointer );
-//                WritableGuard guard( *this );
-//                *m_access = ::std::forward< _Argument >( argument );
-//            }
+            /*!
+             * Assignment operation between compatible Holders. Specialization
+             * of operation enabled if left is not constant reference and any
+             * kind of right.
+             */
+            template < typename _LeftHolderRefer, typename _RightHolderRefer,
+                typename = ::std::enable_if_t<
+                        !::std::is_const< ::std::remove_reference_t< _LeftHolderRefer > >::value > >
+            static void operatorAssignment ( _LeftHolderRefer && left, _RightHolderRefer && right )
+            {
+                if ( left.m_pointer != right.m_pointer )
+                {
+                    left.decrement();
+                    left.m_pointer = right.m_pointer;
+                    left.m_access = right.m_access;
+                    left.increment();
+                }
+            }
 
-//            void operator = ( ThisType && other )
-//            {
-//                decrement();
-//                m_pointer = other.m_pointer;
-//                m_access = other.m_access;
-//                other.m_pointer = nullptr;
-//            }
-
-//            void operator = ( const ThisType && other )
-//            {
-//                if ( m_pointer != other.m_pointer )
-//                {
-//                    decrement();
-//                    m_pointer = other.m_pointer;
-//                    m_access = other.m_access;
-//                    increment();
-//                }
-//            }
-
-//            void operator = ( ThisType & other )
-//            {
-//                if ( m_pointer != other.m_pointer )
-//                {
-//                    decrement();
-//                    m_pointer = other.m_pointer;
-//                    m_access = other.m_access;
-//                    increment();
-//                }
-//            }
-
-//            void operator = ( const ThisType & other )
-//            {
-//                if ( m_pointer != other.m_pointer )
-//                {
-//                    decrement();
-//                    m_pointer = other.m_pointer;
-//                    m_access = other.m_access;
-//                    increment();
-//                }
-//            }
-
-//            template < typename _OtherValue >
-//            void operator = ( Holder< _OtherValue > && other )
-//            {
-//                static_assert( ::std::is_base_of< _Value, _OtherValue >::value,
-//                    "_Value must to be base of _OtherValue" );
-
-//                decrement();
-//                m_pointer = other.m_pointer;
-//                m_access = other.m_access;
-//                other.m_pointer = nullptr;
-//            }
-
-//            template < typename _OtherValue >
-//            void operator = ( const Holder< _OtherValue > && other )
-//            {
-//                static_assert( ::std::is_base_of< _Value, _OtherValue >::value,
-//                    "_Value must to be base of _OtherValue" );
-
-//                if ( m_pointer != reinterpret_cast< CountedPointer >( other.m_pointer ) )
-//                {
-//                    decrement();
-//                    m_pointer = other.m_pointer;
-//                    m_access = other.m_access;
-//                    increment();
-//                }
-//                return *this;
-//            }
-
-//            template < typename _OtherValue >
-//            void operator = ( Holder< _OtherValue > & other )
-//            {
-//                static_assert( ::std::is_base_of< _Value, _OtherValue >::value,
-//                    "_Value must to be base of _OtherValue" );
-
-//                if ( m_pointer != reinterpret_cast< CountedPointer >( other.m_pointer ) )
-//                {
-//                    decrement();
-//                    m_pointer = other.m_pointer;
-//                    m_access = other.m_access;
-//                    increment();
-//                }
-//            }
-
-//            template < typename _OtherValue >
-//            void operator = ( const Holder< _OtherValue > & other )
-//            {
-//                static_assert( ::std::is_base_of< _Value, _OtherValue >::value,
-//                    "_Value must to be base of _OtherValue" );
-
-//                if ( m_pointer != reinterpret_cast< CountedPointer >( other.m_pointer ) )
-//                {
-//                    decrement();
-//                    m_pointer = other.m_pointer;
-//                    m_access = other.m_access;
-//                    increment();
-//                }
-//            }
-
-            static constexpr void guard ( ThisType & holder )
+            /*!
+             * Guard internal value of Holder for any not constant referencies.
+             */
+            template < typename _HolderRefer,
+                typename = ::std::enable_if_t<
+                        !::std::is_const< ::std::remove_reference_t< _HolderRefer > >::value > >
+            static constexpr void guard ( _HolderRefer && holder )
             {
                 if ( !!holder.m_pointer && holder.m_pointer->m_counter > 1 )
                 {
@@ -264,22 +244,13 @@ namespace Implicit
                 }
             }
 
-            static constexpr void guard ( volatile ThisType & holder )
+            /*!
+             * Access to internal value of Holder for any king of referencies.
+             */
+            template < typename _HolderRefer >
+            static constexpr decltype(auto) value ( _HolderRefer && holder )
             {
-                if ( !!holder.m_pointer && holder.m_pointer->m_counter > 1 )
-                {
-                    CountedPointer pointer = new CountedValue( *holder.m_access );
-                    holder.decrement();
-                    holder.m_pointer = pointer;
-                    holder.m_access = ::std::addressof( static_cast< CountedValue * >( holder.m_pointer )->m_value );
-                }
-            }
-
-            //! Access to internal value of Holder for any king of referencies.
-            template < typename _Refer >
-            static constexpr decltype(auto) value ( _Refer && holder )
-            {
-                using HolderRefer = _Refer &&;
+                using HolderRefer = _HolderRefer &&;
                 using ValueRefer = ::SimilarRefer< Value, HolderRefer >;
                 return ::std::forward< ValueRefer >( *holder.m_access );
             }

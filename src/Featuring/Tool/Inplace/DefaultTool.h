@@ -117,14 +117,10 @@ namespace Inplace
             {
             }
 
-//            template < typename _HolderRefer, typename _Argument >
-//            static constexpr void operatorSquareBrackets ( _HolderRefer && , _Argument && )
-//            {
-//            }
-
-            //! Access to internal value of Holder for any king of referencies.
-            template < typename _HolderRefer,
-                typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _HolderRefer > >::value > >
+            /*!
+             * Access to internal value of Holder for any king of referencies.
+             */
+            template < typename _HolderRefer >
             static constexpr decltype(auto) value ( _HolderRefer && holder )
             {
                 using HolderRefer = _HolderRefer &&;

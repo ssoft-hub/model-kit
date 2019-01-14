@@ -14,7 +14,7 @@ namespace Implicit
     /*!
      * Инструмент для формирования неявно обобщенного значения на основе
      * умного указателя ::std::shared_ptr.
-     * Инструмент реализует технику ленивых вычислений, когда копирование
+     * Реализует технику ленивых вычислений, когда копирование
      * экземпляра значения происходит только в момент доступа к неконстантному
      * экземпляру.
      */
@@ -76,7 +76,7 @@ namespace Implicit
             }
 
             template < typename _OtherValue >
-            Holder ( const Holder< _OtherValue > & other )
+            Holder ( Holder< _OtherValue > const  & other )
                 : m_pointer( other.m_pointer )
             {
             }
@@ -86,79 +86,45 @@ namespace Implicit
                 m_pointer.reset();
             }
 
-//            template < typename _Argument >
-//            void operator = ( _Argument && argument )
-//            {
-//                assert( m_pointer );
-//                WritableGuard guard( *this );
-//                *m_pointer.get() = ::std::forward< _Argument >( argument );
-//            }
+            /*!
+             * Assignment operation between compatible Holders. Specialization
+             * of operation enabled if left is not constant reference and any
+             * kind of right.
+             */
+            template < typename _LeftHolderRefer, typename _RightHolderRefer,
+                typename = ::std::enable_if_t<
+                        !::std::is_const< ::std::remove_reference_t< _LeftHolderRefer > >::value > >
+            static void operatorAssignment ( _LeftHolderRefer && left, _RightHolderRefer && right )
+            {
+                using RightHolderRefer = _RightHolderRefer &&;
+                using RightHolder = ::std::decay_t< RightHolderRefer >;
+                using RightPointerRefer = ::SimilarRefer< typename RightHolder::Pointer, RightHolderRefer >;
+                left.m_pointer = ::std::forward< RightPointerRefer >( right.m_pointer );
+            }
 
-//            void operator = ( ThisType && other )
-//            {
-//                m_pointer = ::std::forward< Pointer >( other.m_pointer );
-//            }
-
-//            void operator = ( const ThisType && other )
-//            {
-//                m_pointer = other.m_pointer;
-//            }
-
-//            void operator = ( ThisType & other )
-//            {
-//                m_pointer = other.m_pointer;
-//            }
-
-//            void operator = ( const ThisType & other )
-//            {
-//                m_pointer = other.m_pointer;
-//            }
-
-//            template < typename _OtherValue >
-//            void operator = ( Holder< _OtherValue > && other )
-//            {
-//                using OtherPointer = typename Holder< _OtherValue >::Pointer;
-//                m_pointer = ::std::forward< OtherPointer >( other.m_pointer );
-//            }
-
-//            template < typename _OtherValue >
-//            void operator = ( const Holder< _OtherValue > && other )
-//            {
-//                m_pointer = other.m_pointer;
-//            }
-
-//            template < typename _OtherValue >
-//            void operator = ( Holder< _OtherValue > & other )
-//            {
-//                m_pointer = other.m_pointer;
-//            }
-
-//            template < typename _OtherValue >
-//            void operator = ( const Holder< _OtherValue > & other )
-//            {
-//                m_pointer = other.m_pointer;
-//            }
-
-            static constexpr void guard ( ThisType & holder )
+            /*!
+             * Guard internal value of Holder for any not constant referencies.
+             */
+            template < typename _HolderRefer,
+                typename = ::std::enable_if_t<
+                        !::std::is_const< ::std::remove_reference_t< _HolderRefer > >::value > >
+            static constexpr void guard ( _HolderRefer && holder )
             {
                 if ( !!holder.m_pointer && !holder.m_pointer.unique() )
                     holder.m_pointer = ::std::make_shared< Value >( *holder.m_pointer.get() );
             }
 
-            static constexpr void guard ( volatile ThisType & holder )
+            /*!
+             * Access to internal value of Holder for any king of referencies
+             * (except volatile).
+             */
+            template < typename _HolderRefer,
+                typename = ::std::enable_if_t< !::std::is_volatile< ::std::remove_reference_t< _HolderRefer > >::value > >
+            static constexpr decltype(auto) value ( _HolderRefer && holder )
             {
-//                if ( !!holder.m_pointer && !holder.m_pointer.unique() )
-//                    holder.m_pointer = ::std::make_shared< Value >( *holder.m_pointer.get() );
-            }
-
-            //! Access to internal value of Holder for any king of referencies.
-            // NOTE: Functionality ::std::shared_ptr has a limitation for volatile case.
-            template < typename _Refer,
-                typename = ::std::enable_if_t< !::std::is_volatile< ::std::remove_reference_t< _Refer > >::value > >
-            static constexpr decltype(auto) value ( _Refer && holder )
-            {
-                using HolderRefer = _Refer &&;
+                using HolderRefer = _HolderRefer &&;
                 using ValueRefer = ::SimilarRefer< _Value, HolderRefer >;
+                // NOTE: Functionality ::std::shared_ptr has a limitation for volatile case.
                 return ::std::forward< ValueRefer >( *holder.m_pointer.get() );
             }
         };

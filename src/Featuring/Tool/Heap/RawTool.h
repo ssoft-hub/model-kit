@@ -11,8 +11,7 @@
 namespace Heap
 {
     /*!
-     * Инструмент для формирования значения в "куче" на основе
-     * "голого" raw указателя.
+     * Инструмент для формирования значения в "куче" на основе raw указателя.
      */
     struct RawTool
     {
@@ -129,41 +128,28 @@ namespace Heap
                     delete m_pointer;
             }
 
-            template < typename _Refer >
-            static void operatorAssignment ( _Refer && holder, ThisType && other )
+            /*!
+             * Assignment operation between compatible Holders. Specialization
+             * of operation enabled if left is not constant any reference and
+             * right is not constant rvalue reference.
+             */
+            template < typename _LeftHolderRefer, typename _RightHolderRefer,
+                typename = ::std::enable_if_t<
+                        !::std::is_const< ::std::remove_reference_t< _LeftHolderRefer > >::value
+                     && !::std::is_const< ::std::remove_reference_t< _RightHolderRefer > >::value
+                     && !::std::is_rvalue_reference< _RightHolderRefer && >::value > >
+            static void operatorAssignment ( _LeftHolderRefer && left, _RightHolderRefer && right )
             {
-                ::std::swap( holder.m_pointer, other.m_pointer );
-            }
-
-            template < typename _Refer >
-            static void operatorAssignment ( _Refer && holder, volatile ThisType && other )
-            {
-                delete holder.m_pointer;
-                holder.m_pointer = other.m_pointer;
-                other.m_pointer = nullptr;
-            }
-
-            template < typename _Refer, typename _OtherValue >
-            static void operatorAssignment ( _Refer && holder, Holder< _OtherValue > && other )
-            {
-                delete holder.m_pointer;
-                holder.m_pointer = other.m_pointer;
-                other.m_pointer = nullptr;
+                delete left.m_pointer;
+                left.m_pointer = right.m_pointer;
+                right.m_pointer = nullptr;
             }
 
             //! Access to internal value of Holder for any king of referencies.
-            template < typename _Refer, typename _OtherValue >
-            static void operatorAssignment ( _Refer && holder, volatile Holder< _OtherValue > && other )
+            template < typename _HolderRefer >
+            static constexpr decltype(auto) value ( _HolderRefer && holder )
             {
-                delete holder.m_pointer;
-                holder.m_pointer = other.m_pointer;
-                other.m_pointer = nullptr;
-            }
-
-            template < typename _Refer >
-            static constexpr decltype(auto) value ( _Refer && holder )
-            {
-                using HolderRefer = _Refer &&;
+                using HolderRefer = _HolderRefer &&;
                 using ValueRefer = ::SimilarRefer< Value, HolderRefer >;
                 return ::std::forward< ValueRefer >( *holder.m_pointer );
             }
