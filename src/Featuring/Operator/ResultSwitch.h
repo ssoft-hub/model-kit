@@ -367,11 +367,10 @@ namespace Operator
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
         {
             using LeftInstanceRefer = _Left &&;
-            using LeftValueRefer = ::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >;
             using RightInstanceRefer = _Right &&;
             using RightValueRefer = ::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >;
             using Invokable = _Invokable;
-            using Returned = ::std::result_of_t< Invokable( LeftValueRefer, RightValueRefer ) >;
+            using Returned = ::std::result_of_t< Invokable( LeftInstanceRefer, RightValueRefer ) >;
 
             static_assert( !::std::is_reference< Returned >::value,
                 "The type of return parameter must to be not a reference type." );
@@ -392,9 +391,8 @@ namespace Operator
             using LeftInstanceRefer = _Left &&;
             using LeftValueRefer = ::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >;
             using RightInstanceRefer = _Right &&;
-            using RightValueRefer = ::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >;
             using Invokable = _Invokable;
-            using Returned = ::std::result_of_t< Invokable( LeftValueRefer, RightValueRefer ) >;
+            using Returned = ::std::result_of_t< Invokable( LeftValueRefer, RightInstanceRefer ) >;
 
             static_assert( !::std::is_reference< Returned >::value,
                 "The type of return parameter must to be not a reference type." );
@@ -433,12 +431,11 @@ namespace Operator
         static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
         {
             using LeftInstanceRefer = _Left &&;
-            using LeftValueRefer = ::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >;
             using RightInstanceRefer = _Right &&;
             using RightValueRefer = ::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >;
             using Invokable = _Invokable;
             using InvokableRefer = _Invokable &&;
-            using Returned = ::std::result_of_t< Invokable( LeftValueRefer, RightValueRefer ) >;
+            using Returned = ::std::result_of_t< Invokable( LeftInstanceRefer, RightValueRefer ) >;
 
             using GuardTool = ::Guard::RightTool< Invokable, LeftInstanceRefer, RightInstanceRefer >;
             using ResultInstance = ::Instance< Returned, GuardTool >;
@@ -455,10 +452,9 @@ namespace Operator
             using LeftInstanceRefer = _Left &&;
             using LeftValueRefer = ::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >;
             using RightInstanceRefer = _Right &&;
-            using RightValueRefer = ::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >;
             using Invokable = _Invokable;
             using InvokableRefer = _Invokable &&;
-            using Returned = ::std::result_of_t< Invokable( LeftValueRefer, RightValueRefer ) >;
+            using Returned = ::std::result_of_t< Invokable( LeftValueRefer, RightInstanceRefer ) >;
 
             using GuardTool = ::Guard::LeftTool< Invokable, LeftInstanceRefer, RightInstanceRefer >;
             using ResultInstance = ::Instance< Returned, GuardTool >;
