@@ -128,13 +128,13 @@ namespace Private
     public:
         SpecialValueGuard ( InstanceRefer refer )
             : m_instance_guard( ::std::forward< InstanceRefer >( refer ) )
-            , m_value_guard( ::HolderInternal::value< ValueRefer, HolderRefer >( m_instance_guard.holderAccess() ) )
+            , m_value_guard( ::HolderInternal::value< HolderRefer >( m_instance_guard.holderAccess() ) )
         {
         }
 
         SpecialValueGuard ( InstanceGuard && other )
             : m_instance_guard( ::std::forward< InstanceGuard >( other ) )
-            , m_value_guard( ::HolderInternal::value< ValueRefer, HolderRefer >( m_instance_guard.holderAccess() ) )
+            , m_value_guard( ::HolderInternal::value< HolderRefer >( m_instance_guard.holderAccess() ) )
         {
         }
 

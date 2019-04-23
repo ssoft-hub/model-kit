@@ -24,7 +24,7 @@
     { \
     private: \
         template < typename _Test, \
-            typename = ::std::enable_if_t< ::std::is_same< decltype( ::std::declval< _Test >().method( ::std::declval< _Arguments >() ... ) ), _Result >::value > > \
+            typename = ::std::enable_if_t< ::std::is_same< decltype( ::std::declval< _Test >(). method ( ::std::declval< _Arguments >() ... ) ), _Result >::value > > \
         static constexpr ::std::true_type __test ( int ); \
     \
         template< typename > \

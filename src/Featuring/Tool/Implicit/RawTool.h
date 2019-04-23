@@ -260,7 +260,7 @@ namespace Implicit
 
 namespace Implicit
 {
-    using RawTool = struct CountedRawTool< ::std::atomic< int32_t > >;
+    using RawTool = CountedRawTool< ::std::atomic< int32_t > >;
 }
 
 #endif

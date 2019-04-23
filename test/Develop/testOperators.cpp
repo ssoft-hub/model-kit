@@ -5,7 +5,11 @@
 
 using namespace ::Mdk;
 
-#define DATA_FUNC_INFO __PRETTY_FUNCTION__
+#if defined( __GNUC__ )
+#   define DATA_FUNC_INFO __PRETTY_FUNCTION__
+#elif defined( _MSC_VER )
+#   define DATA_FUNC_INFO __FUNCSIG__
+#endif
 
 #define DATA_UNARY_OPERATOR_INT_PROTOTYPE( symbol, refer ) \
     void operator symbol ( int ) refer \

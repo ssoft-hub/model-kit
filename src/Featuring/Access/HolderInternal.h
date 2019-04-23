@@ -79,21 +79,6 @@ struct UnguardHelper< _HolderRefer, true >
     }
 };
 
-template < typename _ValueRefer, typename _HolderRefer, bool has_method >
-struct ValueHelper;
-
-template < typename _ValueRefer, typename _HolderRefer >
-struct ValueHelper< _ValueRefer, _HolderRefer, true >
-{
-    static_assert( ::std::is_reference< _ValueRefer >::value, "The template parameter _ValueRefer type must to be a reference type." );
-    static_assert( ::std::is_reference< _HolderRefer >::value, "The template parameter _HolderRefer type must to be a reference type." );
-    static constexpr _ValueRefer value ( _HolderRefer holder )
-    {
-        using Holder = ::std::decay_t< _HolderRefer >;
-        return Holder::value( ::std::forward< _HolderRefer >( holder ) );
-    }
-};
-
 struct HolderInternal
 {
     MDK_IS_METHOD_EXISTS_TRAIT( guard )
@@ -116,12 +101,12 @@ struct HolderInternal
         ::UnguardHelper< _HolderRefer, is_unguard_method_exists< Holder, void( _HolderRefer ) > >::unguard( ::std::forward< _HolderRefer >( holder ) );
     }
 
-    template < typename _ValueRefer, typename _HolderRefer,
-        typename = ::std::enable_if_t< is_value_method_exists< ::std::decay_t< _HolderRefer >, _ValueRefer( _HolderRefer ) > > >
-    static constexpr _ValueRefer value ( _HolderRefer holder )
+    template < typename _HolderRefer,
+        typename = ::std::enable_if_t< is_value_method_exists< ::std::decay_t< _HolderRefer >, _HolderRefer > > >
+    static constexpr decltype(auto) value ( _HolderRefer holder )
     {
-        //using Holder = ::std::decay_t< _HolderRefer >;
-        return ::ValueHelper< _ValueRefer, _HolderRefer, true >::value( ::std::forward< _HolderRefer >( holder ) );
+        using Holder = ::std::decay_t< _HolderRefer >;
+        return Holder::value( ::std::forward< _HolderRefer >( holder ) );
     }
 };
 

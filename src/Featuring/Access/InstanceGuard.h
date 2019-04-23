@@ -70,6 +70,8 @@ namespace Private
     };
 }
 
+#include <QtGlobal>
+
 namespace Private
 {
     /*!
@@ -108,8 +110,8 @@ namespace Private
         SpecialInstanceGuard ( InstanceRefer refer )
             : m_refer_pointer( ::std::forward< InstanceRefer >( refer ) )
         {
-            static_assert( ::HolderInternal::is_value_method_exists< Holder, ValueRefer(HolderRefer) >,
-                "There are no appropriate access methods for Holder." );
+            static_assert( ::HolderInternal::is_value_method_exists< Holder, HolderRefer >
+                , "There are no appropriate access methods for Holder." );
             ::HolderInternal::guard< HolderRefer >( ::std::forward< HolderRefer >( m_refer_pointer->m_holder ) );
         }
 
@@ -127,7 +129,7 @@ namespace Private
         InstanceAccess instanceAccess () const
         {
             assert( m_refer_pointer );
-            return ::HolderInternal::value< ValueRefer, HolderRefer >( ::std::forward< HolderRefer >( m_refer_pointer->m_holder ) );
+            return ::HolderInternal::value< HolderRefer >( ::std::forward< HolderRefer >( m_refer_pointer->m_holder ) );
         }
 
         HolderAccess holderAccess () const

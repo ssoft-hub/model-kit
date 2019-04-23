@@ -6,17 +6,24 @@
 #include <type_traits>
 #include <vector>
 #include <iostream>
-#include <cxxabi.h>
+
 #include <memory>
+
+#if defined( __GNUC__ )
+#   include <cxxabi.h>
+#endif
 
 using namespace ::Mdk;
 
 template < typename _Type >
 void printTypeOf ()
 {
+#if defined( __GNUC__ )
     int status = 0;
-    char * realname = 0;
-    realname = abi::__cxa_demangle( typeid( _Type ).name(), 0, 0, &status );
+    char * realname = abi::__cxa_demangle( typeid( _Type ).name(), 0, 0, &status );
+#elif defined( _MSC_VER )
+    const char * realname = typeid( _Type ).name();
+#endif
 
     ::std::cout
         << realname;
@@ -36,7 +43,10 @@ void printTypeOf ()
     ::std::cout
         << ::std::endl << ::std::flush;
 
-    free( realname );
+#if defined( __GNUC__ )
+    if ( status )
+        free( realname );
+#endif
 }
 
 template < typename _Type >
@@ -472,8 +482,8 @@ void testInstanceContainer ()
         for ( int i = 0; i < 10; ++i )
             container[ i ] = castConst( container )[ 9 - i ];
 
-        Instance< Container >()[0];
-        castConst( Instance< Container >() )[0];
+        Instance< Container >( 10, 123.456 )[0];
+        castConst( Instance< Container >( 10, 123.456 ) )[0];
     }
 }
 

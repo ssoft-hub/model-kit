@@ -107,7 +107,7 @@ namespace Operator
                     using Holder = typename Instance::Holder; \
                     using HolderRefer = ::SimilarRefer< Holder, InstanceRefer >; \
      \
-                    constexpr bool holder_has_method_for_operator = ::Operator::Unary::is_operator ## Invokable ## _method_exists< Holder, void( HolderRefer, _Arguments ... ) >; \
+                    constexpr bool holder_has_method_for_operator = ::Operator::Unary::is_operator ## Invokable ## _method_exists< Holder, void( HolderRefer, _Arguments && ... ) >; \
                     using OperatorSwitchCase = ::std::conditional_t< holder_has_method_for_operator, ::Operator::Unary::HolderHasOperatorCase, ::Operator::Unary::HolderHasNoOperatorCase >; \
                     return ::Operator::Unary::Invokable ## Switch< OperatorSwitchCase >::invoke( ::std::forward< InstanceRefer >( value ), ::std::forward< _Arguments >( arguments ) ... ); \
                 } \

@@ -4,6 +4,15 @@
 
 #include <type_traits>
 
+namespace Mdk
+{
+    template < typename _Type >
+    using remove_rvalue_reference_t = ::std::conditional_t< ::std::is_rvalue_reference< _Type >::value, ::std::remove_reference_t< _Type >, _Type >;
+
+    template < typename _Type >
+    using remove_lvalue_reference_t = ::std::conditional_t< ::std::is_lvalue_reference< _Type >::value, ::std::remove_reference_t< _Type >, _Type >;
+}
+
 // Предопределение
 template < typename _Value, typename _Tool > class Instance;
 template < typename _Test > struct IsInstance;
