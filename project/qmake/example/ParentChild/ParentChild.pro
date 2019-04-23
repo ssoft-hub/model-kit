@@ -1,6 +1,6 @@
 # Тип сборки
 TEMPLATE = app
-TARGET = Example-ModelKit-Syntax
+TARGET = Example-ModelKit-ParentChild
 CONFIG *= console
 
 # Перечень зависимостей
