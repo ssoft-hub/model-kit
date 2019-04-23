@@ -107,7 +107,7 @@ public:
     }
 
     // проверка наличия
-    ReturnCreate< bool > contains ( InRead< NoneItemEnd > item ) const
+    ReturnCreate< bool > contains ( InRead< NoneItemEnd > /*item*/ ) const
     {
 //        return m_child_ends.count( item );
         return false;
