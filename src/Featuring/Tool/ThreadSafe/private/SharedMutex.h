@@ -6,7 +6,7 @@
 #   include <condition_variable>
 #   include <mutex>
 
-namespace _Scl
+namespace SclPrivate
 {
     /*
      * Copied implementation from Boost library

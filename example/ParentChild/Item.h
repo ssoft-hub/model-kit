@@ -26,8 +26,8 @@ public:
     typedef ::std::list< NoneItemEnd > NoneItemEnds;
 
 private:
-    Instance< NoneItemEnd > m_parent_end;
-    Instance< UniqueItemEnds > m_child_ends;
+    ::Scl::Instance< NoneItemEnd > m_parent_end;
+    ::Scl::Instance< UniqueItemEnds > m_child_ends;
 
 public:
     Item ()

@@ -16,8 +16,9 @@ namespace Guard
         {
             using ThisType = Holder< _Value >;
             using Value = _Value;
+            using ValueGuard = ::Scl::ValueGuard< InstanceRefer >;
 
-            ValueGuard< InstanceRefer > m_value_guard;
+            ValueGuard m_value_guard;
 
             Holder ( InstanceRefer refer )
                 : m_value_guard( ::std::forward< InstanceRefer >( refer ) )
@@ -30,7 +31,7 @@ namespace Guard
             static constexpr decltype(auto) value ( _HolderRefer && holder )
             {
                 using HolderRefer = _HolderRefer &&;
-                using ValueRefer = ::SimilarRefer< Value, HolderRefer >;
+                using ValueRefer = ::Scl::SimilarRefer< Value, HolderRefer >;
                 return ::std::forward< ValueRefer >( holder.m_value_guard.valueAccess() );
             }
         };

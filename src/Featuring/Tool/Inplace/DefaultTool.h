@@ -124,7 +124,7 @@ namespace Inplace
             static constexpr decltype(auto) value ( _HolderRefer && holder )
             {
                 using HolderRefer = _HolderRefer &&;
-                using ValueRefer = ::SimilarRefer< Value, HolderRefer >;
+                using ValueRefer = ::Scl::SimilarRefer< Value, HolderRefer >;
                 return ::std::forward< ValueRefer >( holder.m_value );
             }
         };

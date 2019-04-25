@@ -12,6 +12,8 @@ struct DerivedType
 
 int main ( int /*argc*/, char ** /*argv*/ )
 {
+    using namespace ::Scl;
+
     ::std::cout
         << "is_compatible< Instance< int >, Instance< int > >" << ::std::endl
         << true << " = "

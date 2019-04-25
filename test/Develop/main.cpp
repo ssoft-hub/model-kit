@@ -6,8 +6,9 @@
 #include <type_traits>
 #include <vector>
 #include <iostream>
-
 #include <memory>
+
+#define mayby_unused void
 
 #if defined( __GNUC__ )
 #   include <cxxabi.h>
@@ -91,9 +92,9 @@ void compileTestInstanceTrancpatancy ()
     //(*&castConst( My() ) ).rvalueConstMethod();
 
     // по похожим причинам нельзя через operator -> вызвать rvalue методы
-    //ReferPointer< My && >( My() )->rvalueMethod();
-    //ReferPointer< My && >( My() )->rvalueConstMethod();
-    //castConst( ReferPointer< My && >( My() ) )->rvalueConstMethod();
+    //::SclPrivate::ReferPointer< My && >( My() )->rvalueMethod();
+    //::SclPrivate::ReferPointer< My && >( My() )->rvalueConstMethod();
+    //castConst( ::SclPrivate::ReferPointer< My && >( My() ) )->rvalueConstMethod();
 
     // как следствие, не работает
     //Instance< My >()->rvalueMethod();
@@ -447,13 +448,13 @@ decltype(auto) squareBrackets ( _Refer refer, _Arguments && ... arguments )
 
 void testInstanceValue ()
 {
-    { Instance< double > value; }
-    { Instance< double > value( double() ); }
-    { Instance< double > value = double(); (void)value; }
-    { Instance< double > value( Instance< double >() ); }
-    { Instance< double > value = Instance< double >(); (void)value; }
-    { Instance< double > value( Instance< int >() ); }
-    { Instance< double > value = Instance< int >(); (void)value; }
+    { Instance< double > value; (mayby_unused) value; }
+    { Instance< double > value{ double() }; (mayby_unused) value; }
+    { Instance< double > value = double(); (mayby_unused) value; }
+    { Instance< double > value{ Instance< double >() }; (mayby_unused) value; }
+    { Instance< double > value = Instance< double >(); (mayby_unused) value; }
+    { Instance< double > value{ Instance< int >() }; (mayby_unused) value; }
+    { Instance< double > value = Instance< int >(); (mayby_unused) value; }
 }
 
 void testInstanceContainer ()
@@ -461,9 +462,9 @@ void testInstanceContainer ()
     using Container = ::std::vector< double >;
     //using Container = Instance< ::std::vector< double >, Implicit::SharedTool >;
 
-    { Instance< Container > value; }
-    { Instance< Container > value( Container() ); }
-    { Instance< Container > value = Container(); (void)value; }
+    { Instance< Container > value; (mayby_unused) value; }
+    { Instance< Container > value{ Container() }; (mayby_unused) value; }
+    { Instance< Container > value = Container(); (mayby_unused) value; }
     {
         Instance< Container > container;
         for ( int i = 0; i < 10; ++i )

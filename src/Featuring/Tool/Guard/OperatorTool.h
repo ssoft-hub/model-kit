@@ -19,8 +19,8 @@ namespace Guard
         struct Holder
         {
             using ThisType = Holder;
-            using InstanceGuard = ::InstanceGuard< InstanceRefer >;
-            using ValueRefer = ::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >;
+            using InstanceGuard = ::SclPrivate::InstanceGuard< InstanceRefer >;
+            using ValueRefer = ::Scl::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >;
             using ResultRefer = _Type;
 
             static_assert( ::std::is_same< ResultRefer, ::std::result_of_t< Invokable( ValueRefer, _Arguments && ... ) > >::value,
@@ -46,9 +46,9 @@ namespace Guard
 
             template < typename _HolderRefer,
                 typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _HolderRefer > >::value > >
-            static constexpr ::SimilarRefer< ResultRefer, _HolderRefer && > value ( _HolderRefer && holder )
+            static constexpr ::Scl::SimilarRefer< ResultRefer, _HolderRefer && > value ( _HolderRefer && holder )
             {
-                return ::std::forward< ::SimilarRefer< ResultRefer, _HolderRefer && > >( holder.m_result_refer );
+                return ::std::forward< ::Scl::SimilarRefer< ResultRefer, _HolderRefer && > >( holder.m_result_refer );
             }
         };
     };
@@ -72,8 +72,8 @@ namespace Guard
         struct Holder
         {
             using ThisType = Holder;
-            using InstanceGuard = ::InstanceGuard< InstanceRefer >;
-            using ValueRefer = ::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >;
+            using InstanceGuard = ::SclPrivate::InstanceGuard< InstanceRefer >;
+            using ValueRefer = ::Scl::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >;
             using ResultRefer = _Type;
 
             static_assert( ::std::is_same< ResultRefer, ::std::result_of_t< Invokable( LeftRefer, ValueRefer ) > >::value,
@@ -99,9 +99,9 @@ namespace Guard
 
             template < typename _HolderRefer,
                 typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _HolderRefer > >::value > >
-            static constexpr ::SimilarRefer< ResultRefer, _HolderRefer && > value ( _HolderRefer && holder )
+            static constexpr ::Scl::SimilarRefer< ResultRefer, _HolderRefer && > value ( _HolderRefer && holder )
             {
-                return ::std::forward< ::SimilarRefer< ResultRefer, _HolderRefer && > >( holder.m_result_refer );
+                return ::std::forward< ::Scl::SimilarRefer< ResultRefer, _HolderRefer && > >( holder.m_result_refer );
             }
         };
     };
@@ -124,10 +124,10 @@ namespace Guard
         struct Holder
         {
             using ThisType = Holder;
-            using LeftInstanceGuard = ::InstanceGuard< LeftInstanceRefer >;
-            using RightInstanceGuard = ::InstanceGuard< RightInstanceRefer >;
-            using LeftValueRefer = ::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >;
-            using RightValueRefer = ::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >;
+            using LeftInstanceGuard = ::SclPrivate::InstanceGuard< LeftInstanceRefer >;
+            using RightInstanceGuard = ::SclPrivate::InstanceGuard< RightInstanceRefer >;
+            using LeftValueRefer = ::Scl::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >;
+            using RightValueRefer = ::Scl::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >;
             using ResultRefer = _Type;
 
             static_assert( ::std::is_same< ResultRefer, ::std::result_of_t< Invokable( LeftValueRefer, RightValueRefer ) > >::value,
@@ -156,9 +156,9 @@ namespace Guard
 
             template < typename _HolderRefer,
                 typename = ::std::enable_if_t< ::std::is_same< ThisType, ::std::decay_t< _HolderRefer > >::value > >
-            static constexpr ::SimilarRefer< ResultRefer, _HolderRefer && > value ( _HolderRefer && holder )
+            static constexpr ::Scl::SimilarRefer< ResultRefer, _HolderRefer && > value ( _HolderRefer && holder )
             {
-                return ::std::forward< ::SimilarRefer< ResultRefer, _HolderRefer && > >( holder.m_result_refer );
+                return ::std::forward< ::Scl::SimilarRefer< ResultRefer, _HolderRefer && > >( holder.m_result_refer );
             }
         };
     };

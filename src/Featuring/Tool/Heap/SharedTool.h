@@ -105,7 +105,7 @@ namespace Heap
             static constexpr decltype(auto) value ( _HolderRefer && holder )
             {
                 using HolderRefer = _HolderRefer &&;
-                using ValueRefer = ::SimilarRefer< _Value, HolderRefer >;
+                using ValueRefer = ::Scl::SimilarRefer< _Value, HolderRefer >;
                 // NOTE: Functionality ::std::shared_ptr has a limitation for volatile case.
                 return ::std::forward< ValueRefer >( *holder.m_pointer.get() );
             }

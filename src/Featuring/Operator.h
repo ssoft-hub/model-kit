@@ -1,6 +1,6 @@
 #pragma once
-#ifndef SCL_OPERATOR_BLA_H
-#define SCL_OPERATOR_BLA_H
+#ifndef SCL_FEATURING_OPERATOR_H
+#define SCL_FEATURING_OPERATOR_H
 
 #include <ModelKit/Featuring/Access/ValuePointer.h>
 #include <ModelKit/Utility/SingleArgument.h>
@@ -61,34 +61,37 @@ SCL_BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
 
 #define SCL_GLOBAL_BINARY_OPERATOR_PROTOTYPE( symbol, right_refer, Invokable ) \
     template < typename _Left, typename _RightValue, typename _RightTool, \
-        typename = ::std::enable_if_t< !::is_instance< ::std::decay_t< _Left > > \
-            && ::Operator::Binary::is_ ## Invokable ## _operator_exists_test< _Left &&, Instance< _RightValue, _RightTool > right_refer > > > \
-    constexpr decltype(auto) operator symbol ( _Left && left, Instance< _RightValue, _RightTool > right_refer right ) \
+        typename = ::std::enable_if_t< !::Scl::is_instance< ::std::decay_t< _Left > > \
+            && ::SclPrivate::Operator::Binary::is_ ## Invokable ## _operator_exists_test< _Left &&, ::SclPrivate::Instance< _RightValue, _RightTool > right_refer > > > \
+    constexpr decltype(auto) operator symbol ( _Left && left, ::SclPrivate::Instance< _RightValue, _RightTool > right_refer right ) \
     { \
         using LeftRefer = _Left &&; \
-        using RightRefer = Instance< _RightValue, _RightTool > right_refer; \
-        return ::Operator::Binary::Invokable ## Helper< LeftRefer, RightRefer >::invoke( ::std::forward< LeftRefer >( left ), ::std::forward< RightRefer >( right ) ); \
+        using RightRefer = ::SclPrivate::Instance< _RightValue, _RightTool > right_refer; \
+        return ::SclPrivate::Operator::Binary::Invokable ## Helper< LeftRefer, RightRefer >::invoke( ::std::forward< LeftRefer >( left ), ::std::forward< RightRefer >( right ) ); \
     } \
 
 #define SCL_GLOBAL_BINARY_OPERATOR_SPECIALIZATION( Invokable ) \
-    namespace Operator \
+    namespace SclPrivate \
     { \
-        namespace Binary \
+        namespace Operator \
         { \
-            template <> \
-            struct Invokable ## Operator< ::Operator::Global::Invokable ## Case > \
+            namespace Binary \
             { \
-                template < typename _Left, typename _Right > \
-                static decltype(auto) invoke ( _Left && left, _Right && right ) \
+                template <> \
+                struct Invokable ## Operator< ::SclPrivate::Operator::Global::Invokable ## Case > \
                 { \
-                    using LeftRefer = _Left &&; \
-                    using RightRefer = _Right &&; \
-                    return ::Operator::Binary::Invokable ## Helper< LeftRefer, RightRefer >::invoke( ::std::forward< LeftRefer >( left ), ::std::forward< RightRefer >( right ) ); \
-                } \
-            }; \
-             \
+                    template < typename _Left, typename _Right > \
+                    static decltype(auto) invoke ( _Left && left, _Right && right ) \
+                    { \
+                        using LeftRefer = _Left &&; \
+                        using RightRefer = _Right &&; \
+                        return ::SclPrivate::Operator::Binary::Invokable ## Helper< LeftRefer, RightRefer >::invoke( ::std::forward< LeftRefer >( left ), ::std::forward< RightRefer >( right ) ); \
+                    } \
+                }; \
+                 \
+            } \
         } \
-    } \
+    }
 
 #define SCL_GLOBAL_BINARY_OPERATOR( symbol, Invokable ) \
     SCL_GLOBAL_BINARY_OPERATOR_SPECIALIZATION( Invokable ) \
@@ -104,89 +107,89 @@ SCL_BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
 #define SCL_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, this_refer, other_refer, Invokable ) \
     /*template < typename ... _Arguments, \
         typename = ::std::enable_if_t< sizeof...( _Arguments ) == 0 \
-            && ::HolderInternal::is_value_method_exists< Holder, Holder this_refer > \
-            && ::Operator::Binary::is_ ## Invokable ## _operator_exists_test< ThisType this_refer, ThisType other_refer > > >*/ \
+            && ::SclPrivate::HolderInternal::is_value_method_exists< Holder, Holder this_refer > \
+            && ::SclPrivate::Operator::Binary::is_ ## Invokable ## _operator_exists_test< ThisType this_refer, ThisType other_refer > > >*/ \
     constexpr decltype(auto) operator symbol ( ThisType other_refer right ) this_refer \
     { \
         using LeftRefer = ThisType this_refer; \
         using RightRefer = ThisType other_refer; \
-        return ::Operator::Binary::Invokable ## Helper< LeftRefer, RightRefer >::invoke( ::std::forward< LeftRefer >( *this ), ::std::forward< RightRefer >( right ) ); \
+        return ::SclPrivate::Operator::Binary::Invokable ## Helper< LeftRefer, RightRefer >::invoke( ::std::forward< LeftRefer >( *this ), ::std::forward< RightRefer >( right ) ); \
     } \
 
 #define SCL_BINARY_OPERATOR_PROTOTYPE_FOR_ANY( symbol, this_refer, Invokable ) \
     template < typename _Right, \
-        typename = ::std::enable_if_t< ::HolderInternal::is_value_method_exists< Holder, Holder this_refer > \
-            && ::Operator::Binary::is_ ## Invokable ## _operator_exists_test< ThisType this_refer, _Right && > > > \
+        typename = ::std::enable_if_t< ::SclPrivate::HolderInternal::is_value_method_exists< Holder, Holder this_refer > \
+            && ::SclPrivate::Operator::Binary::is_ ## Invokable ## _operator_exists_test< ThisType this_refer, _Right && > > > \
     constexpr decltype(auto) operator symbol ( _Right && right ) this_refer \
     { \
         using LeftRefer = ThisType this_refer; \
         using RightRefer = _Right &&; \
-        return ::Operator::Binary::Invokable ## Helper< LeftRefer, RightRefer >::invoke( ::std::forward< LeftRefer >( *this ), ::std::forward< RightRefer >( right ) ); \
+        return ::SclPrivate::Operator::Binary::Invokable ## Helper< LeftRefer, RightRefer >::invoke( ::std::forward< LeftRefer >( *this ), ::std::forward< RightRefer >( right ) ); \
     } \
 
 #define SCL_POSTFIX_UNARY_OPERATOR_PROTOTYPE_WITH_ARGUMENT( symbol, this_refer, Invokable ) \
     template < typename _Argument, \
-        typename = ::std::enable_if_t< ::HolderInternal::is_value_method_exists< Holder, Holder this_refer > \
-            && ::Operator::Unary::is_ ## Invokable ## _operator_exists_test< Value this_refer, _Argument && > > > \
+        typename = ::std::enable_if_t< ::SclPrivate::HolderInternal::is_value_method_exists< Holder, Holder this_refer > \
+            && ::SclPrivate::Operator::Unary::is_ ## Invokable ## _operator_exists_test< Value this_refer, _Argument && > > > \
     constexpr decltype(auto) operator symbol ( _Argument && argument ) this_refer \
     { \
         using ThisRefer = ThisType this_refer; \
-        return ::Operator::Unary::Invokable ## Helper< ThisRefer, _Argument && >::invoke( ::std::forward< ThisRefer >( *this ), ::std::forward< _Argument && >( argument ) ); \
+        return ::SclPrivate::Operator::Unary::Invokable ## Helper< ThisRefer, _Argument && >::invoke( ::std::forward< ThisRefer >( *this ), ::std::forward< _Argument && >( argument ) ); \
     } \
 
 #define SCL_POSTFIX_UNARY_OPERATOR_PROTOTYPE_WITH_ARGUMENTS( symbol, this_refer, Invokable ) \
     template < typename ... _Arguments, \
-        typename = ::std::enable_if_t< ::HolderInternal::is_value_method_exists< Holder, Holder this_refer > \
-            && ::Operator::Unary::is_ ## Invokable ## _operator_exists_test< Value this_refer, _Arguments && ... > > > \
+        typename = ::std::enable_if_t< ::SclPrivate::HolderInternal::is_value_method_exists< Holder, Holder this_refer > \
+            && ::SclPrivate::Operator::Unary::is_ ## Invokable ## _operator_exists_test< Value this_refer, _Arguments && ... > > > \
     constexpr decltype(auto) operator symbol ( _Arguments && ... arguments ) this_refer \
     { \
         using ThisRefer = ThisType this_refer; \
-        return ::Operator::Unary::Invokable ## Helper< ThisRefer, _Arguments && ... >::invoke( ::std::forward< ThisRefer >( *this ), ::std::forward< _Arguments && >( arguments ) ... ); \
+        return ::SclPrivate::Operator::Unary::Invokable ## Helper< ThisRefer, _Arguments && ... >::invoke( ::std::forward< ThisRefer >( *this ), ::std::forward< _Arguments && >( arguments ) ... ); \
     } \
 
 #define SCL_PREFIX_UNARY_OPERATOR_PROTOTYPE( symbol, this_refer, Invokable ) \
     template < typename ... _Arguments, \
         typename = ::std::enable_if_t< sizeof...( _Arguments ) == 0 \
-            && ::HolderInternal::is_value_method_exists< Holder, Holder this_refer > \
-            && ::Operator::Unary::is_ ## Invokable ## _operator_exists_test< Value this_refer, _Arguments && ... > > > \
+            && ::SclPrivate::HolderInternal::is_value_method_exists< Holder, Holder this_refer > \
+            && ::SclPrivate::Operator::Unary::is_ ## Invokable ## _operator_exists_test< Value this_refer, _Arguments && ... > > > \
     constexpr decltype(auto) operator symbol () this_refer \
     { \
         using ThisRefer = ThisType this_refer; \
-        return ::Operator::Unary::Invokable ## Helper< ThisRefer >::invoke( ::std::forward< ThisRefer >( *this ) ); \
+        return ::SclPrivate::Operator::Unary::Invokable ## Helper< ThisRefer >::invoke( ::std::forward< ThisRefer >( *this ) ); \
     } \
 
 #define SCL_POSTFIX_UNARY_OPERATOR_PROTOTYPE_WITH_INT( symbol, this_refer, Invokable ) \
     template < typename ... _Arguments, \
         typename = ::std::enable_if_t< sizeof...( _Arguments ) == 0 \
-            && ::HolderInternal::is_value_method_exists< Holder, Holder this_refer > \
-            && ::Operator::Unary::is_ ## Invokable ## _operator_exists_test< Value this_refer, _Arguments && ... > > > \
+            && ::SclPrivate::HolderInternal::is_value_method_exists< Holder, Holder this_refer > \
+            && ::SclPrivate::Operator::Unary::is_ ## Invokable ## _operator_exists_test< Value this_refer, _Arguments && ... > > > \
     constexpr decltype(auto) operator symbol ( int ) this_refer \
     { \
         using ThisRefer = ThisType this_refer; \
-        return ::Operator::Unary::Invokable ## Helper< ThisRefer >::invoke( ::std::forward< ThisRefer >( *this ) ); \
+        return ::SclPrivate::Operator::Unary::Invokable ## Helper< ThisRefer >::invoke( ::std::forward< ThisRefer >( *this ) ); \
     } \
 
 #define SCL_ADDRESS_OF_OPERATOR_PROTOTYPE( symbol, this_refer ) \
     template < typename ... _Arguments, \
         typename = ::std::enable_if_t< sizeof...( _Arguments ) == 0 \
-            && ::HolderInternal::is_value_method_exists< Holder, Holder this_refer > > > \
-    constexpr ValuePointer< ThisType this_refer > operator symbol () this_refer \
+            && ::SclPrivate::HolderInternal::is_value_method_exists< Holder, Holder this_refer > > > \
+    constexpr ::Scl::ValuePointer< ThisType this_refer > operator symbol () this_refer \
     { \
-        return ValuePointer< ThisType this_refer >( ::std::forward< ThisType this_refer >( *this ) ); \
+        return ::Scl::ValuePointer< ThisType this_refer >( ::std::forward< ThisType this_refer >( *this ) ); \
     } \
 
 #define SCL_DEREFERENCE_OPERATOR_PROTOTYPE( symbol, this_refer ) \
     template < typename ... _Arguments, \
         typename = ::std::enable_if_t< sizeof...( _Arguments ) == 0 \
-            && ::HolderInternal::is_value_method_exists< Holder, Holder this_refer > > > \
-    constexpr ValuePointer< ThisType this_refer > operator symbol () this_refer \
+            && ::SclPrivate::HolderInternal::is_value_method_exists< Holder, Holder this_refer > > > \
+    constexpr ::Scl::ValuePointer< ThisType this_refer > operator symbol () this_refer \
     { \
-        return ValuePointer< ThisType this_refer >( ::std::forward< ThisType this_refer >( *this ) ); \
+        return ::Scl::ValuePointer< ThisType this_refer >( ::std::forward< ThisType this_refer >( *this ) ); \
     } \
 
 #define SCL_CONSTRUCTOR_FOR_THIS_INSTANCE_PROTOTYPE( other_refer ) \
     constexpr Instance ( ThisType other_refer other ) \
-        : m_holder( InstanceResolver< ThisType, ThisType other_refer >( \
+        : m_holder( ::SclPrivate::InstanceResolver< ThisType, ThisType other_refer >( \
             ::std::forward< ThisType other_refer >( other ) ).resolve() ) \
     { \
     } \
@@ -196,7 +199,7 @@ SCL_BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
         typename = ::std::enable_if_t< ::std::is_constructible< ThisType, ThisType other_refer >::value && \
             sizeof...( _Arguments ) == 0 > > \
     constexpr Instance ( ThisType other_refer other ) \
-        : m_holder( InstanceResolver< ThisType, ThisType other_refer >( \
+        : m_holder( ::SclPrivate::InstanceResolver< ThisType, ThisType other_refer >( \
             ::std::forward< ThisType other_refer >( other ) ).resolve() ) \
     { \
     } \
@@ -204,7 +207,7 @@ SCL_BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
 #define SCL_CONSTRUCTOR_FOR_OTHER_INSTANCE_PROTOTYPE( other_refer ) \
     template < typename _OtherValue, typename _OtherTool > \
     constexpr Instance ( Instance< _OtherValue, _OtherTool > other_refer other ) \
-        : m_holder( InstanceResolver< ThisType, Instance< _OtherValue, _OtherTool > other_refer >( \
+        : m_holder( ::SclPrivate::InstanceResolver< ThisType, Instance< _OtherValue, _OtherTool > other_refer >( \
             ::std::forward< Instance< _OtherValue, _OtherTool > other_refer >( other ) ).resolve() ) \
     { \
     } \
@@ -213,7 +216,7 @@ SCL_BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
     template < typename _OtherValue, \
         typename = ::std::enable_if_t< \
             ::std::is_same< ::std::decay_t< _OtherValue >, ::std::decay_t< _Value > >::value \
-            && ::is_similar< _OtherValue, _Value > > > \
+            && ::Scl::is_similar< _OtherValue, _Value > > > \
     operator Instance< _OtherValue, _Tool > refer_Value () refer_Value \
     { \
         return static_cast< Instance< _OtherValue, _Tool > refer_Value >( *this ); \
@@ -320,7 +323,7 @@ SCL_BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
     SCL_BINARY_OPERATOR_PROTOTYPE_FOR_ANY( SCL_SINGLE_ARG( symbol ), const volatile &, Invokable ) \
 
 #define SCL_FRIEND_OPERATOR_ACCESS( Invokable ) \
-    template < typename > friend struct ::Operator::Invokable; \
+    template < typename > friend struct ::SclPrivate::Operator::Invokable; \
 
 /*
  * NOTE: Закомментирована реализация из-за проблем со сборкой ::std::map< Instance, Value >

@@ -17,7 +17,7 @@ void parentChildTest ()
 //    using UniqueItemEnd = Item::UniqueItemEnd;
 
 
-    Instance< int > child_count = 10;
+    ::Scl::Instance< int > child_count = 10;
     ::std::cout
         << ::std::endl << "Begin test" << *&child_count << ::std::endl;
 

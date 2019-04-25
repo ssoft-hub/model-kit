@@ -9,8 +9,8 @@ struct BaseType
     using Int = int;
     using String = ::std::string;
 
-    Instance< Int > m_int;
-    Instance< String > m_string;
+    ::Scl::Instance< Int > m_int;
+    ::Scl::Instance< String > m_string;
 
     BaseType (
         Int int_value = Int(),

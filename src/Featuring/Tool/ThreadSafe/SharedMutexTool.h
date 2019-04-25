@@ -16,7 +16,7 @@ namespace ThreadSafe
 #if __cplusplus > 201700L
         ::std::shared_mutex
 #else
-    ::_Scl::SharedMutex
+    ::SclPrivate::SharedMutex
 #endif
     ;
 }

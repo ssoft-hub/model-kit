@@ -4,6 +4,8 @@
 #include <thread>
 #include <vector>
 
+using namespace ::Scl;
+
 struct CreditCard
 {
     Instance< int64_t > m_id;

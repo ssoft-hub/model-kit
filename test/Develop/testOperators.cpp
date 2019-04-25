@@ -3,9 +3,7 @@
 #include <map>
 #include <string>
 
-using ::Scl::castConst;
-using ::Scl::castVolatile;
-using ::Scl::castConstVolatile;
+using namespace ::Scl;
 using ::std::move;
 
 #if defined( __GNUC__ )

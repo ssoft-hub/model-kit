@@ -55,7 +55,7 @@ namespace Implicit
             using CountedValue = Counted< Value >;
             using CountedPointer = BaseCounted *;
             using Access = Value *;
-            using WritableGuard = ::HolderGuard< ThisType & >;
+            using WritableGuard = ::Scl::HolderGuard< ThisType & >;
 
             CountedPointer m_pointer;
             Access m_access; // to resolve multiple inheritance
@@ -251,7 +251,7 @@ namespace Implicit
             static constexpr decltype(auto) value ( _HolderRefer && holder )
             {
                 using HolderRefer = _HolderRefer &&;
-                using ValueRefer = ::SimilarRefer< Value, HolderRefer >;
+                using ValueRefer = ::Scl::SimilarRefer< Value, HolderRefer >;
                 return ::std::forward< ValueRefer >( *holder.m_access );
             }
         };
