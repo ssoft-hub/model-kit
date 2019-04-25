@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MDK_INSTANCE_TOOL_THREAD_SAFE_MUTEX_H
-#define MDK_INSTANCE_TOOL_THREAD_SAFE_MUTEX_H
+#ifndef SCL_INSTANCE_TOOL_THREAD_SAFE_MUTEX_H
+#define SCL_INSTANCE_TOOL_THREAD_SAFE_MUTEX_H
 
 #include <ModelKit/Featuring/Tool/ThreadSafe/LockTool.h>
 #include <mutex>

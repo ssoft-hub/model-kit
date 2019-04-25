@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MDK_INSTANCE_TOOL_IMPLICIT_SHARED_H
-#define MDK_INSTANCE_TOOL_IMPLICIT_SHARED_H
+#ifndef SCL_INSTANCE_TOOL_IMPLICIT_SHARED_H
+#define SCL_INSTANCE_TOOL_IMPLICIT_SHARED_H
 
 #include <cassert>
 #include <memory>

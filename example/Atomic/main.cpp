@@ -5,7 +5,7 @@
 #include <thread>
 #include <vector>
 
-using namespace ::Mdk;
+using namespace ::Scl;
 
 using Map = ::std::map< ::std::string, ::std::pair< ::std::string, int > >;
 

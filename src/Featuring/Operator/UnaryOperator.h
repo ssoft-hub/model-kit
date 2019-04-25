@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MDK_UNARY_OPERATOR_H
-#define MDK_UNARY_OPERATOR_H
+#ifndef SCL_UNARY_OPERATOR_H
+#define SCL_UNARY_OPERATOR_H
 
 #include <ModelKit/Featuring/Access/HolderInternal.h>
 #include <ModelKit/Utility/IsMethodExists.h>
@@ -18,7 +18,7 @@ namespace Operator
     }
 }
 
-#define MDK_IS_UNARY_OPERATOR_EXISTS_TEST_TRAIT( Invokable ) \
+#define SCL_IS_UNARY_OPERATOR_EXISTS_TEST_TRAIT( Invokable ) \
     template < typename _Kind, typename _Refer, typename ... _Arguments > \
     struct Is ## Invokable ## OperatorExistsTestHelper; \
      \
@@ -52,7 +52,7 @@ namespace Operator
     }; \
      \
 
-#define MDK_COMMON_UNARY_OPERATOR_IMPLEMENTAION( Invokable ) \
+#define SCL_COMMON_UNARY_OPERATOR_IMPLEMENTAION( Invokable ) \
     namespace Operator \
     { \
         namespace Unary \
@@ -134,14 +134,14 @@ namespace Operator
         } \
     } \
 
-#define MDK_POSTFIX_UNARY_OPERATOR_IMPLEMENTAION( symbol, Invokable ) \
+#define SCL_POSTFIX_UNARY_OPERATOR_IMPLEMENTAION( symbol, Invokable ) \
     namespace Operator \
     { \
         namespace Unary \
         { \
-            MDK_IS_POSTFIX_UNARY_OPERATOR_EXISTS_TRAIT( MDK_SINGLE_ARG( symbol ), Invokable ) \
-            MDK_IS_METHOD_EXISTS_TRAIT( operator ## Invokable ) \
-            MDK_IS_UNARY_OPERATOR_EXISTS_TEST_TRAIT( Invokable ) \
+            SCL_IS_POSTFIX_UNARY_OPERATOR_EXISTS_TRAIT( SCL_SINGLE_ARG( symbol ), Invokable ) \
+            SCL_IS_METHOD_EXISTS_TRAIT( operator ## Invokable ) \
+            SCL_IS_UNARY_OPERATOR_EXISTS_TEST_TRAIT( Invokable ) \
         } \
     } \
      \
@@ -160,16 +160,16 @@ namespace Operator
         } \
     } \
      \
-    MDK_COMMON_UNARY_OPERATOR_IMPLEMENTAION( Invokable ) \
+    SCL_COMMON_UNARY_OPERATOR_IMPLEMENTAION( Invokable ) \
 
-#define MDK_PREFIX_UNARY_OPERATOR_IMPLEMENTAION( symbol, Invokable ) \
+#define SCL_PREFIX_UNARY_OPERATOR_IMPLEMENTAION( symbol, Invokable ) \
     namespace Operator \
     { \
         namespace Unary \
         { \
-            MDK_IS_PREFIX_UNARY_OPERATOR_EXISTS_TRAIT( MDK_SINGLE_ARG( symbol ), Invokable ) \
-            MDK_IS_METHOD_EXISTS_TRAIT( operator ## Invokable ) \
-            MDK_IS_UNARY_OPERATOR_EXISTS_TEST_TRAIT( Invokable ) \
+            SCL_IS_PREFIX_UNARY_OPERATOR_EXISTS_TRAIT( SCL_SINGLE_ARG( symbol ), Invokable ) \
+            SCL_IS_METHOD_EXISTS_TRAIT( operator ## Invokable ) \
+            SCL_IS_UNARY_OPERATOR_EXISTS_TEST_TRAIT( Invokable ) \
         } \
     } \
      \
@@ -188,17 +188,17 @@ namespace Operator
         } \
     } \
      \
-    MDK_COMMON_UNARY_OPERATOR_IMPLEMENTAION( Invokable ) \
+    SCL_COMMON_UNARY_OPERATOR_IMPLEMENTAION( Invokable ) \
 
 
-#define MDK_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT_IMPLEMENTAION( symbol, Invokable ) \
+#define SCL_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT_IMPLEMENTAION( symbol, Invokable ) \
     namespace Operator \
     { \
         namespace Unary \
         { \
-            MDK_IS_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT_EXISTS_TRAIT( MDK_SINGLE_ARG( symbol ), Invokable ) \
-            MDK_IS_METHOD_EXISTS_TRAIT( operator ## Invokable ) \
-            MDK_IS_UNARY_OPERATOR_EXISTS_TEST_TRAIT( Invokable ) \
+            SCL_IS_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT_EXISTS_TRAIT( SCL_SINGLE_ARG( symbol ), Invokable ) \
+            SCL_IS_METHOD_EXISTS_TRAIT( operator ## Invokable ) \
+            SCL_IS_UNARY_OPERATOR_EXISTS_TEST_TRAIT( Invokable ) \
         } \
     } \
      \
@@ -217,16 +217,16 @@ namespace Operator
         } \
     } \
      \
-    MDK_COMMON_UNARY_OPERATOR_IMPLEMENTAION( Invokable ) \
+    SCL_COMMON_UNARY_OPERATOR_IMPLEMENTAION( Invokable ) \
 
-#define MDK_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENTS_IMPLEMENTAION( symbol, Invokable ) \
+#define SCL_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENTS_IMPLEMENTAION( symbol, Invokable ) \
     namespace Operator \
     { \
         namespace Unary \
         { \
-            MDK_IS_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENTS_EXISTS_TRAIT( MDK_SINGLE_ARG( symbol ), Invokable ) \
-            MDK_IS_METHOD_EXISTS_TRAIT( operator ## Invokable ) \
-            MDK_IS_UNARY_OPERATOR_EXISTS_TEST_TRAIT( Invokable ) \
+            SCL_IS_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENTS_EXISTS_TRAIT( SCL_SINGLE_ARG( symbol ), Invokable ) \
+            SCL_IS_METHOD_EXISTS_TRAIT( operator ## Invokable ) \
+            SCL_IS_UNARY_OPERATOR_EXISTS_TEST_TRAIT( Invokable ) \
         } \
     } \
      \
@@ -245,6 +245,6 @@ namespace Operator
         } \
     } \
      \
-    MDK_COMMON_UNARY_OPERATOR_IMPLEMENTAION( Invokable ) \
+    SCL_COMMON_UNARY_OPERATOR_IMPLEMENTAION( Invokable ) \
 
 #endif

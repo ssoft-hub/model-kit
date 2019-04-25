@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MDK_FEATURING_OPERATOR_BINARY_H
-#define MDK_FEATURING_OPERATOR_BINARY_H
+#ifndef SCL_FEATURING_OPERATOR_BINARY_H
+#define SCL_FEATURING_OPERATOR_BINARY_H
 
 #include <ModelKit/Utility/IsMethodExists.h>
 #include <ModelKit/Utility/IsOperatorExists.h>
@@ -25,7 +25,7 @@ namespace Operator
     }
 }
 
-#define MDK_IS_BINARY_OPERATOR_EXISTS_TEST_TRAIT( Invokable ) \
+#define SCL_IS_BINARY_OPERATOR_EXISTS_TEST_TRAIT( Invokable ) \
     template < typename _Kind, typename _LeftRefer, typename _RightRefer > \
     struct Is ## Invokable ## OperatorExistsTestHelper; \
      \
@@ -115,16 +115,16 @@ namespace Operator
             || is_not_compatible_value; \
     }; \
 
-#define MDK_BINARY_OPERATOR_IMPLEMENTAION( symbol, Invokable ) \
+#define SCL_BINARY_OPERATOR_IMPLEMENTAION( symbol, Invokable ) \
     namespace Operator \
     { \
         namespace Binary \
         { \
-            MDK_IS_BINARY_OPERATOR_EXISTS_TRAIT( MDK_SINGLE_ARG( symbol ), Invokable ) \
-            MDK_IS_METHOD_EXISTS_TRAIT( operator ## Invokable ) \
-            MDK_IS_METHOD_EXISTS_TRAIT( operator ## Invokable ## Left ) \
-            MDK_IS_METHOD_EXISTS_TRAIT( operator ## Invokable ## Right ) \
-            MDK_IS_BINARY_OPERATOR_EXISTS_TEST_TRAIT( Invokable ) \
+            SCL_IS_BINARY_OPERATOR_EXISTS_TRAIT( SCL_SINGLE_ARG( symbol ), Invokable ) \
+            SCL_IS_METHOD_EXISTS_TRAIT( operator ## Invokable ) \
+            SCL_IS_METHOD_EXISTS_TRAIT( operator ## Invokable ## Left ) \
+            SCL_IS_METHOD_EXISTS_TRAIT( operator ## Invokable ## Right ) \
+            SCL_IS_BINARY_OPERATOR_EXISTS_TEST_TRAIT( Invokable ) \
         } \
     } \
      \

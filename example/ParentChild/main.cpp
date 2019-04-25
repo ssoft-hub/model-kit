@@ -275,8 +275,8 @@ int main ( int /*narg*/, char ** /*varg*/ )
 //const _Type & link ( const _Type & value ) { return value; }
 
 
-////#define MDK_SIMPLEST
-//#define MDK_WRIPERS
+////#define SCL_SIMPLEST
+//#define SCL_WRIPERS
 
 //#ifdef SIMPLEST
 //    typedef Type * TypeInstance;

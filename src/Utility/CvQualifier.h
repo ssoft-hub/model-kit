@@ -1,11 +1,11 @@
 #pragma once
-#ifndef MDK_UTILITY_AS_CONST_H
-#define MDK_UTILITY_AS_CONST_H
+#ifndef SCL_UTILITY_AS_CONST_H
+#define SCL_UTILITY_AS_CONST_H
 
 #include <memory>
 #include <type_traits>
 
-namespace Mdk
+namespace Scl
 {
     template < typename _Type >
     constexpr ::std::add_const_t< _Type > & castConst ( _Type & value ) noexcept

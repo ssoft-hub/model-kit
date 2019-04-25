@@ -1,10 +1,10 @@
 #pragma once
-#ifndef MDK_UTILITY_IS_OPERATOR_EXISTS_H
-#define MDK_UTILITY_IS_OPERATOR_EXISTS_H
+#ifndef SCL_UTILITY_IS_OPERATOR_EXISTS_H
+#define SCL_UTILITY_IS_OPERATOR_EXISTS_H
 
 #include <type_traits>
 
-#define MDK_IS_PREFIX_UNARY_OPERATOR_EXISTS_TRAIT( symbol, Invokable ) \
+#define SCL_IS_PREFIX_UNARY_OPERATOR_EXISTS_TRAIT( symbol, Invokable ) \
     template < typename _Right > \
     class Is ## Invokable ## OperatorExistsHelper \
     { \
@@ -26,7 +26,7 @@
     template < typename _Type > \
     static constexpr bool is_ ## Invokable ## _operator_exists = Is ## Invokable ## OperatorExists< _Type >::value; \
 
-#define MDK_IS_POSTFIX_UNARY_OPERATOR_EXISTS_TRAIT( symbol, Invokable ) \
+#define SCL_IS_POSTFIX_UNARY_OPERATOR_EXISTS_TRAIT( symbol, Invokable ) \
     template < typename _Left > \
     class Is ## Invokable ## OperatorExistsHelper \
     { \
@@ -48,7 +48,7 @@
     template < typename _Type > \
     static constexpr bool is_ ## Invokable ## _operator_exists = Is ## Invokable ## OperatorExists< _Type >::value; \
 
-#define MDK_IS_BINARY_OPERATOR_EXISTS_TRAIT( symbol, Invokable ) \
+#define SCL_IS_BINARY_OPERATOR_EXISTS_TRAIT( symbol, Invokable ) \
     template < typename _Left, typename _Right > \
     class Is ## Invokable ## OperatorExistsHelper \
     { \
@@ -72,7 +72,7 @@
     template < typename _Left, typename _Right > \
     static constexpr bool is_ ## Invokable ## _operator_exists = Is ## Invokable ## OperatorExists< _Left, _Right >::value; \
 
-#define MDK_IS_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT_EXISTS_TRAIT( symbol, Invokable ) \
+#define SCL_IS_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT_EXISTS_TRAIT( symbol, Invokable ) \
     template < typename _Type, typename _Argument > \
     class Is ## Invokable ## OperatorExistsHelper \
     { \
@@ -92,7 +92,7 @@
     template < typename _Type, typename _Argument > \
     static constexpr bool is_ ## Invokable ## _operator_exists = Is ## Invokable ## OperatorExists< _Type, _Argument >::value; \
 
-#define MDK_IS_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENTS_EXISTS_TRAIT( symbol, Invokable ) \
+#define SCL_IS_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENTS_EXISTS_TRAIT( symbol, Invokable ) \
     template < typename _Type, typename ... _Arguments > \
     class Is ## Invokable ## OperatorExistsHelper \
     { \

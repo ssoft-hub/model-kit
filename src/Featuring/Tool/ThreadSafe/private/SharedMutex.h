@@ -1,12 +1,12 @@
 #pragma once
-#ifndef MDK_TOOL_PRIVATE_SHATED_MUTEX_H
-#define MDK_TOOL_PRIVATE_SHATED_MUTEX_H
+#ifndef SCL_TOOL_PRIVATE_SHATED_MUTEX_H
+#define SCL_TOOL_PRIVATE_SHATED_MUTEX_H
 
 #   include <atomic>
 #   include <condition_variable>
 #   include <mutex>
 
-namespace _Mdk
+namespace _Scl
 {
     /*
      * Copied implementation from Boost library

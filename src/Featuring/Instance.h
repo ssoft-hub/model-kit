@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MDK_INSTANCE_FEATURED_H
-#define MDK_INSTANCE_FEATURED_H
+#ifndef SCL_INSTANCE_FEATURED_H
+#define SCL_INSTANCE_FEATURED_H
 
 #ifdef _MSC_VER
 #pragma warning( disable : 4521 4522 )
@@ -58,111 +58,111 @@ public:
     {}
 
     /* All kind of constructors for ThisType */
-    MDK_CONSTRUCTOR_FOR_THIS_INSTANCE
+    SCL_CONSTRUCTOR_FOR_THIS_INSTANCE
     /* All kind of constructors for Instance< _OtherValue, _OtherTool > */
-    MDK_CONSTRUCTOR_FOR_OTHER_INSTANCE // TODO: to remove
+    SCL_CONSTRUCTOR_FOR_OTHER_INSTANCE // TODO: to remove
 
     /* All kind of assignment operators for any type (including Instance< _OtherValue, _OtherTool >) */
-    MDK_BINARY_OPERATOR_FOR_ANY( =, Assignment )
+    SCL_BINARY_OPERATOR_FOR_ANY( =, Assignment )
     /* All kind of assignment operators for ThisType */
-    MDK_ASSIGNMENT_OPERATOR_FOR_THIS( =, Assignment )
+    SCL_ASSIGNMENT_OPERATOR_FOR_THIS( =, Assignment )
 
     /* Member access */
     // NOTE: Используется доступ через оператор "->", но семантически необходим ".".
     // TODO: Заменить на оператор "." с внедрением P0416R1(N4477) или P0352 в стандарт C++,
     // а для оператора "->" использовать реализацию подобно другим.
-    MDK_DEREFERENCE_OPERATOR( -> )
-    MDK_ADDRESS_OF_OPERATOR( & )
+    SCL_DEREFERENCE_OPERATOR( -> )
+    SCL_ADDRESS_OF_OPERATOR( & )
     //PREFIX_UNARY_OPERATOR( &, AddressOf )
-    MDK_PREFIX_UNARY_OPERATOR( *, Indirection )
-    MDK_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT( ->*, MemberIndirection )
-    MDK_BINARY_OPERATOR_FOR_ANY( MDK_SINGLE_ARG( , ), Comma )
+    SCL_PREFIX_UNARY_OPERATOR( *, Indirection )
+    SCL_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT( ->*, MemberIndirection )
+    SCL_BINARY_OPERATOR_FOR_ANY( SCL_SINGLE_ARG( , ), Comma )
     /* Subscript */
-    MDK_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT( [], SquareBrackets )
+    SCL_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENT( [], SquareBrackets )
 
     /* Functional forms */
-    MDK_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENTS( (), RoundBrackets )
+    SCL_POSTFIX_UNARY_OPERATOR_WITH_ARGUMENTS( (), RoundBrackets )
     /* Arithmetic operators */
-    MDK_PREFIX_UNARY_OPERATOR( +, UnaryPrefixPlus )
-    MDK_PREFIX_UNARY_OPERATOR( -, UnaryPrefixMinus )
-    MDK_BINARY_OPERATOR_FOR_ANY( *, Multiply )
-    MDK_BINARY_OPERATOR_FOR_ANY( /, Divide )
-    MDK_BINARY_OPERATOR_FOR_ANY( %, Modulo )
-    MDK_BINARY_OPERATOR_FOR_ANY( +, Addition )
-    MDK_BINARY_OPERATOR_FOR_ANY( -, Subtraction )
+    SCL_PREFIX_UNARY_OPERATOR( +, UnaryPrefixPlus )
+    SCL_PREFIX_UNARY_OPERATOR( -, UnaryPrefixMinus )
+    SCL_BINARY_OPERATOR_FOR_ANY( *, Multiply )
+    SCL_BINARY_OPERATOR_FOR_ANY( /, Divide )
+    SCL_BINARY_OPERATOR_FOR_ANY( %, Modulo )
+    SCL_BINARY_OPERATOR_FOR_ANY( +, Addition )
+    SCL_BINARY_OPERATOR_FOR_ANY( -, Subtraction )
     /* Compound assignment */
-    MDK_BINARY_OPERATOR_FOR_ANY( *=, MultiplyAssignment )
-    MDK_BINARY_OPERATOR_FOR_ANY( /=, DivideAssignment )
-    MDK_BINARY_OPERATOR_FOR_ANY( %=, ModuloAssignment )
-    MDK_BINARY_OPERATOR_FOR_ANY( +=, AdditionAssignment )
-    MDK_BINARY_OPERATOR_FOR_ANY( -=, SubtractionAssignment )
-    MDK_BINARY_OPERATOR_FOR_ANY( <<=, ShiftLeftAssignment )
-    MDK_BINARY_OPERATOR_FOR_ANY( >>=, ShiftRightAssignment )
-    MDK_BINARY_OPERATOR_FOR_ANY( &=, BitwiseAndAssignment )
-    MDK_BINARY_OPERATOR_FOR_ANY( ^=, BitwiseXorAssignment )
-    MDK_BINARY_OPERATOR_FOR_ANY( |=, BitwiseOrAssignment )
+    SCL_BINARY_OPERATOR_FOR_ANY( *=, MultiplyAssignment )
+    SCL_BINARY_OPERATOR_FOR_ANY( /=, DivideAssignment )
+    SCL_BINARY_OPERATOR_FOR_ANY( %=, ModuloAssignment )
+    SCL_BINARY_OPERATOR_FOR_ANY( +=, AdditionAssignment )
+    SCL_BINARY_OPERATOR_FOR_ANY( -=, SubtractionAssignment )
+    SCL_BINARY_OPERATOR_FOR_ANY( <<=, ShiftLeftAssignment )
+    SCL_BINARY_OPERATOR_FOR_ANY( >>=, ShiftRightAssignment )
+    SCL_BINARY_OPERATOR_FOR_ANY( &=, BitwiseAndAssignment )
+    SCL_BINARY_OPERATOR_FOR_ANY( ^=, BitwiseXorAssignment )
+    SCL_BINARY_OPERATOR_FOR_ANY( |=, BitwiseOrAssignment )
     /* Increment and decrement */
-    MDK_PREFIX_UNARY_OPERATOR( ++, UnaryPrefixPlusPlus )
-    MDK_PREFIX_UNARY_OPERATOR( --, UnaryPrefixMinusMinus )
-    MDK_POSTFIX_UNARY_OPERATOR_WITH_INT( ++, UnaryPostfixPlusPlus )
-    MDK_POSTFIX_UNARY_OPERATOR_WITH_INT( --, UnaryPostfixMinusMinus )
+    SCL_PREFIX_UNARY_OPERATOR( ++, UnaryPrefixPlusPlus )
+    SCL_PREFIX_UNARY_OPERATOR( --, UnaryPrefixMinusMinus )
+    SCL_POSTFIX_UNARY_OPERATOR_WITH_INT( ++, UnaryPostfixPlusPlus )
+    SCL_POSTFIX_UNARY_OPERATOR_WITH_INT( --, UnaryPostfixMinusMinus )
     /* Relational and comparison operators */
-    MDK_BINARY_OPERATOR_FOR_ANY( ==, IsEqual )
-    MDK_BINARY_OPERATOR_FOR_ANY( !=, NotEqual )
-    MDK_BINARY_OPERATOR_FOR_ANY( <, Less )
-    MDK_BINARY_OPERATOR_FOR_ANY( <=, LessOrEqual )
-    MDK_BINARY_OPERATOR_FOR_ANY( >, Greater )
-    MDK_BINARY_OPERATOR_FOR_ANY( >=, GreaterOrEqual )
+    SCL_BINARY_OPERATOR_FOR_ANY( ==, IsEqual )
+    SCL_BINARY_OPERATOR_FOR_ANY( !=, NotEqual )
+    SCL_BINARY_OPERATOR_FOR_ANY( <, Less )
+    SCL_BINARY_OPERATOR_FOR_ANY( <=, LessOrEqual )
+    SCL_BINARY_OPERATOR_FOR_ANY( >, Greater )
+    SCL_BINARY_OPERATOR_FOR_ANY( >=, GreaterOrEqual )
     /* Logical operators */
-    MDK_PREFIX_UNARY_OPERATOR( !, UnaryPrefixLogicalNot )
-    MDK_BINARY_OPERATOR_FOR_ANY( &&, LogicalAnd )
-    MDK_BINARY_OPERATOR_FOR_ANY( ||, LogicalOr )
+    SCL_PREFIX_UNARY_OPERATOR( !, UnaryPrefixLogicalNot )
+    SCL_BINARY_OPERATOR_FOR_ANY( &&, LogicalAnd )
+    SCL_BINARY_OPERATOR_FOR_ANY( ||, LogicalOr )
     /* Bitwise operators */
-    MDK_PREFIX_UNARY_OPERATOR( ~, UnaryPrefixBitwiseNot )
-    MDK_BINARY_OPERATOR_FOR_ANY( &, BitwiseAnd )
-    MDK_BINARY_OPERATOR_FOR_ANY( ^, BitwiseXor )
-    MDK_BINARY_OPERATOR_FOR_ANY( |, BitwiseOr )
-    MDK_BINARY_OPERATOR_FOR_ANY( <<, ShiftLeft )
-    MDK_BINARY_OPERATOR_FOR_ANY( >>, ShiftRight )
+    SCL_PREFIX_UNARY_OPERATOR( ~, UnaryPrefixBitwiseNot )
+    SCL_BINARY_OPERATOR_FOR_ANY( &, BitwiseAnd )
+    SCL_BINARY_OPERATOR_FOR_ANY( ^, BitwiseXor )
+    SCL_BINARY_OPERATOR_FOR_ANY( |, BitwiseOr )
+    SCL_BINARY_OPERATOR_FOR_ANY( <<, ShiftLeft )
+    SCL_BINARY_OPERATOR_FOR_ANY( >>, ShiftRight )
     /* Type-casting */
-    MDK_CAST_OPERATOR
+    SCL_CAST_OPERATOR
 };
 
 /* RIGHT-SIDE INSTANCE OPERATORS */
 
 /* Arithmetic operators */
-MDK_GLOBAL_BINARY_OPERATOR( *, Multiply )
-MDK_GLOBAL_BINARY_OPERATOR( /, Divide )
-MDK_GLOBAL_BINARY_OPERATOR( %, Modulo )
-MDK_GLOBAL_BINARY_OPERATOR( +, Addition )
-MDK_GLOBAL_BINARY_OPERATOR( -, Subtraction )
+SCL_GLOBAL_BINARY_OPERATOR( *, Multiply )
+SCL_GLOBAL_BINARY_OPERATOR( /, Divide )
+SCL_GLOBAL_BINARY_OPERATOR( %, Modulo )
+SCL_GLOBAL_BINARY_OPERATOR( +, Addition )
+SCL_GLOBAL_BINARY_OPERATOR( -, Subtraction )
 /* Compound assignment */
-MDK_GLOBAL_BINARY_OPERATOR_SPECIALIZATION( Assignment ) // NOTE: The 'operator =' cannot be implemented as global method.
-MDK_GLOBAL_BINARY_OPERATOR( *=, MultiplyAssignment )
-MDK_GLOBAL_BINARY_OPERATOR( /=, DivideAssignment )
-MDK_GLOBAL_BINARY_OPERATOR( %=, ModuloAssignment )
-MDK_GLOBAL_BINARY_OPERATOR( +=, AdditionAssignment )
-MDK_GLOBAL_BINARY_OPERATOR( -=, SubtractionAssignment )
-MDK_GLOBAL_BINARY_OPERATOR( <<=, ShiftLeftAssignment )
-MDK_GLOBAL_BINARY_OPERATOR( >>=, ShiftRightAssignment )
-MDK_GLOBAL_BINARY_OPERATOR( &=, BitwiseAndAssignment )
-MDK_GLOBAL_BINARY_OPERATOR( ^=, BitwiseXorAssignment )
-MDK_GLOBAL_BINARY_OPERATOR( |=, BitwiseOrAssignment )
+SCL_GLOBAL_BINARY_OPERATOR_SPECIALIZATION( Assignment ) // NOTE: The 'operator =' cannot be implemented as global method.
+SCL_GLOBAL_BINARY_OPERATOR( *=, MultiplyAssignment )
+SCL_GLOBAL_BINARY_OPERATOR( /=, DivideAssignment )
+SCL_GLOBAL_BINARY_OPERATOR( %=, ModuloAssignment )
+SCL_GLOBAL_BINARY_OPERATOR( +=, AdditionAssignment )
+SCL_GLOBAL_BINARY_OPERATOR( -=, SubtractionAssignment )
+SCL_GLOBAL_BINARY_OPERATOR( <<=, ShiftLeftAssignment )
+SCL_GLOBAL_BINARY_OPERATOR( >>=, ShiftRightAssignment )
+SCL_GLOBAL_BINARY_OPERATOR( &=, BitwiseAndAssignment )
+SCL_GLOBAL_BINARY_OPERATOR( ^=, BitwiseXorAssignment )
+SCL_GLOBAL_BINARY_OPERATOR( |=, BitwiseOrAssignment )
 /* Relational and comparison operators */
-MDK_GLOBAL_BINARY_OPERATOR( ==, IsEqual )
-MDK_GLOBAL_BINARY_OPERATOR( !=, NotEqual )
-MDK_GLOBAL_BINARY_OPERATOR( <, Less )
-MDK_GLOBAL_BINARY_OPERATOR( <=, LessOrEqual )
-MDK_GLOBAL_BINARY_OPERATOR( >, Greater )
-MDK_GLOBAL_BINARY_OPERATOR( >=, GreaterOrEqual )
+SCL_GLOBAL_BINARY_OPERATOR( ==, IsEqual )
+SCL_GLOBAL_BINARY_OPERATOR( !=, NotEqual )
+SCL_GLOBAL_BINARY_OPERATOR( <, Less )
+SCL_GLOBAL_BINARY_OPERATOR( <=, LessOrEqual )
+SCL_GLOBAL_BINARY_OPERATOR( >, Greater )
+SCL_GLOBAL_BINARY_OPERATOR( >=, GreaterOrEqual )
 /* Logical operators */
-MDK_GLOBAL_BINARY_OPERATOR( &&, LogicalAnd )
-MDK_GLOBAL_BINARY_OPERATOR( ||, LogicalOr )
+SCL_GLOBAL_BINARY_OPERATOR( &&, LogicalAnd )
+SCL_GLOBAL_BINARY_OPERATOR( ||, LogicalOr )
 /* Bitwise operators */
-MDK_GLOBAL_BINARY_OPERATOR( &, BitwiseAnd )
-MDK_GLOBAL_BINARY_OPERATOR( ^, BitwiseXor )
-MDK_GLOBAL_BINARY_OPERATOR( |, BitwiseOr )
-MDK_GLOBAL_BINARY_OPERATOR( <<, ShiftLeft )
-MDK_GLOBAL_BINARY_OPERATOR( >>, ShiftRight )
+SCL_GLOBAL_BINARY_OPERATOR( &, BitwiseAnd )
+SCL_GLOBAL_BINARY_OPERATOR( ^, BitwiseXor )
+SCL_GLOBAL_BINARY_OPERATOR( |, BitwiseOr )
+SCL_GLOBAL_BINARY_OPERATOR( <<, ShiftLeft )
+SCL_GLOBAL_BINARY_OPERATOR( >>, ShiftRight )
 
 #endif

@@ -1,7 +1,7 @@
 #pragma once
-#ifndef MDK_UTILITY_SINGLE_ARGUMENT_H
-#define MDK_UTILITY_SINGLE_ARGUMENT_H
+#ifndef SCL_UTILITY_SINGLE_ARGUMENT_H
+#define SCL_UTILITY_SINGLE_ARGUMENT_H
 
-#define MDK_SINGLE_ARG(...) __VA_ARGS__
+#define SCL_SINGLE_ARG(...) __VA_ARGS__
 
 #endif

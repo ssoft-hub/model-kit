@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MDK_INSTANCE_TOOL_HEAP_UNIQUE_H
-#define MDK_INSTANCE_TOOL_HEAP_UNIQUE_H
+#ifndef SCL_INSTANCE_TOOL_HEAP_UNIQUE_H
+#define SCL_INSTANCE_TOOL_HEAP_UNIQUE_H
 
 #include <ModelKit/Featuring/Access/HolderInternal.h>
 #include <ModelKit/Featuring/Traits.h>

@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MDK_GUARD_FEATURE_POINTER_H
-#define MDK_GUARD_FEATURE_POINTER_H
+#ifndef SCL_GUARD_FEATURE_POINTER_H
+#define SCL_GUARD_FEATURE_POINTER_H
 
 #include <ModelKit/Featuring/Access/HolderInternal.h>
 #include <ModelKit/Featuring/Traits.h>

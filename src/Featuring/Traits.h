@@ -1,10 +1,10 @@
 #pragma once
-#ifndef MDK_FEATURED_TRAITS_H
-#define MDK_FEATURED_TRAITS_H
+#ifndef SCL_FEATURED_TRAITS_H
+#define SCL_FEATURED_TRAITS_H
 
 #include <type_traits>
 
-namespace Mdk
+namespace Scl
 {
     template < typename _Type >
     using remove_rvalue_reference_t = ::std::conditional_t< ::std::is_rvalue_reference< _Type >::value, ::std::remove_reference_t< _Type >, _Type >;

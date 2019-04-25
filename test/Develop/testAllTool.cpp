@@ -3,7 +3,7 @@
 //#include "MyType.h"
 //#include <ModelKit.h>
 
-// using namespace ::Mdk;
+// using namespace ::Scl;
 
 //template < typename _TestType >
 //void testTool ()

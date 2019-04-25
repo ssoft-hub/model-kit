@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MDK_INSTANCE_TOOL_IMPLICIT_RAW_H
-#define MDK_INSTANCE_TOOL_IMPLICIT_RAW_H
+#ifndef SCL_INSTANCE_TOOL_IMPLICIT_RAW_H
+#define SCL_INSTANCE_TOOL_IMPLICIT_RAW_H
 
 #include <atomic>
 #include <cassert>

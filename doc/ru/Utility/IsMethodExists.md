@@ -1,11 +1,11 @@
 # Проверка существования метода на этапе компиляции
 
-## Макроопределение MDK_IS_METHOD_EXISTS_TRAIT
+## Макроопределение SCL_IS_METHOD_EXISTS_TRAIT
 
 Данное макроопределение позволяет свормировать структуры и переменные для возможности проверки у типа наличия метода с заданным наименованием. Имя метода передается в виде параметра.
 
 ```cpp
-#define MDK_IS_METHOD_EXISTS_TRAIT( method )
+#define SCL_IS_METHOD_EXISTS_TRAIT( method )
 ```
 
 Макрос явно определяет вспомогательные типы ```Is_ ## method ## _MethodExistsHelper```, ```Is_ ## method ## _MethodExists``` и переменную ```static constexpr bool is_ ## method ## _method_exists```, поэтому рекомендуется его использовать в отдельных пространствах имен.
@@ -17,8 +17,8 @@
 ```cpp
 namespace Test // struct, class, etc.
 {
-    MDK_IS_METHOD_EXISTS_TRAIT( setValue )
-    MDK_IS_METHOD_EXISTS_TRAIT( getValue )
+    SCL_IS_METHOD_EXISTS_TRAIT( setValue )
+    SCL_IS_METHOD_EXISTS_TRAIT( getValue )
 }
 
 class MyClass

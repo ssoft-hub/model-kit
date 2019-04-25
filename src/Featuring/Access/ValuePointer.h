@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MDK_FEATURING_ACCESS_VALUE_POINTER_H
-#define MDK_FEATURING_ACCESS_VALUE_POINTER_H
+#ifndef SCL_FEATURING_ACCESS_VALUE_POINTER_H
+#define SCL_FEATURING_ACCESS_VALUE_POINTER_H
 
 #include <ModelKit/Featuring/Access/ValueGuard.h>
 

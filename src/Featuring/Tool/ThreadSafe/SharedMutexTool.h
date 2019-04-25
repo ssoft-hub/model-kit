@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MDK_INSTANCE_TOOL_THREAD_SAFE_SHARED_MUTEX_H
-#define MDK_INSTANCE_TOOL_THREAD_SAFE_SHARED_MUTEX_H
+#ifndef SCL_INSTANCE_TOOL_THREAD_SAFE_SHARED_MUTEX_H
+#define SCL_INSTANCE_TOOL_THREAD_SAFE_SHARED_MUTEX_H
 
 #include <ModelKit/Featuring/Tool/ThreadSafe/LockTool.h>
 
@@ -16,7 +16,7 @@ namespace ThreadSafe
 #if __cplusplus > 201700L
         ::std::shared_mutex
 #else
-        _Mdk::SharedMutex
+    ::_Scl::SharedMutex
 #endif
     ;
 }

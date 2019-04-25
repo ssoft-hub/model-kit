@@ -1,10 +1,10 @@
 #pragma once
-#ifndef MDK_UTILITY_MDK_IS_METHOD_EXISTS_H
-#define MDK_UTILITY_MDK_IS_METHOD_EXISTS_H
+#ifndef SCL_UTILITY_SCL_IS_METHOD_EXISTS_H
+#define SCL_UTILITY_SCL_IS_METHOD_EXISTS_H
 
 #include <type_traits>
 
-#define MDK_IS_METHOD_EXISTS_TRAIT( method ) \
+#define SCL_IS_METHOD_EXISTS_TRAIT( method ) \
     template < typename _Type, typename ... _Arguments > \
     struct Is_ ## method ## _MethodExistsHelper { \
     private: \

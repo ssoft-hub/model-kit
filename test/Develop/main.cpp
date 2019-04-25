@@ -13,7 +13,7 @@
 #   include <cxxabi.h>
 #endif
 
-using namespace ::Mdk;
+using namespace ::Scl;
 
 template < typename _Type >
 void printTypeOf ()

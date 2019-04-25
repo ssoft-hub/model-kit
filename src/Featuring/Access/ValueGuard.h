@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MDK_FEATURING_ACCESS_VALUE_GUARD_H
-#define MDK_FEATURING_ACCESS_VALUE_GUARD_H
+#ifndef SCL_FEATURING_ACCESS_VALUE_GUARD_H
+#define SCL_FEATURING_ACCESS_VALUE_GUARD_H
 
 #include <ModelKit/Featuring/Access/InstanceGuard.h>
 #include <ModelKit/Featuring/Traits.h>

@@ -3,7 +3,10 @@
 #include <map>
 #include <string>
 
-using namespace ::Mdk;
+using ::Scl::castConst;
+using ::Scl::castVolatile;
+using ::Scl::castConstVolatile;
+using ::std::move;
 
 #if defined( __GNUC__ )
 #   define DATA_FUNC_INFO __PRETTY_FUNCTION__
@@ -16,28 +19,28 @@ using namespace ::Mdk;
     { ::std::cout << DATA_FUNC_INFO << ::std::endl; } \
 
 #define DATA_UNARY_OPERATOR_INT( symbol ) \
-    DATA_UNARY_OPERATOR_INT_PROTOTYPE( MDK_SINGLE_ARG( symbol ), && ) \
-    DATA_UNARY_OPERATOR_INT_PROTOTYPE( MDK_SINGLE_ARG( symbol ), const && ) \
-    DATA_UNARY_OPERATOR_INT_PROTOTYPE( MDK_SINGLE_ARG( symbol ), volatile && ) \
-    DATA_UNARY_OPERATOR_INT_PROTOTYPE( MDK_SINGLE_ARG( symbol ), const volatile && ) \
-    DATA_UNARY_OPERATOR_INT_PROTOTYPE( MDK_SINGLE_ARG( symbol ), & ) \
-    DATA_UNARY_OPERATOR_INT_PROTOTYPE( MDK_SINGLE_ARG( symbol ), const & ) \
-    DATA_UNARY_OPERATOR_INT_PROTOTYPE( MDK_SINGLE_ARG( symbol ), volatile & ) \
-    DATA_UNARY_OPERATOR_INT_PROTOTYPE( MDK_SINGLE_ARG( symbol ), const volatile & ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( SCL_SINGLE_ARG( symbol ), && ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( SCL_SINGLE_ARG( symbol ), const && ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( SCL_SINGLE_ARG( symbol ), volatile && ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( SCL_SINGLE_ARG( symbol ), const volatile && ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( SCL_SINGLE_ARG( symbol ), & ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( SCL_SINGLE_ARG( symbol ), const & ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( SCL_SINGLE_ARG( symbol ), volatile & ) \
+    DATA_UNARY_OPERATOR_INT_PROTOTYPE( SCL_SINGLE_ARG( symbol ), const volatile & ) \
 
 #define DATA_UNARY_OPERATOR_PROTOTYPE( symbol, refer ) \
     void operator symbol () refer \
     { ::std::cout << DATA_FUNC_INFO << ::std::endl; } \
 
 #define DATA_UNARY_OPERATOR( symbol ) \
-    DATA_UNARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), && ) \
-    DATA_UNARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), const && ) \
-    DATA_UNARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), volatile && ) \
-    DATA_UNARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), const volatile && ) \
-    DATA_UNARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), & ) \
-    DATA_UNARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), const & ) \
-    DATA_UNARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), volatile & ) \
-    DATA_UNARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), const volatile & ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), && ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), const && ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), volatile && ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), const volatile && ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), & ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), const & ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), volatile & ) \
+    DATA_UNARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), const volatile & ) \
 
 #define DATA_BINARY_OPERATOR_PROTOTYPE( symbol, refer ) \
     template < typename _Right > \
@@ -45,84 +48,84 @@ using namespace ::Mdk;
         { ::std::cout << DATA_FUNC_INFO << ::std::endl; } \
 
 #define DATA_BINARY_OPERATOR( symbol ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), const && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), const volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), const & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), const volatile & ) \
 
 #define DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( symbol, this_refer, other_refer ) \
     void operator symbol ( ThisType other_refer ) this_refer \
         { ::std::cout << DATA_FUNC_INFO << ::std::endl; } \
 
 #define DATA_BINARY_OPERATOR_FOR_THIS( symbol ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), &&, && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), &&, const && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), &&, volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), &&, const volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), &&, & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), &&, const & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), &&, volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), &&, const volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const &&, && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const &&, const && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const &&, volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const &&, const volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const &&, & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const &&, const & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const &&, volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const &&, const volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), volatile &&, && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), volatile &&, const && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), volatile &&, volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), volatile &&, const volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), volatile &&, & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), volatile &&, const & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), volatile &&, volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), volatile &&, const volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const volatile &&, && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const volatile &&, const && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const volatile &&, volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const volatile &&, const volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const volatile &&, & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const volatile &&, const & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const volatile &&, volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const volatile &&, const volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), &, && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), &, const && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), &, volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), &, const volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), &, & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), &, const & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), &, volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), &, const volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const &, && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const &, const && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const &, volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const &, const volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const &, & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const &, const & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const &, volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const &, const volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), volatile &, && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), volatile &, const && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), volatile &, volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), volatile &, const volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), volatile &, & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), volatile &, const & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), volatile &, volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), volatile &, const volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const volatile &, && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const volatile &, const && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const volatile &, volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const volatile &, const volatile && ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const volatile &, & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const volatile &, const & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const volatile &, volatile & ) \
-    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( MDK_SINGLE_ARG( symbol ), const volatile &, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), &&, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), &&, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), &&, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), &&, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), &&, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), &&, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), &&, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), &&, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const &&, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const &&, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const &&, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const &&, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const &&, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const &&, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const &&, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const &&, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), volatile &&, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), volatile &&, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), volatile &&, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), volatile &&, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), volatile &&, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), volatile &&, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), volatile &&, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), volatile &&, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const volatile &&, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const volatile &&, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const volatile &&, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const volatile &&, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const volatile &&, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const volatile &&, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const volatile &&, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const volatile &&, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), &, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), &, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), &, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), &, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), &, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), &, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), &, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), &, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const &, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const &, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const &, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const &, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const &, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const &, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const &, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const &, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), volatile &, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), volatile &, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), volatile &, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), volatile &, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), volatile &, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), volatile &, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), volatile &, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), volatile &, const volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const volatile &, && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const volatile &, const && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const volatile &, volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const volatile &, const volatile && ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const volatile &, & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const volatile &, const & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const volatile &, volatile & ) \
+    DATA_BINARY_OPERATOR_PROTOTYPE_FOR_THIS( SCL_SINGLE_ARG( symbol ), const volatile &, const volatile & ) \
 
 #define DATA_GLOBAL_BINARY_OPERATOR_PROTOTYPE( symbol, right_refer ) \
     template < typename _Left, typename _Right > \
@@ -130,14 +133,14 @@ using namespace ::Mdk;
         { ::std::cout << DATA_FUNC_INFO << ::std::endl; } \
 
 #define DATA_GLOBAL_BINARY_OPERATOR( symbol ) \
-    DATA_GLOBAL_BINARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), && ) \
-    DATA_GLOBAL_BINARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), const && ) \
-    DATA_GLOBAL_BINARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), volatile && ) \
-    DATA_GLOBAL_BINARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), const volatile && ) \
-    DATA_GLOBAL_BINARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), & ) \
-    DATA_GLOBAL_BINARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), const & ) \
-    DATA_GLOBAL_BINARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), volatile & ) \
-    DATA_GLOBAL_BINARY_OPERATOR_PROTOTYPE( MDK_SINGLE_ARG( symbol ), const volatile & ) \
+    DATA_GLOBAL_BINARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), && ) \
+    DATA_GLOBAL_BINARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), const && ) \
+    DATA_GLOBAL_BINARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), volatile && ) \
+    DATA_GLOBAL_BINARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), const volatile && ) \
+    DATA_GLOBAL_BINARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), & ) \
+    DATA_GLOBAL_BINARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), const & ) \
+    DATA_GLOBAL_BINARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), volatile & ) \
+    DATA_GLOBAL_BINARY_OPERATOR_PROTOTYPE( SCL_SINGLE_ARG( symbol ), const volatile & ) \
 
 class Dummy {};
 
@@ -268,7 +271,7 @@ public:
     DATA_UNARY_OPERATOR( & )
     DATA_UNARY_OPERATOR( -> )
     DATA_BINARY_OPERATOR( ->* )
-    DATA_BINARY_OPERATOR( MDK_SINGLE_ARG( , ) )
+    DATA_BINARY_OPERATOR( SCL_SINGLE_ARG( , ) )
 
     DATA_UNARY_OPERATOR( + )
     DATA_UNARY_OPERATOR( - )
@@ -433,6 +436,7 @@ void testConstructors ()
     using CTestData = const TestData;
     using VTestData = volatile TestData;
     using CVTestData = const volatile TestData;
+    using ::std::move;
 
     TestData lvalue;
     CTestData lvalue_c;
@@ -444,10 +448,10 @@ void testConstructors ()
     { TestData data = lvalue_c; }
     { TestData data = lvalue_v; }
     { TestData data = lvalue_cv; }
-    { TestData data = ::std::move( lvalue ); }
-    { TestData data = ::std::move( lvalue_c ); }
-    { TestData data = ::std::move( lvalue_v ); }
-    { TestData data = ::std::move( lvalue_cv ); }
+    { TestData data = move( lvalue ); }
+    { TestData data = move( lvalue_c ); }
+    { TestData data = move( lvalue_v ); }
+    { TestData data = move( lvalue_cv ); }
 }
 
 /* Remove warning like this:
@@ -468,19 +472,19 @@ void testAssignmentOperator ()
     data = castConst( other );
     data = castVolatile( other );
     data = castConstVolatile( other );
-    data = ::std::move( other );
-    data = castConst( ::std::move( other ) );
-    data = castVolatile( ::std::move( other ) );
-    data = castConstVolatile( ::std::move( other ) );
+    data = move( other );
+    data = castConst( move( other ) );
+    data = castVolatile( move( other ) );
+    data = castConstVolatile( move( other ) );
 
-    ::std::move( data ) = other;
-    ::std::move( data ) = castConst( other );
-    ::std::move( data ) = castVolatile( other );
-    ::std::move( data ) = castConstVolatile( other );
-    ::std::move( data ) = ::std::move( other );
-    ::std::move( data ) = castConst( ::std::move( other ) );
-    ::std::move( data ) = castVolatile( ::std::move( other ) );
-    ::std::move( data ) = castConstVolatile( ::std::move( other ) );
+    move( data ) = other;
+    move( data ) = castConst( other );
+    move( data ) = castVolatile( other );
+    move( data ) = castConstVolatile( other );
+    move( data ) = move( other );
+    move( data ) = castConst( move( other ) );
+    move( data ) = castVolatile( move( other ) );
+    move( data ) = castConstVolatile( move( other ) );
 }
 
 template < typename _Data >
@@ -490,6 +494,7 @@ void testInstanceUnaryOperators ()
 
     TestData data;
     TestData & lvalue = data;
+
 
     // lvalue
     lvalue[0];
@@ -504,22 +509,22 @@ void testInstanceUnaryOperators ()
 
     +lvalue;
     +castConst(lvalue);
-    +Mdk::castVolatile(lvalue);
+    +castVolatile(lvalue);
     +castConstVolatile(lvalue);
 
     -lvalue;
     -castConst(lvalue);
-    -Mdk::castVolatile(lvalue);
+    -castVolatile(lvalue);
     -castConstVolatile(lvalue);
 
     ++lvalue;
     ++castConst(lvalue);
-    ++Mdk::castVolatile(lvalue);
+    ++castVolatile(lvalue);
     ++castConstVolatile(lvalue);
 
     --lvalue;
     --castConst(lvalue);
-    --Mdk::castVolatile(lvalue);
+    --castVolatile(lvalue);
     --castConstVolatile(lvalue);
 
     lvalue++;
@@ -534,69 +539,71 @@ void testInstanceUnaryOperators ()
 
     !lvalue;
     !castConst(lvalue);
-    !Mdk::castVolatile(lvalue);
+    !castVolatile(lvalue);
     !castConstVolatile(lvalue);
 
     ~lvalue;
     ~castConst(lvalue);
-    ~Mdk::castVolatile(lvalue);
+    ~castVolatile(lvalue);
     ~castConstVolatile(lvalue);
 
     // rvalue
-    ::std::move( lvalue )[0];
-    castConst( ::std::move( lvalue ) )[0];
-    castVolatile( ::std::move( lvalue ) )[0];
-    castConstVolatile( ::std::move( lvalue ) )[0];
+    move( lvalue )[0];
+    castConst( move( lvalue ) )[0];
+    castVolatile( move( lvalue ) )[0];
+    castConstVolatile( move( lvalue ) )[0];
 
-    ::std::move( lvalue )(0, 1);
-    castConst( ::std::move( lvalue ) )(0, 1);
-    castVolatile( ::std::move( lvalue ) )(0, 1);
-    castConstVolatile( ::std::move( lvalue ) )(0, 1);
+    move( lvalue )(0, 1);
+    castConst( move( lvalue ) )(0, 1);
+    castVolatile( move( lvalue ) )(0, 1);
+    castConstVolatile( move( lvalue ) )(0, 1);
 
-    +::std::move( lvalue );
-    +castConst( ::std::move( lvalue ) );
-    +Mdk::castVolatile( ::std::move( lvalue ) );
-    +castConstVolatile( ::std::move( lvalue ) );
+    +move( lvalue );
+    +castConst( move( lvalue ) );
+    +castVolatile( move( lvalue ) );
+    +castConstVolatile( move( lvalue ) );
 
-    -::std::move( lvalue );
-    -castConst( ::std::move( lvalue ) );
-    -Mdk::castVolatile( ::std::move( lvalue ) );
-    -castConstVolatile( ::std::move( lvalue ) );
+    -move( lvalue );
+    -castConst( move( lvalue ) );
+    -castVolatile( move( lvalue ) );
+    -castConstVolatile( move( lvalue ) );
 
-    ++::std::move( lvalue );
-    ++castConst( ::std::move( lvalue ) );
-    ++Mdk::castVolatile( ::std::move( lvalue ) );
-    ++castConstVolatile( ::std::move( lvalue ) );
+    ++move( lvalue );
+    ++castConst( move( lvalue ) );
+    ++castVolatile( move( lvalue ) );
+    ++castConstVolatile( move( lvalue ) );
 
-    --::std::move( lvalue );
-    --castConst( ::std::move( lvalue ) );
-    --Mdk::castVolatile( ::std::move( lvalue ) );
-    --castConstVolatile( ::std::move( lvalue ) );
+    --move( lvalue );
+    --castConst( move( lvalue ) );
+    --castVolatile( move( lvalue ) );
+    --castConstVolatile( move( lvalue ) );
 
-    ::std::move( lvalue )++;
-    castConst( ::std::move( lvalue ) )++;
-    castVolatile( ::std::move( lvalue ) )++;
-    castConstVolatile( ::std::move( lvalue ) )++;
+    move( lvalue )++;
+    castConst( move( lvalue ) )++;
+    castVolatile( move( lvalue ) )++;
+    castConstVolatile( move( lvalue ) )++;
 
-    ::std::move( lvalue )--;
-    castConst( ::std::move( lvalue ) )--;
-    castVolatile( ::std::move( lvalue ) )--;
-    castConstVolatile( ::std::move( lvalue ) )--;
+    move( lvalue )--;
+    castConst( move( lvalue ) )--;
+    castVolatile( move( lvalue ) )--;
+    castConstVolatile( move( lvalue ) )--;
 
-    !::std::move( lvalue );
-    !castConst( ::std::move( lvalue ) );
-    !Mdk::castVolatile( ::std::move( lvalue ) );
-    !castConstVolatile( ::std::move( lvalue ) );
+    !move( lvalue );
+    !castConst( move( lvalue ) );
+    !castVolatile( move( lvalue ) );
+    !castConstVolatile( move( lvalue ) );
 
-    ~::std::move( lvalue );
-    ~castConst( ::std::move( lvalue ) );
-    ~Mdk::castVolatile( ::std::move( lvalue ) );
-    ~castConstVolatile( ::std::move( lvalue ) );
+    ~move( lvalue );
+    ~castConst( move( lvalue ) );
+    ~castVolatile( move( lvalue ) );
+    ~castConstVolatile( move( lvalue ) );
 }
 
 template < typename _Left, typename _Right >
 void testInstanceBinaryOperatorsSpec ()
 {
+    using ::std::move;
+
     _Left left;
     _Right right;
 
@@ -633,100 +640,100 @@ void testInstanceBinaryOperatorsSpec ()
     left <<= right;
 
     // lvalue / rvalue
-    left + ::std::move( right );
-    left - ::std::move( right );
-    left * ::std::move( right );
-    left / ::std::move( right );
-    left % ::std::move( right );
+    left + move( right );
+    left - move( right );
+    left * move( right );
+    left / move( right );
+    left % move( right );
 
-    left == ::std::move( right );
-    left != ::std::move( right );
-    left > ::std::move( right );
-    left < ::std::move( right );
-    left >= ::std::move( right );
-    left <= ::std::move( right );
-    left && ::std::move( right );
-    left || ::std::move( right );
-    left & ::std::move( right );
-    left | ::std::move( right );
-    left ^ ::std::move( right );
-    left >> ::std::move( right );
-    left << ::std::move( right );
+    left == move( right );
+    left != move( right );
+    left > move( right );
+    left < move( right );
+    left >= move( right );
+    left <= move( right );
+    left && move( right );
+    left || move( right );
+    left & move( right );
+    left | move( right );
+    left ^ move( right );
+    left >> move( right );
+    left << move( right );
 
-    left += ::std::move( right );
-    left -= ::std::move( right );
-    left *= ::std::move( right );
-    left /= ::std::move( right );
-    left %= ::std::move( right );
-    left &= ::std::move( right );
-    left |= ::std::move( right );
-    left ^= ::std::move( right );
-    left >>= ::std::move( right );
-    left <<= ::std::move( right );
+    left += move( right );
+    left -= move( right );
+    left *= move( right );
+    left /= move( right );
+    left %= move( right );
+    left &= move( right );
+    left |= move( right );
+    left ^= move( right );
+    left >>= move( right );
+    left <<= move( right );
 
     // rvalue / lvalue
-    ::std::move( left ) + right;
-    ::std::move( left ) - right;
-    ::std::move( left ) * right;
-    ::std::move( left ) / right;
-    ::std::move( left ) % right;
+    move( left ) + right;
+    move( left ) - right;
+    move( left ) * right;
+    move( left ) / right;
+    move( left ) % right;
 
-    ::std::move( left ) == right;
-    ::std::move( left ) != right;
-    ::std::move( left ) > right;
-    ::std::move( left ) < right;
-    ::std::move( left ) >= right;
-    ::std::move( left ) <= right;
-    ::std::move( left ) && right;
-    ::std::move( left ) || right;
-    ::std::move( left ) & right;
-    ::std::move( left ) | right;
-    ::std::move( left ) ^ right;
-    ::std::move( left ) >> right;
-    ::std::move( left ) << right;
+    move( left ) == right;
+    move( left ) != right;
+    move( left ) > right;
+    move( left ) < right;
+    move( left ) >= right;
+    move( left ) <= right;
+    move( left ) && right;
+    move( left ) || right;
+    move( left ) & right;
+    move( left ) | right;
+    move( left ) ^ right;
+    move( left ) >> right;
+    move( left ) << right;
 
-    ::std::move( left ) += right;
-    ::std::move( left ) -= right;
-    ::std::move( left ) *= right;
-    ::std::move( left ) /= right;
-    ::std::move( left ) %= right;
-    ::std::move( left ) &= right;
-    ::std::move( left ) |= right;
-    ::std::move( left ) ^= right;
-    ::std::move( left ) >>= right;
-    ::std::move( left ) <<= right;
+    move( left ) += right;
+    move( left ) -= right;
+    move( left ) *= right;
+    move( left ) /= right;
+    move( left ) %= right;
+    move( left ) &= right;
+    move( left ) |= right;
+    move( left ) ^= right;
+    move( left ) >>= right;
+    move( left ) <<= right;
 
     // rvalue / rvalue
-    ::std::move( left ) + ::std::move( right );
-    ::std::move( left ) - ::std::move( right );
-    ::std::move( left ) * ::std::move( right );
-    ::std::move( left ) / ::std::move( right );
-    ::std::move( left ) % ::std::move( right );
+    move( left ) + move( right );
+    move( left ) - move( right );
+    move( left ) * move( right );
+    move( left ) / move( right );
+    move( left ) % move( right );
 
-    ::std::move( left ) == ::std::move( right );
-    ::std::move( left ) != ::std::move( right );
-    ::std::move( left ) > ::std::move( right );
-    ::std::move( left ) < ::std::move( right );
-    ::std::move( left ) >= ::std::move( right );
-    ::std::move( left ) <= ::std::move( right );
-    ::std::move( left ) && ::std::move( right );
-    ::std::move( left ) || ::std::move( right );
-    ::std::move( left ) & ::std::move( right );
-    ::std::move( left ) | ::std::move( right );
-    ::std::move( left ) ^ ::std::move( right );
-    ::std::move( left ) >> ::std::move( right );
-    ::std::move( left ) << ::std::move( right );
+    move( left ) == move( right );
+    move( left ) != move( right );
+    move( left ) > move( right );
+    move( left ) < move( right );
+    move( left ) >= move( right );
+    move( left ) <= move( right );
+    move( left ) && move( right );
+    move( left ) || move( right );
+    move( left ) & move( right );
+    move( left ) | move( right );
+    move( left ) ^ move( right );
+    move( left ) >> move( right );
+    move( left ) << move( right );
 
-    ::std::move( left ) += ::std::move( right );
-    ::std::move( left ) -= ::std::move( right );
-    ::std::move( left ) *= ::std::move( right );
-    ::std::move( left ) /= ::std::move( right );
-    ::std::move( left ) %= ::std::move( right );
-    ::std::move( left ) &= ::std::move( right );
-    ::std::move( left ) |= ::std::move( right );
-    ::std::move( left ) ^= ::std::move( right );
-    ::std::move( left ) >>= ::std::move( right );
-    ::std::move( left ) <<= ::std::move( right );
+    move( left ) += move( right );
+    move( left ) -= move( right );
+    move( left ) *= move( right );
+    move( left ) /= move( right );
+    move( left ) %= move( right );
+    move( left ) &= move( right );
+    move( left ) |= move( right );
+    move( left ) ^= move( right );
+    move( left ) >>= move( right );
+    move( left ) <<= move( right );
 }
 
 template < typename _Left, typename _Right >

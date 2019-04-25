@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MDK_INSTANCE_TOOL_INPLACE_DEFAULT_H
-#define MDK_INSTANCE_TOOL_INPLACE_DEFAULT_H
+#ifndef SCL_INSTANCE_TOOL_INPLACE_DEFAULT_H
+#define SCL_INSTANCE_TOOL_INPLACE_DEFAULT_H
 
 #include <ModelKit/Featuring/Access.h>
 #include <ModelKit/Featuring/Traits.h>
