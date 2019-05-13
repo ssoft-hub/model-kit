@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 
-using namespace ::Scl;
+using namespace ::ScL;
 using ::std::move;
 
 #if defined( __GNUC__ )

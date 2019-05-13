@@ -25,11 +25,11 @@ namespace SclPrivate
         {
             using Left = ::std::decay_t< _Left >;
             using Right = ::std::decay_t< _Right >;
-            using Type = ::std::conditional_t< ::Scl::is_instance< Left > && ::Scl::is_instance< Right >,
+            using Type = ::std::conditional_t< ::ScL::is_instance< Left > && ::ScL::is_instance< Right >,
                 BothInstanceCase,
-                ::std::conditional_t< ::Scl::is_instance< Left >,
+                ::std::conditional_t< ::ScL::is_instance< Left >,
                     LeftInstanceCase,
-                    ::std::conditional_t< ::Scl::is_instance< Right >,
+                    ::std::conditional_t< ::ScL::is_instance< Right >,
                         RightInstanceCase,
                         NoneInstanceCase > > >;
         };
@@ -42,9 +42,9 @@ namespace SclPrivate
         {
             using Left = ::std::decay_t< _Left >;
             using Right = ::std::decay_t< _Right >;
-            using Type = ::std::conditional_t< ::Scl::is_this_part_of_other< Left, Right >,
+            using Type = ::std::conditional_t< ::ScL::is_this_part_of_other< Left, Right >,
                     RightExposingCase,
-                    ::std::conditional_t< ::Scl::is_this_part_of_other< Right, Left >,
+                    ::std::conditional_t< ::ScL::is_this_part_of_other< Right, Left >,
                         LeftExposingCase,
                         BothExposingCase > >;
         };
@@ -72,7 +72,7 @@ namespace SclPrivate
         {
             using Returned = _Returned;
             using Instance = ::std::decay_t< Returned >;
-            static_assert( ::Scl::is_instance< Instance >, "Bla" );
+            static_assert( ::ScL::is_instance< Instance >, "Bla" );
             using Value = typename Instance::Value;
 
             using Type = ::std::conditional_t< ::std::is_reference< Value >::value,
@@ -102,7 +102,7 @@ namespace SclPrivate
         template < typename _Returned, typename _Refer >
         struct ResultCaseHelper
         {
-            using Type = typename ResultCaseInstanceHelper< ::Scl::is_instance< _Returned >, _Returned, _Refer >::Type;
+            using Type = typename ResultCaseInstanceHelper< ::ScL::is_instance< _Returned >, _Returned, _Refer >::Type;
         };
 
         template < typename _Returned, typename _Value >
@@ -149,7 +149,7 @@ namespace SclPrivate
             static constexpr decltype(auto) invoke ( _Invokable && invokable, _Instance && instance, _Arguments && ... arguments )
             {
                 using InstanceRefer = _Instance &&;
-                using ValueRefer = ::Scl::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >;
+                using ValueRefer = ::ScL::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >;
                 using Invokable = _Invokable;
                 using Returned = ::std::result_of_t< Invokable( ValueRefer, _Arguments && ... ) >;
 
@@ -169,7 +169,7 @@ namespace SclPrivate
             static constexpr decltype(auto) invoke ( _Invokable && invokable, _Instance && instance, _Arguments && ... arguments )
             {
                 using InstanceRefer = _Instance &&;
-                using ValueRefer = ::Scl::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >;
+                using ValueRefer = ::ScL::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >;
                 using Invokable = _Invokable;
                 using InvokableRefer = _Invokable &&;
                 using Returned = ::std::result_of_t< Invokable( ValueRefer, _Arguments && ... ) >;
@@ -218,7 +218,7 @@ namespace SclPrivate
             {
                 using LeftRefer = _Left &&;
                 using InstanceRefer = _Instance &&;
-                using ValueRefer = ::Scl::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >;
+                using ValueRefer = ::ScL::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >;
                 using Invokable = _Invokable;
                 using Returned = ::std::result_of_t< Invokable( LeftRefer, ValueRefer ) >;
 
@@ -226,7 +226,7 @@ namespace SclPrivate
                     "The type of return parameter must to be not a reference type." );
 
                 using InstanceGuard = ::SclPrivate::InstanceGuard< InstanceRefer >;
-                using ResultInstance = ::Scl::Instance< Returned, ::Inplace::DefaultTool >;
+                using ResultInstance = ::ScL::Instance< Returned, ::Inplace::DefaultTool >;
                 return ResultInstance( invokable( ::std::forward< LeftRefer >( left ), InstanceGuard( ::std::forward< InstanceRefer >( instance ) ).instanceAccess() ) );
             }
         };
@@ -239,7 +239,7 @@ namespace SclPrivate
             {
                 using LeftRefer = _Left &&;
                 using InstanceRefer = _Instance &&;
-                using ValueRefer = ::Scl::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >;
+                using ValueRefer = ::ScL::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >;
                 using Invokable = _Invokable;
                 using InvokableRefer = _Invokable &&;
                 using Returned = ::std::result_of_t< Invokable( LeftRefer, ValueRefer ) >;
@@ -349,9 +349,9 @@ namespace SclPrivate
             static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
             {
                 using LeftInstanceRefer = _Left &&;
-                using LeftValueRefer = ::Scl::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >;
+                using LeftValueRefer = ::ScL::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >;
                 using RightInstanceRefer = _Right &&;
-                using RightValueRefer = ::Scl::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >;
+                using RightValueRefer = ::ScL::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >;
                 using Invokable = _Invokable;
                 using Returned = ::std::result_of_t< Invokable( LeftValueRefer, RightValueRefer ) >;
 
@@ -360,7 +360,7 @@ namespace SclPrivate
 
                 using LeftInstanceGuard = ::SclPrivate::InstanceGuard< LeftInstanceRefer >;
                 using RightInstanceGuard = ::SclPrivate::InstanceGuard< RightInstanceRefer >;
-                using ResultInstance = ::Scl::Instance< Returned, ::Inplace::DefaultTool >;
+                using ResultInstance = ::ScL::Instance< Returned, ::Inplace::DefaultTool >;
                 return ResultInstance( invokable( LeftInstanceGuard( ::std::forward< LeftInstanceRefer >( left ) ).instanceAccess(),
                     RightInstanceGuard( ::std::forward< RightInstanceRefer >( right ) ).instanceAccess() ) );
             }
@@ -374,7 +374,7 @@ namespace SclPrivate
             {
                 using LeftInstanceRefer = _Left &&;
                 using RightInstanceRefer = _Right &&;
-                using RightValueRefer = ::Scl::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >;
+                using RightValueRefer = ::ScL::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >;
                 using Invokable = _Invokable;
                 using Returned = ::std::result_of_t< Invokable( LeftInstanceRefer, RightValueRefer ) >;
 
@@ -382,7 +382,7 @@ namespace SclPrivate
                     "The type of return parameter must to be not a reference type." );
 
                 using RightInstanceGuard = ::SclPrivate::InstanceGuard< RightInstanceRefer >;
-                using ResultInstance = ::Scl::Instance< Returned, ::Inplace::DefaultTool >;
+                using ResultInstance = ::ScL::Instance< Returned, ::Inplace::DefaultTool >;
                 return ResultInstance( invokable( ::std::forward< LeftInstanceRefer >( left ),
                     RightInstanceGuard( ::std::forward< RightInstanceRefer >( right ) ).instanceAccess() ) );
             }
@@ -395,7 +395,7 @@ namespace SclPrivate
             static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
             {
                 using LeftInstanceRefer = _Left &&;
-                using LeftValueRefer = ::Scl::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >;
+                using LeftValueRefer = ::ScL::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >;
                 using RightInstanceRefer = _Right &&;
                 using Invokable = _Invokable;
                 using Returned = ::std::result_of_t< Invokable( LeftValueRefer, RightInstanceRefer ) >;
@@ -404,7 +404,7 @@ namespace SclPrivate
                     "The type of return parameter must to be not a reference type." );
 
                 using LeftInstanceGuard = ::SclPrivate::InstanceGuard< LeftInstanceRefer >;
-                using ResultInstance = ::Scl::Instance< Returned, ::Inplace::DefaultTool >;
+                using ResultInstance = ::ScL::Instance< Returned, ::Inplace::DefaultTool >;
                 return ResultInstance( invokable( LeftInstanceGuard( ::std::forward< LeftInstanceRefer >( left ) ).instanceAccess(),
                     ::std::forward< RightInstanceRefer >( right ) ) );
             }
@@ -417,9 +417,9 @@ namespace SclPrivate
             static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
             {
                 using LeftInstanceRefer = _Left &&;
-                using LeftValueRefer = ::Scl::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >;
+                using LeftValueRefer = ::ScL::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >;
                 using RightInstanceRefer = _Right &&;
-                using RightValueRefer = ::Scl::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >;
+                using RightValueRefer = ::ScL::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >;
                 using Invokable = _Invokable;
                 using InvokableRefer = _Invokable &&;
                 using Returned = ::std::result_of_t< Invokable( LeftValueRefer, RightValueRefer ) >;
@@ -438,7 +438,7 @@ namespace SclPrivate
             {
                 using LeftInstanceRefer = _Left &&;
                 using RightInstanceRefer = _Right &&;
-                using RightValueRefer = ::Scl::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >;
+                using RightValueRefer = ::ScL::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >;
                 using Invokable = _Invokable;
                 using InvokableRefer = _Invokable &&;
                 using Returned = ::std::result_of_t< Invokable( LeftInstanceRefer, RightValueRefer ) >;
@@ -456,7 +456,7 @@ namespace SclPrivate
             static constexpr decltype(auto) invoke ( _Invokable && invokable, _Left && left, _Right && right )
             {
                 using LeftInstanceRefer = _Left &&;
-                using LeftValueRefer = ::Scl::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >;
+                using LeftValueRefer = ::ScL::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >;
                 using RightInstanceRefer = _Right &&;
                 using Invokable = _Invokable;
                 using InvokableRefer = _Invokable &&;

@@ -58,9 +58,9 @@ namespace SclPrivate
         using LeftInstanceRefer = _LeftRefer; \
         using LeftInstance = ::std::decay_t< LeftInstanceRefer >; \
         using LeftHolder = typename LeftInstance::Holder; \
-        using LeftHolderRefer = ::Scl::SimilarRefer< LeftHolder, LeftInstanceRefer >; \
+        using LeftHolderRefer = ::ScL::SimilarRefer< LeftHolder, LeftInstanceRefer >; \
         using LeftValue = typename LeftInstance::Value; \
-        using LeftValueRefer = ::Scl::SimilarRefer< LeftValue, LeftInstanceRefer >; \
+        using LeftValueRefer = ::ScL::SimilarRefer< LeftValue, LeftInstanceRefer >; \
         using RightRefer = _RightRefer; \
      \
         static const bool value = ::SclPrivate::Operator::Binary::is_operator ## Invokable ## Left_method_exists< LeftHolder, void(LeftHolderRefer,RightRefer) > \
@@ -76,9 +76,9 @@ namespace SclPrivate
         using RightInstanceRefer = _RightRefer; \
         using RightInstance = ::std::decay_t< RightInstanceRefer >; \
         using RightHolder = typename RightInstance::Holder; \
-        using RightHolderRefer = ::Scl::SimilarRefer< RightHolder, RightInstanceRefer >; \
+        using RightHolderRefer = ::ScL::SimilarRefer< RightHolder, RightInstanceRefer >; \
         using RightValue = typename RightInstance::Value; \
-        using RightValueRefer = ::Scl::SimilarRefer< RightValue, RightInstanceRefer >; \
+        using RightValueRefer = ::ScL::SimilarRefer< RightValue, RightInstanceRefer >; \
      \
         static const bool value = ::SclPrivate::Operator::Binary::is_operator ## Invokable ## Right_method_exists< RightHolder, void(LeftRefer,RightHolderRefer) > \
             || ::SclPrivate::Operator::Binary::is_ ## Invokable ## _operator_exists< LeftRefer, RightValueRefer >; \
@@ -92,27 +92,27 @@ namespace SclPrivate
         using LeftInstanceRefer = _LeftRefer; \
         using LeftInstance = ::std::decay_t< LeftInstanceRefer >; \
         using LeftHolder = typename LeftInstance::Holder; \
-        using LeftHolderRefer = ::Scl::SimilarRefer< LeftHolder, LeftInstanceRefer >; \
+        using LeftHolderRefer = ::ScL::SimilarRefer< LeftHolder, LeftInstanceRefer >; \
         using LeftValue = typename LeftInstance::Value; \
-        using LeftValueRefer = ::Scl::SimilarRefer< LeftValue, LeftInstanceRefer >; \
+        using LeftValueRefer = ::ScL::SimilarRefer< LeftValue, LeftInstanceRefer >; \
         using RightInstanceRefer = _RightRefer; \
         using RightInstance = ::std::decay_t< RightInstanceRefer >; \
         using RightHolder = typename RightInstance::Holder; \
-        using RightHolderRefer = ::Scl::SimilarRefer< RightHolder, RightInstanceRefer >; \
+        using RightHolderRefer = ::ScL::SimilarRefer< RightHolder, RightInstanceRefer >; \
         using RightValue = typename RightInstance::Value; \
-        using RightValueRefer = ::Scl::SimilarRefer< RightValue, RightInstanceRefer >; \
+        using RightValueRefer = ::ScL::SimilarRefer< RightValue, RightInstanceRefer >; \
      \
-        static const bool is_compatible_value = ::Scl::is_compatible< LeftInstance, RightInstance > \
+        static const bool is_compatible_value = ::ScL::is_compatible< LeftInstance, RightInstance > \
             && ( ::SclPrivate::Operator::Binary::is_operator ## Invokable ## _method_exists< LeftHolder, void(LeftHolderRefer,RightHolderRefer) > \
                 || is_ ## Invokable ## _operator_exists_test< LeftValueRefer, LeftValueRefer > ); \
      \
-        static const bool is_left_path_of_right_value = ::Scl::is_this_part_of_other< LeftInstance, RightInstance > \
+        static const bool is_left_path_of_right_value = ::ScL::is_this_part_of_other< LeftInstance, RightInstance > \
             && is_ ## Invokable ## _operator_exists_test< LeftInstanceRefer, RightValueRefer >; \
      \
-        static const bool is_right_path_of_left_value = ::Scl::is_this_part_of_other< RightInstance, LeftInstance > \
+        static const bool is_right_path_of_left_value = ::ScL::is_this_part_of_other< RightInstance, LeftInstance > \
             && is_ ## Invokable ## _operator_exists_test< LeftValueRefer, RightInstanceRefer >; \
      \
-        static const bool is_not_compatible_value = !::Scl::is_compatible< LeftInstance, RightInstance > \
+        static const bool is_not_compatible_value = !::ScL::is_compatible< LeftInstance, RightInstance > \
             && is_ ## Invokable ## _operator_exists_test< LeftValueRefer, LeftValueRefer >; \
      \
         static const bool value = is_compatible_value \
@@ -177,7 +177,7 @@ namespace SclPrivate
                         using LeftRefer = _Left &&; \
                         using RightRefer = _Right &&; \
                         using Invokable ## OperatorSwitchCase = ::std::conditional_t< \
-                            ::Scl::is_instance< ::std::decay_t< RightRefer > >, \
+                            ::ScL::is_instance< ::std::decay_t< RightRefer > >, \
                                 ::SclPrivate::Operator::Global::Invokable ## Case, \
                                 ::SclPrivate::Operator::Global::DefaultCase >; \
                         return ::SclPrivate::Operator::Binary::Invokable ## Operator< Invokable ## OperatorSwitchCase >::invoke( ::std::forward< LeftRefer >( left ), ::std::forward< RightRefer >( right ) ); \
@@ -217,7 +217,7 @@ namespace SclPrivate
                     static decltype(auto) invoke ( _Left && left, _Right && right ) \
                     { \
                         using LeftInstanceRefer = _Left &&; \
-                        using LeftValueRefer = ::Scl::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >; \
+                        using LeftValueRefer = ::ScL::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >; \
                         using RightRefer = _Right &&; \
                         using Returned = ::std::result_of_t< ::SclPrivate::Operator::Binary::Invokable( LeftValueRefer, RightRefer ) >; \
                         return ::SclPrivate::Operator::ResultSwitch< ::SclPrivate::Operator::LeftInstanceCase, ::SclPrivate::Operator::ResultSwitchCase< Returned, LeftValueRefer > > \
@@ -247,7 +247,7 @@ namespace SclPrivate
                     { \
                         using LeftRefer = _Left &&; \
                         using RightInstanceRefer = _Right &&; \
-                        using RightValueRefer = ::Scl::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >; \
+                        using RightValueRefer = ::ScL::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >; \
                         using Returned = ::std::result_of_t< ::SclPrivate::Operator::Binary::Invokable( LeftRefer, RightValueRefer ) >; \
                         return ::SclPrivate::Operator::ResultSwitch< ::SclPrivate::Operator::RightInstanceCase, ::SclPrivate::Operator::ResultSwitchCase< Returned, RightValueRefer > > \
                             ::invoke( ::SclPrivate::Operator::Binary::Invokable(), ::std::forward< LeftRefer >( left ), ::std::forward< RightInstanceRefer >( right ) ); \
@@ -288,9 +288,9 @@ namespace SclPrivate
                     static decltype(auto) invoke ( _Left && left, _Right && right ) \
                     { \
                         using LeftInstanceRefer = _Left &&; \
-                        using LeftValueRefer = ::Scl::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >; \
+                        using LeftValueRefer = ::ScL::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >; \
                         using RightInstanceRefer = _Right &&; \
-                        using RightValueRefer = ::Scl::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >; \
+                        using RightValueRefer = ::ScL::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >; \
          \
                         using Returned = ::std::result_of_t< ::SclPrivate::Operator::Binary::Invokable( LeftValueRefer, RightValueRefer ) >; \
                         return ::SclPrivate::Operator::ResultSwitch< ::SclPrivate::Operator::BothExposingCase, ::SclPrivate::Operator::ResultSwitchCase< Returned, LeftValueRefer > > \
@@ -305,7 +305,7 @@ namespace SclPrivate
                     static decltype(auto) invoke ( _Left && left, _Right && right ) \
                     { \
                         using LeftInstanceRefer = _Left &&; \
-                        using LeftValueRefer = ::Scl::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >; \
+                        using LeftValueRefer = ::ScL::SimilarRefer< typename ::std::decay_t< LeftInstanceRefer >::Value, LeftInstanceRefer >; \
                         using RightInstanceRefer = _Right &&; \
          \
                         using Returned = ::std::result_of_t< ::SclPrivate::Operator::Binary::Invokable( LeftValueRefer, RightInstanceRefer ) >; \
@@ -322,7 +322,7 @@ namespace SclPrivate
                     { \
                         using LeftInstanceRefer = _Left &&; \
                         using RightInstanceRefer = _Right &&; \
-                        using RightValueRefer = ::Scl::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >; \
+                        using RightValueRefer = ::ScL::SimilarRefer< typename ::std::decay_t< RightInstanceRefer >::Value, RightInstanceRefer >; \
          \
                         using Returned = ::std::result_of_t< ::SclPrivate::Operator::Binary::Invokable( LeftInstanceRefer, RightValueRefer ) >; \
                         return ::SclPrivate::Operator::ResultSwitch< ::SclPrivate::Operator::RightExposingCase, ::SclPrivate::Operator::ResultSwitchCase< Returned, LeftInstanceRefer > > \
@@ -351,7 +351,7 @@ namespace SclPrivate
                         using LeftInstanceRefer = _Left &&; \
                         using LeftInstance = ::std::decay_t< LeftInstanceRefer >; \
                         using LeftHolder = typename LeftInstance::Holder; \
-                        using LeftHolderRefer = ::Scl::SimilarRefer< LeftHolder, LeftInstanceRefer >; \
+                        using LeftHolderRefer = ::ScL::SimilarRefer< LeftHolder, LeftInstanceRefer >; \
                         using RightRefer = _Right &&; \
          \
                         constexpr bool holder_has_method_for_operator = ::SclPrivate::Operator::Binary::is_operator ## Invokable ## Left_method_exists< LeftHolder, void( LeftHolderRefer, RightRefer ) >; \
@@ -369,7 +369,7 @@ namespace SclPrivate
                         using RightInstanceRefer = _Right &&; \
                         using RightInstance = ::std::decay_t< RightInstanceRefer >; \
                         using RightHolder = typename RightInstance::Holder; \
-                        using RightHolderRefer = ::Scl::SimilarRefer< RightHolder, RightInstanceRefer >; \
+                        using RightHolderRefer = ::ScL::SimilarRefer< RightHolder, RightInstanceRefer >; \
                         using LeftRefer = _Left &&; \
          \
                         constexpr bool holder_has_method_for_operator = ::SclPrivate::Operator::Binary::is_operator ## Invokable ## Right_method_exists< RightHolder, void( LeftRefer, RightHolderRefer ) >; \
@@ -387,13 +387,13 @@ namespace SclPrivate
                         using LeftInstanceRefer = _Left &&; \
                         using LeftInstance = ::std::decay_t< LeftInstanceRefer >; \
                         using LeftHolder = typename LeftInstance::Holder; \
-                        using LeftHolderRefer = ::Scl::SimilarRefer< LeftHolder, LeftInstanceRefer >; \
+                        using LeftHolderRefer = ::ScL::SimilarRefer< LeftHolder, LeftInstanceRefer >; \
                         using RightInstanceRefer = _Right &&; \
                         using RightInstance = ::std::decay_t< RightInstanceRefer >; \
                         using RightHolder = typename RightInstance::Holder; \
-                        using RightHolderRefer = ::Scl::SimilarRefer< RightHolder, RightInstanceRefer >; \
+                        using RightHolderRefer = ::ScL::SimilarRefer< RightHolder, RightInstanceRefer >; \
          \
-                        constexpr bool is_left_compatible_to_right = ::Scl::is_compatible< LeftHolder, RightHolder >; \
+                        constexpr bool is_left_compatible_to_right = ::ScL::is_compatible< LeftHolder, RightHolder >; \
                         constexpr bool holder_has_method_for_operator = ::SclPrivate::Operator::Binary::is_operator ## Invokable ## _method_exists< LeftHolder, void( LeftHolderRefer, RightHolderRefer ) >; \
                         using OperatorSwitchCase = ::std::conditional_t< is_left_compatible_to_right && holder_has_method_for_operator, ::SclPrivate::Operator::Binary::HolderHasOperatorCase, ::SclPrivate::Operator::Binary::HolderHasNoOperatorCase >; \
                         return ::SclPrivate::Operator::Binary::Invokable ## Switch< BothInstanceCase, OperatorSwitchCase >::invoke( ::std::forward< LeftInstanceRefer >( left ), ::std::forward< RightInstanceRefer >( right ) ); \

@@ -8,7 +8,7 @@
 namespace SclPrivate { template < typename _Value, typename _Tool > class Instance; }
 namespace SclPrivate { template < typename > struct ValueGuardHelper; }
 
-namespace Scl
+namespace ScL
 {
     //! Указатель на экземпляр вложенного в Instance базового значения, к которому применены
     /// все особенности, реализуемые посредством используемых Instance.
@@ -36,7 +36,7 @@ namespace SclPrivate
         using PointerAccess = typename InstanceGuard::PointerAccess;
 
         static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must to be a reference type." );
-        static_assert( !::Scl::is_instance< ::std::decay_t< Refer > >, "The template parameter _Refer must to be a not Instance type reference!" );
+        static_assert( !::ScL::is_instance< ::std::decay_t< Refer > >, "The template parameter _Refer must to be a not Instance type reference!" );
 
     private:
         InstanceGuard m_instance_guard;
@@ -99,21 +99,21 @@ namespace SclPrivate
         using InstanceRefer = _Refer;
         using Instance = ::std::decay_t< InstanceRefer >;
         using Value = typename Instance::Value;
-        using ValueRefer = ::Scl::SimilarRefer< Value, InstanceRefer >;
+        using ValueRefer = ::ScL::SimilarRefer< Value, InstanceRefer >;
         using Holder = typename Instance::Holder;
-        using HolderRefer = ::Scl::SimilarRefer< Holder, InstanceRefer >;
+        using HolderRefer = ::ScL::SimilarRefer< Holder, InstanceRefer >;
 
         using InstanceGuard = ::SclPrivate::InstanceGuard< InstanceRefer >;
-        using ValueGuard = ::Scl::ValueGuard< ValueRefer >;
+        using ValueGuard = ::ScL::ValueGuard< ValueRefer >;
 
         using InstanceAccess = typename InstanceGuard::InstanceAccess;
         using ValueAccess =  typename ValueGuard::ValueAccess;
         using PointerAccess = typename ValueGuard::PointerAccess;
 
         static_assert( ::std::is_reference< InstanceRefer >::value, "The template parameter _Refer must to be a reference type." );
-        static_assert( ::Scl::is_instance< Instance >, "The template parameter _Refer must to be a Instance type reference!" );
-        //static_assert( ::Scl::is_similar< ValueRefer, InstanceRefer >, "The Refer and ValueRefer must to be similar types!" );
-        static_assert( ::Scl::is_similar< HolderRefer, InstanceRefer >, "The Refer and HolderRefer must to be similar types!" );
+        static_assert( ::ScL::is_instance< Instance >, "The template parameter _Refer must to be a Instance type reference!" );
+        //static_assert( ::ScL::is_similar< ValueRefer, InstanceRefer >, "The Refer and ValueRefer must to be similar types!" );
+        static_assert( ::ScL::is_similar< HolderRefer, InstanceRefer >, "The Refer and HolderRefer must to be similar types!" );
 
     private:
         InstanceGuard m_instance_guard;

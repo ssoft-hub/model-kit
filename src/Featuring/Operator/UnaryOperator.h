@@ -46,9 +46,9 @@ namespace SclPrivate
         using InstanceRefer = _Refer; \
         using Instance = ::std::decay_t< InstanceRefer >; \
         using Holder = typename Instance::Holder; \
-        using HolderRefer = ::Scl::SimilarRefer< Holder, InstanceRefer >; \
+        using HolderRefer = ::ScL::SimilarRefer< Holder, InstanceRefer >; \
         using Value = typename Instance::Value; \
-        using ValueRefer = ::Scl::SimilarRefer< Value, InstanceRefer >; \
+        using ValueRefer = ::ScL::SimilarRefer< Value, InstanceRefer >; \
      \
         static const bool value = ::SclPrivate::Operator::Unary::is_operator ## Invokable ## _method_exists< Holder, void(HolderRefer, _Arguments ...) > \
             || ::SclPrivate::Operator::Unary::is_ ## Invokable ## _operator_exists< ValueRefer, _Arguments ...  >; \
@@ -85,7 +85,7 @@ namespace SclPrivate
                     static decltype(auto) invoke ( _Instance && instance, _Arguments && ... arguments ) \
                     { \
                         using InstanceRefer = _Instance &&; \
-                        using ValueRefer = ::Scl::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >; \
+                        using ValueRefer = ::ScL::SimilarRefer< typename ::std::decay_t< InstanceRefer >::Value, InstanceRefer >; \
                         using Returned = ::std::result_of_t< Invokable( ValueRefer, _Arguments && ... ) >; \
                         return ::SclPrivate::Operator::ResultSwitch< ::SclPrivate::Operator::UnaryInstanceCase, ::SclPrivate::Operator::ResultSwitchCase< Returned, ValueRefer > > \
                             ::invoke( ::SclPrivate::Operator::Unary::Invokable(), ::std::forward< InstanceRefer >( instance ), ::std::forward< _Arguments >( arguments ) ... ); \
@@ -113,7 +113,7 @@ namespace SclPrivate
                         using InstanceRefer = _Refer &&; \
                         using Instance = ::std::decay_t< InstanceRefer >; \
                         using Holder = typename Instance::Holder; \
-                        using HolderRefer = ::Scl::SimilarRefer< Holder, InstanceRefer >; \
+                        using HolderRefer = ::ScL::SimilarRefer< Holder, InstanceRefer >; \
          \
                         constexpr bool holder_has_method_for_operator = ::SclPrivate::Operator::Unary::is_operator ## Invokable ## _method_exists< Holder, void( HolderRefer, _Arguments && ... ) >; \
                         using OperatorSwitchCase = ::std::conditional_t< holder_has_method_for_operator, ::SclPrivate::Operator::Unary::HolderHasOperatorCase, ::SclPrivate::Operator::Unary::HolderHasNoOperatorCase >; \

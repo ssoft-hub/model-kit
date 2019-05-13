@@ -34,7 +34,7 @@ namespace SclPrivate
         using PointerAccess = ReferPointer const &;
 
         static_assert( ::std::is_reference< Refer >::value, "The template parameter _Refer must to be a reference type." );
-        static_assert( !::Scl::is_instance< ::std::decay_t< Refer > >, "The template parameter _Refer must to be a not Instance type reference!" );
+        static_assert( !::ScL::is_instance< ::std::decay_t< Refer > >, "The template parameter _Refer must to be a not Instance type reference!" );
 
     private:
         ReferPointer m_refer_pointer;
@@ -77,18 +77,18 @@ namespace SclPrivate
         using InstanceRefer = _Refer;
         using Instance = ::std::decay_t< InstanceRefer >;
         using Value = typename Instance::Value;
-        using ValueRefer = ::Scl::SimilarRefer< Value, InstanceRefer >;
+        using ValueRefer = ::ScL::SimilarRefer< Value, InstanceRefer >;
         using Holder = typename Instance::Holder;
-        using HolderRefer = ::Scl::SimilarRefer< Holder, InstanceRefer >;
+        using HolderRefer = ::ScL::SimilarRefer< Holder, InstanceRefer >;
         using ReferPointer = ::SclPrivate::ReferPointer< InstanceRefer >;
 
         using InstanceAccess = ValueRefer;
         using HolderAccess = HolderRefer;
 
         static_assert( ::std::is_reference< InstanceRefer >::value, "The template parameter _Refer must to be a reference type." );
-        static_assert( ::Scl::is_instance< Instance >, "The template parameter _Refer must to be a Instance type reference!" );
-        //static_assert( ::Scl::is_similar< ValueRefer, InstanceRefer >, "The Refer and ValueRefer must to be similar types!" );
-        static_assert( ::Scl::is_similar< HolderRefer, InstanceRefer >, "The Refer and HolderRefer must to be similar types!" );
+        static_assert( ::ScL::is_instance< Instance >, "The template parameter _Refer must to be a Instance type reference!" );
+        //static_assert( ::ScL::is_similar< ValueRefer, InstanceRefer >, "The Refer and ValueRefer must to be similar types!" );
+        static_assert( ::ScL::is_similar< HolderRefer, InstanceRefer >, "The Refer and HolderRefer must to be similar types!" );
 
     private:
         ReferPointer m_refer_pointer;
@@ -138,7 +138,7 @@ namespace SclPrivate
     template < typename _Refer >
     struct InstanceGuardCaseHelper
     {
-        using Type = ::std::conditional_t< ::Scl::is_instance< ::std::decay_t< _Refer > >,
+        using Type = ::std::conditional_t< ::ScL::is_instance< ::std::decay_t< _Refer > >,
             InstanceCase,
             ValueCase >;
     };

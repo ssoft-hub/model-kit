@@ -61,13 +61,13 @@ namespace SclPrivate
         using OtherInstance = ::std::decay_t< _OtherRefer >;
 
         using Type = ::std::conditional_t<
-            ::Scl::is_compatible< Instance, OtherInstance >,
+            ::ScL::is_compatible< Instance, OtherInstance >,
             ::SclPrivate::InstanceCompatibleResolver< Instance, OtherRefer >,
             ::std::conditional_t<
-                ::Scl::is_this_part_of_other< OtherInstance, Instance >,
+                ::ScL::is_this_part_of_other< OtherInstance, Instance >,
                 ::SclPrivate::InstanceOtherPathOfThisResolver< Instance, OtherRefer >,
                 ::std::conditional_t<
-                    ::Scl::is_this_part_of_other< Instance, OtherInstance >,
+                    ::ScL::is_this_part_of_other< Instance, OtherInstance >,
                     ::SclPrivate::InstanceThisPathOfOtherResolver< Instance, OtherRefer >,
                     ::SclPrivate::InstanceValueResolver< Instance, OtherRefer > > > >;
     };
@@ -86,7 +86,7 @@ namespace SclPrivate
         using OtherRefer = _OtherRefer;
         using OtherInstance = ::std::decay_t< OtherRefer >;
         using OtherHolder = typename OtherInstance::Holder;
-        using OtherHolderRefer = ::Scl::SimilarRefer< OtherHolder, OtherRefer >;
+        using OtherHolderRefer = ::ScL::SimilarRefer< OtherHolder, OtherRefer >;
         using AccessRefer = OtherHolderRefer;
 
     private:
@@ -148,14 +148,14 @@ namespace SclPrivate
         using OtherInstanceGuard = ::SclPrivate::InstanceGuard< OtherRefer >;
         using OtherInstance = ::std::decay_t< OtherRefer >;
         using OtherValue = typename OtherInstance::Value;
-        using OtherValueRefer = ::Scl::SimilarRefer< OtherValue, OtherRefer >;
+        using OtherValueRefer = ::ScL::SimilarRefer< OtherValue, OtherRefer >;
         using NextResolver = ::SclPrivate::InstanceResolver< Instance, OtherValueRefer >;
         using AccessRefer = typename NextResolver::AccessRefer;
 
-        static_assert( ::Scl::is_instance< Instance >, "The template parameter _Instance must to be a Instance type!" );
+        static_assert( ::ScL::is_instance< Instance >, "The template parameter _Instance must to be a Instance type!" );
         static_assert( ::std::is_reference< OtherRefer >::value, "The template parameter _OtherRefer must to be a reference type." );
-        static_assert( ::Scl::is_instance< OtherInstance >, "The template parameter _OtherRefer must to be a Instance type reference!" );
-        static_assert( ::Scl::is_similar< OtherRefer, OtherValueRefer >, "The OtherRefer and OtherValueRefer must to be similar types!" );
+        static_assert( ::ScL::is_instance< OtherInstance >, "The template parameter _OtherRefer must to be a Instance type reference!" );
+        static_assert( ::ScL::is_similar< OtherRefer, OtherValueRefer >, "The OtherRefer and OtherValueRefer must to be similar types!" );
 
     private:
         OtherInstanceGuard m_instance_guard;
@@ -186,10 +186,10 @@ namespace SclPrivate
     public:
         using Instance = _Instance;
         using OtherRefer = _OtherRefer;
-        using OtherValueGuard = ::Scl::ValueGuard< OtherRefer >;
+        using OtherValueGuard = ::ScL::ValueGuard< OtherRefer >;
         using AccessRefer = typename OtherValueGuard::ValueRefer;
 
-        static_assert( ::Scl::is_instance< Instance >, "The template parameter _Instance must to be a instance!" );
+        static_assert( ::ScL::is_instance< Instance >, "The template parameter _Instance must to be a instance!" );
         static_assert( ::std::is_reference< OtherRefer >::value, "The template parameter _OtherRefer must to be a reference type." );
 
     private:

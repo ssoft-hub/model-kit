@@ -6,7 +6,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace Scl
+namespace ScL
 {
     template < typename _HolderRefer >
     class HolderGuard

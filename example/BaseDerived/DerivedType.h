@@ -5,11 +5,11 @@ struct DerivedType
     : public BaseType
 {
     using Tool = ::Implicit::SharedTool;
-    using Int = ::Scl::Instance< int, Tool >;
-    using String = ::Scl::Instance< ::std::string, Tool >;
+    using Int = ::ScL::Instance< int, Tool >;
+    using String = ::ScL::Instance< ::std::string, Tool >;
 
-    ::Scl::Instance< Int > m_int;
-    ::Scl::Instance< String > m_string;
+    ::ScL::Instance< Int > m_int;
+    ::ScL::Instance< String > m_string;
 
     DerivedType (
             Int int_value = Int(),

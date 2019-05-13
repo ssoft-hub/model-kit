@@ -14,7 +14,7 @@
 #   include <cxxabi.h>
 #endif
 
-using namespace ::Scl;
+using namespace ::ScL;
 
 template < typename _Type >
 void printTypeOf ()

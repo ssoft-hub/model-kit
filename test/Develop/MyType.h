@@ -5,8 +5,8 @@
 
 struct MyType
 {
-    Scl::Instance< ::std::string > m_first_name;
-    Scl::Instance< ::std::string > m_last_name;
-    Scl::Instance< int > m_age;
-    Scl::Instance< double > m_stature;
+    ScL::Instance< ::std::string > m_first_name;
+    ScL::Instance< ::std::string > m_last_name;
+    ScL::Instance< int > m_age;
+    ScL::Instance< double > m_stature;
 };

@@ -5,7 +5,7 @@
 #include <memory>
 #include <type_traits>
 
-namespace Scl
+namespace ScL
 {
     template < typename _Type >
     constexpr ::std::add_const_t< _Type > & castConst ( _Type & value ) noexcept

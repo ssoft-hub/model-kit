@@ -2,7 +2,7 @@
 #include "BaseType.h"
 #include "DerivedType.h"
 
-using namespace ::Scl;
+using namespace ::ScL;
 
 using Int = int;
 using String = ::std::string;

@@ -40,7 +40,7 @@ namespace ThreadSafe
             Holder ( ThisType && other )
                 : m_lock()
             {
-                using OtherMovableGuard = ::Scl::HolderGuard< ThisType && >;
+                using OtherMovableGuard = ::ScL::HolderGuard< ThisType && >;
                 OtherMovableGuard guard( other );
                 m_value = ::std::forward< Value >( other.m_value );
             }
@@ -48,7 +48,7 @@ namespace ThreadSafe
             Holder ( const ThisType && other )
                 : m_lock()
             {
-                using OtherReadableGuard = ::Scl::HolderGuard< const ThisType && >;
+                using OtherReadableGuard = ::ScL::HolderGuard< const ThisType && >;
                 OtherReadableGuard guard( other );
                 m_value = ::std::forward< const Value >( other.m_value );
             }
@@ -56,7 +56,7 @@ namespace ThreadSafe
             Holder ( volatile ThisType && other )
                 : m_lock()
             {
-                using OtherMovableGuard = ::Scl::HolderGuard< volatile ThisType && >;
+                using OtherMovableGuard = ::ScL::HolderGuard< volatile ThisType && >;
                 OtherMovableGuard guard( other );
                 m_value = ::std::forward< volatile Value >( other.m_value );
             }
@@ -64,7 +64,7 @@ namespace ThreadSafe
             Holder ( const volatile ThisType && other )
                 : m_lock()
             {
-                using OtherReadableGuard = ::Scl::HolderGuard< const volatile ThisType && >;
+                using OtherReadableGuard = ::ScL::HolderGuard< const volatile ThisType && >;
                 OtherReadableGuard guard( other );
                 m_value = ::std::forward< const volatile Value >( other.m_value );
             }
@@ -72,7 +72,7 @@ namespace ThreadSafe
             Holder ( ThisType & other )
                 : m_lock()
             {
-                using OtherMovableGuard = ::Scl::HolderGuard< ThisType & >;
+                using OtherMovableGuard = ::ScL::HolderGuard< ThisType & >;
                 OtherMovableGuard guard( other );
                 m_value = other.m_value;
             }
@@ -80,7 +80,7 @@ namespace ThreadSafe
             Holder ( const ThisType & other )
                 : m_lock()
             {
-                using OtherReadableGuard = ::Scl::HolderGuard< const ThisType & >;
+                using OtherReadableGuard = ::ScL::HolderGuard< const ThisType & >;
                 OtherReadableGuard guard( other );
                 m_value = other.m_value;
             }
@@ -88,7 +88,7 @@ namespace ThreadSafe
             Holder ( volatile ThisType & other )
                 : m_lock()
             {
-                using OtherMovableGuard = ::Scl::HolderGuard< volatile ThisType & >;
+                using OtherMovableGuard = ::ScL::HolderGuard< volatile ThisType & >;
                 OtherMovableGuard guard( other );
                 m_value = other.m_value;
             }
@@ -96,7 +96,7 @@ namespace ThreadSafe
             Holder ( const volatile ThisType & other )
                 : m_lock()
             {
-                using OtherReadableGuard = ::Scl::HolderGuard< const volatile ThisType & >;
+                using OtherReadableGuard = ::ScL::HolderGuard< const volatile ThisType & >;
                 OtherReadableGuard guard( other );
                 m_value = other.m_value;
             }
@@ -105,7 +105,7 @@ namespace ThreadSafe
             Holder ( Holder< _OtherValue > && other )
                 : m_lock()
             {
-                using OtherMovableGuard = ::Scl::HolderGuard< Holder< _OtherValue > && >;
+                using OtherMovableGuard = ::ScL::HolderGuard< Holder< _OtherValue > && >;
                 OtherMovableGuard guard( other );
                 m_value = ::std::forward< Value >( other.m_value );
             }
@@ -114,7 +114,7 @@ namespace ThreadSafe
             Holder ( const Holder< _OtherValue > && other )
                 : m_lock()
             {
-                using OtherReadableGuard = ::Scl::HolderGuard< const Holder< _OtherValue > && >;
+                using OtherReadableGuard = ::ScL::HolderGuard< const Holder< _OtherValue > && >;
                 OtherReadableGuard guard( other );
                 m_value = ::std::forward< const Value >( other.m_value );
             }
@@ -123,7 +123,7 @@ namespace ThreadSafe
             Holder ( volatile Holder< _OtherValue > && other )
                 : m_lock()
             {
-                using OtherMovableGuard = ::Scl::HolderGuard< volatile Holder< _OtherValue > && >;
+                using OtherMovableGuard = ::ScL::HolderGuard< volatile Holder< _OtherValue > && >;
                 OtherMovableGuard guard( other );
                 m_value = ::std::forward< Value >( other.m_value );
             }
@@ -132,7 +132,7 @@ namespace ThreadSafe
             Holder ( const volatile Holder< _OtherValue > && other )
                 : m_lock()
             {
-                using OtherReadableGuard = ::Scl::HolderGuard< const volatile Holder< _OtherValue > && >;
+                using OtherReadableGuard = ::ScL::HolderGuard< const volatile Holder< _OtherValue > && >;
                 OtherReadableGuard guard( other );
                 m_value = ::std::forward< const volatile Value >( other.m_value );
             }
@@ -141,7 +141,7 @@ namespace ThreadSafe
             Holder ( Holder< _OtherValue > & other )
                 : m_lock()
             {
-                using OtherMovableGuard = ::Scl::HolderGuard< Holder< _OtherValue > & >;
+                using OtherMovableGuard = ::ScL::HolderGuard< Holder< _OtherValue > & >;
                 OtherMovableGuard guard( other );
                 m_value = other.m_value;
             }
@@ -150,7 +150,7 @@ namespace ThreadSafe
             Holder ( const Holder< _OtherValue > & other )
                 : m_lock()
             {
-                using OtherReadableGuard = ::Scl::HolderGuard< const Holder< _OtherValue > & >;
+                using OtherReadableGuard = ::ScL::HolderGuard< const Holder< _OtherValue > & >;
                 OtherReadableGuard guard( other );
                 m_value = other.m_value;
             }
@@ -159,7 +159,7 @@ namespace ThreadSafe
             Holder ( volatile Holder< _OtherValue > & other )
                 : m_lock()
             {
-                using OtherMovableGuard = ::Scl::HolderGuard< volatile Holder< _OtherValue > & >;
+                using OtherMovableGuard = ::ScL::HolderGuard< volatile Holder< _OtherValue > & >;
                 OtherMovableGuard guard( other );
                 m_value = other.m_value;
             }
@@ -168,14 +168,14 @@ namespace ThreadSafe
             Holder ( const volatile Holder< _OtherValue > & other )
                 : m_lock()
             {
-                using OtherReadableGuard = ::Scl::HolderGuard< const volatile Holder< _OtherValue > & >;
+                using OtherReadableGuard = ::ScL::HolderGuard< const volatile Holder< _OtherValue > & >;
                 OtherReadableGuard guard( other );
                 m_value = other.m_value;
             }
 
             ~Holder ()
             {
-                using WritableGuard = ::Scl::HolderGuard< ThisType & >;
+                using WritableGuard = ::ScL::HolderGuard< ThisType & >;
                 WritableGuard guard( *this );
             }
 
@@ -200,7 +200,7 @@ namespace ThreadSafe
             static constexpr decltype(auto) value ( _HolderRefer && holder )
             {
                 using HolderRefer = _HolderRefer &&;
-                using ValueRefer = ::Scl::SimilarRefer< _Value, HolderRefer >;
+                using ValueRefer = ::ScL::SimilarRefer< _Value, HolderRefer >;
                 return ::std::forward< ValueRefer >( holder.m_value );
             }
         };

@@ -4,7 +4,7 @@
 #include <thread>
 #include <vector>
 
-using namespace ::Scl;
+using namespace ::ScL;
 
 struct CreditCard
 {

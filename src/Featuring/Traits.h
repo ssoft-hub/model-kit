@@ -16,14 +16,14 @@ namespace SclPrivate
     { using Type = ::SclPrivate::Instance< _Value, _Tool >; };
 }
 
-namespace Scl
+namespace ScL
 {
     template < typename _Value, typename _Tool = ::Inplace::DefaultTool >
     using Instance = typename ::SclPrivate::InstanceSimplifyHelper< ::SclPrivate::Instance< _Value, _Tool > >::Type;
         //!< This is definition of Instance type. No duplicates guarantee.
 }
 
-namespace Scl
+namespace ScL
 {
     template < typename _Test > struct IsInstance;
     template < typename _Test > static constexpr bool is_instance = IsInstance< _Test >::value;
@@ -61,18 +61,18 @@ namespace SclPrivate
         using CVCheckedType =::std::conditional_t< is_const, ::std::add_const_t< VCheckedType >, VCheckedType >;
         using Type = ::std::conditional_t< is_rvalue, ::std::add_rvalue_reference_t< CVCheckedType >, ::std::add_lvalue_reference_t< CVCheckedType > >;
 
-        //static_assert( ::Scl::is_similar< Type, _Refer >, "Result Type must to be similar _Refer" );
+        //static_assert( ::ScL::is_similar< Type, _Refer >, "Result Type must to be similar _Refer" );
     };
 }
 
-namespace Scl
+namespace ScL
 {
     template < typename _Type, typename _Refer >
     using SimilarRefer = typename ::SclPrivate::SimilarReferHelper< _Type, _Refer >::Type;
         //!< Наделение типа свойствами ссылки.
 }
 
-namespace Scl
+namespace ScL
 {
     template < typename > struct IsInstance : public ::std::false_type {};
         //!< По умолчанию, типы не являются Instance.
@@ -81,13 +81,13 @@ namespace Scl
     struct IsInstance< ::SclPrivate::Instance< _Test, _Tool > > : public ::std::true_type {};
 }
 
-namespace Scl
+namespace ScL
 {
     //! Типы являются совместимыми, если они одинаковые тип _Test является
     /// производным от другого _Other.
     template < typename _Test, typename _Other >
     struct IsCompatible
-        : public ::std::integral_constant< bool, ::Scl::is_similar< _Test, _Other >
+        : public ::std::integral_constant< bool, ::ScL::is_similar< _Test, _Other >
             && ( ::std::is_same< ::std::decay_t< _Test >, ::std::decay_t< _Other > >::value
                || ::std::is_base_of< ::std::decay_t< _Test >, ::std::decay_t< _Other > >::value ) >
     {};
@@ -100,7 +100,7 @@ namespace Scl
     {};
 }
 
-namespace Scl
+namespace ScL
 {
     //! Типы, не являющиеся Instance, не могут быть вложенными.
     template < typename _Test, typename _Other >
@@ -116,7 +116,7 @@ namespace Scl
     {};
 }
 
-namespace Scl
+namespace ScL
 {
     template < typename _Type, typename _Other >
     struct IsSimilar

@@ -4,7 +4,7 @@
 
 #include <ModelKit/Featuring/Access/ValueGuard.h>
 
-namespace Scl
+namespace ScL
 {
     /*!
      * Указатель на экземпляр вложенного в Instance базового значения, к которому применены
@@ -18,7 +18,7 @@ namespace Scl
 
     public:
         using InstanceRefer = _InstanceRefer;
-        using ValueGuard = ::Scl::ValueGuard< InstanceRefer >;
+        using ValueGuard = ::ScL::ValueGuard< InstanceRefer >;
         using PointerAccess = typename ValueGuard::PointerAccess;
         using ValueAccess = typename ValueGuard::ValueAccess;
 

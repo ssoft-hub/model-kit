@@ -61,7 +61,7 @@ SCL_BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
 
 #define SCL_GLOBAL_BINARY_OPERATOR_PROTOTYPE( symbol, right_refer, Invokable ) \
     template < typename _Left, typename _RightValue, typename _RightTool, \
-        typename = ::std::enable_if_t< !::Scl::is_instance< ::std::decay_t< _Left > > \
+        typename = ::std::enable_if_t< !::ScL::is_instance< ::std::decay_t< _Left > > \
             && ::SclPrivate::Operator::Binary::is_ ## Invokable ## _operator_exists_test< _Left &&, ::SclPrivate::Instance< _RightValue, _RightTool > right_refer > > > \
     constexpr decltype(auto) operator symbol ( _Left && left, ::SclPrivate::Instance< _RightValue, _RightTool > right_refer right ) \
     { \
@@ -173,18 +173,18 @@ SCL_BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
     template < typename ... _Arguments, \
         typename = ::std::enable_if_t< sizeof...( _Arguments ) == 0 \
             && ::SclPrivate::HolderInternal::is_value_method_exists< Holder, Holder this_refer > > > \
-    constexpr ::Scl::ValuePointer< ThisType this_refer > operator symbol () this_refer \
+    constexpr ::ScL::ValuePointer< ThisType this_refer > operator symbol () this_refer \
     { \
-        return ::Scl::ValuePointer< ThisType this_refer >( ::std::forward< ThisType this_refer >( *this ) ); \
+        return ::ScL::ValuePointer< ThisType this_refer >( ::std::forward< ThisType this_refer >( *this ) ); \
     } \
 
 #define SCL_DEREFERENCE_OPERATOR_PROTOTYPE( symbol, this_refer ) \
     template < typename ... _Arguments, \
         typename = ::std::enable_if_t< sizeof...( _Arguments ) == 0 \
             && ::SclPrivate::HolderInternal::is_value_method_exists< Holder, Holder this_refer > > > \
-    constexpr ::Scl::ValuePointer< ThisType this_refer > operator symbol () this_refer \
+    constexpr ::ScL::ValuePointer< ThisType this_refer > operator symbol () this_refer \
     { \
-        return ::Scl::ValuePointer< ThisType this_refer >( ::std::forward< ThisType this_refer >( *this ) ); \
+        return ::ScL::ValuePointer< ThisType this_refer >( ::std::forward< ThisType this_refer >( *this ) ); \
     } \
 
 #define SCL_CONSTRUCTOR_FOR_THIS_INSTANCE_PROTOTYPE( other_refer ) \
@@ -216,7 +216,7 @@ SCL_BINARY_OPERATOR_IMPLEMENTAION( ^=, BitwiseXorAssignment )
     template < typename _OtherValue, \
         typename = ::std::enable_if_t< \
             ::std::is_same< ::std::decay_t< _OtherValue >, ::std::decay_t< _Value > >::value \
-            && ::Scl::is_similar< _OtherValue, _Value > > > \
+            && ::ScL::is_similar< _OtherValue, _Value > > > \
     operator Instance< _OtherValue, _Tool > refer_Value () refer_Value \
     { \
         return static_cast< Instance< _OtherValue, _Tool > refer_Value >( *this ); \

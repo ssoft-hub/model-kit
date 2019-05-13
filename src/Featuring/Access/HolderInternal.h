@@ -17,11 +17,11 @@ namespace SclPrivate
         using InstanceRefer = _InstanceRefer;
         using Instance = ::std::decay_t< InstanceRefer >;
 
-        static_assert( ::Scl::is_instance< Instance >,
+        static_assert( ::ScL::is_instance< Instance >,
             "The template parameter _InstanceRefer must to be a Instance reference type." );
 
         using Holder = typename Instance::Holder;
-        using HolderRefer = ::Scl::SimilarRefer< Holder, InstanceRefer >;
+        using HolderRefer = ::ScL::SimilarRefer< Holder, InstanceRefer >;
 
         static constexpr HolderRefer holderRefer ( InstanceRefer refer )
         {
@@ -33,8 +33,8 @@ namespace SclPrivate
 namespace SclPrivate
 {
     template < typename _InstanceRefer,
-        typename = ::std::enable_if_t< ::Scl::is_instance< ::std::decay_t< _InstanceRefer > > > >
-    constexpr ::Scl::SimilarRefer< typename ::std::decay_t< _InstanceRefer >::Holder, _InstanceRefer && > instanceHolder ( _InstanceRefer && refer )
+        typename = ::std::enable_if_t< ::ScL::is_instance< ::std::decay_t< _InstanceRefer > > > >
+    constexpr ::ScL::SimilarRefer< typename ::std::decay_t< _InstanceRefer >::Holder, _InstanceRefer && > instanceHolder ( _InstanceRefer && refer )
     {
         using InstanceRefer = _InstanceRefer &&;
         return ::SclPrivate::InstanceAccess< InstanceRefer >::holderRefer( ::std::forward< InstanceRefer >( refer ) );

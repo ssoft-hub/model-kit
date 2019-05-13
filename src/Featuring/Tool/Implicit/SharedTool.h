@@ -27,7 +27,7 @@ namespace Implicit
             using Value = _Value;
 
             using Pointer = ::std::shared_ptr< Value >;
-            using WritableGuard = ::Scl::HolderGuard< ThisType & >;
+            using WritableGuard = ::ScL::HolderGuard< ThisType & >;
 
             Pointer m_pointer;
 
@@ -98,7 +98,7 @@ namespace Implicit
             {
                 using RightHolderRefer = _RightHolderRefer &&;
                 using RightHolder = ::std::decay_t< RightHolderRefer >;
-                using RightPointerRefer = ::Scl::SimilarRefer< typename RightHolder::Pointer, RightHolderRefer >;
+                using RightPointerRefer = ::ScL::SimilarRefer< typename RightHolder::Pointer, RightHolderRefer >;
                 left.m_pointer = ::std::forward< RightPointerRefer >( right.m_pointer );
             }
 
@@ -123,7 +123,7 @@ namespace Implicit
             static constexpr decltype(auto) value ( _HolderRefer && holder )
             {
                 using HolderRefer = _HolderRefer &&;
-                using ValueRefer = ::Scl::SimilarRefer< _Value, HolderRefer >;
+                using ValueRefer = ::ScL::SimilarRefer< _Value, HolderRefer >;
                 // NOTE: Functionality ::std::shared_ptr has a limitation for volatile case.
                 return ::std::forward< ValueRefer >( *holder.m_pointer.get() );
             }
